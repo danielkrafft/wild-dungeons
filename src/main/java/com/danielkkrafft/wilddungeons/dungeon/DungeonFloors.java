@@ -10,6 +10,6 @@ public class DungeonFloors {
 
     public static void setupDungeonFloors(MinecraftServer server) {
         DungeonRooms.setupDungeonRooms(server);
-        DUNGEON_FLOORS.put("empty_floor", new DungeonFloor(DungeonRooms.DUNGEON_ROOMS.get("three_room"), 100));
+        DUNGEON_FLOORS.put("empty_floor", new DungeonFloor(DungeonRooms.ALL_POOL, DungeonRooms.DUNGEON_ROOMS.get("small_1"),100));
     }
 }

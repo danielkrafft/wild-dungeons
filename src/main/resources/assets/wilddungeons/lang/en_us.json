@@ -1,3 +1,11 @@
 {
-  "item.wilddungeons.debug_item": "Debug Item"
+  "item.wilddungeons.debug_item": "Debug Item",
+
+  "block.wilddungeons.connection_block": "Connection Block",
+
+  "connection_block.occupied_label": "Occupied Blockstate:",
+  "connection_block.unoccupied_label": "Unoccupied Blockstate:",
+  "connection_block.pool_label": "Pool:",
+  "connection_block.lock_label": "Lock Rotation?"
+
 }

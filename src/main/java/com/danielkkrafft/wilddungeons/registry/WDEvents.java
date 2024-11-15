@@ -1,10 +1,7 @@
 package com.danielkkrafft.wilddungeons.registry;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.dungeon.DungeonFloor;
-import com.danielkkrafft.wilddungeons.dungeon.DungeonRoom;
-import com.danielkkrafft.wilddungeons.dungeon.Dungeon;
-import com.danielkkrafft.wilddungeons.dungeon.Dungeons;
+import com.danielkkrafft.wilddungeons.dungeon.*;
 import com.danielkkrafft.wilddungeons.entity.EssenceOrb;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;

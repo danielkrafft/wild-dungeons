@@ -25,6 +25,9 @@ import java.util.concurrent.CompletableFuture;
 
 public class EmptyGenerator extends ChunkGenerator {
 
+    public static final int MIN_Y = -64;
+    public static final int GEN_DEPTH = 320;
+
     private final BiomeSource biomeSource;
     public static final MapCodec<EmptyGenerator> CODEC = RecordCodecBuilder.mapCodec((instance) ->
             instance.group(
@@ -67,7 +70,7 @@ public class EmptyGenerator extends ChunkGenerator {
     @Override
     public int getGenDepth() {
 
-        return 320;
+        return GEN_DEPTH;
 
     }
 
@@ -99,7 +102,7 @@ public class EmptyGenerator extends ChunkGenerator {
     @Override
     public int getMinY() {
 
-        return -64;
+        return MIN_Y;
 
     }
 

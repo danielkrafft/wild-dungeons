@@ -1,5 +1,7 @@
 package com.danielkkrafft.wilddungeons;
 
+import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundOpenConnectionBlockUIPacket;
+import com.danielkkrafft.wilddungeons.network.serverbound.ServerboundUpdateConnectionBlockPacket;
 import com.danielkkrafft.wilddungeons.registry.WDBlocks;
 import com.danielkkrafft.wilddungeons.dungeon.Alignments;
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
@@ -62,13 +64,6 @@ public class WildDungeons {
     }
 
     @SubscribeEvent
-    public static void onClientSetup(FMLClientSetupEvent event) {
-        event.enqueueWork(() -> {
-            EntityRenderers.register(WDEntities.ESSENCE_ORB.get(), EssenceOrbRenderer::new);
-        });
-    }
-
-    @SubscribeEvent
     public static void onCommonSetup(FMLCommonSetupEvent event) {
         FileUtil.setGamePath(FMLPaths.GAMEDIR.get());
         FileUtil.setDungeonsPath(FileUtil.getGamePath().resolve(MODID));
@@ -81,6 +76,9 @@ public class WildDungeons {
 
         registrar.playToClient(ClientboundUpdateWDPlayerPacket.TYPE, ClientboundUpdateWDPlayerPacket.STREAM_CODEC, ClientboundUpdateWDPlayerPacket::handle);
         registrar.playToClient(UpdateDimensionsPacket.TYPE, UpdateDimensionsPacket.STREAM_CODEC, UpdateDimensionsPacket::handle);
+        registrar.playToClient(ClientboundOpenConnectionBlockUIPacket.TYPE, ClientboundOpenConnectionBlockUIPacket.STREAM_CODEC, ClientboundOpenConnectionBlockUIPacket::handle);
+
+        registrar.playToServer(ServerboundUpdateConnectionBlockPacket.TYPE, ServerboundUpdateConnectionBlockPacket.STREAM_CODEC, ServerboundUpdateConnectionBlockPacket::handle);
     }
 
     @SubscribeEvent
@@ -97,18 +95,13 @@ public class WildDungeons {
 
     @SubscribeEvent
     public static void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
-        event.registerBlockEntityRenderer(
-                // The block entity type to register the renderer for.
-                WDBlockEntities.RIFT_BLOCK_ENTITY.get(),
-                // A function of BlockEntityRendererProvider.Context to BlockEntityRenderer.
-                RiftRenderer::new
-        );
+        event.registerEntityRenderer(WDEntities.ESSENCE_ORB.get(), EssenceOrbRenderer::new);
+        event.registerBlockEntityRenderer(WDBlockEntities.RIFT_BLOCK_ENTITY.get(), RiftRenderer::new);
     }
 
     public static ResourceLocation rl(String path) {
         return ResourceLocation.fromNamespaceAndPath(MODID, path);
     }
-
     public static Logger getLogger() {
         return LOGGER;
     }
