@@ -32,7 +32,6 @@ public record ClientboundOpenConnectionBlockUIPacket(CompoundTag data) implement
                     data.getString("occupiedBlockstate"),
                     data.getString("unoccupiedBlockstate"),
                     data.getString("pool"),
-                    data.getBoolean("lock"),
                     data.getInt("x"),
                     data.getInt("y"),
                     data.getInt("z")));

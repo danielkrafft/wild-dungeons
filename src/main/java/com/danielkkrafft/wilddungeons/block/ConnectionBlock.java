@@ -38,7 +38,6 @@ public class ConnectionBlock extends Block implements EntityBlock {
             data.putString("occupiedBlockstate", connectionBlockEntity.occupiedBlockstate);
             data.putString("unoccupiedBlockstate", connectionBlockEntity.unoccupiedBlockstate);
             data.putString("pool", connectionBlockEntity.pool);
-            data.putBoolean("lock", connectionBlockEntity.lock);
             data.putInt("x", connectionBlockEntity.getBlockPos().getX());
             data.putInt("y", connectionBlockEntity.getBlockPos().getY());
             data.putInt("z", connectionBlockEntity.getBlockPos().getZ());

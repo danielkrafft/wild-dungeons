@@ -1,7 +1,6 @@
 package com.danielkkrafft.wilddungeons.block;
 
-import com.danielkkrafft.wilddungeons.dungeon.Dungeon;
-import com.danielkkrafft.wilddungeons.dungeon.Dungeons;
+import com.danielkkrafft.wilddungeons.dungeon.DungeonComponents;
 import com.danielkkrafft.wilddungeons.entity.blockentity.RiftBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -32,10 +31,9 @@ public class RiftBlock extends Block implements EntityBlock {
             RiftBlockEntity riftBlockEntity = (RiftBlockEntity) level.getBlockEntity(pos);
             if (riftBlockEntity == null || riftBlockEntity.destination == null) {return;}
 
-            Dungeon dungeon = Dungeons.DUNGEONS.get(riftBlockEntity.destination);
+            DungeonComponents.DungeonTemplate dungeon = DungeonComponents.DUNGEON_REGISTRY.get(riftBlockEntity.destination);
             dungeon.startDungeonDimension(serverplayer.getServer());
             dungeon.enterDungeon(serverplayer);
-
         }
     }
 

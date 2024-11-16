@@ -1,8 +1,7 @@
 package com.danielkkrafft.wilddungeons.entity.blockentity;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.dungeon.Dungeon;
-import com.danielkkrafft.wilddungeons.dungeon.Dungeons;
+import com.danielkkrafft.wilddungeons.dungeon.DungeonComponents;
 import com.danielkkrafft.wilddungeons.registry.WDBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -16,7 +15,7 @@ public class RiftBlockEntity extends BlockEntity {
 
     public RiftBlockEntity(BlockPos pos, BlockState blockState) {
         super(WDBlockEntities.RIFT_BLOCK_ENTITY.get(), pos, blockState);
-        destination = Dungeons.getRandomDungeon().name;
+        destination = DungeonComponents.DUNGEON_POOL.getRandom().name();
         WildDungeons.getLogger().info("GOT RANDOM DUNGEON: " + destination);
     }
 

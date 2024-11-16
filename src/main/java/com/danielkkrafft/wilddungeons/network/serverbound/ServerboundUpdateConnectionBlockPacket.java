@@ -35,7 +35,6 @@ public record ServerboundUpdateConnectionBlockPacket(CompoundTag data) implement
                 connectionBlockEntity.occupiedBlockstate = data.getString("occupiedBlockstate");
                 connectionBlockEntity.unoccupiedBlockstate = data.getString("unoccupiedBlockstate");
                 connectionBlockEntity.pool = data.getString("pool");
-                connectionBlockEntity.lock = data.getBoolean("lock");
             }
         });
     }

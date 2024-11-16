@@ -17,7 +17,6 @@ public class ConnectionBlockEditScreen extends Screen {
     private String occupiedBlockstate;
     private String unoccupiedBlockstate;
     private String pool;
-    private boolean lock;
     private int x;
     private int y;
     private int z;
@@ -25,20 +24,17 @@ public class ConnectionBlockEditScreen extends Screen {
     private static final Component OCCUPIED_LABEL = Component.translatable("connection_block.occupied_label");
     private static final Component UNOCCUPIED_LABEL = Component.translatable("connection_block.unoccupied_label");
     private static final Component POOL_LABEL = Component.translatable("connection_block.pool_label");
-    private static final Component LOCK_LABEL = Component.translatable("connection_block.lock_label");
     private EditBox occupiedEdit;
     private EditBox unoccupiedEdit;
     private EditBox poolEdit;
-    private Checkbox lockBox;
     private Button doneButton;
     private Button cancelButton;
 
-    public ConnectionBlockEditScreen(String occupiedBlockstate, String unoccupiedBlockstate, String pool, boolean lock, int x, int y, int z) {
+    public ConnectionBlockEditScreen(String occupiedBlockstate, String unoccupiedBlockstate, String pool, int x, int y, int z) {
         super(GameNarrator.NO_TITLE);
         this.occupiedBlockstate = occupiedBlockstate;
         this.unoccupiedBlockstate = unoccupiedBlockstate;
         this.pool = pool;
-        this.lock = lock;
         this.x = x;
         this.y = y;
         this.z = z;
@@ -74,9 +70,6 @@ public class ConnectionBlockEditScreen extends Screen {
         this.poolEdit.setMaxLength(128);
         this.poolEdit.setValue(this.pool);
         this.addWidget(this.poolEdit);
-
-        this.lockBox = Checkbox.builder(LOCK_LABEL, this.font).pos(this.width / 2 + 158, 90).selected(lock).build();
-        this.addWidget(this.lockBox);
 
         this.doneButton = this.addRenderableWidget(
                 Button.builder(CommonComponents.GUI_DONE, x -> this.onDone()).bounds(this.width / 2 - 4 - 150, 125, 150, 20).build()
@@ -128,7 +121,6 @@ public class ConnectionBlockEditScreen extends Screen {
         this.unoccupiedEdit.render(guiGraphics, mouseX, mouseY, partialTick);
         guiGraphics.drawString(this.font, POOL_LABEL, this.width / 2 - 153, 80, 10526880);
         this.poolEdit.render(guiGraphics, mouseX, mouseY, partialTick);
-        this.lockBox.render(guiGraphics, mouseX, mouseY, partialTick);
     }
 
     private void sendToServer() {
@@ -136,7 +128,6 @@ public class ConnectionBlockEditScreen extends Screen {
         tag.putString("occupiedBlockstate", this.occupiedEdit.getValue());
         tag.putString("unoccupiedBlockstate", this.unoccupiedEdit.getValue());
         tag.putString("pool", this.poolEdit.getValue());
-        tag.putBoolean("lock", this.lockBox.selected());
         tag.putInt("x", this.x);
         tag.putInt("y", this.y);
         tag.putInt("z", this.z);

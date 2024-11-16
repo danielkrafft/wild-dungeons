@@ -41,7 +41,8 @@ public class WDEvents {
 
     @SubscribeEvent
     public static void onServerStart(ServerStartedEvent event) {
-        Dungeons.setupDungeons(event.getServer());
+        DungeonComponents.server = event.getServer();
+        DungeonComponents.setupDungeons();
     }
 
     @SubscribeEvent
