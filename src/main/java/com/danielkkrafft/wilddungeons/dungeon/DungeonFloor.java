@@ -32,7 +32,7 @@ public class DungeonFloor {
             tries++;
         }
         this.dungeonRooms.forEach(room -> room.processConnectionPoints(level));
-        WildDungeons.getLogger().info("PLACED " + dungeonRooms.size() + " ROOMS IN " + tries + " TRIES");
+        WildDungeons.getLogger().info("PLACED {} ROOMS IN {} TRIES", dungeonRooms.size(), tries);
     }
 
     private void populateNextRoom(DungeonComponents.DungeonFloorTemplate floorTemplate, ServerLevel level, BlockPos position) {
@@ -70,7 +70,7 @@ public class DungeonFloor {
     }
 
     private boolean isPointEligible(ConnectionPoint en, ConnectionPoint ex) {
-        return !ex.occupied && ex.failures < 3 && Objects.equals(en.pool, ex.pool) && (en.getDirection().getAxis() != Direction.Axis.Y || ex.getDirection() == en.getDirection().getOpposite()) && en.getSize().equals(ex.getSize());
+        return !ex.occupied && ex.failures < 3 && Objects.equals(en.pool, ex.pool) && (en.direction.getAxis() != Direction.Axis.Y || ex.direction == en.direction.getOpposite()) && en.getSize().equals(ex.getSize());
     }
 
     private boolean attemptPlaceRoom(List<ConnectionPoint> exitPoints, List<ConnectionPoint> entrancePoints, ConnectionPoint entrancePoint, DungeonComponents.DungeonRoomTemplate nextRoom, ServerLevel level) {
@@ -82,7 +82,7 @@ public class DungeonFloor {
         Vec3 entranceAveragePoint = finalPoint.getAveragePosition();
         Vec3 offset = exitAveragePoint.subtract(entranceAveragePoint);
 
-        BlockPos blockOffset = new BlockPos((int) Math.round(offset.x), (int) Math.round(offset.y), (int) Math.round(offset.z)).offset(exitPoint.getDirection().getNormal());
+        BlockPos blockOffset = new BlockPos((int) Math.round(offset.x), (int) Math.round(offset.y), (int) Math.round(offset.z)).offset(exitPoint.direction.getNormal());
         BoundingBox proposedBox = nextRoom.template().getBoundingBox(settings, blockOffset);
 
         if (!isBoundingBoxValid(proposedBox)) {
@@ -99,7 +99,7 @@ public class DungeonFloor {
     private StructurePlaceSettings handlePointTransformation(ConnectionPoint entrancePoint, ConnectionPoint exitPoint, RandomSource random) {
         StructurePlaceSettings settings = new StructurePlaceSettings();
 
-        if (entrancePoint.getDirection().getAxis() == Direction.Axis.Y) {
+        if (entrancePoint.direction.getAxis() == Direction.Axis.Y) {
             settings.setMirror(exitPoint.room.settings.getMirror());
             settings.setRotation(exitPoint.room.settings.getRotation());
             return settings;
@@ -107,11 +107,11 @@ public class DungeonFloor {
 
         settings.setMirror(Util.getRandom(Mirror.values(), random));
         ConnectionPoint mirroredPoint = entrancePoint.transformed(settings, new BlockPos(0, 0, 0), new BlockPos(0, 0, 0));
-        if (exitPoint.getDirection() == mirroredPoint.getDirection()) {
+        if (exitPoint.direction == mirroredPoint.direction) {
             settings.setRotation(Rotation.CLOCKWISE_180);
-        } else if (exitPoint.getDirection() == mirroredPoint.getDirection().getClockWise()) {
+        } else if (exitPoint.direction == mirroredPoint.direction.getClockWise()) {
             settings.setRotation(Rotation.COUNTERCLOCKWISE_90);
-        } else if (exitPoint.getDirection() == mirroredPoint.getDirection().getCounterClockWise()) {
+        } else if (exitPoint.direction == mirroredPoint.direction.getCounterClockWise()) {
             settings.setRotation(Rotation.CLOCKWISE_90);
         }
 
