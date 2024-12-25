@@ -29,8 +29,8 @@ public record ClientboundOpenConnectionBlockUIPacket(CompoundTag data) implement
     public void handle(IPayloadContext context) {
         context.enqueueWork(() -> {
             Minecraft.getInstance().setScreen(new ConnectionBlockEditScreen(
-                    data.getString("occupiedBlockstate"),
-                    data.getString("unoccupiedBlockstate"),
+                    data.getString("lockedBlockstate"),
+                    data.getString("unlockedBlockstate"),
                     data.getString("pool"),
                     data.getInt("x"),
                     data.getInt("y"),

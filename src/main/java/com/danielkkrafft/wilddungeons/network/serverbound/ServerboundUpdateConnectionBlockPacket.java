@@ -2,11 +2,7 @@ package com.danielkkrafft.wilddungeons.network.serverbound;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.entity.blockentity.ConnectionBlockEntity;
-import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundUpdateWDPlayerPacket;
-import com.danielkkrafft.wilddungeons.player.WDPlayer;
-import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -32,8 +28,8 @@ public record ServerboundUpdateConnectionBlockPacket(CompoundTag data) implement
             ServerLevel level = (ServerLevel) context.player().level();
             BlockEntity blockEntity = level.getBlockEntity(new BlockPos(data.getInt("x"), data.getInt("y"), data.getInt("z")));
             if (blockEntity instanceof ConnectionBlockEntity connectionBlockEntity) {
-                connectionBlockEntity.occupiedBlockstate = data.getString("occupiedBlockstate");
-                connectionBlockEntity.unoccupiedBlockstate = data.getString("unoccupiedBlockstate");
+                connectionBlockEntity.lockedBlockstate = data.getString("occupiedBlockstate");
+                connectionBlockEntity.unlockedBlockstate = data.getString("unoccupiedBlockstate");
                 connectionBlockEntity.pool = data.getString("pool");
             }
         });

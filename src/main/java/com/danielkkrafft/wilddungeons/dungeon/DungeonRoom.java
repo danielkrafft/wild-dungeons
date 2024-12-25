@@ -17,6 +17,7 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 //TODO Refactor this god forsaken class
@@ -33,6 +34,7 @@ public class DungeonRoom {
 
     public DungeonRoom(DungeonComponents.DungeonRoomTemplate dungeonRoomTemplate, ServerLevel level, BlockPos position, BlockPos offset, StructurePlaceSettings settings, RandomSource random, int flags, List<ConnectionPoint> inputPoints) {
         dungeonRoomTemplate.template().placeInWorld(level, position, offset, settings, random, flags);
+        WildDungeons.getLogger().info("SHOULD HAVE PLACED AT: {}", dungeonRoomTemplate.template().getBoundingBox(settings, position));
         this.dungeonRoomTemplate = dungeonRoomTemplate;
         this.level = level;
         this.position = position;
@@ -42,6 +44,7 @@ public class DungeonRoom {
         this.flags = flags;
         this.boundingBox = dungeonRoomTemplate.template().getBoundingBox(settings, position);
 
+
         for (ConnectionPoint point : inputPoints) {
             point.room = this;
             point = point.transformed(settings, position, offset);
@@ -50,17 +53,26 @@ public class DungeonRoom {
     }
 
     public void processConnectionPoints(ServerLevel level) {
+        WildDungeons.getLogger().info("PROCESSING {} CONNECTION POINTS", connectionPoints.size());
         for (ConnectionPoint point : connectionPoints) {
             for (BlockPos pos : point.positions) {
                 BlockEntity blockEntity = level.getBlockEntity(pos);
                 if (blockEntity instanceof ConnectionBlockEntity connectionBlockEntity) {
-                    String toCheck = point.occupied ? connectionBlockEntity.occupiedBlockstate : connectionBlockEntity.unoccupiedBlockstate;
-                    BlockStateParser.BlockResult blockResult;
-                    BlockState blockState;
-                    try {
-                        blockResult = BlockStateParser.parseForBlock(BuiltInRegistries.BLOCK.asLookup(), toCheck, true);
-                        blockState = blockResult.blockState();
+                    HashMap<String, String> toCheck = new HashMap<>();
+                    HashMap<String, BlockState> blockStates = new HashMap<>();
+                    toCheck.put("locked", connectionBlockEntity.lockedBlockstate);
+                    toCheck.put("unlocked", connectionBlockEntity.unlockedBlockstate);
 
+                    toCheck.forEach((key, value) -> {
+                        try {
+                            blockStates.put(key, BlockStateParser.parseForBlock(BuiltInRegistries.BLOCK.asLookup(), value, true).blockState());
+                        } catch (CommandSyntaxException e) {
+                            blockStates.put(key, Blocks.AIR.defaultBlockState());
+                            throw new RuntimeException(e);
+                        }
+                    });
+
+                    blockStates.forEach((key, blockState) -> {
                         if ((blockState.hasProperty(BlockStateProperties.HORIZONTAL_FACING) || blockState.hasProperty(BlockStateProperties.FACING))) {
                             Direction facing = blockState.hasProperty(BlockStateProperties.FACING) ? blockState.getValue(BlockStateProperties.FACING) : blockState.getValue(BlockStateProperties.HORIZONTAL_FACING);
 
@@ -97,18 +109,18 @@ public class DungeonRoom {
                                 }
                             }
 
-                            blockState = blockState.hasProperty(BlockStateProperties.FACING) ?
+                            blockStates.put(key, blockState.hasProperty(BlockStateProperties.FACING) ?
                                     blockState.setValue(BlockStateProperties.FACING, facing) :
-                                    blockState.setValue(BlockStateProperties.HORIZONTAL_FACING, facing);
+                                    blockState.setValue(BlockStateProperties.HORIZONTAL_FACING, facing));
                         }
+                    });
 
+                    point.lockedBlockStates.put(pos, blockStates.get("locked"));
+                    point.unlockedBlockStates.put(pos, blockStates.get("unlocked"));
 
-                    } catch (CommandSyntaxException e) {
-                        blockState = Blocks.AIR.defaultBlockState();
-                        throw new RuntimeException(e);
-                    }
-
-                    level.setBlock(pos, blockState, 2);
+                    level.setBlock(pos, point.locked ? blockStates.get("locked") : blockStates.get("unlocked"), 2);
+                } else {
+                    WildDungeons.getLogger().info("OOPS! NO BLOCK ENTITY");
                 }
             }
         }

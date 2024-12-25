@@ -1,10 +1,14 @@
 package com.danielkkrafft.wilddungeons.dungeon;
 
+import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.registry.WDBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
@@ -12,16 +16,20 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Vector2i;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class ConnectionPoint {
     public DungeonRoom room = null;
     public BoundingBox boundingBox;
     public List<BlockPos> positions;
+    public HashMap<BlockPos, BlockState> lockedBlockStates = new HashMap<>();
+    public HashMap<BlockPos, BlockState> unlockedBlockStates = new HashMap<>();
     public Direction direction;
 
     public String pool = "all";
     public boolean rotated = false;
+    public boolean locked = true;
     public boolean occupied = false;
     public int failures = 0;
 
@@ -40,6 +48,7 @@ public class ConnectionPoint {
 
         this.pool = point.pool;
         this.rotated = point.rotated;
+        this.locked = point.locked;
         this.occupied = point.occupied;
         this.failures = point.failures;
     }
@@ -52,16 +61,33 @@ public class ConnectionPoint {
 
         newPoint.rotated = settings.getRotation() == Rotation.CLOCKWISE_90 || settings.getRotation() == Rotation.COUNTERCLOCKWISE_90;
         newPoint.positions = newPoint.positions.stream().map(pos -> StructureTemplate.transform(pos, settings.getMirror(), settings.getRotation(), offset).offset(position)).toList();
+        newPoint.boundingBox = new BoundingBox(newPoint.positions.getFirst());
+        newPoint.positions.forEach((pos) -> newPoint.boundingBox.encapsulate(pos));
 
+        WildDungeons.getLogger().info("CONVERTING INPUT POINT: {} INTO TRANSFORMED POINT {}", this.direction, newPoint.direction);
         return newPoint;
+    }
+
+    public void lock(ServerLevel level) {
+        lockedBlockStates.forEach((pos, blockState) -> {
+            level.setBlock(pos, blockState, 2);
+        });
+    }
+
+    public void unlock(ServerLevel level) {
+        unlockedBlockStates.forEach((pos, blockState) -> {
+            level.setBlock(pos, blockState, 2);
+        });
     }
 
     public Direction mirrorDirection(Direction direction, Mirror mirror) {
         switch (mirror) {
             case FRONT_BACK:
                 if (direction == Direction.WEST || direction == Direction.EAST) {return direction.getOpposite();}
+                break;
             case LEFT_RIGHT:
                 if (direction == Direction.NORTH || direction == Direction.SOUTH) {return direction.getOpposite();}
+                break;
         }
         return direction;
     }
@@ -76,24 +102,24 @@ public class ConnectionPoint {
         };
     }
 
-    public Vec3 getAveragePosition() {
-        float totalX = 0.0f;
-        float totalY = 0.0f;
-        float totalZ = 0.0f;
-
-        for (BlockPos pos : positions) {
-            totalX += pos.getX();
-            totalY += pos.getY();
-            totalZ += pos.getZ();
-        }
-
-        return new Vec3(totalX / positions.size(), totalY / positions.size(), totalZ / positions.size());
-    }
+//    public Vec3i getAveragePosition() {
+//        int totalX = 0;
+//        int totalY = 0;
+//        int totalZ = 0;
+//
+//        for (BlockPos pos : positions) {
+//            totalX += pos.getX();
+//            totalY += pos.getY();
+//            totalZ += pos.getZ();
+//        }
+//
+//        return new Vec3i(totalX / positions.size(), totalY / positions.size(), totalZ / positions.size());
+//    }
 
     public Vector2i getSize() {
-        int x = this.rotated ? this.boundingBox.getZSpan() : this.boundingBox.getXSpan();
+        int x = this.boundingBox.getXSpan();
         int y = this.boundingBox.getYSpan();
-        int z = this.rotated ? this.boundingBox.getXSpan() : this.boundingBox.getZSpan();
+        int z = this.boundingBox.getZSpan();
 
         return switch (this.direction) {
             case UP, DOWN -> new Vector2i(x, z);

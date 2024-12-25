@@ -3,8 +3,8 @@
 
   "block.wilddungeons.connection_block": "Connection Block",
 
-  "connection_block.occupied_label": "Occupied Blockstate:",
-  "connection_block.unoccupied_label": "Unoccupied Blockstate:",
+  "connection_block.locked_label": "Locked Blockstate:",
+  "connection_block.unlocked_label": "Unlocked Blockstate:",
   "connection_block.pool_label": "Pool:",
   "connection_block.lock_label": "Lock Rotation?"
 
