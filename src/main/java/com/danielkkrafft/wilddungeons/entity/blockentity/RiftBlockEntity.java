@@ -15,8 +15,7 @@ public class RiftBlockEntity extends BlockEntity {
 
     public RiftBlockEntity(BlockPos pos, BlockState blockState) {
         super(WDBlockEntities.RIFT_BLOCK_ENTITY.get(), pos, blockState);
-        destination = DungeonComponents.DUNGEON_POOL.getRandom().name();
-        WildDungeons.getLogger().info("GOT RANDOM DUNGEON: " + destination);
+        destination = "random";
     }
 
     @Override

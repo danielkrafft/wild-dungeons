@@ -1,29 +1,80 @@
 package com.danielkkrafft.wilddungeons.player;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.dungeon.DungeonFloor;
+import com.danielkkrafft.wilddungeons.util.CommandUtil;
 import com.danielkkrafft.wilddungeons.util.MathUtil;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
 public class WDPlayer {
 
     private HashMap<String, Integer> essenceTotals = new HashMap<>();
+    private List<SavedTransform> respawns = new ArrayList<>();
+    private List<SavedTransform> positions = new ArrayList<>();
     private String recentEssence = "essence:overworld";
+    private String currentDungeon = "none";
+    private String currentFloor = "none";
+    private String UUID;
+    private int riftCooldown = 0;
 
     public int getEssenceTotal(String key) {return this.essenceTotals.getOrDefault(key, 0);}
     public void setEssenceTotal(String key, int value) {this.essenceTotals.put(key, value);}
 
     public String getRecentEssence() {return this.recentEssence;}
     public void setRecentEssence(String recentEssence) {this.recentEssence = recentEssence;}
+
+    public String getCurrentDungeon() {return this.currentDungeon;}
+    public void setCurrentDungeon(String currentDungeon) {this.currentDungeon = currentDungeon;}
+    public String getCurrentFloor() {return this.currentFloor;}
+    public void setCurrentFloor(String currentFloor) {this.currentFloor = currentFloor;}
+    public void setCurrentFloor(DungeonFloor floor) {this.currentFloor = floor.LEVEL_KEY.toString();}
+    public int getRiftCooldown() {return this.riftCooldown;}
+    public void setRiftCooldown(int cooldown) {this.riftCooldown = cooldown;}
+
+    public String getUUID() {return this.UUID;}
+
+    public void storeRespawn(SavedTransform transform) {respawns.add(transform);}
+    public void storePosition(SavedTransform transform) {positions.add(transform);}
+
+    public SavedTransform removeLastPosition() {return positions.removeLast();}
+    public SavedTransform removeLastRespawn() {return respawns.removeLast();}
+    public int getDepth() {return this.positions.size();};
+
+    public WDPlayer(String playerUUID){this.UUID = playerUUID;}
+
+    public void tick() {
+        if (riftCooldown > 0) {
+            riftCooldown -= 1;
+        }
+    }
+
+    public void rootRespawn(MinecraftServer server) {
+        WDPlayer.SavedTransform newPosition = positions.getFirst();
+        WDPlayer.setRespawnPosition(respawns.getFirst(), getServerPlayer(server));
+        this.currentDungeon = "none";
+        this.currentFloor = "none";
+        CommandUtil.executeTeleportCommand(getServerPlayer(server), newPosition);
+    }
+
+    public ServerPlayer getServerPlayer(MinecraftServer server) {
+        return server.getPlayerList().getPlayer(java.util.UUID.fromString(UUID));
+    }
 
     public CompoundTag toCompoundTag() {
         CompoundTag tag = new CompoundTag();
@@ -32,12 +83,26 @@ public class WDPlayer {
             essenceTag.putInt(key, essenceTotals.get(key));
         }
 
+        CompoundTag respawnsTag = new CompoundTag();
+        for (int i = 0; i < respawns.size(); i++) {
+            respawnsTag.put(""+i, respawns.get(i).serialize());
+        }
+
+        CompoundTag positionsTag = new CompoundTag();
+        for (int i = 0; i < positions.size(); i++) {
+            positionsTag.put(""+i, positions.get(i).serialize());
+        }
+
         tag.put("essenceTotals", essenceTag);
+        tag.put("respawns", respawnsTag);
+        tag.put("positions", positionsTag);
         tag.putString("recentEssence", this.recentEssence);
+        tag.putString("currentDungeon", this.currentDungeon);
+        tag.putString("currentFloor", this.currentFloor);
+        tag.putString("uuid", this.UUID);
         return tag;
     }
 
-    public WDPlayer(){}
     public WDPlayer(CompoundTag tag) {
         CompoundTag essenceTag = tag.getCompound("essenceTotals");
         HashMap<String, Integer> newEssenceTotals = new HashMap<>();
@@ -45,8 +110,25 @@ public class WDPlayer {
             newEssenceTotals.put(key, essenceTag.getInt(key));
         }
 
+        CompoundTag respawnsTag = tag.getCompound("respawns");
+        List<SavedTransform> newRespawns = new ArrayList<>();
+        for (int i = 0; i < respawnsTag.size(); i++) {
+            newRespawns.add(new SavedTransform(respawnsTag.getCompound(String.valueOf(i))));
+        }
+
+        CompoundTag positionsTag = tag.getCompound("positions");
+        List<SavedTransform> newPositions = new ArrayList<>();
+        for (int i = 0; i < positionsTag.size(); i++) {
+            newPositions.add(new SavedTransform(positionsTag.getCompound(String.valueOf(i))));
+        }
+
         this.essenceTotals = newEssenceTotals;
+        this.respawns = newRespawns;
+        this.positions = newPositions;
         this.recentEssence = tag.getString("recentEssence");
+        this.currentDungeon = tag.getString("currentDungeon");
+        this.currentFloor = tag.getString("currentFloor");
+        this.UUID = tag.getString("uuid");
     }
 
     public void giveEssencePoints(String key, int points) {
@@ -83,6 +165,10 @@ public class WDPlayer {
         }
 
         return level;
+    }
+
+    public static void setRespawnPosition(SavedTransform transform, ServerPlayer player) {
+        player.setRespawnPosition(transform.getDimension(), transform.getBlockPos(), (float) transform.getYaw(), true, false);
     }
 
 
@@ -124,6 +210,29 @@ public class WDPlayer {
             this.yaw = yaw;
             this.pitch = pitch;
             this.dimension = dimension;
+        }
+
+        public SavedTransform(CompoundTag tag) {
+            this.position = new Vec3(tag.getDouble("x"), tag.getDouble("y"), tag.getDouble("z"));
+            this.yaw = tag.getDouble("yaw");
+            this.pitch = tag.getDouble("pitch");
+            this.dimension = ResourceKey.create(Registries.DIMENSION, WildDungeons.rl(tag.getString("levelKey").split(":")[1]));
+        }
+
+        public static SavedTransform fromRespawn(ServerPlayer player) {
+            return new SavedTransform(player.position(), MathUtil.round(WDPlayer.calcYaw(player), 2), MathUtil.round(WDPlayer.calcPitch(player), 2), player.getRespawnDimension());
+        }
+
+        public CompoundTag serialize() {
+            CompoundTag result = new CompoundTag();
+
+            result.putDouble("x", this.position.x);
+            result.putDouble("y", this.position.y);
+            result.putDouble("z", this.position.z);
+            result.putDouble("yaw", this.yaw);
+            result.putDouble("pitch", this.pitch);
+            result.putString("levelKey", this.dimension.toString());
+            return result;
         }
 
         public double getX() {return this.position.x;}

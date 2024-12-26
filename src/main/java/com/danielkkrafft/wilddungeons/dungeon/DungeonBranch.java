@@ -25,12 +25,11 @@ public class DungeonBranch {
     public DungeonFloor floor;
     public ServerLevel level;
     public BlockPos origin;
+    public BlockPos spawnPoint;
 
     public static final int openConnectionsTarget = 6;
 
     public int openConnections = 0;
-
-
 
     public DungeonBranch(DungeonComponents.DungeonBranchTemplate branchTemplate, DungeonFloor floor, ServerLevel level, BlockPos origin) {
         this.branchTemplate = branchTemplate;
@@ -38,6 +37,10 @@ public class DungeonBranch {
         this.level = level;
         this.origin = origin;
         generateDungeonBranch();
+        if (!this.dungeonRooms.isEmpty()) {
+            this.spawnPoint = this.dungeonRooms.getFirst().spawnPoint;
+        }
+
     }
 
     private void generateDungeonBranch() {
@@ -55,21 +58,32 @@ public class DungeonBranch {
     private void populateNextRoom() {
 
         DungeonComponents.DungeonRoomTemplate nextRoom = selectNextRoom();
-        WildDungeons.getLogger().info("SELECTED ROOM {} WITH BOUNDING BOX {}", nextRoom.name(), nextRoom.boundingBox());
-
         List<ConnectionPoint> entrancePoints = nextRoom.connectionPoints().stream().map(ConnectionPoint::new).toList();
+        WildDungeons.getLogger().info("SELECTED ROOM {} WITH BOUNDING BOX {}", nextRoom.name(), nextRoom.boundingBox());
+        if (maybePlaceInitialRoom(nextRoom, entrancePoints)) {return;}
+
         ConnectionPoint entrancePoint = entrancePoints.get(new Random().nextInt(entrancePoints.size()));
         WildDungeons.getLogger().info("SELECTED ENTRANCE POINT {} WITH BOUNDING BOX {}", entrancePoint.direction, entrancePoint.boundingBox);
 
         List<ConnectionPoint> exitPoints = populatePotentialExitPoints(entrancePoint);
-        if (exitPoints.isEmpty() && !floor.dungeonBranches.isEmpty()) return;
 
         for (int i = 0; i < 50; i++) {
+            if (exitPoints.isEmpty()) break;
             if (attemptPlaceRoom(exitPoints, entrancePoints, entrancePoint, nextRoom)) {
                 return;
             }
         }
         WildDungeons.getLogger().info("FAILED TO PLACE ROOM");
+    }
+
+    private boolean maybePlaceInitialRoom(DungeonComponents.DungeonRoomTemplate nextRoom, List<ConnectionPoint> entrancePoints) {
+        if (dungeonRooms.isEmpty() && floor.dungeonBranches.isEmpty()) {
+            WildDungeons.getLogger().info("PLACING INITIAL ROOM: {} AT BOUNDING BOX: {}", nextRoom.name(), nextRoom.template().getBoundingBox(new StructurePlaceSettings(), origin));
+            dungeonRooms.add(branchTemplate.endingRoom().placeInWorld(level, origin, new StructurePlaceSettings(), entrancePoints));
+            openConnections += branchTemplate.endingRoom().connectionPoints().size();
+            return true;
+        }
+        return false;
     }
 
     private DungeonComponents.DungeonRoomTemplate selectNextRoom() {
@@ -107,56 +121,48 @@ public class DungeonBranch {
     }
 
     private boolean isPointEligible(ConnectionPoint en, ConnectionPoint ex) {
-        boolean log = true;
         if (ex.occupied) {
-            //if (log) WildDungeons.getLogger().info("INELIGIBLE DUE TO OCCUPIED");
+            //WildDungeons.getLogger().info("INELIGIBLE DUE TO OCCUPIED");
             return false;
         } else if (ex.failures > 10) {
-            if (log) WildDungeons.getLogger().info("INELIGIBLE DUE TO FAILURES");
+            //WildDungeons.getLogger().info("INELIGIBLE DUE TO FAILURES");
             return false;
         } else if (!Objects.equals(en.pool, ex.pool)) {
-            if (log) WildDungeons.getLogger().info("INELIGIBLE DUE TO POOL");
+            //WildDungeons.getLogger().info("INELIGIBLE DUE TO POOL");
             return false;
         } else if (en.direction.getAxis() == Direction.Axis.Y && ex.direction != en.direction.getOpposite()) {
-            if (log) WildDungeons.getLogger().info("INELIGIBLE DUE TO AXIS");
+            //WildDungeons.getLogger().info("INELIGIBLE DUE TO AXIS");
             return false;
         } else if (!en.getSize().equals(ex.getSize())) {
-            if (log) WildDungeons.getLogger().info("INELIGIBLE DUE TO SIZE EN: {} EX: {}", en.getSize(), ex.getSize());
+            //WildDungeons.getLogger().info("INELIGIBLE DUE TO SIZE EN: {} EX: {}", en.getSize(), ex.getSize());
             return false;
         }
         return true;
     }
 
     private boolean attemptPlaceRoom(List<ConnectionPoint> exitPoints, List<ConnectionPoint> entrancePoints, ConnectionPoint entrancePoint, DungeonComponents.DungeonRoomTemplate nextRoom) {
-        if (exitPoints.isEmpty() && dungeonRooms.isEmpty()) {
-            dungeonRooms.add(branchTemplate.endingRoom().placeInWorld(level, origin, new StructurePlaceSettings(), entrancePoints));
-            openConnections += branchTemplate.endingRoom().connectionPoints().size();
-            return true;
-        } else if (exitPoints.isEmpty()) {
-            return false;
-        }
 
         ConnectionPoint exitPoint = exitPoints.remove(new Random().nextInt(exitPoints.size()));
-        WildDungeons.getLogger().info("SELECTED EXIT POINT {} WITH BOUNDING BOX {}", exitPoint.direction, exitPoint.boundingBox);
+        //WildDungeons.getLogger().info("SELECTED EXIT POINT {} WITH BOUNDING BOX {}", exitPoint.direction, exitPoint.boundingBox);
 
         StructurePlaceSettings settings = handleRoomTransformation(entrancePoint, exitPoint, level.getRandom());
         ConnectionPoint finalPoint = entrancePoint.transformed(settings, new BlockPos(0, 0, 0), new BlockPos(0, 0, 0));
-        WildDungeons.getLogger().info("TRANSFORMED ENTRANCE POINT {} WITH BOUNDING BOX {}. ROOM BOUNDING BOX IS NOW {}", finalPoint.direction, finalPoint.boundingBox, nextRoom.template().getBoundingBox(settings, new BlockPos(0,0,0)));
+        //WildDungeons.getLogger().info("TRANSFORMED ENTRANCE POINT {} WITH BOUNDING BOX {}. ROOM BOUNDING BOX IS NOW {}", finalPoint.direction, finalPoint.boundingBox, nextRoom.template().getBoundingBox(settings, new BlockPos(0,0,0)));
 
         BoundingBox exitBox = exitPoint.boundingBox;
         BoundingBox enterBox = finalPoint.boundingBox;
         BlockPos blockOffset = new BlockPos(exitBox.minX() - enterBox.minX(), exitBox.minY() - enterBox.minY(), exitBox.minZ() - enterBox.minZ()).offset(exitPoint.direction.getNormal());
-        WildDungeons.getLogger().info("CALCULATED BLOCK OFFSET: {}", blockOffset);
+        //WildDungeons.getLogger().info("CALCULATED BLOCK OFFSET: {}", blockOffset);
 
         BoundingBox proposedBox = nextRoom.template().getBoundingBox(settings, blockOffset);
-        WildDungeons.getLogger().info("PROPOSED BOUNDING BOX: {}", proposedBox);
+        //WildDungeons.getLogger().info("PROPOSED BOUNDING BOX: {}", proposedBox);
 
         if (!isBoundingBoxValid(proposedBox)) {
             WildDungeons.getLogger().info("FAILED TO PLACE");
             exitPoint.failures += 1;
             return false;
         } else {
-            WildDungeons.getLogger().info("SUCCESSFULLY PLACED");
+            WildDungeons.getLogger().info("SUCCESSFULLY PLACED ROOM {} AT BOUNDING BOX {}", nextRoom.name(), proposedBox);
             exitPoint.locked = false;
             entrancePoint.locked = false;
             exitPoint.occupied = true;
@@ -178,10 +184,10 @@ public class DungeonBranch {
         }
 
         settings.setMirror(Util.getRandom(Mirror.values(), random));
-        WildDungeons.getLogger().info("SELECTED MIRROR: {}", settings.getMirror());
+        //WildDungeons.getLogger().info("SELECTED MIRROR: {}", settings.getMirror());
 
         ConnectionPoint mirroredPoint = entrancePoint.transformed(settings, new BlockPos(0, 0, 0), new BlockPos(0, 0, 0));
-        WildDungeons.getLogger().info("MIRRORED POINT TO DIRECTION: {}", mirroredPoint.direction);
+        //WildDungeons.getLogger().info("MIRRORED POINT TO DIRECTION: {}", mirroredPoint.direction);
         if (exitPoint.direction == mirroredPoint.direction) {
             settings.setRotation(Rotation.CLOCKWISE_180);
         } else if (exitPoint.direction == mirroredPoint.direction.getClockWise()) {
@@ -189,7 +195,7 @@ public class DungeonBranch {
         } else if (exitPoint.direction == mirroredPoint.direction.getCounterClockWise()) {
             settings.setRotation(Rotation.CLOCKWISE_90);
         }
-        WildDungeons.getLogger().info("SELECTED ROTATION: {}", settings.getRotation());
+        //WildDungeons.getLogger().info("SELECTED ROTATION: {}", settings.getRotation());
 
         return settings;
     }

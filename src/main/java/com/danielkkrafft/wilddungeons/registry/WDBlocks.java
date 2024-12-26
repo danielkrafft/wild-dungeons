@@ -20,6 +20,7 @@ public class WDBlocks {
 
     public static final DeferredBlock<Block> RIFT_BLOCK = registerWithItem("rift_block", () -> new RiftBlock(BlockBehaviour.Properties.of().destroyTime(-1).lightLevel(state -> 15).noCollission().noOcclusion()));
     public static final DeferredBlock<Block> CONNECTION_BLOCK = registerWithItem("connection_block", () -> new ConnectionBlock(BlockBehaviour.Properties.of().destroyTime(-1).noCollission()));
+    public static final DeferredBlock<Block> SPAWN_BLOCK = registerWithItem("spawn_block", () -> new Block(BlockBehaviour.Properties.of().destroyTime(-1).noCollission()));
 
     private static <T extends Block> DeferredBlock<T> registerWithItem(String name, Supplier<T> supplier, Item.@NotNull Properties properties) {
         DeferredBlock<T> block = BLOCKS.register(name, supplier);

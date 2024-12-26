@@ -64,7 +64,7 @@ public class ConnectionPoint {
         newPoint.boundingBox = new BoundingBox(newPoint.positions.getFirst());
         newPoint.positions.forEach((pos) -> newPoint.boundingBox.encapsulate(pos));
 
-        WildDungeons.getLogger().info("CONVERTING INPUT POINT: {} INTO TRANSFORMED POINT {}", this.direction, newPoint.direction);
+        //WildDungeons.getLogger().info("CONVERTING INPUT POINT: {} INTO TRANSFORMED POINT {}", this.direction, newPoint.direction);
         return newPoint;
     }
 
@@ -101,20 +101,6 @@ public class ConnectionPoint {
             default -> direction;
         };
     }
-
-//    public Vec3i getAveragePosition() {
-//        int totalX = 0;
-//        int totalY = 0;
-//        int totalZ = 0;
-//
-//        for (BlockPos pos : positions) {
-//            totalX += pos.getX();
-//            totalY += pos.getY();
-//            totalZ += pos.getZ();
-//        }
-//
-//        return new Vec3i(totalX / positions.size(), totalY / positions.size(), totalZ / positions.size());
-//    }
 
     public Vector2i getSize() {
         int x = this.boundingBox.getXSpan();

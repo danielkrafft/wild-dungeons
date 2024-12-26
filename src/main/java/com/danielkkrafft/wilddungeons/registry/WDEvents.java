@@ -19,6 +19,12 @@ import net.neoforged.neoforge.event.entity.player.PlayerXpEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public class WDEvents {
 
@@ -43,6 +49,22 @@ public class WDEvents {
     public static void onServerStart(ServerStartedEvent event) {
         DungeonComponents.server = event.getServer();
         DungeonComponents.setupDungeons();
+    }
+
+    @SubscribeEvent
+    public static void onServerTick(ServerTickEvent.Post event) {
+        WDPlayerManager.getInstance().getPlayers().forEach((key, value) -> value.tick());
+
+        List<String> sessionsToRemove = new ArrayList<>();
+        DungeonSession.DungeonSessionManager.getInstance().getSessions().forEach((key, value) -> {
+                value.tick();
+                if (value.markedForShutdown) {
+                    sessionsToRemove.add(key);
+                }
+        });
+        sessionsToRemove.forEach(s -> {
+            DungeonSession.DungeonSessionManager.getInstance().getSessions().remove(s);
+        });
     }
 
     @SubscribeEvent

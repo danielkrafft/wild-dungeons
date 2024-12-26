@@ -44,18 +44,21 @@ public class DungeonComponents {
         DUNGEON_ROOM_REGISTRY.add(DungeonRoomTemplate.build("stone/small_1").pool(SMALL_ROOM_POOL));
         DUNGEON_ROOM_REGISTRY.add(DungeonRoomTemplate.build("stone/small_2").pool(SMALL_ROOM_POOL));
         DUNGEON_ROOM_REGISTRY.add(DungeonRoomTemplate.build("stone/small_3").pool(SMALL_ROOM_POOL));
+        DUNGEON_ROOM_REGISTRY.add(DungeonRoomTemplate.build("stone/small_4").pool(SMALL_ROOM_POOL));
         DUNGEON_ROOM_REGISTRY.add(DungeonRoomTemplate.build("stone/medium_1").pool(MEDIUM_ROOM_POOL));
         DUNGEON_ROOM_REGISTRY.add(DungeonRoomTemplate.build("stone/medium_2").pool(MEDIUM_ROOM_POOL));
         DUNGEON_ROOM_REGISTRY.add(DungeonRoomTemplate.build("stone/medium_3").pool(MEDIUM_ROOM_POOL));
-        DUNGEON_ROOM_REGISTRY.add(DungeonRoomTemplate.build("stone/large_1"));
+        DUNGEON_ROOM_REGISTRY.add(DungeonRoomTemplate.build("stone/large_1").pool(MEDIUM_ROOM_POOL));
+        DUNGEON_ROOM_REGISTRY.add(DungeonRoomTemplate.build("stone/start"));
 
-        DUNGEON_BRANCH_REGISTRY.add(DungeonBranchTemplate.build("starter_room_branch", SMALL_ROOM_POOL, DUNGEON_ROOM_REGISTRY.get("stone/large_1"), 1));
+        DUNGEON_BRANCH_REGISTRY.add(DungeonBranchTemplate.build("starter_room_branch", SMALL_ROOM_POOL, DUNGEON_ROOM_REGISTRY.get("stone/start"), 1));
         DUNGEON_BRANCH_REGISTRY.add(DungeonBranchTemplate.build("small_room_branch", SMALL_ROOM_POOL, DUNGEON_ROOM_REGISTRY.get("stone/large_1"), 30).pool(BRANCH_POOL));
         DUNGEON_BRANCH_REGISTRY.add(DungeonBranchTemplate.build("medium_room_branch", MEDIUM_ROOM_POOL, DUNGEON_ROOM_REGISTRY.get("stone/large_1"), 15).pool(BRANCH_POOL));
+        DUNGEON_BRANCH_REGISTRY.add(DungeonBranchTemplate.build("ending_room_branch", SMALL_ROOM_POOL, DUNGEON_ROOM_REGISTRY.get("stone/start"), 10));
 
-        DUNGEON_FLOOR_REGISTRY.add(DungeonFloorTemplate.build("test_floor", BRANCH_POOL, DUNGEON_BRANCH_REGISTRY.get("starter_room_branch"), DUNGEON_BRANCH_REGISTRY.get("medium_room_branch"), 10).pool(FLOOR_POOL));
+        DUNGEON_FLOOR_REGISTRY.add(DungeonFloorTemplate.build("test_floor", BRANCH_POOL, DUNGEON_BRANCH_REGISTRY.get("starter_room_branch"), DUNGEON_BRANCH_REGISTRY.get("ending_room_branch"), 2).pool(FLOOR_POOL));
 
-        DUNGEON_REGISTRY.add(DungeonTemplate.build("dungeon_1", DungeonOpenBehavior.NONE, DUNGEON_FLOOR_REGISTRY.get("test_floor")).pool(DUNGEON_POOL));
+        DUNGEON_REGISTRY.add(DungeonTemplate.build("dungeon_1", DungeonOpenBehavior.NONE, Arrays.asList(DUNGEON_FLOOR_REGISTRY.get("test_floor"), DUNGEON_FLOOR_REGISTRY.get("test_floor"), DUNGEON_FLOOR_REGISTRY.get("test_floor"))).pool(DUNGEON_POOL));
     }
 
     public static class DungeonComponentPool<T extends DungeonComponent> {
@@ -78,7 +81,7 @@ public class DungeonComponents {
 
     public interface DungeonComponent { String name(); }
 
-    public record DungeonRoomTemplate(String name, StructureTemplate template, BoundingBox boundingBox, List<ConnectionPoint> connectionPoints) implements DungeonComponent {
+    public record DungeonRoomTemplate(String name, StructureTemplate template, BoundingBox boundingBox, List<ConnectionPoint> connectionPoints, BlockPos spawnPoint, List<BlockPos> rifts) implements DungeonComponent {
 
         public static DungeonRoomTemplate build(String name) {
 
@@ -86,7 +89,9 @@ public class DungeonComponents {
             BoundingBox boundingBox = template.getBoundingBox(EMPTY_STRUCTURE_PLACE_SETTINGS, EMPTY_BLOCK_POS);
 
             List<ConnectionPoint> connectionPoints = ConnectionPoint.locateConnectionPoints(template, boundingBox);
-            return new DungeonRoomTemplate(name, template, boundingBox, connectionPoints);
+            List<BlockPos> rifts = DungeonRoom.locateRifts(template);
+            BlockPos spawnPoint = DungeonRoom.locateSpawnPoint(template);
+            return new DungeonRoomTemplate(name, template, boundingBox, connectionPoints, spawnPoint, rifts);
         }
 
         public DungeonRoomTemplate pool(DungeonComponentPool<DungeonRoomTemplate> pool) {pool.add(this); return this;}
@@ -117,34 +122,18 @@ public class DungeonComponents {
 
         public DungeonFloorTemplate pool(DungeonComponentPool<DungeonFloorTemplate> pool) {pool.add(this); return this;}
 
-        public DungeonFloor placeInWorld(ServerLevel level, BlockPos position) {
-            return new DungeonFloor(this, level, position);
+        public DungeonFloor placeInWorld(DungeonSession session, BlockPos position, int id, List<String> destinations) {
+            WildDungeons.getLogger().info("PLACING FLOOR: {}", this.name());
+            return new DungeonFloor(this, session, position, id, destinations);
         }
     }
 
-    public record DungeonTemplate(String name, String openBehavior, DungeonFloorTemplate floorTemplate) implements DungeonComponent {
+    public record DungeonTemplate(String name, String openBehavior, List<DungeonFloorTemplate> floorTemplates) implements DungeonComponent {
 
-        public static DungeonTemplate build(String name, String openBehavior, DungeonFloorTemplate floorTemplate) {
-            return new DungeonTemplate(name, openBehavior, floorTemplate);
-        }
-
-        public void startDungeonDimension(MinecraftServer server) {
-
-            final ResourceKey<Level> LEVEL_KEY = ResourceKey.create(Registries.DIMENSION, WildDungeons.rl(this.name));
-            ServerLevel newLevel = InfiniverseAPI.get().getOrCreateLevel(server, LEVEL_KEY, () -> WDDimensions.createLevel(server));
-
-            this.floorTemplate.placeInWorld(newLevel, EMPTY_BLOCK_POS);
+        public static DungeonTemplate build(String name, String openBehavior, List<DungeonFloorTemplate> floorTemplates) {
+            return new DungeonTemplate(name, openBehavior, floorTemplates);
         }
 
         public DungeonTemplate pool(DungeonComponentPool<DungeonTemplate> pool) {pool.add(this); return this;}
-
-        public void enterDungeon(ServerPlayer player) {
-
-            final ResourceKey<Level> LEVEL_KEY = ResourceKey.create(Registries.DIMENSION, WildDungeons.rl(this.name));
-            WDPlayer.SavedTransform newRespawn = new WDPlayer.SavedTransform(new Vec3(0.0, -30.0, 0.0), 0.0, 0.0, LEVEL_KEY);
-
-            player.setRespawnPosition(newRespawn.getDimension(), newRespawn.getBlockPos(), (float) newRespawn.getYaw(), true, false);
-            CommandUtil.executeTeleportCommand(player, newRespawn);
-        }
     }
 }
