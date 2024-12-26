@@ -65,7 +65,7 @@ public class RiftBlock extends Block implements EntityBlock {
                 DungeonComponents.DungeonTemplate dungeonTemplate = DungeonRegistry.DUNGEON_POOL.getRandom();
                 WildDungeons.getLogger().info("TRYING TO ENTER {}", dungeonTemplate.name());
 
-                DungeonSession dungeon = DungeonSessionManager.getInstance().getOrCreateDungeonSession(riftBlockEntity.getBlockPos(), dungeonTemplate, level.getServer());
+                DungeonSession dungeon = DungeonSessionManager.getInstance().getOrCreateDungeonSession(riftBlockEntity.getBlockPos(), dungeonTemplate);
                 dungeon.enterDungeon(serverplayer);
                 wdPlayer.setRiftCooldown(100);
 

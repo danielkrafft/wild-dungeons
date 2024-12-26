@@ -1,5 +1,6 @@
 package com.danielkkrafft.wilddungeons.dungeon.components;
 
+import com.danielkkrafft.wilddungeons.dungeon.DungeonMaterials;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonOpenBehavior;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 
@@ -38,9 +39,13 @@ public class DungeonRegistry {
         DUNGEON_BRANCH_REGISTRY.add(DungeonComponents.DungeonBranchTemplate.build("medium_room_branch", MEDIUM_ROOM_POOL, DUNGEON_ROOM_REGISTRY.get("stone/large_1"), 15).pool(BRANCH_POOL));
         DUNGEON_BRANCH_REGISTRY.add(DungeonComponents.DungeonBranchTemplate.build("ending_room_branch", SMALL_ROOM_POOL, DUNGEON_ROOM_REGISTRY.get("stone/start"), 10));
 
-        DUNGEON_FLOOR_REGISTRY.add(DungeonComponents.DungeonFloorTemplate.build("test_floor", BRANCH_POOL, DUNGEON_BRANCH_REGISTRY.get("starter_room_branch"), DUNGEON_BRANCH_REGISTRY.get("ending_room_branch"), 2).pool(FLOOR_POOL));
+        DUNGEON_FLOOR_REGISTRY.add(DungeonComponents.DungeonFloorTemplate.build("test_floor", BRANCH_POOL, DUNGEON_BRANCH_REGISTRY.get("starter_room_branch"), DUNGEON_BRANCH_REGISTRY.get("ending_room_branch"), 3).pool(FLOOR_POOL));
 
-        DUNGEON_REGISTRY.add(DungeonComponents.DungeonTemplate.build("dungeon_1", DungeonOpenBehavior.NONE, Arrays.asList(DUNGEON_FLOOR_REGISTRY.get("test_floor"), DUNGEON_FLOOR_REGISTRY.get("test_floor"), DUNGEON_FLOOR_REGISTRY.get("test_floor"))).pool(DUNGEON_POOL));
+        DUNGEON_REGISTRY.add(DungeonComponents.DungeonTemplate.build("dungeon_1", DungeonOpenBehavior.NONE, Arrays.asList(
+                        DUNGEON_FLOOR_REGISTRY.get("test_floor"),
+                        DUNGEON_FLOOR_REGISTRY.get("test_floor"),
+                        DUNGEON_FLOOR_REGISTRY.get("test_floor")),
+                List.of(DungeonMaterials.SANDSTONE, DungeonMaterials.STONE_BRICK)).pool(DUNGEON_POOL));
     }
 
     public static class DungeonComponentPool<T extends DungeonComponents.DungeonComponent> {

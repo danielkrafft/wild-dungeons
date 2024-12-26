@@ -28,8 +28,7 @@ public record ServerboundUpdateConnectionBlockPacket(CompoundTag data) implement
             ServerLevel level = (ServerLevel) context.player().level();
             BlockEntity blockEntity = level.getBlockEntity(new BlockPos(data.getInt("x"), data.getInt("y"), data.getInt("z")));
             if (blockEntity instanceof ConnectionBlockEntity connectionBlockEntity) {
-                connectionBlockEntity.lockedBlockstate = data.getString("occupiedBlockstate");
-                connectionBlockEntity.unlockedBlockstate = data.getString("unoccupiedBlockstate");
+                connectionBlockEntity.unblockedBlockstate = data.getString("unblockedBlockstate");
                 connectionBlockEntity.pool = data.getString("pool");
             }
         });

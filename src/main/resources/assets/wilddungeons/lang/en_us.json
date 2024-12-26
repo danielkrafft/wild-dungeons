@@ -2,10 +2,8 @@
   "item.wilddungeons.debug_item": "Debug Item",
 
   "block.wilddungeons.connection_block": "Connection Block",
+  "block.wilddungeons.rift_block": "Rift Block",
 
-  "connection_block.locked_label": "Locked Blockstate:",
-  "connection_block.unlocked_label": "Unlocked Blockstate:",
-  "connection_block.pool_label": "Pool:",
-  "connection_block.lock_label": "Lock Rotation?"
-
+  "connection_block.unblocked_label": "Unblocked Blockstate:",
+  "connection_block.pool_label": "Pool:"
 }

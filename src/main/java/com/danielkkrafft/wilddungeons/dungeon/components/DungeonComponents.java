@@ -1,6 +1,7 @@
 package com.danielkkrafft.wilddungeons.dungeon.components;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.dungeon.DungeonMaterial;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import net.minecraft.core.BlockPos;
@@ -18,7 +19,7 @@ import java.util.*;
 public class DungeonComponents {
     public interface DungeonComponent { String name(); }
 
-    public record DungeonRoomTemplate(String name, StructureTemplate template, List<ConnectionPoint> connectionPoints, BlockPos spawnPoint, List<BlockPos> rifts) implements DungeonComponent {
+    public record DungeonRoomTemplate(String name, StructureTemplate template, List<ConnectionPoint> connectionPoints, BlockPos spawnPoint, List<BlockPos> rifts, List<StructureTemplate.StructureBlockInfo> materialBlocks) implements DungeonComponent {
 
         public static DungeonRoomTemplate build(String name) {
 
@@ -27,14 +28,15 @@ public class DungeonComponents {
             List<ConnectionPoint> connectionPoints = TemplateHelper.locateConnectionPoints(template);
             List<BlockPos> rifts = TemplateHelper.locateRifts(template);
             BlockPos spawnPoint = TemplateHelper.locateSpawnPoint(template);
-            return new DungeonRoomTemplate(name, template, connectionPoints, spawnPoint, rifts);
+            List<StructureTemplate.StructureBlockInfo> materialBlocks = TemplateHelper.locateMaterialBlocks(template);
+            return new DungeonRoomTemplate(name, template, connectionPoints, spawnPoint, rifts, materialBlocks);
         }
 
         public BoundingBox getBoundingBox() {return template.getBoundingBox(new StructurePlaceSettings(), TemplateHelper.EMPTY_BLOCK_POS);}
         public DungeonRoomTemplate pool(DungeonRegistry.DungeonComponentPool<DungeonRoomTemplate> pool) {pool.add(this); return this;}
 
-        public DungeonRoom placeInWorld(ServerLevel level, BlockPos position, StructurePlaceSettings settings, List<ConnectionPoint> connectionPoints) {
-            return new DungeonRoom(this, level, position, TemplateHelper.EMPTY_BLOCK_POS, settings, connectionPoints);
+        public DungeonRoom placeInWorld(DungeonBranch branch, ServerLevel level, BlockPos position, StructurePlaceSettings settings, List<ConnectionPoint> connectionPoints) {
+            return new DungeonRoom(branch, this, level, position, TemplateHelper.EMPTY_BLOCK_POS, settings, connectionPoints);
         }
     }
 
@@ -65,10 +67,10 @@ public class DungeonComponents {
         }
     }
 
-    public record DungeonTemplate(String name, String openBehavior, List<DungeonFloorTemplate> floorTemplates) implements DungeonComponent {
+    public record DungeonTemplate(String name, String openBehavior, List<DungeonFloorTemplate> floorTemplates, List<DungeonMaterial> materials) implements DungeonComponent {
 
-        public static DungeonTemplate build(String name, String openBehavior, List<DungeonFloorTemplate> floorTemplates) {
-            return new DungeonTemplate(name, openBehavior, floorTemplates);
+        public static DungeonTemplate build(String name, String openBehavior, List<DungeonFloorTemplate> floorTemplates, List<DungeonMaterial> materials) {
+            return new DungeonTemplate(name, openBehavior, floorTemplates, materials);
         }
 
         public DungeonTemplate pool(DungeonRegistry.DungeonComponentPool<DungeonTemplate> pool) {pool.add(this); return this;}

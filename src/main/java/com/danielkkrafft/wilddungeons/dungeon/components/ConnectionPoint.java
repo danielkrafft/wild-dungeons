@@ -3,7 +3,6 @@ package com.danielkkrafft.wilddungeons.dungeon.components;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
@@ -18,14 +17,11 @@ public class ConnectionPoint {
     public DungeonRoom room = null;
     public BoundingBox boundingBox;
     public List<BlockPos> positions;
-    public HashMap<BlockPos, BlockState> lockedBlockStates = new HashMap<>();
-    public HashMap<BlockPos, BlockState> unlockedBlockStates = new HashMap<>();
+    public HashMap<BlockPos, BlockState> unBlockedBlockStates = new HashMap<>();
     public Direction direction;
 
     public String pool = "all";
-    public boolean rotated = false;
-    public boolean locked = true;
-    public boolean occupied = false;
+    public boolean connected = false;
     public int failures = 0;
 
     public ConnectionPoint(BlockPos position, Direction direction) {
@@ -42,9 +38,7 @@ public class ConnectionPoint {
         this.direction = point.direction;
 
         this.pool = point.pool;
-        this.rotated = point.rotated;
-        this.locked = point.locked;
-        this.occupied = point.occupied;
+        this.connected = point.connected;
         this.failures = point.failures;
     }
 
@@ -54,7 +48,6 @@ public class ConnectionPoint {
         newPoint.direction = TemplateHelper.mirrorDirection(newPoint.direction, settings.getMirror());
         newPoint.direction = TemplateHelper.rotateDirection(newPoint.direction, settings.getRotation());
 
-        newPoint.rotated = settings.getRotation() == Rotation.CLOCKWISE_90 || settings.getRotation() == Rotation.COUNTERCLOCKWISE_90;
         newPoint.positions = newPoint.positions.stream().map(pos -> StructureTemplate.transform(pos, settings.getMirror(), settings.getRotation(), offset).offset(position)).toList();
         newPoint.boundingBox = new BoundingBox(newPoint.positions.getFirst());
         newPoint.positions.forEach((pos) -> newPoint.boundingBox.encapsulate(pos));
@@ -62,14 +55,14 @@ public class ConnectionPoint {
         return newPoint;
     }
 
-    public void lock(ServerLevel level) {
-        lockedBlockStates.forEach((pos, blockState) -> {
+    public void block(ServerLevel level, BlockState blockState) {
+        positions.forEach((pos) -> {
             level.setBlock(pos, blockState, 2);
         });
     }
 
-    public void unlock(ServerLevel level) {
-        unlockedBlockStates.forEach((pos, blockState) -> {
+    public void unBlock(ServerLevel level) {
+        unBlockedBlockStates.forEach((pos, blockState) -> {
             level.setBlock(pos, blockState, 2);
         });
     }

@@ -32,8 +32,7 @@ public class ConnectionBlock extends Block implements EntityBlock {
         BlockEntity blockentity = level.getBlockEntity(pos);
         if (blockentity instanceof ConnectionBlockEntity connectionBlockEntity && player.canUseGameMasterBlocks()) {
             CompoundTag data = new CompoundTag();
-            data.putString("lockedBlockstate", connectionBlockEntity.lockedBlockstate);
-            data.putString("unlockedBlockstate", connectionBlockEntity.unlockedBlockstate);
+            data.putString("unblockedBlockstate", connectionBlockEntity.unblockedBlockstate);
             data.putString("pool", connectionBlockEntity.pool);
             data.putInt("x", connectionBlockEntity.getBlockPos().getX());
             data.putInt("y", connectionBlockEntity.getBlockPos().getY());

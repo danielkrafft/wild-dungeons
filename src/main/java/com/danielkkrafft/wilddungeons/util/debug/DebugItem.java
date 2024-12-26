@@ -24,6 +24,8 @@ public class DebugItem extends Item {
         WildDungeons.getLogger().info("CURRENT WDPlayers: {}", WDPlayerManager.getInstance().getPlayerNames(level.getServer()));
         WildDungeons.getLogger().info("CURRENT DUNGEON: {}", WDPlayerManager.getInstance().getPlayers().get(player.getStringUUID()).getCurrentDungeon());
         WildDungeons.getLogger().info("CURRENT FLOOR: {}", WDPlayerManager.getInstance().getPlayers().get(player.getStringUUID()).getCurrentFloor());
+        WildDungeons.getLogger().info("CURRENT POSITIONS: {}", WDPlayerManager.getInstance().getPlayers().get(player.getStringUUID()).getPositions());
+        WildDungeons.getLogger().info("CURRENT RESPAWNS: {}", WDPlayerManager.getInstance().getPlayers().get(player.getStringUUID()).getRespawns());
 
         return InteractionResultHolder.pass(player.getItemInHand(usedHand));
     }

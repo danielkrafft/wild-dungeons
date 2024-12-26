@@ -5,6 +5,7 @@ import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
@@ -106,6 +107,10 @@ public class TemplateHelper {
         return settings;
     }
 
+    public static BlockPos transform(BlockPos input, DungeonRoom room) {
+        return StructureTemplate.transform(input, room.settings.getMirror(), room.settings.getRotation(), room.offset).offset(room.position);
+    }
+
     public static BlockPos locateSpawnPoint(StructureTemplate template) {
         List<StructureTemplate.StructureBlockInfo> SPAWN_BLOCKS = template.filterBlocks(new BlockPos(0, 0, 0), new StructurePlaceSettings(), WDBlocks.SPAWN_BLOCK.get());
         return SPAWN_BLOCKS.isEmpty() ? null : SPAWN_BLOCKS.getFirst().pos();
@@ -115,6 +120,16 @@ public class TemplateHelper {
         List<StructureTemplate.StructureBlockInfo> RIFT_BLOCKS = template.filterBlocks(new BlockPos(0, 0, 0), new StructurePlaceSettings(), WDBlocks.RIFT_BLOCK.get());
         List<BlockPos> result = new ArrayList<>();
         RIFT_BLOCKS.forEach(info -> {result.add(info.pos());});
+        return result;
+    }
+
+    public static List<StructureTemplate.StructureBlockInfo> locateMaterialBlocks(StructureTemplate template) {
+        List<StructureTemplate.StructureBlockInfo> result = new ArrayList<>();
+        result.addAll(template.filterBlocks(new BlockPos(0,0,0), new StructurePlaceSettings(), Blocks.STONE_BRICKS));
+        result.addAll(template.filterBlocks(new BlockPos(0,0,0), new StructurePlaceSettings(), Blocks.STONE_BRICK_STAIRS));
+        result.addAll(template.filterBlocks(new BlockPos(0,0,0), new StructurePlaceSettings(), Blocks.STONE_BRICK_SLAB));
+        result.addAll(template.filterBlocks(new BlockPos(0,0,0), new StructurePlaceSettings(), Blocks.STONE_BRICK_WALL));
+        result.addAll(template.filterBlocks(new BlockPos(0,0,0), new StructurePlaceSettings(), Blocks.SEA_LANTERN));
         return result;
     }
 }

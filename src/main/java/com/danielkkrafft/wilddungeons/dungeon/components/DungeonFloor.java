@@ -27,11 +27,13 @@ public class DungeonFloor {
     public ResourceKey<Level> LEVEL_KEY;
     public BlockPos spawnPoint;
     public final int id;
+    public DungeonSession session;
 
     public DungeonFloor(DungeonComponents.DungeonFloorTemplate floorTemplate, DungeonSession session, BlockPos origin, int id, List<String> destinations) {
         this.floorTemplate = floorTemplate;
         this.id = id;
         this.LEVEL_KEY = buildFloorLevelKey(session.entrance, this);
+        this.session = session;
         this.level = InfiniverseAPI.get().getOrCreateLevel(DungeonSessionManager.getInstance().server, LEVEL_KEY, () -> WDDimensions.createLevel(DungeonSessionManager.getInstance().server));
         this.origin = origin;
         generateDungeonFloor();

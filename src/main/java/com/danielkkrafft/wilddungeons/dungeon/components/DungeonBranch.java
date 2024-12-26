@@ -1,6 +1,8 @@
 package com.danielkkrafft.wilddungeons.dungeon.components;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.dungeon.DungeonMaterial;
+import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -39,7 +41,7 @@ public class DungeonBranch {
             tries++;
         }
 
-        this.dungeonRooms.forEach(room -> room.processConnectionPoints(level));
+        this.dungeonRooms.forEach(room -> room.processConnectionPoints(room.material));
         WildDungeons.getLogger().info("PLACED {} ROOMS IN {} TRIES", dungeonRooms.size(), tries);
     }
 
@@ -67,7 +69,7 @@ public class DungeonBranch {
     private boolean maybePlaceInitialRoom(DungeonComponents.DungeonRoomTemplate nextRoom, List<ConnectionPoint> entrancePoints) {
         if (dungeonRooms.isEmpty() && floor.dungeonBranches.isEmpty()) {
             WildDungeons.getLogger().info("PLACING INITIAL ROOM: {} AT BOUNDING BOX: {}", nextRoom.name(), nextRoom.template().getBoundingBox(new StructurePlaceSettings(), origin));
-            dungeonRooms.add(branchTemplate.endingRoom().placeInWorld(level, origin, new StructurePlaceSettings(), entrancePoints));
+            dungeonRooms.add(branchTemplate.endingRoom().placeInWorld(this, level, origin, new StructurePlaceSettings(), entrancePoints));
             openConnections += branchTemplate.endingRoom().connectionPoints().size();
             return true;
         }
@@ -107,7 +109,7 @@ public class DungeonBranch {
 
     private boolean isPointEligible(ConnectionPoint en, ConnectionPoint ex) {
         List<Boolean> conditions = List.of(
-                !ex.occupied,
+                !ex.connected,
                 ex.failures < 10,
                 Objects.equals(en.pool, ex.pool),
                 en.direction.getAxis() != Direction.Axis.Y || ex.direction == en.direction.getOpposite(),
@@ -134,12 +136,10 @@ public class DungeonBranch {
             return false;
         } else {
             WildDungeons.getLogger().info("SUCCESSFULLY PLACED ROOM {} AT BOUNDING BOX {}", nextRoom.name(), proposedBox);
-            exitPoint.locked = false;
-            entrancePoint.locked = false;
-            exitPoint.occupied = true;
-            entrancePoint.occupied = true;
-            exitPoint.unlock(level);
-            dungeonRooms.add(nextRoom.placeInWorld(level, blockOffset, settings, entrancePoints));
+            exitPoint.connected = true;
+            entrancePoint.connected = true;
+            exitPoint.unBlock(level);
+            dungeonRooms.add(nextRoom.placeInWorld(this, level, blockOffset, settings, entrancePoints));
             openConnections += nextRoom.connectionPoints().size() - 2;
             return true;
         }

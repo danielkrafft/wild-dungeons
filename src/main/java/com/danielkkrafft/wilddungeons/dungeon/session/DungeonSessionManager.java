@@ -1,6 +1,7 @@
 package com.danielkkrafft.wilddungeons.dungeon.session;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.dungeon.DungeonMaterial;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonComponents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
@@ -22,8 +23,8 @@ public class DungeonSessionManager {
         return sessions.getOrDefault(key, null);
     }
 
-    public DungeonSession getOrCreateDungeonSession(BlockPos entrance, DungeonComponents.DungeonTemplate template, MinecraftServer server) {
-        return sessions.computeIfAbsent(buildDungeonSessionKey(entrance), k -> new DungeonSession(entrance, template, server));
+    public DungeonSession getOrCreateDungeonSession(BlockPos entrance, DungeonComponents.DungeonTemplate template) {
+        return sessions.computeIfAbsent(buildDungeonSessionKey(entrance), k -> new DungeonSession(entrance, template));
     }
 
     public static String buildDungeonSessionKey(BlockPos entrance) {

@@ -1,5 +1,6 @@
 package com.danielkkrafft.wilddungeons.dungeon.session;
 
+import com.danielkkrafft.wilddungeons.dungeon.DungeonMaterial;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonComponents;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
@@ -25,10 +26,12 @@ public class DungeonSession {
     public DungeonComponents.DungeonTemplate template;
     public int shutdownTimer = SHUTDOWN_TIME;
     public boolean markedForShutdown = false;
+    public List<DungeonMaterial> materials;
 
-    protected DungeonSession(BlockPos entrance, DungeonComponents.DungeonTemplate template, MinecraftServer server) {
+    protected DungeonSession(BlockPos entrance, DungeonComponents.DungeonTemplate template) {
         this.entrance = entrance;
         this.template = template;
+        this.materials = template.materials();
     }
 
     public void enterDungeon(ServerPlayer player) {

@@ -43,6 +43,8 @@ public class WDPlayer {
     public void setCurrentFloor(DungeonFloor floor) {this.currentFloor = floor.LEVEL_KEY.toString();}
     public int getRiftCooldown() {return this.riftCooldown;}
     public void setRiftCooldown(int cooldown) {this.riftCooldown = cooldown;}
+    public List<SavedTransform> getPositions() {return this.positions;}
+    public List<SavedTransform> getRespawns() {return this.respawns;}
 
     public String getUUID() {return this.UUID;}
 
@@ -62,10 +64,13 @@ public class WDPlayer {
     }
 
     public void rootRespawn(MinecraftServer server) {
+        if (respawns.isEmpty() || positions.isEmpty()) return;
         WDPlayer.SavedTransform newPosition = positions.getFirst();
         WDPlayer.setRespawnPosition(respawns.getFirst(), getServerPlayer(server));
         this.currentDungeon = "none";
         this.currentFloor = "none";
+        respawns = new ArrayList<>();
+        positions = new ArrayList<>();
         CommandUtil.executeTeleportCommand(getServerPlayer(server), newPosition);
     }
 

@@ -8,30 +8,26 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class ConnectionBlockEntity extends BlockEntity {
-    public String lockedBlockstate;
-    public String unlockedBlockstate;
+    public String unblockedBlockstate;
     public String pool;
 
     public ConnectionBlockEntity(BlockPos pos, BlockState blockState) {
         super(WDBlockEntities.CONNECTION_BLOCK_ENTITY.get(), pos, blockState);
-        this.lockedBlockstate = "minecraft:stone_bricks";
-        this.unlockedBlockstate = "minecraft:air";
+        this.unblockedBlockstate = "minecraft:air";
         this.pool = "all";
     }
 
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
-        this.lockedBlockstate = tag.getString("lockedBlockstate");
-        this.unlockedBlockstate = tag.getString("unlockedBlockstate");
+        this.unblockedBlockstate = tag.getString("unblockedBlockstate");
         this.pool = tag.getString("pool");
     }
 
     @Override
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
-        tag.putString("lockedBlockstate", this.lockedBlockstate);
-        tag.putString("unlockedBlockstate", this.unlockedBlockstate);
+        tag.putString("unblockedBlockstate", this.unblockedBlockstate);
         tag.putString("pool", this.pool);
     }
 }
