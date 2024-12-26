@@ -1,16 +1,14 @@
-package com.danielkkrafft.wilddungeons.dungeon;
+package com.danielkkrafft.wilddungeons.dungeon.components;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.entity.blockentity.ConnectionBlockEntity;
-import com.danielkkrafft.wilddungeons.registry.WDBlocks;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -23,7 +21,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-//TODO Refactor this god forsaken class
 public class DungeonRoom {
     public DungeonComponents.DungeonRoomTemplate dungeonRoomTemplate;
     public ServerLevel level;
@@ -31,22 +28,17 @@ public class DungeonRoom {
     public BlockPos offset;
     public BlockPos spawnPoint;
     public StructurePlaceSettings settings;
-    public RandomSource random;
-    public int flags;
     public List<ConnectionPoint> connectionPoints = new ArrayList<>();
     public List<BlockPos> rifts = new ArrayList<>();
     public BoundingBox boundingBox;
 
-    public DungeonRoom(DungeonComponents.DungeonRoomTemplate dungeonRoomTemplate, ServerLevel level, BlockPos position, BlockPos offset, StructurePlaceSettings settings, RandomSource random, int flags, List<ConnectionPoint> inputPoints) {
-        dungeonRoomTemplate.template().placeInWorld(level, position, offset, settings, random, flags);
-        //WildDungeons.getLogger().info("SHOULD HAVE PLACED AT: {}", dungeonRoomTemplate.template().getBoundingBox(settings, position));
+    public DungeonRoom(DungeonComponents.DungeonRoomTemplate dungeonRoomTemplate, ServerLevel level, BlockPos position, BlockPos offset, StructurePlaceSettings settings, List<ConnectionPoint> inputPoints) {
+        dungeonRoomTemplate.template().placeInWorld(level, position, offset, settings, DungeonSessionManager.getInstance().server.overworld().getRandom(), 2);
         this.dungeonRoomTemplate = dungeonRoomTemplate;
         this.level = level;
         this.position = position;
         this.offset = offset;
         this.settings = settings;
-        this.random = random;
-        this.flags = flags;
         this.boundingBox = dungeonRoomTemplate.template().getBoundingBox(settings, position);
         dungeonRoomTemplate.rifts().forEach(pos -> {
             this.rifts.add(StructureTemplate.transform(pos, settings.getMirror(), settings.getRotation(), offset).offset(position));
@@ -134,18 +126,6 @@ public class DungeonRoom {
                 }
             }
         }
-    }
-
-    public static BlockPos locateSpawnPoint(StructureTemplate template) {
-        List<StructureTemplate.StructureBlockInfo> SPAWN_BLOCKS = template.filterBlocks(new BlockPos(0, 0, 0), new StructurePlaceSettings(), WDBlocks.SPAWN_BLOCK.get());
-        return SPAWN_BLOCKS.isEmpty() ? null : SPAWN_BLOCKS.getFirst().pos();
-    }
-
-    public static List<BlockPos> locateRifts(StructureTemplate template) {
-        List<StructureTemplate.StructureBlockInfo> RIFT_BLOCKS = template.filterBlocks(new BlockPos(0, 0, 0), new StructurePlaceSettings(), WDBlocks.RIFT_BLOCK.get());
-        List<BlockPos> result = new ArrayList<>();
-        RIFT_BLOCKS.forEach(info -> {result.add(info.pos());});
-        return result;
     }
 
 }

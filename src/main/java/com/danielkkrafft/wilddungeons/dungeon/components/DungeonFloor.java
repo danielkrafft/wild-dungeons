@@ -1,25 +1,23 @@
-package com.danielkkrafft.wilddungeons.dungeon;
+package com.danielkkrafft.wilddungeons.dungeon.components;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
+import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.entity.blockentity.RiftBlockEntity;
-import com.danielkkrafft.wilddungeons.player.WDPlayer;
-import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.danielkkrafft.wilddungeons.registry.WDDimensions;
-import com.danielkkrafft.wilddungeons.util.CommandUtil;
 import com.danielkkrafft.wilddungeons.util.FileUtil;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
+import com.danielkkrafft.wilddungeons.world.dimension.EmptyGenerator;
 import com.danielkkrafft.wilddungeons.world.dimension.tools.InfiniverseAPI;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class DungeonFloor {
     public List<DungeonBranch> dungeonBranches = new ArrayList<>();
@@ -28,36 +26,28 @@ public class DungeonFloor {
     public BlockPos origin;
     public ResourceKey<Level> LEVEL_KEY;
     public BlockPos spawnPoint;
-    public DungeonSession session;
     public final int id;
 
     public DungeonFloor(DungeonComponents.DungeonFloorTemplate floorTemplate, DungeonSession session, BlockPos origin, int id, List<String> destinations) {
         this.floorTemplate = floorTemplate;
         this.id = id;
         this.LEVEL_KEY = buildFloorLevelKey(session.entrance, this);
-        ServerLevel newLevel = InfiniverseAPI.get().getOrCreateLevel(session.server, LEVEL_KEY, () -> WDDimensions.createLevel(session.server));
-        this.level = newLevel;
+        this.level = InfiniverseAPI.get().getOrCreateLevel(DungeonSessionManager.getInstance().server, LEVEL_KEY, () -> WDDimensions.createLevel(DungeonSessionManager.getInstance().server));
         this.origin = origin;
-        this.session = session;
         generateDungeonFloor();
         this.spawnPoint = this.dungeonBranches.getFirst().spawnPoint;
+
         BlockPos exitRiftPos = this.dungeonBranches.getFirst().dungeonRooms.getFirst().rifts.getFirst();
         RiftBlockEntity riftBlockEntity = (RiftBlockEntity) this.level.getBlockEntity(exitRiftPos);
-        if (riftBlockEntity != null) {
-            riftBlockEntity.destination = "exit";
-        }
+        if (riftBlockEntity != null) {riftBlockEntity.destination = "exit";}
 
         BlockPos enterRiftPos = this.dungeonBranches.getLast().dungeonRooms.getLast().rifts.getLast();
         RiftBlockEntity enterRiftBlockEntity = (RiftBlockEntity) this.level.getBlockEntity(enterRiftPos);
-        if (enterRiftBlockEntity != null) {
-            enterRiftBlockEntity.destination = destinations.get(RandomUtil.randIntBetween(0, destinations.size()-1));
-        }
-
-
+        if (enterRiftBlockEntity != null) {enterRiftBlockEntity.destination = destinations.get(RandomUtil.randIntBetween(0, destinations.size()-1));}
     }
 
     public void shutdown() {
-        InfiniverseAPI.get().markDimensionForUnregistration(session.server, this.LEVEL_KEY);
+        InfiniverseAPI.get().markDimensionForUnregistration(DungeonSessionManager.getInstance().server, this.LEVEL_KEY);
         FileUtil.deleteDirectoryContents(FileUtil.getWorldPath().resolve("dimensions").resolve(WildDungeons.MODID).resolve(this.LEVEL_KEY.location().getPath()), true);
     }
 
@@ -87,5 +77,29 @@ public class DungeonFloor {
         }
 
         dungeonBranches.add(nextBranch.placeInWorld(this, level, origin));
+    }
+
+    protected boolean isBoundingBoxValid(BoundingBox proposedBox, List<DungeonRoom> dungeonRooms) {
+        for (DungeonBranch branch : dungeonBranches) {
+            for (DungeonRoom room : branch.dungeonRooms) {
+                if (proposedBox.intersects(room.boundingBox)) {
+                    WildDungeons.getLogger().info("BOUNDING BOX INTERSECTS " + room.boundingBox);
+                    return false;
+                } else if (proposedBox.minY() < EmptyGenerator.MIN_Y || proposedBox.maxY() > EmptyGenerator.MIN_Y + EmptyGenerator.GEN_DEPTH) {
+                    WildDungeons.getLogger().info("BOUNDING BOX GOES OUT OF RANGE");
+                    return false;
+                }
+            }
+        }
+        for (DungeonRoom room : dungeonRooms) {
+            if (proposedBox.intersects(room.boundingBox)) {
+                WildDungeons.getLogger().info("BOUNDING BOX INTERSECTS " + room.boundingBox);
+                return false;
+            } else if (proposedBox.minY() < EmptyGenerator.MIN_Y || proposedBox.maxY() > EmptyGenerator.MIN_Y + EmptyGenerator.GEN_DEPTH) {
+                WildDungeons.getLogger().info("BOUNDING BOX GOES OUT OF RANGE");
+                return false;
+            }
+        }
+        return true;
     }
 }

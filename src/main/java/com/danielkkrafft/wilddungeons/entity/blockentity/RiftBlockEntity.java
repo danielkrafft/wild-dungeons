@@ -1,7 +1,5 @@
 package com.danielkkrafft.wilddungeons.entity.blockentity;
 
-import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.dungeon.DungeonComponents;
 import com.danielkkrafft.wilddungeons.registry.WDBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;

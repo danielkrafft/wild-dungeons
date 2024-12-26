@@ -1,9 +1,10 @@
 package com.danielkkrafft.wilddungeons.block;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.dungeon.DungeonComponents;
-import com.danielkkrafft.wilddungeons.dungeon.DungeonFloor;
-import com.danielkkrafft.wilddungeons.dungeon.DungeonSession;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRegistry;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonComponents;
+import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
+import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.entity.blockentity.RiftBlockEntity;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
@@ -45,7 +46,7 @@ public class RiftBlock extends Block implements EntityBlock {
 
                 WildDungeons.getLogger().info("TRYING TO EXIT {}", wdPlayer.getCurrentFloor());
 
-                DungeonSession dungeon = DungeonSession.DungeonSessionManager.getInstance().getDungeonSession(wdPlayer.getCurrentDungeon());
+                DungeonSession dungeon = DungeonSessionManager.getInstance().getDungeonSession(wdPlayer.getCurrentDungeon());
                 dungeon.exitFloor(serverplayer);
                 wdPlayer.setRiftCooldown(100);
 
@@ -53,7 +54,7 @@ public class RiftBlock extends Block implements EntityBlock {
 
                 WildDungeons.getLogger().info("TRYING TO WIN {}", wdPlayer.getCurrentDungeon());
 
-                DungeonSession dungeon = DungeonSession.DungeonSessionManager.getInstance().getDungeonSession(wdPlayer.getCurrentDungeon());
+                DungeonSession dungeon = DungeonSessionManager.getInstance().getDungeonSession(wdPlayer.getCurrentDungeon());
                 dungeon.exitDungeon(serverplayer);
                 wdPlayer.setRiftCooldown(100);
                 serverplayer.addItem(new ItemStack(Items.DIAMOND.asItem(), 1));
@@ -61,16 +62,16 @@ public class RiftBlock extends Block implements EntityBlock {
 
             } else if (riftBlockEntity.destination.equals("random")) {
 
-                DungeonComponents.DungeonTemplate dungeonTemplate = DungeonComponents.DUNGEON_POOL.getRandom();
+                DungeonComponents.DungeonTemplate dungeonTemplate = DungeonRegistry.DUNGEON_POOL.getRandom();
                 WildDungeons.getLogger().info("TRYING TO ENTER {}", dungeonTemplate.name());
 
-                DungeonSession dungeon = DungeonSession.DungeonSessionManager.getInstance().getOrCreateDungeonSession(riftBlockEntity.getBlockPos(), dungeonTemplate, level.getServer());
+                DungeonSession dungeon = DungeonSessionManager.getInstance().getOrCreateDungeonSession(riftBlockEntity.getBlockPos(), dungeonTemplate, level.getServer());
                 dungeon.enterDungeon(serverplayer);
                 wdPlayer.setRiftCooldown(100);
 
             } else {
 
-                DungeonSession dungeon = DungeonSession.DungeonSessionManager.getInstance().getDungeonSession(wdPlayer.getCurrentDungeon());
+                DungeonSession dungeon = DungeonSessionManager.getInstance().getDungeonSession(wdPlayer.getCurrentDungeon());
                 dungeon.enterFloor(serverplayer, riftBlockEntity.destination);
                 wdPlayer.setRiftCooldown(100);
 

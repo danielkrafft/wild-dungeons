@@ -1,4 +1,4 @@
-package com.danielkkrafft.wilddungeons.dungeon;
+package com.danielkkrafft.wilddungeons.dungeon.session;
 
 public class DungeonOpenBehavior {
 

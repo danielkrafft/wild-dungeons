@@ -1,7 +1,8 @@
 package com.danielkkrafft.wilddungeons.registry;
 
-import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.dungeon.*;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRegistry;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonComponents;
+import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.entity.EssenceOrb;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
@@ -22,9 +23,7 @@ import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 public class WDEvents {
 
@@ -47,8 +46,8 @@ public class WDEvents {
 
     @SubscribeEvent
     public static void onServerStart(ServerStartedEvent event) {
-        DungeonComponents.server = event.getServer();
-        DungeonComponents.setupDungeons();
+        DungeonSessionManager.getInstance().server = event.getServer();
+        DungeonRegistry.setupDungeons();
     }
 
     @SubscribeEvent
@@ -56,14 +55,14 @@ public class WDEvents {
         WDPlayerManager.getInstance().getPlayers().forEach((key, value) -> value.tick());
 
         List<String> sessionsToRemove = new ArrayList<>();
-        DungeonSession.DungeonSessionManager.getInstance().getSessions().forEach((key, value) -> {
+        DungeonSessionManager.getInstance().getSessions().forEach((key, value) -> {
                 value.tick();
                 if (value.markedForShutdown) {
                     sessionsToRemove.add(key);
                 }
         });
         sessionsToRemove.forEach(s -> {
-            DungeonSession.DungeonSessionManager.getInstance().getSessions().remove(s);
+            DungeonSessionManager.getInstance().getSessions().remove(s);
         });
     }
 

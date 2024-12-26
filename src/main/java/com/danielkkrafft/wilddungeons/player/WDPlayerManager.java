@@ -1,6 +1,5 @@
 package com.danielkkrafft.wilddungeons.player;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 
 import java.util.*;

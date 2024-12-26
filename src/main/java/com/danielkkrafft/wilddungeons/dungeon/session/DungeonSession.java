@@ -1,10 +1,10 @@
-package com.danielkkrafft.wilddungeons.dungeon;
+package com.danielkkrafft.wilddungeons.dungeon.session;
 
-import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonComponents;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.danielkkrafft.wilddungeons.util.CommandUtil;
-import com.danielkkrafft.wilddungeons.util.FileUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
@@ -15,26 +15,20 @@ import net.minecraft.world.phys.Vec3;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class DungeonSession {
     public static final int SHUTDOWN_TIME = 300;
 
     public BlockPos entrance;
-    private List<WDPlayer> players = new ArrayList<>();
-    private HashMap<String, DungeonFloor> floors = new HashMap<>();
-    public MinecraftServer server;
+    private final List<WDPlayer> players = new ArrayList<>();
+    private final HashMap<String, DungeonFloor> floors = new HashMap<>();
     public DungeonComponents.DungeonTemplate template;
-    public boolean active = false;
     public int shutdownTimer = SHUTDOWN_TIME;
     public boolean markedForShutdown = false;
 
-    private DungeonSession(BlockPos entrance, DungeonComponents.DungeonTemplate template, MinecraftServer server) {
-        this.server = server;
+    protected DungeonSession(BlockPos entrance, DungeonComponents.DungeonTemplate template, MinecraftServer server) {
         this.entrance = entrance;
         this.template = template;
-        //floors.put(""+1, template.floorTemplates().getFirst().placeInWorld(this, new BlockPos(0,0,0), 1, List.of("2")));
-        this.active = true;
     }
 
     public void enterDungeon(ServerPlayer player) {
@@ -50,16 +44,6 @@ public class DungeonSession {
         wdPlayer.setCurrentDungeon("none");
         wdPlayer.setCurrentFloor("none");
         wdPlayer.rootRespawn(player.getServer());
-    }
-
-    public DungeonFloor getFloor(WDPlayer wdPlayer) {
-        WildDungeons.getLogger().info("TRYING TO GET FLOOR: {}", wdPlayer.getCurrentFloor());
-        WildDungeons.getLogger().info("OUT OF EXISTING FLOORS: {}", floors.keySet());
-        return floors.get(wdPlayer.getCurrentFloor());
-    }
-
-    public DungeonFloor getFloor(String destination) {
-        return floors.get(destination);
     }
 
     public DungeonFloor getFloor(ResourceKey<Level> levelKey) {
@@ -103,53 +87,13 @@ public class DungeonSession {
     }
 
     public void tick() {
-        if (players.isEmpty() && active) {
-            shutdownTimer -= 1;
-        }
-
-        if (shutdownTimer == 0) {
-            shutdown();
-        }
+        if (players.isEmpty() && !floors.isEmpty()) {shutdownTimer -= 1;}
+        if (shutdownTimer == 0) {shutdown();}
     }
 
     public void shutdown() {
-        players.forEach(player -> player.rootRespawn(server));
+        players.forEach(player -> player.rootRespawn(DungeonSessionManager.getInstance().server));
         floors.forEach((key, floor) -> floor.shutdown());
         markedForShutdown = true;
-    }
-
-    public static class DungeonSessionManager {
-        private static final DungeonSessionManager INSTANCE = new DungeonSessionManager();
-        private Map<String, DungeonSession> sessions = new HashMap<>();
-
-        private DungeonSessionManager(){}
-
-        public DungeonSession getDungeonSession(BlockPos entrance) {
-            return sessions.getOrDefault(buildDungeonSessionKey(entrance), null);
-        }
-
-        public DungeonSession getDungeonSession(String key) {
-            return sessions.getOrDefault(key, null);
-        }
-
-        public DungeonSession getOrCreateDungeonSession(BlockPos entrance, DungeonComponents.DungeonTemplate template, MinecraftServer server) {
-            return sessions.computeIfAbsent(buildDungeonSessionKey(entrance), k -> new DungeonSession(entrance, template, server));
-        }
-
-        public static String buildDungeonSessionKey(BlockPos entrance) {
-            return WildDungeons.rl("wild_" + entrance.getX() + entrance.getY() + entrance.getZ()).toString();
-        }
-
-        public Map<String, DungeonSession> getSessions() {return this.sessions;}
-        public void setSessions(Map<String, DungeonSession> map) {this.sessions = map;}
-        public static DungeonSessionManager getInstance() {return INSTANCE;}
-
-        public List<String> getSessionNames() {
-            List<String> result = new ArrayList<>();
-            sessions.forEach((k,v) -> {
-                result.add(k);
-            });
-            return result;
-        }
     }
 }
