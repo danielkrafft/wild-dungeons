@@ -1,6 +1,5 @@
 package com.danielkkrafft.wilddungeons.dungeon.components;
 
-import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.registry.WDBlocks;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.Util;
@@ -10,6 +9,9 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.StairsShape;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
@@ -49,22 +51,20 @@ public class TemplateHelper {
 
                 ConnectionPoint targetPoint = null;
                 for (ConnectionPoint point : connectionPoints) {
-                    if (point.direction != blockDirection) continue;
-                    if (point.positions.stream().noneMatch(pos -> block.pos().closerThan(pos, 2.0))) continue;
+                    if (point.getDirection() != blockDirection) continue;
+                    if (point.getPositions().stream().noneMatch(pos -> block.pos().closerThan(pos, 2.0))) continue;
                     targetPoint = point;
                 }
 
                 if (targetPoint == null) {
-                    targetPoint = new ConnectionPoint(block.pos(), blockDirection);
-                    targetPoint.pool = block.nbt().getString("pool");
-                    targetPoint.type = block.nbt().getString("type");
+                    targetPoint = ConnectionPoint.create(block.pos(), blockDirection);
+                    targetPoint.setPool(block.nbt().getString("pool"));
+                    targetPoint.setType(block.nbt().getString("type"));
                     connectionPoints.add(targetPoint);
                 } else {
-                    targetPoint.positions.add(block.pos());
-                    targetPoint.boundingBox.encapsulate(block.pos());
+                    targetPoint.addPosition(block.pos());
                 }
             }
-
         });
 
         return connectionPoints;
@@ -95,20 +95,21 @@ public class TemplateHelper {
     public static StructurePlaceSettings handleRoomTransformation(ConnectionPoint entrancePoint, ConnectionPoint exitPoint, RandomSource random) {
         StructurePlaceSettings settings = new StructurePlaceSettings();
 
-        if (entrancePoint.direction.getAxis() == Direction.Axis.Y) {
-            settings.setMirror(exitPoint.room.settings.getMirror());
-            settings.setRotation(exitPoint.room.settings.getRotation());
+        if (entrancePoint.getAxis() == Direction.Axis.Y) {
+            settings.setMirror(exitPoint.getRoom().settings.getMirror());
+            settings.setRotation(exitPoint.getRoom().settings.getRotation());
             return settings;
         }
 
         settings.setMirror(Util.getRandom(Mirror.values(), random));
 
-        ConnectionPoint mirroredPoint = entrancePoint.transformed(settings, new BlockPos(0, 0, 0), new BlockPos(0, 0, 0));
-        if (exitPoint.direction == mirroredPoint.direction) {
+        ConnectionPoint mirroredPoint = ConnectionPoint.copy(entrancePoint);
+        mirroredPoint.transform(settings, EMPTY_BLOCK_POS, EMPTY_BLOCK_POS);
+        if (exitPoint.getDirection() == mirroredPoint.getDirection()) {
             settings.setRotation(Rotation.CLOCKWISE_180);
-        } else if (exitPoint.direction == mirroredPoint.direction.getClockWise()) {
+        } else if (exitPoint.getDirection() == mirroredPoint.getDirection().getClockWise()) {
             settings.setRotation(Rotation.COUNTERCLOCKWISE_90);
-        } else if (exitPoint.direction == mirroredPoint.direction.getCounterClockWise()) {
+        } else if (exitPoint.getDirection() == mirroredPoint.getDirection().getCounterClockWise()) {
             settings.setRotation(Rotation.CLOCKWISE_90);
         }
 
@@ -147,5 +148,65 @@ public class TemplateHelper {
             result.addAll(template.getFirst().filterBlocks(template.getSecond(), new StructurePlaceSettings(), Blocks.SEA_LANTERN));
         });
         return result;
+    }
+
+    public static BlockState fixBlockStateProperties(BlockState input, StructurePlaceSettings settings) {
+        boolean rotated = settings.getRotation() == Rotation.CLOCKWISE_90 || settings.getRotation() == Rotation.COUNTERCLOCKWISE_90;
+
+        if ((input.hasProperty(BlockStateProperties.HORIZONTAL_FACING) || input.hasProperty(BlockStateProperties.FACING))) {
+            Direction facing = input.hasProperty(BlockStateProperties.FACING) ? input.getValue(BlockStateProperties.FACING) : input.getValue(BlockStateProperties.HORIZONTAL_FACING);
+            StairsShape stairsShape = input.hasProperty(BlockStateProperties.STAIRS_SHAPE) ? input.getValue(BlockStateProperties.STAIRS_SHAPE) : null;
+
+            if (facing != Direction.UP && facing != Direction.DOWN) {
+                facing = switch (settings.getRotation()) {
+                    case CLOCKWISE_90 -> facing.getClockWise();
+                    case CLOCKWISE_180 -> facing.getOpposite();
+                    case COUNTERCLOCKWISE_90 -> facing.getCounterClockWise();
+                    default -> facing;
+                };
+
+                switch (settings.getMirror()) {
+                    case LEFT_RIGHT:
+                        if ((facing == Direction.NORTH || facing == Direction.SOUTH) && !rotated) {
+                            facing = facing.getOpposite();
+                        }
+                        if ((facing == Direction.EAST || facing == Direction.WEST) && rotated) {
+                            facing = facing.getOpposite();
+                        }
+                        if (stairsShape != null) {
+                            switch(stairsShape) {
+                                case INNER_LEFT -> stairsShape = StairsShape.INNER_RIGHT;
+                                case INNER_RIGHT -> stairsShape = StairsShape.INNER_RIGHT;
+                                case OUTER_LEFT -> stairsShape = StairsShape.OUTER_RIGHT;
+                                case OUTER_RIGHT -> stairsShape = StairsShape.OUTER_LEFT;
+                            }
+                        }
+                        break;
+                    case FRONT_BACK:
+                        if ((facing == Direction.EAST || facing == Direction.WEST) && !rotated) {
+                            facing = facing.getOpposite();
+                        }
+                        if ((facing == Direction.NORTH || facing == Direction.SOUTH) && rotated) {
+                            facing = facing.getOpposite();
+                        }
+                        if (stairsShape != null) {
+                            switch(stairsShape) {
+                                case INNER_LEFT -> stairsShape = StairsShape.INNER_RIGHT;
+                                case INNER_RIGHT -> stairsShape = StairsShape.INNER_RIGHT;
+                                case OUTER_LEFT -> stairsShape = StairsShape.OUTER_RIGHT;
+                                case OUTER_RIGHT -> stairsShape = StairsShape.OUTER_LEFT;
+                            }
+                        }
+                        break;
+                }
+            }
+
+            if (input.hasProperty(BlockStateProperties.STAIRS_SHAPE) && stairsShape != null) input = input.setValue(BlockStateProperties.STAIRS_SHAPE, stairsShape);
+
+            return input.hasProperty(BlockStateProperties.FACING) ?
+                    input.setValue(BlockStateProperties.FACING, facing) :
+                    input.setValue(BlockStateProperties.HORIZONTAL_FACING, facing);
+        }
+        return input;
     }
 }
