@@ -19,10 +19,16 @@ public class ConnectionPoint {
     public List<BlockPos> positions;
     public HashMap<BlockPos, BlockState> unBlockedBlockStates = new HashMap<>();
     public Direction direction;
+    public String type = "both";
+    public StructurePlaceSettings settings;
 
     public String pool = "all";
     public boolean connected = false;
     public int failures = 0;
+    public int score = 0;
+    public int distanceToBranchOrigin = 0;
+    public int distanceToFloorOrigin = 0;
+    public int distanceToYTarget = 0;
 
     public ConnectionPoint(BlockPos position, Direction direction) {
         this.boundingBox = new BoundingBox(position);
@@ -40,6 +46,7 @@ public class ConnectionPoint {
         this.pool = point.pool;
         this.connected = point.connected;
         this.failures = point.failures;
+        this.type = point.type;
     }
 
     public ConnectionPoint transformed(StructurePlaceSettings settings, BlockPos position, BlockPos offset) {

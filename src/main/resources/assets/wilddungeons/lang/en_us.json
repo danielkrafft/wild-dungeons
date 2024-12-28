@@ -5,5 +5,7 @@
   "block.wilddungeons.rift_block": "Rift Block",
 
   "connection_block.unblocked_label": "Unblocked Blockstate:",
+  "connection_block.entrance_label": "Entrance",
+  "connection_block.exit_label": "Exit",
   "connection_block.pool_label": "Pool:"
 }

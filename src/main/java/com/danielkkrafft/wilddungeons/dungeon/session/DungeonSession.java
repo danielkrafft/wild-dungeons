@@ -3,6 +3,7 @@ package com.danielkkrafft.wilddungeons.dungeon.session;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonMaterial;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonComponents;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
+import com.danielkkrafft.wilddungeons.dungeon.components.TemplateHelper;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.danielkkrafft.wilddungeons.util.CommandUtil;
@@ -67,7 +68,7 @@ public class DungeonSession {
 
         WDPlayer.SavedTransform oldRespawn = WDPlayer.SavedTransform.fromRespawn(player);
         WDPlayer.SavedTransform oldPosition = new WDPlayer.SavedTransform(player);
-        WDPlayer.SavedTransform newPosition = new WDPlayer.SavedTransform(new Vec3(floor.spawnPoint.getX(), floor.spawnPoint.getY(), floor.spawnPoint.getZ()), 0.0, 0.0, floor.LEVEL_KEY);
+        WDPlayer.SavedTransform newPosition = floor.spawnPoint == null ? new WDPlayer.SavedTransform(new Vec3(0.0,0.0,0.0), 0.0, 0.0, floor.LEVEL_KEY) : new WDPlayer.SavedTransform(new Vec3(floor.spawnPoint.getX(), floor.spawnPoint.getY(), floor.spawnPoint.getZ()), 0.0, 0.0, floor.LEVEL_KEY);
         WDPlayer.setRespawnPosition(newPosition, player);
         wdPlayer.storeRespawn(oldRespawn);
         wdPlayer.storePosition(oldPosition);

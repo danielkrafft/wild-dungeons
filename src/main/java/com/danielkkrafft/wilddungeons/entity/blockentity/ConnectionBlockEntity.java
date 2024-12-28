@@ -1,5 +1,6 @@
 package com.danielkkrafft.wilddungeons.entity.blockentity;
 
+import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.registry.WDBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -10,11 +11,13 @@ import net.minecraft.world.level.block.state.BlockState;
 public class ConnectionBlockEntity extends BlockEntity {
     public String unblockedBlockstate;
     public String pool;
+    public String type;
 
     public ConnectionBlockEntity(BlockPos pos, BlockState blockState) {
         super(WDBlockEntities.CONNECTION_BLOCK_ENTITY.get(), pos, blockState);
         this.unblockedBlockstate = "minecraft:air";
         this.pool = "all";
+        this.type = "both";
     }
 
     @Override
@@ -22,6 +25,7 @@ public class ConnectionBlockEntity extends BlockEntity {
         super.loadAdditional(tag, registries);
         this.unblockedBlockstate = tag.getString("unblockedBlockstate");
         this.pool = tag.getString("pool");
+        this.type = tag.getString("type");
     }
 
     @Override
@@ -29,5 +33,6 @@ public class ConnectionBlockEntity extends BlockEntity {
         super.saveAdditional(tag, registries);
         tag.putString("unblockedBlockstate", this.unblockedBlockstate);
         tag.putString("pool", this.pool);
+        tag.putString("type", this.type);;
     }
 }

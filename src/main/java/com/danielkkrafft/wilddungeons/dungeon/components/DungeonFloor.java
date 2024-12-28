@@ -1,6 +1,7 @@
 package com.danielkkrafft.wilddungeons.dungeon.components;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.dungeon.DungeonMaterial;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.entity.blockentity.RiftBlockEntity;
@@ -28,9 +29,11 @@ public class DungeonFloor {
     public BlockPos spawnPoint;
     public final int id;
     public DungeonSession session;
+    public List<DungeonMaterial> materials;
 
     public DungeonFloor(DungeonComponents.DungeonFloorTemplate floorTemplate, DungeonSession session, BlockPos origin, int id, List<String> destinations) {
         this.floorTemplate = floorTemplate;
+        this.materials = floorTemplate.materials() == null ? session.materials : floorTemplate.materials();
         this.id = id;
         this.LEVEL_KEY = buildFloorLevelKey(session.entrance, this);
         this.session = session;
@@ -39,13 +42,18 @@ public class DungeonFloor {
         generateDungeonFloor();
         this.spawnPoint = this.dungeonBranches.getFirst().spawnPoint;
 
-        BlockPos exitRiftPos = this.dungeonBranches.getFirst().dungeonRooms.getFirst().rifts.getFirst();
-        RiftBlockEntity riftBlockEntity = (RiftBlockEntity) this.level.getBlockEntity(exitRiftPos);
-        if (riftBlockEntity != null) {riftBlockEntity.destination = "exit";}
+        if (!this.dungeonBranches.getFirst().dungeonRooms.getFirst().rifts.isEmpty()) {
+            BlockPos exitRiftPos = this.dungeonBranches.getFirst().dungeonRooms.getFirst().rifts.getFirst();
+            RiftBlockEntity riftBlockEntity = (RiftBlockEntity) this.level.getBlockEntity(exitRiftPos);
+            if (riftBlockEntity != null) {riftBlockEntity.destination = "exit";}
+        }
 
-        BlockPos enterRiftPos = this.dungeonBranches.getLast().dungeonRooms.getLast().rifts.getLast();
-        RiftBlockEntity enterRiftBlockEntity = (RiftBlockEntity) this.level.getBlockEntity(enterRiftPos);
-        if (enterRiftBlockEntity != null) {enterRiftBlockEntity.destination = destinations.get(RandomUtil.randIntBetween(0, destinations.size()-1));}
+        if (!this.dungeonBranches.getLast().dungeonRooms.isEmpty() && !this.dungeonBranches.getLast().dungeonRooms.getLast().rifts.isEmpty()) {
+            BlockPos enterRiftPos = this.dungeonBranches.getLast().dungeonRooms.getLast().rifts.getLast();
+            RiftBlockEntity enterRiftBlockEntity = (RiftBlockEntity) this.level.getBlockEntity(enterRiftPos);
+            if (enterRiftBlockEntity != null) {enterRiftBlockEntity.destination = destinations.get(RandomUtil.randIntBetween(0, destinations.size()-1));}
+        }
+
     }
 
     public void shutdown() {
@@ -81,26 +89,31 @@ public class DungeonFloor {
         dungeonBranches.add(nextBranch.placeInWorld(this, level, origin));
     }
 
-    protected boolean isBoundingBoxValid(BoundingBox proposedBox, List<DungeonRoom> dungeonRooms) {
-        for (DungeonBranch branch : dungeonBranches) {
-            for (DungeonRoom room : branch.dungeonRooms) {
-                if (proposedBox.intersects(room.boundingBox)) {
-                    WildDungeons.getLogger().info("BOUNDING BOX INTERSECTS " + room.boundingBox);
-                    return false;
-                } else if (proposedBox.minY() < EmptyGenerator.MIN_Y || proposedBox.maxY() > EmptyGenerator.MIN_Y + EmptyGenerator.GEN_DEPTH) {
-                    WildDungeons.getLogger().info("BOUNDING BOX GOES OUT OF RANGE");
-                    return false;
+    protected boolean isBoundingBoxValid(List<BoundingBox> proposedBoxes, List<DungeonRoom> dungeonRooms) {
+        for (BoundingBox proposedBox : proposedBoxes) {
+
+            for (DungeonBranch branch : dungeonBranches) {
+                for (DungeonRoom room : branch.dungeonRooms) {
+                    for (BoundingBox box : room.boundingBoxes) {
+                        if (proposedBox.intersects(box)) {
+                            return false;
+                        } else if (proposedBox.minY() < EmptyGenerator.MIN_Y || proposedBox.maxY() > EmptyGenerator.MIN_Y + EmptyGenerator.GEN_DEPTH) {
+                            return false;
+                        }
+                    }
                 }
             }
-        }
-        for (DungeonRoom room : dungeonRooms) {
-            if (proposedBox.intersects(room.boundingBox)) {
-                WildDungeons.getLogger().info("BOUNDING BOX INTERSECTS " + room.boundingBox);
-                return false;
-            } else if (proposedBox.minY() < EmptyGenerator.MIN_Y || proposedBox.maxY() > EmptyGenerator.MIN_Y + EmptyGenerator.GEN_DEPTH) {
-                WildDungeons.getLogger().info("BOUNDING BOX GOES OUT OF RANGE");
-                return false;
+
+            for (DungeonRoom room : dungeonRooms) {
+                for (BoundingBox box : room.boundingBoxes) {
+                    if (proposedBox.intersects(box)) {
+                        return false;
+                    } else if (proposedBox.minY() < EmptyGenerator.MIN_Y || proposedBox.maxY() > EmptyGenerator.MIN_Y + EmptyGenerator.GEN_DEPTH) {
+                        return false;
+                    }
+                }
             }
+
         }
         return true;
     }

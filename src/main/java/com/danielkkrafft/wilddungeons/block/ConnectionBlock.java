@@ -34,6 +34,7 @@ public class ConnectionBlock extends Block implements EntityBlock {
             CompoundTag data = new CompoundTag();
             data.putString("unblockedBlockstate", connectionBlockEntity.unblockedBlockstate);
             data.putString("pool", connectionBlockEntity.pool);
+            data.putString("type", connectionBlockEntity.type);
             data.putInt("x", connectionBlockEntity.getBlockPos().getX());
             data.putInt("y", connectionBlockEntity.getBlockPos().getY());
             data.putInt("z", connectionBlockEntity.getBlockPos().getZ());

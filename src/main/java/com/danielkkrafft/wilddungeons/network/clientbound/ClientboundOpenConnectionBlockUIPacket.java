@@ -31,6 +31,7 @@ public record ClientboundOpenConnectionBlockUIPacket(CompoundTag data) implement
             Minecraft.getInstance().setScreen(new ConnectionBlockEditScreen(
                     data.getString("unblockedBlockstate"),
                     data.getString("pool"),
+                    data.getString("type"),
                     data.getInt("x"),
                     data.getInt("y"),
                     data.getInt("z")));

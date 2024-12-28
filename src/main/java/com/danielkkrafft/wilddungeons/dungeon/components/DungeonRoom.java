@@ -6,6 +6,7 @@ import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.entity.blockentity.ConnectionBlockEntity;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -35,13 +36,22 @@ public class DungeonRoom {
     public StructurePlaceSettings settings;
     public List<ConnectionPoint> connectionPoints = new ArrayList<>();
     public List<BlockPos> rifts = new ArrayList<>();
-    public BoundingBox boundingBox;
+    public List<BoundingBox> boundingBoxes;
     public DungeonBranch branch;
     public boolean rotated;
     public DungeonMaterial material;
 
+    public int distanceToBranchOrigin = 0;
+    public int distanceToFloorOrigin = 0;
+
     public DungeonRoom(DungeonBranch branch, DungeonComponents.DungeonRoomTemplate dungeonRoomTemplate, ServerLevel level, BlockPos position, BlockPos offset, StructurePlaceSettings settings, List<ConnectionPoint> inputPoints) {
-        dungeonRoomTemplate.template().placeInWorld(level, position, offset, settings, DungeonSessionManager.getInstance().server.overworld().getRandom(), 2);
+        dungeonRoomTemplate.templates().forEach(template -> {
+            BlockPos newOffset = StructureTemplate.transform(template.getSecond(), settings.getMirror(), settings.getRotation(), TemplateHelper.EMPTY_BLOCK_POS);
+            BlockPos newPosition = position.offset(newOffset);
+            WildDungeons.getLogger().info("ATTEMPTING TO PLACE {} AT NEW POSITION {} WITH BOUNDING BOX {} AND OFFSET {}", dungeonRoomTemplate.name(), newPosition, template.getFirst().getBoundingBox(settings, newPosition), newOffset);
+            WildDungeons.getLogger().info("USING MIRROR: {} AND ROTATION: {}", settings.getMirror(), settings.getRotation());
+            template.getFirst().placeInWorld(level, newPosition, template.getSecond(), settings, DungeonSessionManager.getInstance().server.overworld().getRandom(), 2);
+        });
         this.dungeonRoomTemplate = dungeonRoomTemplate;
         this.branch = branch;
         this.level = level;
@@ -49,15 +59,18 @@ public class DungeonRoom {
         this.offset = offset;
         this.settings = settings;
         this.rotated = settings.getRotation() == Rotation.CLOCKWISE_90 || settings.getRotation() == Rotation.COUNTERCLOCKWISE_90;
-        this.boundingBox = dungeonRoomTemplate.template().getBoundingBox(settings, position);
-        this.material = this.branch.floor.session.materials.get(RandomUtil.randIntBetween(0, this.branch.floor.session.materials.size()-1));
+        this.boundingBoxes = dungeonRoomTemplate.getBoundingBoxes(settings, position);
+        this.material = dungeonRoomTemplate.materials() == null ?
+                this.branch.materials.get(RandomUtil.randIntBetween(0, this.branch.materials.size()-1)) :
+                dungeonRoomTemplate.materials().get(RandomUtil.randIntBetween(0, dungeonRoomTemplate.materials().size()-1));
+
         dungeonRoomTemplate.rifts().forEach(pos -> {
             this.rifts.add(StructureTemplate.transform(pos, settings.getMirror(), settings.getRotation(), offset).offset(position));
         });
         this.processMaterialBlocks(this.material);
 
         this.spawnPoint = dungeonRoomTemplate.spawnPoint();
-        level.setBlock(TemplateHelper.transform(spawnPoint, this), Blocks.AIR.defaultBlockState(), 2);
+        if (this.spawnPoint != null) level.setBlock(TemplateHelper.transform(spawnPoint, this), Blocks.AIR.defaultBlockState(), 2);
 
         for (ConnectionPoint point : inputPoints) {
             point.room = this;
@@ -67,7 +80,6 @@ public class DungeonRoom {
     }
 
     public void processConnectionPoints(DungeonMaterial material) {
-        WildDungeons.getLogger().info("PROCESSING {} CONNECTION POINTS", connectionPoints.size());
         for (ConnectionPoint point : connectionPoints) {
             for (BlockPos pos : point.positions) {
                 BlockEntity blockEntity = level.getBlockEntity(pos);

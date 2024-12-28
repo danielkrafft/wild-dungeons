@@ -1,6 +1,8 @@
 package com.danielkkrafft.wilddungeons.dungeon.components;
 
+import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.registry.WDBlocks;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -18,46 +20,52 @@ import java.util.List;
 public class TemplateHelper {
     public static final BlockPos EMPTY_BLOCK_POS = new BlockPos(0, 0, 0);
 
-    public static List<ConnectionPoint> locateConnectionPoints(StructureTemplate template) {
+    public static List<ConnectionPoint> locateConnectionPoints(List<Pair<StructureTemplate, BlockPos>> templates) {
         List<ConnectionPoint> connectionPoints = new ArrayList<>();
-        BoundingBox boundingBox = template.getBoundingBox(new StructurePlaceSettings(), EMPTY_BLOCK_POS);
 
-        List<StructureTemplate.StructureBlockInfo> CONNECTION_BLOCKS = template.filterBlocks(new BlockPos(0, 0, 0), new StructurePlaceSettings(), WDBlocks.CONNECTION_BLOCK.get());
-        for (StructureTemplate.StructureBlockInfo block : CONNECTION_BLOCKS) {
+        templates.forEach(template -> {
 
-            Direction blockDirection;
-            if (block.pos().getY() == boundingBox.maxY()) {
-                blockDirection = Direction.UP;
-            } else if (block.pos().getY() == boundingBox.minY()) {
-                blockDirection = Direction.DOWN;
-            } else if (block.pos().getZ() == boundingBox.minZ()) {
-                blockDirection = Direction.NORTH;
-            } else if (block.pos().getZ() == boundingBox.maxZ()) {
-                blockDirection = Direction.SOUTH;
-            } else if (block.pos().getX() == boundingBox.minX()) {
-                blockDirection = Direction.WEST;
-            } else if (block.pos().getX() == boundingBox.maxX()) {
-                blockDirection = Direction.EAST;
-            } else {
-                continue;
+            BoundingBox boundingBox = template.getFirst().getBoundingBox(new StructurePlaceSettings(), template.getSecond());
+
+            List<StructureTemplate.StructureBlockInfo> CONNECTION_BLOCKS = template.getFirst().filterBlocks(template.getSecond(), new StructurePlaceSettings(), WDBlocks.CONNECTION_BLOCK.get());
+            for (StructureTemplate.StructureBlockInfo block : CONNECTION_BLOCKS) {
+
+                Direction blockDirection;
+                if (block.pos().getY() == boundingBox.maxY()) {
+                    blockDirection = Direction.UP;
+                } else if (block.pos().getY() == boundingBox.minY()) {
+                    blockDirection = Direction.DOWN;
+                } else if (block.pos().getZ() == boundingBox.minZ()) {
+                    blockDirection = Direction.NORTH;
+                } else if (block.pos().getZ() == boundingBox.maxZ()) {
+                    blockDirection = Direction.SOUTH;
+                } else if (block.pos().getX() == boundingBox.minX()) {
+                    blockDirection = Direction.WEST;
+                } else if (block.pos().getX() == boundingBox.maxX()) {
+                    blockDirection = Direction.EAST;
+                } else {
+                    continue;
+                }
+
+                ConnectionPoint targetPoint = null;
+                for (ConnectionPoint point : connectionPoints) {
+                    if (point.direction != blockDirection) continue;
+                    if (point.positions.stream().noneMatch(pos -> block.pos().closerThan(pos, 2.0))) continue;
+                    targetPoint = point;
+                }
+
+                if (targetPoint == null) {
+                    targetPoint = new ConnectionPoint(block.pos(), blockDirection);
+                    targetPoint.pool = block.nbt().getString("pool");
+                    targetPoint.type = block.nbt().getString("type");
+                    connectionPoints.add(targetPoint);
+                } else {
+                    targetPoint.positions.add(block.pos());
+                    targetPoint.boundingBox.encapsulate(block.pos());
+                }
             }
 
-            ConnectionPoint targetPoint = null;
-            for (ConnectionPoint point : connectionPoints) {
-                if (point.direction != blockDirection) continue;
-                if (point.positions.stream().noneMatch(pos -> block.pos().closerThan(pos, 2.0))) continue;
-                targetPoint = point;
-            }
-
-            if (targetPoint == null) {
-                targetPoint = new ConnectionPoint(block.pos(), blockDirection);
-                targetPoint.pool = block.nbt().getString("pool");
-                connectionPoints.add(targetPoint);
-            } else {
-                targetPoint.positions.add(block.pos());
-                targetPoint.boundingBox.encapsulate(block.pos());
-            }
-        }
+        });
 
         return connectionPoints;
     }
@@ -111,25 +119,33 @@ public class TemplateHelper {
         return StructureTemplate.transform(input, room.settings.getMirror(), room.settings.getRotation(), room.offset).offset(room.position);
     }
 
-    public static BlockPos locateSpawnPoint(StructureTemplate template) {
-        List<StructureTemplate.StructureBlockInfo> SPAWN_BLOCKS = template.filterBlocks(new BlockPos(0, 0, 0), new StructurePlaceSettings(), WDBlocks.SPAWN_BLOCK.get());
+    public static BlockPos locateSpawnPoint(List<Pair<StructureTemplate, BlockPos>> templates) {
+        List<StructureTemplate.StructureBlockInfo> SPAWN_BLOCKS = new ArrayList<>();
+        templates.forEach(template -> {
+            SPAWN_BLOCKS.addAll(template.getFirst().filterBlocks(template.getSecond(), new StructurePlaceSettings(), WDBlocks.SPAWN_BLOCK.get()));
+        });
         return SPAWN_BLOCKS.isEmpty() ? null : SPAWN_BLOCKS.getFirst().pos();
     }
 
-    public static List<BlockPos> locateRifts(StructureTemplate template) {
-        List<StructureTemplate.StructureBlockInfo> RIFT_BLOCKS = template.filterBlocks(new BlockPos(0, 0, 0), new StructurePlaceSettings(), WDBlocks.RIFT_BLOCK.get());
+    public static List<BlockPos> locateRifts(List<Pair<StructureTemplate, BlockPos>> templates) {
+        List<StructureTemplate.StructureBlockInfo> RIFT_BLOCKS = new ArrayList<>();
+        templates.forEach(template -> {
+            RIFT_BLOCKS.addAll(template.getFirst().filterBlocks(template.getSecond(), new StructurePlaceSettings(), WDBlocks.RIFT_BLOCK.get()));
+        });
         List<BlockPos> result = new ArrayList<>();
         RIFT_BLOCKS.forEach(info -> {result.add(info.pos());});
         return result;
     }
 
-    public static List<StructureTemplate.StructureBlockInfo> locateMaterialBlocks(StructureTemplate template) {
+    public static List<StructureTemplate.StructureBlockInfo> locateMaterialBlocks(List<Pair<StructureTemplate, BlockPos>> templates) {
         List<StructureTemplate.StructureBlockInfo> result = new ArrayList<>();
-        result.addAll(template.filterBlocks(new BlockPos(0,0,0), new StructurePlaceSettings(), Blocks.STONE_BRICKS));
-        result.addAll(template.filterBlocks(new BlockPos(0,0,0), new StructurePlaceSettings(), Blocks.STONE_BRICK_STAIRS));
-        result.addAll(template.filterBlocks(new BlockPos(0,0,0), new StructurePlaceSettings(), Blocks.STONE_BRICK_SLAB));
-        result.addAll(template.filterBlocks(new BlockPos(0,0,0), new StructurePlaceSettings(), Blocks.STONE_BRICK_WALL));
-        result.addAll(template.filterBlocks(new BlockPos(0,0,0), new StructurePlaceSettings(), Blocks.SEA_LANTERN));
+        templates.forEach(template -> {
+            result.addAll(template.getFirst().filterBlocks(template.getSecond(), new StructurePlaceSettings(), Blocks.STONE_BRICKS));
+            result.addAll(template.getFirst().filterBlocks(template.getSecond(), new StructurePlaceSettings(), Blocks.STONE_BRICK_STAIRS));
+            result.addAll(template.getFirst().filterBlocks(template.getSecond(), new StructurePlaceSettings(), Blocks.STONE_BRICK_SLAB));
+            result.addAll(template.getFirst().filterBlocks(template.getSecond(), new StructurePlaceSettings(), Blocks.STONE_BRICK_WALL));
+            result.addAll(template.getFirst().filterBlocks(template.getSecond(), new StructurePlaceSettings(), Blocks.SEA_LANTERN));
+        });
         return result;
     }
 }
