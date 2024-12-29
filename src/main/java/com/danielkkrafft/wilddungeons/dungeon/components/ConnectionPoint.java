@@ -1,6 +1,5 @@
 package com.danielkkrafft.wilddungeons.dungeon.components;
 
-import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.entity.blockentity.ConnectionBlockEntity;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.util.Pair;
@@ -22,84 +21,56 @@ import org.joml.Vector2i;
 import java.util.*;
 
 public class ConnectionPoint {
-    private String pool;
-    private String type;
+    private String pool = "all";
+    private String type = "both";
 
-    private DungeonRoom room;
+    private DungeonRoom room = null;
     private Direction direction;
-    private boolean connected;
-    private int failures;
-    private int score;
-    private int distanceToBranchOrigin;
-    private int distanceToFloorOrigin;
-    private int distanceToYTarget;
+    private boolean connected = false;
+    private int failures = 0;
 
     private BoundingBox boundingBox;
-    private List<BlockPos> positions;
-    private HashMap<BlockPos, BlockState> unBlockedBlockStates;
+    private List<BlockPos> positions = new ArrayList<>();
+    private HashMap<BlockPos, BlockState> unBlockedBlockStates = new HashMap<>();
 
     public String getType() {return this.type;}
     public void setType(String type) {this.type = type;}
     public void setPool(String pool) {this.pool = pool;}
-
     public DungeonRoom getRoom() {return this.room;}
     public void setRoom(DungeonRoom room) {this.room = room;}
-
     public Direction getDirection() {return this.direction;}
     public Vec3i getNormal() {return this.direction.getNormal();}
     public Direction.Axis getAxis() {return this.direction.getAxis();}
-
     public boolean isConnected() {return this.connected;}
     public void setConnected(boolean connected) {this.connected = connected;}
-
     public void incrementFailures() {this.failures += 1;}
+    public BlockPos getOrigin() {return new BlockPos(this.boundingBox.minX(), this.boundingBox.minY(), this.boundingBox.minZ());}
     public void addPosition(BlockPos pos) {this.positions.add(pos); this.boundingBox.encapsulate(pos);}
     public List<BlockPos> getPositions() {return this.positions;}
-
-
-    private ConnectionPoint(BlockPos position, Direction direction) {
-        this.pool = "all";
-        this.type = "both";
-
-        this.room = null;
-        this.direction = direction;
-        this.connected = false;
-        this.failures = 0;
-        this.score = 0;
-        this.distanceToBranchOrigin = 0;
-        this.distanceToFloorOrigin = 0;
-        this.distanceToYTarget = 0;
-
-        this.boundingBox = new BoundingBox(position);
-        this.positions = new ArrayList<>();
-        positions.add(position);
-        this.unBlockedBlockStates = new HashMap<>();
-    }
-
-    private ConnectionPoint(ConnectionPoint point) {
-        this.pool = point.pool;
-        this.type = point.type;
-
-        this.room = point.room;
-        this.direction = point.direction;
-        this.connected = point.connected;
-        this.failures = point.failures;
-        this.score = point.score;
-        this.distanceToBranchOrigin = point.distanceToBranchOrigin;
-        this.distanceToFloorOrigin = point.distanceToFloorOrigin;
-        this.distanceToYTarget = point.distanceToYTarget;
-
-        this.boundingBox = point.boundingBox;
-        this.positions = point.positions;
-        this.unBlockedBlockStates = point.unBlockedBlockStates;
-    }
+    private ConnectionPoint() {}
 
     public static ConnectionPoint create(BlockPos position, Direction direction) {
-        return new ConnectionPoint(position, direction);
+        ConnectionPoint newPoint = new ConnectionPoint();
+        newPoint.direction = direction;
+        newPoint.boundingBox = new BoundingBox(position);
+        newPoint.positions.add(position);
+        return newPoint;
     }
 
-    public static ConnectionPoint copy(ConnectionPoint point) {
-        return new ConnectionPoint(point);
+    public static ConnectionPoint copy(ConnectionPoint oldPoint) {
+        ConnectionPoint newPoint = new ConnectionPoint();
+        newPoint.pool = oldPoint.pool;
+        newPoint.type = oldPoint.type;
+
+        newPoint.room = oldPoint.room;
+        newPoint.direction = oldPoint.direction;
+        newPoint.connected = oldPoint.connected;
+        newPoint.failures = oldPoint.failures;
+
+        newPoint.boundingBox = oldPoint.boundingBox;
+        newPoint.positions = oldPoint.positions;
+        newPoint.unBlockedBlockStates = oldPoint.unBlockedBlockStates;
+        return newPoint;
     }
 
     public void transform(StructurePlaceSettings settings, BlockPos position, BlockPos offset) {
@@ -130,31 +101,23 @@ public class ConnectionPoint {
     }
 
     public static Pair<ConnectionPoint, StructurePlaceSettings> selectBestPoint(List<Pair<ConnectionPoint, StructurePlaceSettings>> pointPool, DungeonBranch branch, int yTarget, double branchWeight, double floorWeight, double heightWeight, double randomWeight) {
-        int totalDistanceToBranchOrigin = 0;
-        int totalDistanceToFloorOrigin = 0;
-        int totalDistanceToYTarget = 0;
+        int totalBranchDistance = pointPool.stream().mapToInt(pair -> branch.dungeonRooms.isEmpty() ? 0 : pair.getFirst().getOrigin().distManhattan(branch.dungeonRooms.getFirst().position)).sum();
+        int totalFloorDistance = pointPool.stream().mapToInt(pair -> pair.getFirst().getOrigin().distManhattan(branch.floor.origin)).sum();
+        int totalHeightDistance = pointPool.stream().mapToInt(pair -> Math.abs(pair.getFirst().getOrigin().getY() - yTarget)).sum();
 
-        for (ConnectionPoint point : pointPool.stream().map(Pair::getFirst).toList()) {
-            point.score = 0;
-            BlockPos pointOrigin = new BlockPos(point.boundingBox.minX(), point.boundingBox.minY(), point.boundingBox.minZ());
+        return pointPool.stream().map(pair -> {
+            int distanceToBranchOrigin = branch.dungeonRooms.isEmpty() ? 0 : pair.getFirst().getOrigin().distManhattan(branch.dungeonRooms.getFirst().position);
+            int distanceToFloorOrigin = pair.getFirst().getOrigin().distManhattan(branch.floor.origin);
+            int distanceToYTarget = Math.abs(pair.getFirst().getOrigin().getY() - yTarget);
 
-            point.distanceToYTarget = Math.abs(pointOrigin.getY() - yTarget);
-            point.distanceToFloorOrigin = pointOrigin.distManhattan(branch.floor.origin);
-            point.distanceToBranchOrigin = branch.dungeonRooms.isEmpty() ? 0 : pointOrigin.distManhattan(branch.dungeonRooms.getFirst().position);
-            totalDistanceToBranchOrigin += point.distanceToBranchOrigin;
-            totalDistanceToFloorOrigin += point.distanceToFloorOrigin;
-            totalDistanceToYTarget += point.distanceToYTarget;
-        }
+            int score = 0;
+            score += (int) (branchWeight * distanceToBranchOrigin / totalBranchDistance);
+            score += (int) (floorWeight * distanceToFloorOrigin / totalFloorDistance);
+            score += (int) (heightWeight * distanceToYTarget / totalHeightDistance);
+            score += (int) (randomWeight * Math.random());
 
-        for (ConnectionPoint point : pointPool.stream().map(Pair::getFirst).toList()) {
-            point.score += (int) (branchWeight * point.distanceToBranchOrigin / totalDistanceToBranchOrigin);
-            point.score += (int) (floorWeight * point.distanceToFloorOrigin / totalDistanceToFloorOrigin);
-            point.score -= (int) (heightWeight * point.distanceToYTarget / totalDistanceToYTarget);
-            point.score += (int) (randomWeight * Math.random());
-        }
-
-        pointPool.sort(Comparator.comparingInt(a -> a.getFirst().score));
-        return pointPool.getLast();
+            return new Pair<>(pair, score);
+        }).max(Comparator.comparingInt(Pair::getSecond)).map(Pair::getFirst).orElse(null);
     }
 
     public static BlockPos getOffset(ConnectionPoint en, ConnectionPoint ex) {
@@ -195,16 +158,10 @@ public class ConnectionPoint {
     }
 
     public void block(ServerLevel level) {
-        positions.forEach((pos) -> {
-            WildDungeons.getLogger().info("BLOCKING POSITION {} THIS POINT IS CONNECTED? {}", pos, this.connected);
-            level.setBlock(pos, this.room.material.getBasic(1), 2);
-        });
+        positions.forEach((pos) -> level.setBlock(pos, this.room.material.getBasic(1), 2));
     }
 
     public void unBlock(ServerLevel level) {
-        unBlockedBlockStates.forEach((pos, blockState) -> {
-            WildDungeons.getLogger().info("UNBLOCKING POSITION {} THIS POINT IS CONNECTED? {}", pos, this.connected);
-            level.setBlock(pos, blockState, 2);
-        });
+        unBlockedBlockStates.forEach((pos, blockState) -> level.setBlock(pos, blockState, 2));
     }
 }

@@ -44,8 +44,8 @@ public class DungeonRoom {
         this.rotated = settings.getRotation() == Rotation.CLOCKWISE_90 || settings.getRotation() == Rotation.COUNTERCLOCKWISE_90;
         this.boundingBoxes = dungeonRoomTemplate.getBoundingBoxes(settings, position);
         this.material = dungeonRoomTemplate.materials() == null ?
-                this.branch.materials.get(RandomUtil.randIntBetween(0, this.branch.materials.size()-1)) :
-                dungeonRoomTemplate.materials().get(RandomUtil.randIntBetween(0, dungeonRoomTemplate.materials().size()-1));
+                this.branch.materials.get(RandomUtil.randIntBetween(0, this.branch.materials.size() - 1)) :
+                dungeonRoomTemplate.materials().get(RandomUtil.randIntBetween(0, dungeonRoomTemplate.materials().size() - 1));
 
         dungeonRoomTemplate.rifts().forEach(pos -> {
             this.rifts.add(StructureTemplate.transform(pos, settings.getMirror(), settings.getRotation(), offset).offset(position));
@@ -53,7 +53,8 @@ public class DungeonRoom {
         this.processMaterialBlocks(this.material);
 
         this.spawnPoint = dungeonRoomTemplate.spawnPoint();
-        if (this.spawnPoint != null) level.setBlock(TemplateHelper.transform(spawnPoint, this), Blocks.AIR.defaultBlockState(), 2);
+        if (this.spawnPoint != null)
+            level.setBlock(TemplateHelper.transform(spawnPoint, this), Blocks.AIR.defaultBlockState(), 2);
 
         for (ConnectionPoint point : allConnectionPoints) {
             ConnectionPoint newPoint = ConnectionPoint.copy(point);
@@ -70,7 +71,6 @@ public class DungeonRoom {
 
     public void processConnectionPoints() {
         for (ConnectionPoint point : connectionPoints) {
-            WildDungeons.getLogger().info("HANDLING {} POINT FOR ROOM: {}", point.getDirection(), this.dungeonRoomTemplate.name());
             point.setupBlockstates(this.level, this.settings);
             if (point.isConnected()) point.unBlock(this.level);
             if (!point.isConnected()) point.block(this.level);
@@ -83,6 +83,16 @@ public class DungeonRoom {
             BlockPos newPos = TemplateHelper.transform(structureBlockInfo.pos(), this);
             level.setBlock(newPos, TemplateHelper.fixBlockStateProperties(material.replace(structureBlockInfo.state()), this.settings), 2);
         });
+    }
+
+    public List<ConnectionPoint> getValidExitPoints(ConnectionPoint entrancePoint) {
+        List<ConnectionPoint> exitPoints = new ArrayList<>();
+        for (ConnectionPoint point : connectionPoints) {
+            if (ConnectionPoint.arePointsCompatible(entrancePoint, point)) {
+                exitPoints.add(point);
+            }
+        }
+        return exitPoints;
     }
 
 }

@@ -37,7 +37,7 @@ public class DungeonRegistry {
         DUNGEON_ROOM_REGISTRY.add(DungeonComponents.DungeonRoomTemplate.build("stone/medium_4", List.of(
                 Pair.of("stone/medium_4_comp_1", TemplateHelper.EMPTY_BLOCK_POS),
                 Pair.of("stone/medium_4_comp_2", new BlockPos(4, 0, -17))), null).pool(MEDIUM_ROOM_POOL));
-        DUNGEON_ROOM_REGISTRY.add(DungeonComponents.DungeonRoomTemplate.build("stone/large_1", List.of(Pair.of("stone/large_1", TemplateHelper.EMPTY_BLOCK_POS)), null).pool(MEDIUM_ROOM_POOL));
+        DUNGEON_ROOM_REGISTRY.add(DungeonComponents.DungeonRoomTemplate.build("stone/large_1", List.of(Pair.of("stone/large_1", TemplateHelper.EMPTY_BLOCK_POS)), null));
         DUNGEON_ROOM_REGISTRY.add(DungeonComponents.DungeonRoomTemplate.build("stone/start", List.of(Pair.of("stone/start", TemplateHelper.EMPTY_BLOCK_POS)), null));
         DUNGEON_ROOM_REGISTRY.add(DungeonComponents.DungeonRoomTemplate.build("stone/boss", List.of(
                 Pair.of("stone/boss_comp_1", TemplateHelper.EMPTY_BLOCK_POS),
@@ -56,7 +56,7 @@ public class DungeonRegistry {
                         DUNGEON_FLOOR_REGISTRY.get("test_floor"),
                         DUNGEON_FLOOR_REGISTRY.get("test_floor"),
                         DUNGEON_FLOOR_REGISTRY.get("test_floor")),
-                List.of(DungeonMaterials.DEEP_DARK, DungeonMaterials.PRISMARINE, DungeonMaterials.NETHER, DungeonMaterials.OAK_WOOD, DungeonMaterials.END_STONE, DungeonMaterials.SANDSTONE, DungeonMaterials.STONE_BRICK)).pool(DUNGEON_POOL));
+                List.of(DungeonMaterials.DEEP_DARK, DungeonMaterials.PRISMARINE, DungeonMaterials.OAK_WOOD, DungeonMaterials.END_STONE, DungeonMaterials.SANDSTONE, DungeonMaterials.STONE_BRICK)).pool(DUNGEON_POOL));
     }
 
     public static class DungeonComponentPool<T extends DungeonComponents.DungeonComponent> {
