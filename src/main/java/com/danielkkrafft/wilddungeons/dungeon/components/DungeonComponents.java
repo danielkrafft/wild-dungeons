@@ -82,9 +82,9 @@ public class DungeonComponents {
 
         public DungeonFloorTemplate pool(DungeonRegistry.DungeonComponentPool<DungeonFloorTemplate> pool) {pool.add(this); return this;}
 
-        public DungeonFloor placeInWorld(DungeonSession session, BlockPos position, int id, List<String> destinations) {
+        public DungeonFloor placeInWorld(DungeonSession session, BlockPos position, int index, List<String> destinations) {
             WildDungeons.getLogger().info("PLACING FLOOR: {}", this.name());
-            return new DungeonFloor(this, session, position, id, destinations);
+            return new DungeonFloor(this, session, position, index, destinations);
         }
     }
 

@@ -46,7 +46,7 @@ public class RiftBlock extends Block implements EntityBlock {
 
                 WildDungeons.getLogger().info("TRYING TO EXIT {}", wdPlayer.getCurrentFloor());
 
-                DungeonSession dungeon = DungeonSessionManager.getInstance().getDungeonSession(wdPlayer.getCurrentDungeon());
+                DungeonSession dungeon = wdPlayer.getCurrentDungeon();
                 dungeon.exitFloor(serverplayer);
                 wdPlayer.setRiftCooldown(100);
 
@@ -54,7 +54,7 @@ public class RiftBlock extends Block implements EntityBlock {
 
                 WildDungeons.getLogger().info("TRYING TO WIN {}", wdPlayer.getCurrentDungeon());
 
-                DungeonSession dungeon = DungeonSessionManager.getInstance().getDungeonSession(wdPlayer.getCurrentDungeon());
+                DungeonSession dungeon = wdPlayer.getCurrentDungeon();
                 dungeon.exitDungeon(serverplayer);
                 wdPlayer.setRiftCooldown(100);
                 serverplayer.addItem(new ItemStack(Items.DIAMOND.asItem(), 1));
@@ -71,8 +71,8 @@ public class RiftBlock extends Block implements EntityBlock {
 
             } else {
 
-                DungeonSession dungeon = DungeonSessionManager.getInstance().getDungeonSession(wdPlayer.getCurrentDungeon());
-                dungeon.enterFloor(serverplayer, riftBlockEntity.destination);
+                DungeonSession dungeon = wdPlayer.getCurrentDungeon();
+                dungeon.enterFloor(serverplayer, Integer.parseInt(riftBlockEntity.destination));
                 wdPlayer.setRiftCooldown(100);
 
             }

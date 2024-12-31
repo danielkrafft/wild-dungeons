@@ -1,7 +1,11 @@
 package com.danielkkrafft.wilddungeons.player;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
+import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
+import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.util.CommandUtil;
 import com.danielkkrafft.wilddungeons.util.MathUtil;
 import net.minecraft.core.BlockPos;
@@ -25,22 +29,20 @@ public class WDPlayer {
     private List<SavedTransform> respawns = new ArrayList<>();
     private List<SavedTransform> positions = new ArrayList<>();
     private String recentEssence = "essence:overworld";
-    private String currentDungeon = "none";
-    private String currentFloor = "none";
     private String UUID;
     private int riftCooldown = 0;
 
+    private String currentDungeon = "none";
+    private int currentFloor = -1;
+    private int currentBranch = -1;
+    private int currentRoom = -1;
+
     public int getEssenceTotal(String key) {return this.essenceTotals.getOrDefault(key, 0);}
     public void setEssenceTotal(String key, int value) {this.essenceTotals.put(key, value);}
-
     public String getRecentEssence() {return this.recentEssence;}
     public void setRecentEssence(String recentEssence) {this.recentEssence = recentEssence;}
 
-    public String getCurrentDungeon() {return this.currentDungeon;}
-    public void setCurrentDungeon(String currentDungeon) {this.currentDungeon = currentDungeon;}
-    public String getCurrentFloor() {return this.currentFloor;}
-    public void setCurrentFloor(String currentFloor) {this.currentFloor = currentFloor;}
-    public void setCurrentFloor(DungeonFloor floor) {this.currentFloor = floor.LEVEL_KEY.toString();}
+
     public int getRiftCooldown() {return this.riftCooldown;}
     public void setRiftCooldown(int cooldown) {this.riftCooldown = cooldown;}
     public List<SavedTransform> getPositions() {return this.positions;}
@@ -55,6 +57,15 @@ public class WDPlayer {
     public SavedTransform removeLastRespawn() {return respawns.removeLast();}
     public int getDepth() {return this.positions.size();};
 
+    public DungeonSession getCurrentDungeon() {return DungeonSessionManager.getInstance().getDungeonSession(this.currentDungeon);}
+    public void setCurrentDungeon(DungeonSession session) {this.currentDungeon = session == null ? "none" : DungeonSessionManager.buildDungeonSessionKey(session.entrance);}
+    public DungeonFloor getCurrentFloor() {return this.getCurrentDungeon().floors.get(this.currentFloor);}
+    public void setCurrentFloor(DungeonFloor floor) {this.currentFloor = floor == null ? -1 : floor.index;}
+    public DungeonBranch getCurrentBranch() {return this.getCurrentFloor().dungeonBranches.get(this.currentBranch);}
+    public void setCurrentBranch(DungeonBranch branch) {this.currentBranch = branch == null ? -1 : branch.index;}
+    public DungeonRoom getCurrentRoom() {return this.getCurrentBranch().dungeonRooms.get(this.currentRoom);}
+    public void setCurrentRoom(DungeonRoom room) {this.currentRoom = room == null ? -1 : room.index;}
+
     public WDPlayer(String playerUUID){this.UUID = playerUUID;}
 
     public void tick() {
@@ -65,10 +76,12 @@ public class WDPlayer {
 
     public void rootRespawn(MinecraftServer server) {
         if (respawns.isEmpty() || positions.isEmpty()) return;
-        WDPlayer.SavedTransform newPosition = positions.getFirst();
+        SavedTransform newPosition = positions.getFirst();
         WDPlayer.setRespawnPosition(respawns.getFirst(), getServerPlayer(server));
-        this.currentDungeon = "none";
-        this.currentFloor = "none";
+        this.currentDungeon = null;
+        this.currentFloor = -1;
+        this.currentBranch = -1;
+        this.currentRoom = -1;
         respawns = new ArrayList<>();
         positions = new ArrayList<>();
         CommandUtil.executeTeleportCommand(getServerPlayer(server), newPosition);
@@ -100,7 +113,9 @@ public class WDPlayer {
         tag.put("positions", positionsTag);
         tag.putString("recentEssence", this.recentEssence);
         tag.putString("currentDungeon", this.currentDungeon);
-        tag.putString("currentFloor", this.currentFloor);
+        tag.putInt("currentFloor", this.currentFloor);
+        tag.putInt("currentBranch", this.currentBranch);
+        tag.putInt("currentRoom", this.currentRoom);
         tag.putString("uuid", this.UUID);
         return tag;
     }
@@ -129,7 +144,9 @@ public class WDPlayer {
         this.positions = newPositions;
         this.recentEssence = tag.getString("recentEssence");
         this.currentDungeon = tag.getString("currentDungeon");
-        this.currentFloor = tag.getString("currentFloor");
+        this.currentFloor = tag.getInt("currentFloor");
+        this.currentBranch = tag.getInt("currentBranch");
+        this.currentRoom = tag.getInt("currentRoom");
         this.UUID = tag.getString("uuid");
     }
 
@@ -171,82 +188,6 @@ public class WDPlayer {
 
     public static void setRespawnPosition(SavedTransform transform, ServerPlayer player) {
         player.setRespawnPosition(transform.getDimension(), transform.getBlockPos(), (float) transform.getYaw(), true, false);
-    }
-
-
-
-    public static class SavedTransform {
-
-        private Vec3 position;
-        private double yaw;
-        private double pitch;
-        private ResourceKey<Level> dimension;
-
-        public SavedTransform(ServerPlayer player) {
-            this.position = new Vec3(MathUtil.round(player.getX(), 2), MathUtil.round(player.getY(), 2), MathUtil.round(player.getZ(), 2));
-            this.yaw = MathUtil.round(WDPlayer.calcYaw((Player) player), 2);
-            this.pitch = MathUtil.round(WDPlayer.calcPitch((Player) player), 2);
-            this.dimension = player.level().dimension();
-        }
-
-        public SavedTransform(ServerPlayer player, boolean respawn) {
-            BlockPos spawnPos = player.getRespawnPosition();
-            float spawnAngle = player.getRespawnAngle();
-            ResourceKey<Level> spawnDimension = player.getRespawnDimension();
-
-            //Initial login, player might not have respawn data yet
-            if (spawnPos == null) {
-                spawnPos = player.getServer().overworld().getSharedSpawnPos();
-                spawnAngle = 180;
-                spawnDimension = player.getServer().overworld().dimension();
-            }
-
-            this.position = new Vec3(spawnPos.getX(), spawnPos.getY(), spawnPos.getZ());
-            this.yaw = spawnAngle;
-            this.pitch = 10;
-            this.dimension = spawnDimension;
-        }
-
-        public SavedTransform(Vec3 pos, double yaw, double pitch, ResourceKey<Level> dimension) {
-            this.position = pos;
-            this.yaw = yaw;
-            this.pitch = pitch;
-            this.dimension = dimension;
-        }
-
-        public SavedTransform(CompoundTag tag) {
-            this.position = new Vec3(tag.getDouble("x"), tag.getDouble("y"), tag.getDouble("z"));
-            this.yaw = tag.getDouble("yaw");
-            this.pitch = tag.getDouble("pitch");
-            this.dimension = ResourceKey.create(Registries.DIMENSION, WildDungeons.rl(tag.getString("levelKey").split(":")[1]));
-        }
-
-        public static SavedTransform fromRespawn(ServerPlayer player) {
-            return new SavedTransform(player.position(), MathUtil.round(WDPlayer.calcYaw(player), 2), MathUtil.round(WDPlayer.calcPitch(player), 2), player.getRespawnDimension());
-        }
-
-        public CompoundTag serialize() {
-            CompoundTag result = new CompoundTag();
-
-            result.putDouble("x", this.position.x);
-            result.putDouble("y", this.position.y);
-            result.putDouble("z", this.position.z);
-            result.putDouble("yaw", this.yaw);
-            result.putDouble("pitch", this.pitch);
-            result.putString("levelKey", this.dimension.toString());
-            return result;
-        }
-
-        public double getX() {return this.position.x;}
-        public double getY() {return this.position.y;}
-        public double getZ() {return this.position.z;}
-        public BlockPos getBlockPos() {return new BlockPos((int) this.position.x, (int) this.position.y, (int) this.position.z);}
-
-        public double getYaw() {return this.yaw;}
-        public double getPitch() {return this.pitch;}
-
-        public ResourceKey<Level> getDimension() {return this.dimension;}
-
     }
 
     public static double calcYaw(Player player) {

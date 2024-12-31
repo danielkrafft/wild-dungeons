@@ -6,11 +6,13 @@ import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +22,7 @@ public class DungeonRoom {
     public ServerLevel level;
     public BlockPos position;
     public BlockPos offset;
-    public BlockPos spawnPoint;
+    public BlockPos spawnPoint = null;
     public StructurePlaceSettings settings;
     public List<ConnectionPoint> connectionPoints = new ArrayList<>();
     public List<BlockPos> rifts = new ArrayList<>();
@@ -28,6 +30,7 @@ public class DungeonRoom {
     public DungeonBranch branch;
     public boolean rotated;
     public DungeonMaterial material;
+    public int index;
 
     public DungeonRoom(DungeonBranch branch, DungeonComponents.DungeonRoomTemplate dungeonRoomTemplate, ServerLevel level, BlockPos position, BlockPos offset, StructurePlaceSettings settings, List<ConnectionPoint> allConnectionPoints) {
         dungeonRoomTemplate.templates().forEach(template -> {
@@ -52,9 +55,11 @@ public class DungeonRoom {
         });
         this.processMaterialBlocks(this.material);
 
-        this.spawnPoint = dungeonRoomTemplate.spawnPoint();
-        if (this.spawnPoint != null)
-            level.setBlock(TemplateHelper.transform(spawnPoint, this), Blocks.AIR.defaultBlockState(), 2);
+        if (dungeonRoomTemplate.spawnPoint() != null) {
+            this.spawnPoint = TemplateHelper.transform(dungeonRoomTemplate.spawnPoint(), this);
+            level.setBlock(spawnPoint, Blocks.AIR.defaultBlockState(), 2);
+        }
+
 
         for (ConnectionPoint point : allConnectionPoints) {
             ConnectionPoint newPoint = ConnectionPoint.copy(point);
@@ -94,5 +99,19 @@ public class DungeonRoom {
         }
         return exitPoints;
     }
+
+    public void onGenerate() {
+        if (this.spawnPoint != null) {
+            WildDungeons.getLogger().info("SPAWNING ZOMBIE AT {}", this.spawnPoint);
+            Zombie zombie = new Zombie(level);
+            zombie.setPos(Vec3.atCenterOf(spawnPoint));
+            level.addWithUUID(zombie);
+        }
+    }
+    public void onEnter() {}
+    public void onExit() {}
+    public boolean isClear() {return true;}
+    public void onClear() {}
+    public void tick() {}
 
 }

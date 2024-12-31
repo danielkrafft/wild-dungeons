@@ -27,14 +27,14 @@ public class DungeonFloor {
     public BlockPos origin;
     public ResourceKey<Level> LEVEL_KEY;
     public BlockPos spawnPoint;
-    public final int id;
     public DungeonSession session;
     public List<DungeonMaterial> materials;
+    public int index;
 
-    public DungeonFloor(DungeonComponents.DungeonFloorTemplate floorTemplate, DungeonSession session, BlockPos origin, int id, List<String> destinations) {
+    public DungeonFloor(DungeonComponents.DungeonFloorTemplate floorTemplate, DungeonSession session, BlockPos origin, int index, List<String> destinations) {
         this.floorTemplate = floorTemplate;
         this.materials = floorTemplate.materials() == null ? session.materials : floorTemplate.materials();
-        this.id = id;
+        this.index = index;
         this.LEVEL_KEY = buildFloorLevelKey(session.entrance, this);
         this.session = session;
         this.level = InfiniverseAPI.get().getOrCreateLevel(DungeonSessionManager.getInstance().server, LEVEL_KEY, () -> WDDimensions.createLevel(DungeonSessionManager.getInstance().server));
@@ -51,7 +51,10 @@ public class DungeonFloor {
         if (!this.dungeonBranches.getLast().dungeonRooms.isEmpty() && !this.dungeonBranches.getLast().dungeonRooms.getLast().rifts.isEmpty()) {
             BlockPos enterRiftPos = this.dungeonBranches.getLast().dungeonRooms.getLast().rifts.getLast();
             RiftBlockEntity enterRiftBlockEntity = (RiftBlockEntity) this.level.getBlockEntity(enterRiftPos);
-            if (enterRiftBlockEntity != null) {enterRiftBlockEntity.destination = destinations.get(RandomUtil.randIntBetween(0, destinations.size()-1));}
+            if (enterRiftBlockEntity != null) {
+                enterRiftBlockEntity.destination = destinations.get(RandomUtil.randIntBetween(0, destinations.size()-1));
+                WildDungeons.getLogger().info("PICKED RIFT DESTINATION FOR THIS FLOOR: {}", enterRiftBlockEntity.destination);
+            }
         }
 
     }
@@ -62,7 +65,7 @@ public class DungeonFloor {
     }
 
     public static ResourceKey<Level> buildFloorLevelKey(BlockPos entrance, DungeonFloor floor) {
-        return ResourceKey.create(Registries.DIMENSION, WildDungeons.rl(floor.floorTemplate.name() + "_" + floor.id + entrance.getX() + entrance.getY() + entrance.getZ()));
+        return ResourceKey.create(Registries.DIMENSION, WildDungeons.rl(floor.floorTemplate.name() + "_" + floor.index + entrance.getX() + entrance.getY() + entrance.getZ()));
     }
 
     private void generateDungeonFloor() {

@@ -1,6 +1,7 @@
 package com.danielkkrafft.wilddungeons.util;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.player.SavedTransform;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.mojang.brigadier.CommandDispatcher;
@@ -28,7 +29,7 @@ public class CommandUtil {
         return 1;
     }
 
-    public static void executeTeleportCommand(ServerPlayer player, WDPlayer.SavedTransform transform) {
+    public static void executeTeleportCommand(ServerPlayer player, SavedTransform transform) {
         String command;
 
         String targetDim = transform.getDimension().location().toString();

@@ -23,6 +23,8 @@ public class DungeonBranch {
     public BlockPos origin;
     public BlockPos spawnPoint;
     public int openConnections = 0;
+    public int index;
+    public BoundingBox boundingBox;
 
     public DungeonBranch(DungeonComponents.DungeonBranchTemplate branchTemplate, DungeonFloor floor, ServerLevel level, BlockPos origin) {
         this.branchTemplate = branchTemplate;
@@ -31,6 +33,7 @@ public class DungeonBranch {
         this.level = level;
         this.origin = origin;
         generateDungeonBranch();
+        setupBoundingBox();
     }
 
     private void generateDungeonBranch() {
@@ -122,8 +125,9 @@ public class DungeonBranch {
             iterations += 1;
             WildDungeons.getLogger().info("PLACING AIR, ITERATION {}", iterations);
             for (BlockPos pos : exitPoint.getPositions()) {
-                WildDungeons.getLogger().info("SETTING BLOCK AT {}", pos.offset(iterations, exitPoint.getDirection()));
-                level.setBlock(BlockPos.of(pos.offset(iterations, exitPoint.getDirection())), Blocks.AIR.defaultBlockState(), 2);
+                BlockPos newPos = pos.offset(exitPoint.getNormal().getX() * iterations, exitPoint.getNormal().getY() * iterations, exitPoint.getNormal().getZ() * iterations);
+                WildDungeons.getLogger().info("SETTING BLOCK AT {}", newPos);
+                level.setBlock(newPos, Blocks.AIR.defaultBlockState(), 2);
             }
             position.offset(exitPoint.getNormal());
             if (iterations > 100) return;
@@ -182,8 +186,19 @@ public class DungeonBranch {
         exitPoint.setConnected(true);
         entrancePoint.setConnected(true);
         exitPoint.unBlock(level);
-
-        dungeonRooms.add(nextRoom.placeInWorld(this, level, position, settings, allConnectionPoints));
         openConnections += nextRoom.connectionPoints().size() - 2;
+
+        DungeonRoom room = nextRoom.placeInWorld(this, level, position, settings, allConnectionPoints);
+        dungeonRooms.add(room);
+        room.onGenerate();
+    }
+
+    public void setupBoundingBox() {
+        this.boundingBox = new BoundingBox(this.origin);
+        for (DungeonRoom room : this.dungeonRooms) {
+            for (BoundingBox box : room.boundingBoxes) {
+                this.boundingBox.encapsulate(box);
+            }
+        }
     }
 }
