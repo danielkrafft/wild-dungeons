@@ -2,6 +2,7 @@ package com.danielkkrafft.wilddungeons;
 
 import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundOpenConnectionBlockUIPacket;
 import com.danielkkrafft.wilddungeons.network.serverbound.ServerboundUpdateConnectionBlockPacket;
+import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.danielkkrafft.wilddungeons.registry.WDBlocks;
 import com.danielkkrafft.wilddungeons.dungeon.Alignments;
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
@@ -60,6 +61,7 @@ public class WildDungeons {
 
         NeoForge.EVENT_BUS.register(CustomHUDHandler.class);
         NeoForge.EVENT_BUS.register(WDEvents.class);
+        NeoForge.EVENT_BUS.register(WDPlayerManager.class);
 
     }
 

@@ -53,17 +53,7 @@ public class WDEvents {
     @SubscribeEvent
     public static void onServerTick(ServerTickEvent.Post event) {
         WDPlayerManager.getInstance().getPlayers().forEach((key, value) -> value.tick());
-
-        List<String> sessionsToRemove = new ArrayList<>();
-        DungeonSessionManager.getInstance().getSessions().forEach((key, value) -> {
-                value.tick();
-                if (value.markedForShutdown) {
-                    sessionsToRemove.add(key);
-                }
-        });
-        sessionsToRemove.forEach(s -> {
-            DungeonSessionManager.getInstance().getSessions().remove(s);
-        });
+        DungeonSessionManager.tick();
     }
 
     @SubscribeEvent

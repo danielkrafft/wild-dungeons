@@ -43,4 +43,17 @@ public class DungeonSessionManager {
         return result;
     }
 
+    public static void tick() {
+        List<String> sessionsToRemove = new ArrayList<>();
+        INSTANCE.sessions.forEach((key, session) -> {
+            session.tick();
+            if (session.markedForShutdown) {
+                sessionsToRemove.add(key);
+            }
+        });
+        sessionsToRemove.forEach(s -> {
+            INSTANCE.sessions.remove(s);
+        });
+    }
+
 }

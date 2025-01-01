@@ -5,35 +5,38 @@ import com.danielkkrafft.wilddungeons.dungeon.DungeonMaterial;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.entity.blockentity.RiftBlockEntity;
+import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.registry.WDDimensions;
 import com.danielkkrafft.wilddungeons.util.FileUtil;
-import com.danielkkrafft.wilddungeons.util.RandomUtil;
+import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.world.dimension.EmptyGenerator;
 import com.danielkkrafft.wilddungeons.world.dimension.tools.InfiniverseAPI;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class DungeonFloor {
     public List<DungeonBranch> dungeonBranches = new ArrayList<>();
-    public DungeonComponents.DungeonFloorTemplate floorTemplate;
+    public DungeonComponents.DungeonFloorTemplate template;
     public ServerLevel level;
     public BlockPos origin;
     public ResourceKey<Level> LEVEL_KEY;
     public BlockPos spawnPoint;
     public DungeonSession session;
-    public List<DungeonMaterial> materials;
+    public WeightedPool<DungeonMaterial> materials;
     public int index;
+    public HashMap<ChunkPos, List<DungeonRoom>> chunkMap = new HashMap<>();
+    public Set<WDPlayer> players = new HashSet<>();
 
-    public DungeonFloor(DungeonComponents.DungeonFloorTemplate floorTemplate, DungeonSession session, BlockPos origin, int index, List<String> destinations) {
-        this.floorTemplate = floorTemplate;
-        this.materials = floorTemplate.materials() == null ? session.materials : floorTemplate.materials();
+    public DungeonFloor(DungeonComponents.DungeonFloorTemplate template, DungeonSession session, BlockPos origin, int index, WeightedPool<String> destinations) {
+        this.template = template;
+        this.materials = template.materials() == null ? session.materials : template.materials();
         this.index = index;
         this.LEVEL_KEY = buildFloorLevelKey(session.entrance, this);
         this.session = session;
@@ -45,14 +48,14 @@ public class DungeonFloor {
         if (!this.dungeonBranches.getFirst().dungeonRooms.getFirst().rifts.isEmpty()) {
             BlockPos exitRiftPos = this.dungeonBranches.getFirst().dungeonRooms.getFirst().rifts.getFirst();
             RiftBlockEntity riftBlockEntity = (RiftBlockEntity) this.level.getBlockEntity(exitRiftPos);
-            if (riftBlockEntity != null) {riftBlockEntity.destination = "exit";}
+            if (riftBlockEntity != null) {riftBlockEntity.destination = ""+(index-1);}
         }
 
         if (!this.dungeonBranches.getLast().dungeonRooms.isEmpty() && !this.dungeonBranches.getLast().dungeonRooms.getLast().rifts.isEmpty()) {
             BlockPos enterRiftPos = this.dungeonBranches.getLast().dungeonRooms.getLast().rifts.getLast();
             RiftBlockEntity enterRiftBlockEntity = (RiftBlockEntity) this.level.getBlockEntity(enterRiftPos);
             if (enterRiftBlockEntity != null) {
-                enterRiftBlockEntity.destination = destinations.get(RandomUtil.randIntBetween(0, destinations.size()-1));
+                enterRiftBlockEntity.destination = destinations.getRandom();
                 WildDungeons.getLogger().info("PICKED RIFT DESTINATION FOR THIS FLOOR: {}", enterRiftBlockEntity.destination);
             }
         }
@@ -65,12 +68,12 @@ public class DungeonFloor {
     }
 
     public static ResourceKey<Level> buildFloorLevelKey(BlockPos entrance, DungeonFloor floor) {
-        return ResourceKey.create(Registries.DIMENSION, WildDungeons.rl(floor.floorTemplate.name() + "_" + floor.index + entrance.getX() + entrance.getY() + entrance.getZ()));
+        return ResourceKey.create(Registries.DIMENSION, WildDungeons.rl(floor.template.name() + "_" + floor.index + entrance.getX() + entrance.getY() + entrance.getZ()));
     }
 
     private void generateDungeonFloor() {
         int tries = 0;
-        while (dungeonBranches.size() < floorTemplate.branchCount() && tries < floorTemplate.branchCount() * 2) {
+        while (dungeonBranches.size() < template.branchTemplates().size() && tries < template.branchTemplates().size() * 2) {
             populateNextBranch();
             if (dungeonBranches.getLast().dungeonRooms.isEmpty()) {break;}
             tries++;
@@ -79,17 +82,10 @@ public class DungeonFloor {
     }
 
     private void populateNextBranch() {
-
-        DungeonComponents.DungeonBranchTemplate nextBranch;
-        if (dungeonBranches.isEmpty()) {
-            nextBranch = floorTemplate.startingBranch();
-        } else if (dungeonBranches.size() == floorTemplate.branchCount() - 1) {
-            nextBranch = floorTemplate.endingBranch();
-        } else {
-            nextBranch = floorTemplate.branchPool().getRandom();
-        }
-
-        dungeonBranches.add(nextBranch.placeInWorld(this, level, origin));
+        DungeonComponents.DungeonBranchTemplate nextBranch = template.branchTemplates().get(dungeonBranches.size()).getRandom();
+        DungeonBranch branch = nextBranch.placeInWorld(this, level, origin);
+        branch.index = dungeonBranches.size();
+        dungeonBranches.add(branch);
     }
 
     protected boolean isBoundingBoxValid(List<BoundingBox> proposedBoxes, List<DungeonRoom> dungeonRooms) {
@@ -119,5 +115,18 @@ public class DungeonFloor {
 
         }
         return true;
+    }
+
+    public void onEnter(WDPlayer wdPlayer) {
+        this.players.add(wdPlayer);
+        wdPlayer.travelToFloor(wdPlayer, wdPlayer.getCurrentFloor(), this);
+    }
+
+    public void onExit(WDPlayer wdPlayer) {
+        this.players.remove(wdPlayer);
+    }
+
+    public void tick() {
+        if (!players.isEmpty()) dungeonBranches.forEach(DungeonBranch::tick);
     }
 }
