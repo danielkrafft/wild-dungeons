@@ -29,10 +29,16 @@ public class WeightedPool<T> {
     }
 
     @SafeVarargs
-    public static <T> WeightedPool<T> of(Pair<T, Integer>... pairs) {
+    //Uses int division, use bigger numbers
+    public static <T> WeightedPool<T> combine(Pair<WeightedPool<T>, Integer>... pairs) {
         WeightedPool<T> result = new WeightedPool<>();
-        for (Pair<T, Integer> pair : pairs) {
-            result.add(pair.getFirst(), pair.getSecond());
+        for (Pair<WeightedPool<T>, Integer> pair : pairs) {
+            int totalWeight = pair.getFirst().pool.stream().mapToInt(Pair::getSecond).sum();
+            int factor = pair.getSecond() / totalWeight;
+
+            for (Pair<T, Integer> entryPair : pair.getFirst().pool) {
+                result.add(entryPair.getFirst(), entryPair.getSecond() * factor);
+            }
         }
         return result;
     }

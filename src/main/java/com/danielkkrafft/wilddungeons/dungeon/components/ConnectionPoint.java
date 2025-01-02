@@ -1,5 +1,6 @@
 package com.danielkkrafft.wilddungeons.dungeon.components;
 
+import com.danielkkrafft.wilddungeons.dungeon.components.room.DungeonRoom;
 import com.danielkkrafft.wilddungeons.entity.blockentity.ConnectionBlockEntity;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.util.Pair;
@@ -26,7 +27,7 @@ public class ConnectionPoint {
 
     private DungeonRoom room = null;
     private Direction direction;
-    private boolean connected = false;
+    private ConnectionPoint connectedPoint = null;
     private int failures = 0;
 
     private BoundingBox boundingBox;
@@ -41,8 +42,9 @@ public class ConnectionPoint {
     public Direction getDirection() {return this.direction;}
     public Vec3i getNormal() {return this.direction.getNormal();}
     public Direction.Axis getAxis() {return this.direction.getAxis();}
-    public boolean isConnected() {return this.connected;}
-    public void setConnected(boolean connected) {this.connected = connected;}
+    public boolean isConnected() {return this.connectedPoint != null;}
+    public ConnectionPoint getConnectedPoint() {return this.connectedPoint;}
+    public void setConnectedPoint(ConnectionPoint connectedPoint) {this.connectedPoint = connectedPoint;}
     public void incrementFailures() {this.failures += 1;}
     public BlockPos getOrigin() {return new BlockPos(this.boundingBox.minX(), this.boundingBox.minY(), this.boundingBox.minZ());}
     public void addPosition(BlockPos pos) {this.positions.add(pos); this.boundingBox.encapsulate(pos);}
@@ -64,7 +66,7 @@ public class ConnectionPoint {
 
         newPoint.room = oldPoint.room;
         newPoint.direction = oldPoint.direction;
-        newPoint.connected = oldPoint.connected;
+        newPoint.connectedPoint = oldPoint.connectedPoint;
         newPoint.failures = oldPoint.failures;
 
         newPoint.boundingBox = oldPoint.boundingBox;
@@ -90,7 +92,7 @@ public class ConnectionPoint {
 
     public static boolean arePointsCompatible(ConnectionPoint en, ConnectionPoint ex) {
         List<Boolean> conditions = List.of(
-                !ex.connected,
+                !ex.isConnected(),
                 !Objects.equals(ex.type, "entrance"),
                 ex.failures < 10,
                 Objects.equals(en.pool, ex.pool),
@@ -145,8 +147,8 @@ public class ConnectionPoint {
                 try { blockState = BlockStateParser.parseForBlock(BuiltInRegistries.BLOCK.asLookup(), connectionBlockEntity.unblockedBlockstate, true).blockState();
                 } catch (CommandSyntaxException e) { blockState = Blocks.AIR.defaultBlockState();}
 
-                if (blockState.getBlock().equals(Blocks.STONE_BRICKS)) blockState = this.room.material.getBasic(1);
-                if (blockState.getBlock().equals(Blocks.STONE_BRICK_STAIRS)) blockState = this.room.material.getStair(1)
+                if (blockState.getBlock().equals(Blocks.STONE_BRICKS)) blockState = this.room.material.getBasic(0);
+                if (blockState.getBlock().equals(Blocks.STONE_BRICK_STAIRS)) blockState = this.room.material.getStair(0)
                         .setValue(BlockStateProperties.HORIZONTAL_FACING, blockState.getValue(BlockStateProperties.HORIZONTAL_FACING))
                         .setValue(BlockStateProperties.HALF, blockState.getValue(BlockStateProperties.HALF))
                         .setValue(BlockStateProperties.STAIRS_SHAPE, blockState.getValue(BlockStateProperties.STAIRS_SHAPE));
@@ -158,7 +160,11 @@ public class ConnectionPoint {
     }
 
     public void block(ServerLevel level) {
-        positions.forEach((pos) -> level.setBlock(pos, this.room.material.getBasic(1), 2));
+        positions.forEach((pos) -> level.setBlock(pos, this.room.material.getBasic(0), 2));
+    }
+
+    public void hide(ServerLevel level) {
+        positions.forEach((pos) -> level.setBlock(pos, this.room.material.getHidden(0), 2));
     }
 
     public void unBlock(ServerLevel level) {

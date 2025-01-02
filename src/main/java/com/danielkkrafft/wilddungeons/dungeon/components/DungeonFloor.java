@@ -2,6 +2,8 @@ package com.danielkkrafft.wilddungeons.dungeon.components;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonMaterial;
+import com.danielkkrafft.wilddungeons.dungeon.components.room.DungeonRoom;
+import com.danielkkrafft.wilddungeons.dungeon.components.room.EnemyTable;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.entity.blockentity.RiftBlockEntity;
@@ -34,12 +36,17 @@ public class DungeonFloor {
     public HashMap<ChunkPos, List<DungeonRoom>> chunkMap = new HashMap<>();
     public Set<WDPlayer> players = new HashSet<>();
 
+    public EnemyTable enemyTable;
+    public double difficulty;
+
     public DungeonFloor(DungeonComponents.DungeonFloorTemplate template, DungeonSession session, BlockPos origin, int index, WeightedPool<String> destinations) {
         this.template = template;
         this.materials = template.materials() == null ? session.materials : template.materials();
         this.index = index;
         this.LEVEL_KEY = buildFloorLevelKey(session.entrance, this);
         this.session = session;
+        this.enemyTable = template.enemyTable() == null ? session.enemyTable : template.enemyTable();
+        this.difficulty = session.difficulty * template.difficulty();
         this.level = InfiniverseAPI.get().getOrCreateLevel(DungeonSessionManager.getInstance().server, LEVEL_KEY, () -> WDDimensions.createLevel(DungeonSessionManager.getInstance().server));
         this.origin = origin;
         generateDungeonFloor();

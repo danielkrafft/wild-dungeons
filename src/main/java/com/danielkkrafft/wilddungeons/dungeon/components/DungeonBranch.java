@@ -2,6 +2,8 @@ package com.danielkkrafft.wilddungeons.dungeon.components;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonMaterial;
+import com.danielkkrafft.wilddungeons.dungeon.components.room.DungeonRoom;
+import com.danielkkrafft.wilddungeons.dungeon.components.room.EnemyTable;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.mojang.datafixers.util.Pair;
@@ -29,10 +31,15 @@ public class DungeonBranch {
     public BoundingBox boundingBox;
     public Set<WDPlayer> players = new HashSet<>();
 
+    public EnemyTable enemyTable;
+    public double difficulty;
+
     public DungeonBranch(DungeonComponents.DungeonBranchTemplate template, DungeonFloor floor, ServerLevel level, BlockPos origin) {
         this.template = template;
         this.materials = template.materials() == null ? floor.materials : template.materials();
         this.floor = floor;
+        this.enemyTable = template.enemyTable() == null ? floor.enemyTable : template.enemyTable();
+        this.difficulty = floor.difficulty * template.difficulty() * Math.max(Math.pow(1.1, floor.dungeonBranches.size()), 1);
         this.level = level;
         this.origin = origin;
         generateDungeonBranch();
@@ -64,35 +71,41 @@ public class DungeonBranch {
         if (maybePlaceInitialRoom(templateConnectionPoints)) {return;}
 
         List<ConnectionPoint> entrancePoints = templateConnectionPoints.stream().filter(point -> !Objects.equals(point.getType(), "exit")).toList();
-        ConnectionPoint entrancePoint = entrancePoints.get(new Random().nextInt(entrancePoints.size()));
-        List<ConnectionPoint> exitPoints = this.dungeonRooms.isEmpty() ? floor.dungeonBranches.getLast().dungeonRooms.getLast().getValidExitPoints(entrancePoint) : getValidExitPoints(entrancePoint);
-        WildDungeons.getLogger().info("FOUND {} POTENTIAL EXIT POINTS", exitPoints.size());
+        List<ConnectionPoint> pointsToTry = new ArrayList<>(entrancePoints);
 
-        List<Pair<ConnectionPoint, StructurePlaceSettings>> validPoints = new ArrayList<>();
-        BlockPos.MutableBlockPos position = new BlockPos.MutableBlockPos();
+        while (!pointsToTry.isEmpty()) {
 
-        for (int i = 0; i < 50; i++) {
-            if (exitPoints.isEmpty()) break;
+            ConnectionPoint entrancePoint = pointsToTry.remove(new Random().nextInt(pointsToTry.size()));
+            List<ConnectionPoint> exitPoints = this.dungeonRooms.isEmpty() ? floor.dungeonBranches.getLast().dungeonRooms.getLast().getValidExitPoints(entrancePoint) : getValidExitPoints(entrancePoint);
 
-            ConnectionPoint exitPoint = exitPoints.remove(new Random().nextInt(exitPoints.size()));
-            StructurePlaceSettings settings = TemplateHelper.handleRoomTransformation(entrancePoint, exitPoint, level.getRandom());
-            ConnectionPoint proposedPoint = ConnectionPoint.copy(entrancePoint);
-            proposedPoint.transform(settings, TemplateHelper.EMPTY_BLOCK_POS, TemplateHelper.EMPTY_BLOCK_POS);
-            position.set(ConnectionPoint.getOffset(proposedPoint, exitPoint).offset(exitPoint.getNormal()));
+            List<Pair<ConnectionPoint, StructurePlaceSettings>> validPoints = new ArrayList<>();
+            BlockPos.MutableBlockPos position = new BlockPos.MutableBlockPos();
 
-            if (validateNextPoint(exitPoint, settings, position, nextRoom)) {
-                validPoints.add(new Pair<>(exitPoint, settings));
+            for (int i = 0; i < 50; i++) {
+                if (exitPoints.isEmpty()) break;
+
+                ConnectionPoint exitPoint = exitPoints.remove(new Random().nextInt(exitPoints.size()));
+                StructurePlaceSettings settings = TemplateHelper.handleRoomTransformation(entrancePoint, exitPoint, level.getRandom());
+                ConnectionPoint proposedPoint = ConnectionPoint.copy(entrancePoint);
+                proposedPoint.transform(settings, TemplateHelper.EMPTY_BLOCK_POS, TemplateHelper.EMPTY_BLOCK_POS);
+                position.set(ConnectionPoint.getOffset(proposedPoint, exitPoint).offset(exitPoint.getNormal()));
+
+                if (validateNextPoint(exitPoint, settings, position, nextRoom)) {
+                    validPoints.add(new Pair<>(exitPoint, settings));
+                }
+                if (validPoints.size() >= 3) {
+                    break;
+                }
+
             }
-            if (validPoints.size() >= 3) {
-                break;
-            }
+
+            if (validPoints.isEmpty()) continue;
+
+            Pair<ConnectionPoint, StructurePlaceSettings> exitPoint = ConnectionPoint.selectBestPoint(validPoints, this, Y_TARGET, 75.0, 125.0, 100.0, 50.0);
+            placeRoom(exitPoint.getFirst(), exitPoint.getSecond(), templateConnectionPoints, entrancePoint, nextRoom);
+            break;
 
         }
-
-        if (validPoints.isEmpty()) return;
-
-        Pair<ConnectionPoint, StructurePlaceSettings> exitPoint = ConnectionPoint.selectBestPoint(validPoints, this, Y_TARGET, 75.0, 125.0, 100.0, 50.0);
-        placeRoom(exitPoint.getFirst(), exitPoint.getSecond(), templateConnectionPoints, entrancePoint, nextRoom);
 
     }
 
@@ -125,15 +138,15 @@ public class DungeonBranch {
 
         int iterations = 0;
         while (!validateNextPoint(exitPoint, settings, position, nextRoom)) {
+            WildDungeons.getLogger().info("TESTING POSITION {}", position);
             iterations += 1;
             WildDungeons.getLogger().info("PLACING AIR, ITERATION {}", iterations);
             for (BlockPos pos : exitPoint.getPositions()) {
                 BlockPos newPos = pos.offset(exitPoint.getNormal().getX() * iterations, exitPoint.getNormal().getY() * iterations, exitPoint.getNormal().getZ() * iterations);
-                WildDungeons.getLogger().info("SETTING BLOCK AT {}", newPos);
                 level.setBlock(newPos, Blocks.AIR.defaultBlockState(), 2);
             }
             position.offset(exitPoint.getNormal());
-            if (iterations > 1000) return;
+            if (iterations > 200) return;
         }
         placeRoom(exitPoint, settings, templateConnectionPoints, entrancePoint, nextRoom);
     }
@@ -190,8 +203,8 @@ public class DungeonBranch {
         proposedPoint.transform(settings, TemplateHelper.EMPTY_BLOCK_POS, TemplateHelper.EMPTY_BLOCK_POS);
         BlockPos position = ConnectionPoint.getOffset(proposedPoint, exitPoint).offset(exitPoint.getNormal());
 
-        exitPoint.setConnected(true);
-        entrancePoint.setConnected(true);
+        exitPoint.setConnectedPoint(entrancePoint);
+        entrancePoint.setConnectedPoint(exitPoint);
         exitPoint.unBlock(level);
         openConnections += nextRoom.connectionPoints().size() - 2;
 

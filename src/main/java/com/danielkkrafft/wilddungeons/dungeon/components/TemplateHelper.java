@@ -1,5 +1,6 @@
 package com.danielkkrafft.wilddungeons.dungeon.components;
 
+import com.danielkkrafft.wilddungeons.dungeon.components.room.DungeonRoom;
 import com.danielkkrafft.wilddungeons.registry.WDBlocks;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.Util;

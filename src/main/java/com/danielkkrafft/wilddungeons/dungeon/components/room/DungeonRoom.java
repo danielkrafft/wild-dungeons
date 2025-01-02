@@ -1,11 +1,17 @@
-package com.danielkkrafft.wilddungeons.dungeon.components;
+package com.danielkkrafft.wilddungeons.dungeon.components.room;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonMaterial;
+import com.danielkkrafft.wilddungeons.dungeon.components.ConnectionPoint;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonComponents;
+import com.danielkkrafft.wilddungeons.dungeon.components.TemplateHelper;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
+import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Blocks;
@@ -33,6 +39,12 @@ public class DungeonRoom {
     public int index;
     public boolean clear = false;
     public Set<WDPlayer> players = new HashSet<>();
+    public HashMap<WDPlayer, Boolean> innerPlayers = new HashMap<>();
+    public Set<BlockPos> alwaysBreakable = new HashSet<>();
+
+    public List<BlockPos> spawnablePosList = new ArrayList<>();
+    public EnemyTable enemyTable;
+    public double difficulty;
 
     public DungeonRoom(DungeonBranch branch, DungeonComponents.DungeonRoomTemplate dungeonRoomTemplate, ServerLevel level, BlockPos position, BlockPos offset, StructurePlaceSettings settings, List<ConnectionPoint> allConnectionPoints) {
         dungeonRoomTemplate.templates().forEach(template -> {
@@ -42,6 +54,8 @@ public class DungeonRoom {
         });
         this.template = dungeonRoomTemplate;
         this.branch = branch;
+        this.enemyTable = dungeonRoomTemplate.enemyTable() == null ? branch.enemyTable : dungeonRoomTemplate.enemyTable();
+        this.difficulty = branch.difficulty * dungeonRoomTemplate.difficulty();
         this.level = level;
         this.position = position;
         this.offset = offset;
@@ -81,9 +95,14 @@ public class DungeonRoom {
 
     public void processMaterialBlocks(DungeonMaterial material) {
         List<StructureTemplate.StructureBlockInfo> materialBlocks = this.template.materialBlocks();
+        BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
         materialBlocks.forEach(structureBlockInfo -> {
-            BlockPos newPos = TemplateHelper.transform(structureBlockInfo.pos(), this);
-            level.setBlock(newPos, TemplateHelper.fixBlockStateProperties(material.replace(structureBlockInfo.state()), this.settings), 2);
+            mutableBlockPos.set(TemplateHelper.transform(structureBlockInfo.pos(), this));
+            level.setBlock(mutableBlockPos, TemplateHelper.fixBlockStateProperties(material.replace(structureBlockInfo.state()), this.settings), 2);
+
+            if (level.getBlockState(mutableBlockPos.move(0, 1,0)) == Blocks.AIR.defaultBlockState() && level.getBlockState(mutableBlockPos.move(0, 1,0)) == Blocks.AIR.defaultBlockState()) {
+                spawnablePosList.add(mutableBlockPos.offset(0, -1, 0));
+            }
         });
     }
 
@@ -113,6 +132,32 @@ public class DungeonRoom {
         chunkPosSet.forEach(pos -> this.branch.floor.chunkMap.computeIfAbsent(pos, k -> new ArrayList<>()).add(this));
     }
 
+    public boolean isPosInsideShell(BlockPos pos) {
+        for (BoundingBox box : this.boundingBoxes) {
+            if (box.isInside(pos)) {
+                if (box.inflatedBy(-1).isInside(pos)) {
+                    return true;
+                }
+                for (BoundingBox otherBox : this.boundingBoxes) {
+                    if (otherBox == box) continue;
+                    boolean xConnected = otherBox.inflatedBy(1, 0, 0).isInside(pos);
+                    boolean yConnected = otherBox.inflatedBy(0, 1, 0).isInside(pos);
+                    boolean zConnected = otherBox.inflatedBy(0, 0, 1).isInside(pos);
+
+                    //Only one axis is connected, indicating it's adjacent to another box, but not a corner
+                    if ((xConnected ? 1 : 0) + (yConnected ? 1: 0) + (zConnected ? 1 : 0) == 1) {
+                        if (box.inflatedBy(xConnected ? 0 : -1, yConnected ? 0 : -1, zConnected ? 0 : -1).isInside(pos)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+
+
     public enum DestructionRule {
         DEFAULT, SHELL, NONE
     }
@@ -121,14 +166,12 @@ public class DungeonRoom {
     public void onGenerate() {}
     public void onEnter(WDPlayer player) {
         this.players.add(player);
-        if (this.spawnPoint != null) {
-            Zombie zombie = new Zombie(level);
-            zombie.setPos(Vec3.atCenterOf(spawnPoint));
-            level.addWithUUID(zombie);
-        }
+        this.innerPlayers.put(player, false);
     }
+    public void onEnterInner(WDPlayer player) {}
     public void onExit(WDPlayer player) {
         this.players.remove(player);
+        this.innerPlayers.remove(player);
     }
     public void onClear() {
         this.clear = true;
@@ -136,7 +179,14 @@ public class DungeonRoom {
     public void reset() {}
     public void tick() {
         if (this.players.isEmpty()) return;
-        if (this.template.name().equals("stone/boss")) WildDungeons.getLogger().info("BOSS ROOM TICKING");
+        innerPlayers.forEach((player, inside) -> {
+            if (!inside) {
+                if (this.isPosInsideShell(player.getServerPlayer().blockPosition())) {
+                    innerPlayers.put(player, true);
+                    this.onEnterInner(player);
+                }
+            }
+        });
     }
 
 }

@@ -2,6 +2,7 @@ package com.danielkkrafft.wilddungeons.dungeon.components;
 
 import com.danielkkrafft.wilddungeons.dungeon.DungeonMaterial;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonMaterials;
+import com.danielkkrafft.wilddungeons.dungeon.components.room.EnemyTable;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonOpenBehavior;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.mojang.datafixers.util.Pair;
@@ -19,6 +20,7 @@ public class DungeonRegistry {
     public static final DungeonComponentRegistry<DungeonComponents.DungeonTemplate> DUNGEON_REGISTRY = new DungeonComponentRegistry<>();
 
     public static final WeightedPool<DungeonComponents.DungeonRoomTemplate> SMALL_ROOM_POOL = new WeightedPool<>();
+    public static final WeightedPool<DungeonComponents.DungeonRoomTemplate> SECRET_POOL = new WeightedPool<>();
     public static final WeightedPool<DungeonComponents.DungeonRoomTemplate> MEDIUM_ROOM_POOL = new WeightedPool<>();
     public static final WeightedPool<DungeonComponents.DungeonBranchTemplate> BRANCH_POOL = new WeightedPool<>();
     public static final WeightedPool<DungeonComponents.DungeonFloorTemplate> FLOOR_POOL = new WeightedPool<>();
@@ -30,23 +32,24 @@ public class DungeonRegistry {
          *  ROOMS
          */
 
-        DUNGEON_ROOM_REGISTRY.add(DungeonComponents.DungeonRoomTemplate.build("stone/small_1", List.of(Pair.of("stone/small_1", TemplateHelper.EMPTY_BLOCK_POS)), null).pool(SMALL_ROOM_POOL, 1));
-        DUNGEON_ROOM_REGISTRY.add(DungeonComponents.DungeonRoomTemplate.build("stone/small_2", List.of(Pair.of("stone/small_2", TemplateHelper.EMPTY_BLOCK_POS)), null).pool(SMALL_ROOM_POOL, 1));
-        DUNGEON_ROOM_REGISTRY.add(DungeonComponents.DungeonRoomTemplate.build("stone/small_3", List.of(Pair.of("stone/small_3", TemplateHelper.EMPTY_BLOCK_POS)), null).pool(SMALL_ROOM_POOL, 1));
-        DUNGEON_ROOM_REGISTRY.add(DungeonComponents.DungeonRoomTemplate.build("stone/small_4", List.of(Pair.of("stone/small_4", TemplateHelper.EMPTY_BLOCK_POS)), null).pool(SMALL_ROOM_POOL, 1));
-        DUNGEON_ROOM_REGISTRY.add(DungeonComponents.DungeonRoomTemplate.build("stone/small_5", List.of(Pair.of("stone/composite_1", TemplateHelper.EMPTY_BLOCK_POS), Pair.of("stone/composite_2", new BlockPos(2,0,4))), null).pool(SMALL_ROOM_POOL, 1));
-        DUNGEON_ROOM_REGISTRY.add(DungeonComponents.DungeonRoomTemplate.build("stone/medium_1", List.of(Pair.of("stone/medium_1", TemplateHelper.EMPTY_BLOCK_POS)), null).pool(MEDIUM_ROOM_POOL, 1));
-        DUNGEON_ROOM_REGISTRY.add(DungeonComponents.DungeonRoomTemplate.build("stone/medium_2", List.of(Pair.of("stone/medium_2", TemplateHelper.EMPTY_BLOCK_POS)), null).pool(MEDIUM_ROOM_POOL, 1));
-        DUNGEON_ROOM_REGISTRY.add(DungeonComponents.DungeonRoomTemplate.build("stone/medium_3", List.of(Pair.of("stone/medium_3", TemplateHelper.EMPTY_BLOCK_POS)), null).pool(MEDIUM_ROOM_POOL, 1));
-        DUNGEON_ROOM_REGISTRY.add(DungeonComponents.DungeonRoomTemplate.build("stone/medium_4", List.of(
+        DUNGEON_ROOM_REGISTRY.add(DungeonComponents.DungeonRoomTemplate.build(DungeonComponents.DungeonRoomTemplate.Type.NONE, "stone/small_1", List.of(Pair.of("stone/small_1", TemplateHelper.EMPTY_BLOCK_POS)), null, null, 1.0).pool(SMALL_ROOM_POOL, 1));
+        DUNGEON_ROOM_REGISTRY.add(DungeonComponents.DungeonRoomTemplate.build(DungeonComponents.DungeonRoomTemplate.Type.NONE,"stone/small_2", List.of(Pair.of("stone/small_2", TemplateHelper.EMPTY_BLOCK_POS)), null, null, 1.0).pool(SMALL_ROOM_POOL, 1));
+        DUNGEON_ROOM_REGISTRY.add(DungeonComponents.DungeonRoomTemplate.build(DungeonComponents.DungeonRoomTemplate.Type.NONE,"stone/small_3", List.of(Pair.of("stone/small_3", TemplateHelper.EMPTY_BLOCK_POS)), null, null, 1.0).pool(SMALL_ROOM_POOL, 1));
+        DUNGEON_ROOM_REGISTRY.add(DungeonComponents.DungeonRoomTemplate.build(DungeonComponents.DungeonRoomTemplate.Type.NONE,"stone/small_4", List.of(Pair.of("stone/small_4", TemplateHelper.EMPTY_BLOCK_POS)), null, null, 1.0).pool(SMALL_ROOM_POOL, 1));
+        DUNGEON_ROOM_REGISTRY.add(DungeonComponents.DungeonRoomTemplate.build(DungeonComponents.DungeonRoomTemplate.Type.NONE,"stone/small_5", List.of(Pair.of("stone/composite_1", TemplateHelper.EMPTY_BLOCK_POS), Pair.of("stone/composite_2", new BlockPos(2,0,4))), null, null, 1.0).pool(SMALL_ROOM_POOL, 1));
+        DUNGEON_ROOM_REGISTRY.add(DungeonComponents.DungeonRoomTemplate.build(DungeonComponents.DungeonRoomTemplate.Type.NONE,"stone/medium_1", List.of(Pair.of("stone/medium_1", TemplateHelper.EMPTY_BLOCK_POS)), null, null, 1.0).pool(MEDIUM_ROOM_POOL, 1));
+        DUNGEON_ROOM_REGISTRY.add(DungeonComponents.DungeonRoomTemplate.build(DungeonComponents.DungeonRoomTemplate.Type.NONE,"stone/medium_2", List.of(Pair.of("stone/medium_2", TemplateHelper.EMPTY_BLOCK_POS)), null, null, 1.0).pool(MEDIUM_ROOM_POOL, 1));
+        DUNGEON_ROOM_REGISTRY.add(DungeonComponents.DungeonRoomTemplate.build(DungeonComponents.DungeonRoomTemplate.Type.NONE,"stone/medium_3", List.of(Pair.of("stone/medium_3", TemplateHelper.EMPTY_BLOCK_POS)), null, null, 1.0).pool(MEDIUM_ROOM_POOL, 1));
+        DUNGEON_ROOM_REGISTRY.add(DungeonComponents.DungeonRoomTemplate.build(DungeonComponents.DungeonRoomTemplate.Type.NONE,"stone/medium_4", List.of(
                 Pair.of("stone/medium_4_comp_1", TemplateHelper.EMPTY_BLOCK_POS),
-                Pair.of("stone/medium_4_comp_2", new BlockPos(4, 0, -17))), null).pool(MEDIUM_ROOM_POOL, 1));
-        DUNGEON_ROOM_REGISTRY.add(DungeonComponents.DungeonRoomTemplate.build("stone/large_1", List.of(Pair.of("stone/large_1", TemplateHelper.EMPTY_BLOCK_POS)), null));
-        DUNGEON_ROOM_REGISTRY.add(DungeonComponents.DungeonRoomTemplate.build("stone/start", List.of(Pair.of("stone/start", TemplateHelper.EMPTY_BLOCK_POS)), null));
-        DUNGEON_ROOM_REGISTRY.add(DungeonComponents.DungeonRoomTemplate.build("stone/boss", List.of(
+                Pair.of("stone/medium_4_comp_2", new BlockPos(4, 0, -17))), null, null, 1.0).pool(MEDIUM_ROOM_POOL, 1));
+        DUNGEON_ROOM_REGISTRY.add(DungeonComponents.DungeonRoomTemplate.build(DungeonComponents.DungeonRoomTemplate.Type.COMBAT,"stone/large_1", List.of(Pair.of("stone/large_1", TemplateHelper.EMPTY_BLOCK_POS)), null, null, 1.0));
+        DUNGEON_ROOM_REGISTRY.add(DungeonComponents.DungeonRoomTemplate.build(DungeonComponents.DungeonRoomTemplate.Type.NONE,"stone/start", List.of(Pair.of("stone/start", TemplateHelper.EMPTY_BLOCK_POS)), null, null, 1.0));
+        DUNGEON_ROOM_REGISTRY.add(DungeonComponents.DungeonRoomTemplate.build(DungeonComponents.DungeonRoomTemplate.Type.NONE,"stone/boss", List.of(
                 Pair.of("stone/boss_comp_1", TemplateHelper.EMPTY_BLOCK_POS),
                 Pair.of("stone/boss_comp_2", new BlockPos(0, 0, 48)),
-                Pair.of("stone/boss_comp_3", new BlockPos(20,20,-16))), null));
+                Pair.of("stone/boss_comp_3", new BlockPos(20,20,-16))), null, null, 1.0));
+        DUNGEON_ROOM_REGISTRY.add(DungeonComponents.DungeonRoomTemplate.build(DungeonComponents.DungeonRoomTemplate.Type.SECRET,"secret/1", List.of(Pair.of("secret/1", TemplateHelper.EMPTY_BLOCK_POS)), null, null, 1.0).pool(SECRET_POOL, 1));
 
 
         /**
@@ -55,18 +58,18 @@ public class DungeonRegistry {
 
         DUNGEON_BRANCH_REGISTRY.add(DungeonComponents.DungeonBranchTemplate.build("starter_room_branch",
                 new DungeonLayout<DungeonComponents.DungeonRoomTemplate>()
-                        .addSimple(DUNGEON_ROOM_REGISTRY.get("stone/start")), null));
+                        .addSimple(DUNGEON_ROOM_REGISTRY.get("stone/start")), null, null, 1.0));
 
         DUNGEON_BRANCH_REGISTRY.add(DungeonComponents.DungeonBranchTemplate.build("small_room_branch",
                 new DungeonLayout<DungeonComponents.DungeonRoomTemplate>()
-                        .add(SMALL_ROOM_POOL, 30)
-                        .addSimple(DUNGEON_ROOM_REGISTRY.get("stone/large_1")), null)
+                        .add(WeightedPool.combine(Pair.of(SMALL_ROOM_POOL, 100), Pair.of(SECRET_POOL, 10)), 30)
+                        .addSimple(DUNGEON_ROOM_REGISTRY.get("stone/large_1")), null, null, 1.0)
                 .pool(BRANCH_POOL, 1));
 
         DUNGEON_BRANCH_REGISTRY.add(DungeonComponents.DungeonBranchTemplate.build("medium_room_branch",
                 new DungeonLayout<DungeonComponents.DungeonRoomTemplate>()
                         .add(MEDIUM_ROOM_POOL, 15)
-                        .addSimple(DUNGEON_ROOM_REGISTRY.get("stone/large_1")), null)
+                        .addSimple(DUNGEON_ROOM_REGISTRY.get("stone/large_1")), null, null, 1.0)
                 .pool(BRANCH_POOL, 1));
 
         DUNGEON_BRANCH_REGISTRY.add(DungeonComponents.DungeonBranchTemplate.build("ending_room_branch",
@@ -74,7 +77,7 @@ public class DungeonRegistry {
                         .add(MEDIUM_ROOM_POOL, 10)
                         .addSimple(DUNGEON_ROOM_REGISTRY.get("stone/boss")),
                 new WeightedPool<DungeonMaterial>()
-                        .add(DungeonMaterials.NETHER, 1)));
+                        .add(DungeonMaterials.NETHER, 1), null, 1.0));
 
         /**
          *  FLOORS
@@ -84,7 +87,7 @@ public class DungeonRegistry {
                 new DungeonLayout<DungeonComponents.DungeonBranchTemplate>()
                         .addSimple(DUNGEON_BRANCH_REGISTRY.get("starter_room_branch"))
                         .add(BRANCH_POOL, 10)
-                        .addSimple(DUNGEON_BRANCH_REGISTRY.get("ending_room_branch")), null)
+                        .addSimple(DUNGEON_BRANCH_REGISTRY.get("ending_room_branch")), null, null, 1.0)
                 .pool(FLOOR_POOL, 1));
 
         /**
@@ -99,7 +102,7 @@ public class DungeonRegistry {
                         .add(DungeonMaterials.PRISMARINE, 1)
                         .add(DungeonMaterials.OAK_WOOD, 1)
                         .add(DungeonMaterials.SANDSTONE, 1)
-                        .add(DungeonMaterials.STONE_BRICK, 1))
+                        .add(DungeonMaterials.STONE_BRICK, 1), EnemyTable.EnemyTables.BASIC_TABLE, 1.0)
                 .pool(DUNGEON_POOL, 1));
     }
 

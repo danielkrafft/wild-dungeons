@@ -40,7 +40,7 @@ public class RiftBlock extends Block implements EntityBlock {
     @Override
     protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
         if (entity instanceof ServerPlayer serverplayer) {
-            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(serverplayer.getStringUUID());
+            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(serverplayer);
             if (wdPlayer.getRiftCooldown() != 0) {return;}
 
             RiftBlockEntity riftBlockEntity = (RiftBlockEntity) level.getBlockEntity(pos);

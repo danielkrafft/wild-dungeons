@@ -31,7 +31,7 @@ public class WDEvents {
     public static void onXP(PlayerXpEvent.PickupXp event) {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
             if (!(event.getOrb() instanceof EssenceOrb)) {
-                WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(serverPlayer.getStringUUID());
+                WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(serverPlayer);
                 wdPlayer.setRecentEssence("essence:overworld");
             }
         }

@@ -1,5 +1,6 @@
 package com.danielkkrafft.wilddungeons;
 
+import com.danielkkrafft.wilddungeons.dungeon.components.room.CombatRoom;
 import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundOpenConnectionBlockUIPacket;
 import com.danielkkrafft.wilddungeons.network.serverbound.ServerboundUpdateConnectionBlockPacket;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
@@ -62,6 +63,7 @@ public class WildDungeons {
         NeoForge.EVENT_BUS.register(CustomHUDHandler.class);
         NeoForge.EVENT_BUS.register(WDEvents.class);
         NeoForge.EVENT_BUS.register(WDPlayerManager.class);
+        NeoForge.EVENT_BUS.register(CombatRoom.class);
 
     }
 

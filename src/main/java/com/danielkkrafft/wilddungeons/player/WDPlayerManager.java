@@ -1,18 +1,14 @@
 package com.danielkkrafft.wilddungeons.player;
 
-import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
+import com.danielkkrafft.wilddungeons.dungeon.components.room.DungeonRoom;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.ChatType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDestroyBlockEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
-import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
-import java.awt.event.InputEvent;
 import java.util.*;
 
 public class WDPlayerManager {
@@ -21,12 +17,8 @@ public class WDPlayerManager {
 
     private WDPlayerManager(){}
 
-    public WDPlayer getOrCreateWDPlayer(String playerUUID) {
-        return players.computeIfAbsent(playerUUID, k -> new WDPlayer(playerUUID));
-    }
-
-    public WDPlayer getOrCreateWDPlayer(ServerPlayer serverPlayer) {
-        return players.computeIfAbsent(serverPlayer.getStringUUID(), k -> new WDPlayer(serverPlayer.getStringUUID()));
+    public WDPlayer getOrCreateWDPlayer(Player player) {
+        return players.computeIfAbsent(player.getStringUUID(), k -> new WDPlayer(player.getStringUUID()));
     }
 
     public void replaceWDPlayer(String playerUUID, WDPlayer wdPlayer) {
@@ -68,6 +60,8 @@ public class WDPlayerManager {
             DungeonRoom room = wdPlayer.getCurrentRoom();
             boolean flag = false;
 
+            if (room.alwaysBreakable.contains(pos)) return true;
+
             if (room.getDestructionRule() == DungeonRoom.DestructionRule.DEFAULT) {
                 for (BoundingBox box : room.boundingBoxes) {
                     if (box.isInside(pos)) {
@@ -78,28 +72,8 @@ public class WDPlayerManager {
             }
 
             if (room.getDestructionRule() == DungeonRoom.DestructionRule.SHELL) {
-                for (BoundingBox box : room.boundingBoxes) {
-                    if (box.isInside(pos)) {
-                        if (box.inflatedBy(-1).isInside(pos)) {
-                            flag = true;
-                            break;
-                        }
-                        for (BoundingBox otherBox : room.boundingBoxes) {
-                            if (otherBox == box) continue;
-                            boolean xConnected = otherBox.inflatedBy(1, 0, 0).isInside(pos);
-                            boolean yConnected = otherBox.inflatedBy(0, 1, 0).isInside(pos);
-                            boolean zConnected = otherBox.inflatedBy(0, 0, 1).isInside(pos);
-
-                            //Only one axis is connected, indicating it's adjacent to another box, but not a corner
-                            if ((xConnected ? 1 : 0) + (yConnected ? 1: 0) + (zConnected ? 1 : 0) == 1) {
-                                if (box.inflatedBy(xConnected ? 0 : -1, yConnected ? 0 : -1, zConnected ? 0 : -1).isInside(pos)) {
-                                    flag = true;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-
+                if (room.isPosInsideShell(pos)) {
+                    return true;
                 }
             }
 

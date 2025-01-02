@@ -3,6 +3,7 @@ package com.danielkkrafft.wilddungeons.dungeon.session;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonMaterial;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonComponents;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
+import com.danielkkrafft.wilddungeons.dungeon.components.room.EnemyTable;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import net.minecraft.core.BlockPos;
@@ -25,10 +26,15 @@ public class DungeonSession {
     public boolean markedForShutdown = false;
     public WeightedPool<DungeonMaterial> materials;
 
+    public EnemyTable enemyTable;
+    public double difficulty;
+
     protected DungeonSession(BlockPos entrance, DungeonComponents.DungeonTemplate template) {
         this.entrance = entrance;
         this.template = template;
         this.materials = template.materials();
+        this.enemyTable = template.enemyTable();
+        this.difficulty = template.difficulty();
     }
 
     public DungeonFloor getFloor(ResourceKey<Level> levelKey) {

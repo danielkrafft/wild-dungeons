@@ -2,6 +2,10 @@ package com.danielkkrafft.wilddungeons.dungeon.components;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonMaterial;
+import com.danielkkrafft.wilddungeons.dungeon.components.room.CombatRoom;
+import com.danielkkrafft.wilddungeons.dungeon.components.room.DungeonRoom;
+import com.danielkkrafft.wilddungeons.dungeon.components.room.EnemyTable;
+import com.danielkkrafft.wilddungeons.dungeon.components.room.SecretRoom;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
@@ -21,9 +25,13 @@ import java.util.*;
 public class DungeonComponents {
     public interface DungeonComponent { String name(); }
 
-    public record DungeonRoomTemplate(String name, List<Pair<StructureTemplate, BlockPos>> templates, List<ConnectionPoint> connectionPoints, BlockPos spawnPoint, List<BlockPos> rifts, List<StructureTemplate.StructureBlockInfo> materialBlocks, WeightedPool<DungeonMaterial> materials) implements DungeonComponent {
+    public record DungeonRoomTemplate(Type type, String name, List<Pair<StructureTemplate, BlockPos>> templates, List<ConnectionPoint> connectionPoints, BlockPos spawnPoint, List<BlockPos> rifts, List<StructureTemplate.StructureBlockInfo> materialBlocks, WeightedPool<DungeonMaterial> materials, EnemyTable enemyTable, double difficulty) implements DungeonComponent {
 
-        public static DungeonRoomTemplate build(String name, List<Pair<String, BlockPos>> structures, WeightedPool<DungeonMaterial> materials) {
+        public enum Type {
+            NONE, SECRET, COMBAT
+        }
+
+        public static DungeonRoomTemplate build(Type type, String name, List<Pair<String, BlockPos>> structures, WeightedPool<DungeonMaterial> materials, EnemyTable enemyTable, double difficulty) {
 
             List<Pair<StructureTemplate, BlockPos>> templates = new ArrayList<>();
             for (Pair<String, BlockPos> structure : structures) {
@@ -37,7 +45,7 @@ public class DungeonComponents {
             List<BlockPos> rifts = TemplateHelper.locateRifts(templates);
             BlockPos spawnPoint = TemplateHelper.locateSpawnPoint(templates);
             List<StructureTemplate.StructureBlockInfo> materialBlocks = TemplateHelper.locateMaterialBlocks(templates);
-            return new DungeonRoomTemplate(name, templates, connectionPoints, spawnPoint, rifts, materialBlocks, materials);
+            return new DungeonRoomTemplate(type, name, templates, connectionPoints, spawnPoint, rifts, materialBlocks, materials, enemyTable, difficulty);
         }
 
         public List<BoundingBox> getBoundingBoxes(StructurePlaceSettings settings, BlockPos position) {
@@ -53,14 +61,25 @@ public class DungeonComponents {
         public DungeonRoomTemplate pool(WeightedPool<DungeonRoomTemplate> pool, Integer weight) {pool.add(this, weight); return this;}
 
         public DungeonRoom placeInWorld(DungeonBranch branch, ServerLevel level, BlockPos position, StructurePlaceSettings settings, List<ConnectionPoint> connectionPoints) {
-            return new DungeonRoom(branch, this, level, position, TemplateHelper.EMPTY_BLOCK_POS, settings, connectionPoints);
+            switch (this.type()) {
+                case SECRET -> {
+                    return new SecretRoom(branch, this, level, position, TemplateHelper.EMPTY_BLOCK_POS, settings, connectionPoints);
+                }
+                case COMBAT -> {
+                    return new CombatRoom(branch, this, level, position, TemplateHelper.EMPTY_BLOCK_POS, settings, connectionPoints);
+                }
+                case null, default -> {
+                    return new DungeonRoom(branch, this, level, position, TemplateHelper.EMPTY_BLOCK_POS, settings, connectionPoints);
+                }
+            }
+
         }
     }
 
-    public record DungeonBranchTemplate(String name, DungeonRegistry.DungeonLayout<DungeonRoomTemplate> roomTemplates, WeightedPool<DungeonMaterial> materials) implements DungeonComponent {
+    public record DungeonBranchTemplate(String name, DungeonRegistry.DungeonLayout<DungeonRoomTemplate> roomTemplates, WeightedPool<DungeonMaterial> materials, EnemyTable enemyTable, double difficulty) implements DungeonComponent {
 
-        public static DungeonBranchTemplate build(String name, DungeonRegistry.DungeonLayout<DungeonRoomTemplate> roomTemplates, WeightedPool<DungeonMaterial> materials) {
-            return new DungeonBranchTemplate(name, roomTemplates, materials);
+        public static DungeonBranchTemplate build(String name, DungeonRegistry.DungeonLayout<DungeonRoomTemplate> roomTemplates, WeightedPool<DungeonMaterial> materials, EnemyTable enemyTable, double difficulty) {
+            return new DungeonBranchTemplate(name, roomTemplates, materials, enemyTable, difficulty);
         }
 
         public DungeonBranchTemplate pool(WeightedPool<DungeonBranchTemplate> pool, Integer weight) {pool.add(this, weight); return this;}
@@ -70,10 +89,10 @@ public class DungeonComponents {
         }
     }
 
-    public record DungeonFloorTemplate(String name, DungeonRegistry.DungeonLayout<DungeonBranchTemplate> branchTemplates, WeightedPool<DungeonMaterial> materials) implements DungeonComponent {
+    public record DungeonFloorTemplate(String name, DungeonRegistry.DungeonLayout<DungeonBranchTemplate> branchTemplates, WeightedPool<DungeonMaterial> materials, EnemyTable enemyTable, double difficulty) implements DungeonComponent {
 
-        public static DungeonFloorTemplate build(String name, DungeonRegistry.DungeonLayout<DungeonBranchTemplate> branchTemplates, WeightedPool<DungeonMaterial> materials) {
-            return new DungeonFloorTemplate(name, branchTemplates, materials);
+        public static DungeonFloorTemplate build(String name, DungeonRegistry.DungeonLayout<DungeonBranchTemplate> branchTemplates, WeightedPool<DungeonMaterial> materials, EnemyTable enemyTable, double difficulty) {
+            return new DungeonFloorTemplate(name, branchTemplates, materials, enemyTable, difficulty);
         }
 
         public DungeonFloorTemplate pool(WeightedPool<DungeonFloorTemplate> pool, Integer weight) {pool.add(this, weight); return this;}
@@ -84,10 +103,10 @@ public class DungeonComponents {
         }
     }
 
-    public record DungeonTemplate(String name, String openBehavior, DungeonRegistry.DungeonLayout<DungeonFloorTemplate> floorTemplates, WeightedPool<DungeonMaterial> materials) implements DungeonComponent {
+    public record DungeonTemplate(String name, String openBehavior, DungeonRegistry.DungeonLayout<DungeonFloorTemplate> floorTemplates, WeightedPool<DungeonMaterial> materials, EnemyTable enemyTable, double difficulty) implements DungeonComponent {
 
-        public static DungeonTemplate build(String name, String openBehavior, DungeonRegistry.DungeonLayout<DungeonFloorTemplate> floorTemplates, WeightedPool<DungeonMaterial> materials) {
-            return new DungeonTemplate(name, openBehavior, floorTemplates, materials);
+        public static DungeonTemplate build(String name, String openBehavior, DungeonRegistry.DungeonLayout<DungeonFloorTemplate> floorTemplates, WeightedPool<DungeonMaterial> materials, EnemyTable enemyTable, double difficulty) {
+            return new DungeonTemplate(name, openBehavior, floorTemplates, materials, enemyTable, difficulty);
         }
 
         public DungeonTemplate pool(WeightedPool<DungeonTemplate> pool, Integer weight) {pool.add(this, weight); return this;}

@@ -112,7 +112,7 @@ public class EssenceOrb extends ExperienceOrb implements IEntityWithComplexSpawn
     }
 
     public static void giveEssence(ServerPlayer player, String type, int value) {
-        WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(player.getStringUUID());
+        WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(player);
         //TODO confusion about whether "essence:type" or "type" should be the common key
         String key = "essence:" + type;
         wdPlayer.giveEssencePoints(key, value);

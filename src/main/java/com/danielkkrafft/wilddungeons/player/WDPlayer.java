@@ -3,25 +3,19 @@ package com.danielkkrafft.wilddungeons.player;
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
-import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
+import com.danielkkrafft.wilddungeons.dungeon.components.room.DungeonRoom;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.util.CommandUtil;
-import com.danielkkrafft.wilddungeons.util.MathUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.SubscribeEvent;
 
 import java.util.*;
 
@@ -76,7 +70,7 @@ public class WDPlayer {
             riftCooldown -= 1;
         }
 
-        if (!getServerPlayer().blockPosition().equals(BlockPos.of(blockPos))) {
+        if (getServerPlayer() != null && !getServerPlayer().blockPosition().equals(BlockPos.of(blockPos))) {
             this.onPlayerMovedBlocks();
             this.blockPos = getServerPlayer().blockPosition().asLong();
         }
@@ -108,12 +102,12 @@ public class WDPlayer {
 
         CompoundTag respawnsTag = new CompoundTag();
         for (int i = -1; i < respawns.size()-1; i++) {
-            respawnsTag.put(""+i, respawns.get(i+1).serialize());
+            respawnsTag.put(""+i, respawns.get(i).serialize());
         }
 
         CompoundTag positionsTag = new CompoundTag();
         for (int i = -1; i < positions.size()-1; i++) {
-            positionsTag.put(""+i, positions.get(i+1).serialize());
+            positionsTag.put(""+i, positions.get(i).serialize());
         }
 
         tag.put("essenceTotals", essenceTag);
