@@ -6,6 +6,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -54,7 +55,9 @@ public class SavedTransform {
         this.position = new Vec3(tag.getDouble("x"), tag.getDouble("y"), tag.getDouble("z"));
         this.yaw = tag.getDouble("yaw");
         this.pitch = tag.getDouble("pitch");
-        this.dimension = ResourceKey.create(Registries.DIMENSION, WildDungeons.rl(tag.getString("levelKey").split(":")[1]));
+        WildDungeons.getLogger().info("DIMENSION: {}", tag.getString("levelKey"));
+        this.dimension = ResourceKey.create(Registries.DIMENSION, ResourceLocation.bySeparator(tag.getString("levelKey"), ':'));
+
     }
 
     public static SavedTransform fromRespawn(ServerPlayer player) {
@@ -69,7 +72,7 @@ public class SavedTransform {
         result.putDouble("z", this.position.z);
         result.putDouble("yaw", this.yaw);
         result.putDouble("pitch", this.pitch);
-        result.putString("levelKey", this.dimension.toString());
+        result.putString("levelKey", this.dimension.location().toString());
         return result;
     }
 

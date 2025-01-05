@@ -90,11 +90,11 @@ public class ConnectionPoint {
         unBlockedBlockStates = newBlockStates;
     }
 
-    public static boolean arePointsCompatible(ConnectionPoint en, ConnectionPoint ex) {
+    public static boolean arePointsCompatible(ConnectionPoint en, ConnectionPoint ex, boolean bypassFailures) {
         List<Boolean> conditions = List.of(
                 !ex.isConnected(),
                 !Objects.equals(ex.type, "entrance"),
-                ex.failures < 10,
+                ex.failures < 10 || bypassFailures,
                 Objects.equals(en.pool, ex.pool),
                 en.getAxis() != Direction.Axis.Y || ex.direction == en.direction.getOpposite(),
                 en.getSize().equals(ex.getSize())

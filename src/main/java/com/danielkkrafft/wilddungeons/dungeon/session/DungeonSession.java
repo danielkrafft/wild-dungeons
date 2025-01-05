@@ -1,19 +1,19 @@
 package com.danielkkrafft.wilddungeons.dungeon.session;
 
 import com.danielkkrafft.wilddungeons.dungeon.DungeonMaterial;
+import com.danielkkrafft.wilddungeons.dungeon.DungeonPerk;
+import com.danielkkrafft.wilddungeons.dungeon.DungeonPerks;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonComponents;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
-import com.danielkkrafft.wilddungeons.dungeon.components.room.EnemyTable;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
+import com.danielkkrafft.wilddungeons.util.WeightedTable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class DungeonSession {
     public static final int SHUTDOWN_TIME = 300;
@@ -26,7 +26,9 @@ public class DungeonSession {
     public boolean markedForShutdown = false;
     public WeightedPool<DungeonMaterial> materials;
 
-    public EnemyTable enemyTable;
+    public HashMap<DungeonPerks.Perks, DungeonPerk> perks = new HashMap();
+
+    public WeightedTable<EntityType<?>> enemyTable;
     public double difficulty;
 
     protected DungeonSession(BlockPos entrance, DungeonComponents.DungeonTemplate template) {
@@ -35,6 +37,7 @@ public class DungeonSession {
         this.materials = template.materials();
         this.enemyTable = template.enemyTable();
         this.difficulty = template.difficulty();
+        DungeonPerk.addPerk(this, DungeonPerks.Perks.SWORD_DAMAGE_INCREASE);
     }
 
     public DungeonFloor getFloor(ResourceKey<Level> levelKey) {

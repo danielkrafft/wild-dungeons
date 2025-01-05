@@ -1,7 +1,7 @@
 package com.danielkkrafft.wilddungeons.dungeon.components;
 
 import com.danielkkrafft.wilddungeons.dungeon.components.room.DungeonRoom;
-import com.danielkkrafft.wilddungeons.registry.WDBlocks;
+import com.danielkkrafft.wilddungeons.block.WDBlocks;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
@@ -136,6 +136,25 @@ public class TemplateHelper {
         });
         List<BlockPos> result = new ArrayList<>();
         RIFT_BLOCKS.forEach(info -> {result.add(info.pos());});
+        return result;
+    }
+
+    public static List<BlockPos> locateOfferings(List<Pair<StructureTemplate, BlockPos>> templates) {
+        List<StructureTemplate.StructureBlockInfo> OFFERING_BLOCKS = new ArrayList<>();
+        templates.forEach(template -> {
+            OFFERING_BLOCKS.addAll(template.getFirst().filterBlocks(template.getSecond(), new StructurePlaceSettings(), Blocks.MOSSY_COBBLESTONE));
+        });
+        List<BlockPos> result = new ArrayList<>();
+        OFFERING_BLOCKS.forEach(info -> {result.add(info.pos());});
+        return result;
+    }
+
+    public static List<StructureTemplate.StructureBlockInfo> locateLootTargets(List<Pair<StructureTemplate, BlockPos>> templates) {
+        List<StructureTemplate.StructureBlockInfo> result = new ArrayList<>();
+        templates.forEach(template -> {
+            result.addAll(template.getFirst().filterBlocks(template.getSecond(), new StructurePlaceSettings(), Blocks.CHEST));
+            result.addAll(template.getFirst().filterBlocks(template.getSecond(), new StructurePlaceSettings(), Blocks.BARREL));
+        });
         return result;
     }
 

@@ -14,8 +14,8 @@ authors="${mod_authors}" #optional
 description='''${mod_description}'''
 #[[mixins]]
 #config="${mod_id}.mixins.json"
-#[[accessTransformers]]
-#file="META-INF/accesstransformer.cfg"
+[[accessTransformers]]
+file="META-INF/accesstransformer.cfg"
 
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
 [[dependencies.${mod_id}]] #optional

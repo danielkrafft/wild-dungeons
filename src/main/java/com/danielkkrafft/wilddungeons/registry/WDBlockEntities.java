@@ -1,6 +1,7 @@
 package com.danielkkrafft.wilddungeons.registry;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.block.WDBlocks;
 import com.danielkkrafft.wilddungeons.entity.blockentity.ConnectionBlockEntity;
 import com.danielkkrafft.wilddungeons.entity.blockentity.RiftBlockEntity;
 import net.minecraft.core.registries.Registries;

@@ -9,13 +9,19 @@ import com.danielkkrafft.wilddungeons.dungeon.components.TemplateHelper;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
+import com.danielkkrafft.wilddungeons.util.WeightedTable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.vehicle.ContainerEntity;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.entity.BarrelBlockEntity;
+import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
@@ -43,7 +49,7 @@ public class DungeonRoom {
     public Set<BlockPos> alwaysBreakable = new HashSet<>();
 
     public List<BlockPos> spawnablePosList = new ArrayList<>();
-    public EnemyTable enemyTable;
+    public WeightedTable<EntityType<?>> enemyTable;
     public double difficulty;
 
     public DungeonRoom(DungeonBranch branch, DungeonComponents.DungeonRoomTemplate dungeonRoomTemplate, ServerLevel level, BlockPos position, BlockPos offset, StructurePlaceSettings settings, List<ConnectionPoint> allConnectionPoints) {
@@ -70,6 +76,8 @@ public class DungeonRoom {
             this.rifts.add(StructureTemplate.transform(pos, settings.getMirror(), settings.getRotation(), offset).offset(position));
         });
         this.processMaterialBlocks(this.material);
+        this.processOfferings();
+        this.processLootBlocks();
 
         if (dungeonRoomTemplate.spawnPoint() != null) {
             this.spawnPoint = TemplateHelper.transform(dungeonRoomTemplate.spawnPoint(), this);
@@ -106,10 +114,50 @@ public class DungeonRoom {
         });
     }
 
-    public List<ConnectionPoint> getValidExitPoints(ConnectionPoint entrancePoint) {
+    public void processLootBlocks() {
+        if (this.template.lootBlocks().isEmpty()) return;
+
+        WildDungeons.getLogger().info("SETTING UP LOOT");
+
+        List<StructureTemplate.StructureBlockInfo> lootBlocks = this.template.lootBlocks();
+        List<StructureTemplate.StructureBlockInfo> chosenBlocks = new ArrayList<>();
+        int maxChests = 3;
+
+        while (chosenBlocks.size() < maxChests) {
+            chosenBlocks.add(lootBlocks.get(RandomUtil.randIntBetween(0, lootBlocks.size()-1)));
+        }
+
+        BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
+        int remainingChests = maxChests;
+        List<LootTables.LootEntry> entries = LootTables.BASIC_LOOT_TABLE.randomResults(5, (int) (5 * this.difficulty), 1.5f);
+
+        for (StructureTemplate.StructureBlockInfo structureBlockInfo : chosenBlocks) {
+            mutableBlockPos.set(TemplateHelper.transform(structureBlockInfo.pos(), this));
+
+            if (level.getBlockEntity(mutableBlockPos) instanceof BaseContainerBlockEntity container) {
+
+                int slots = container.getContainerSize();
+                for (int i = 0; i < entries.size() / remainingChests; i++) {
+                    container.setItem(RandomUtil.randIntBetween(0, slots-1), entries.removeFirst().asItemStack());
+                }
+                remainingChests -= 1;
+            }
+        }
+    }
+
+    public void processOfferings() {
+
+        List<BlockPos> offeringPositions = this.template.offerings();
+        offeringPositions.forEach(pos -> {
+            level.setBlock(TemplateHelper.transform(pos, this), Blocks.AIR.defaultBlockState(), 2);
+        });
+
+    }
+
+    public List<ConnectionPoint> getValidExitPoints(ConnectionPoint entrancePoint, boolean bypassFailures) {
         List<ConnectionPoint> exitPoints = new ArrayList<>();
         for (ConnectionPoint point : connectionPoints) {
-            if (ConnectionPoint.arePointsCompatible(entrancePoint, point)) {
+            if (ConnectionPoint.arePointsCompatible(entrancePoint, point, bypassFailures)) {
                 exitPoints.add(point);
             }
         }
@@ -168,6 +216,7 @@ public class DungeonRoom {
         this.players.add(player);
         this.innerPlayers.put(player, false);
     }
+    public void onBranchEnter(WDPlayer player) {}
     public void onEnterInner(WDPlayer player) {}
     public void onExit(WDPlayer player) {
         this.players.remove(player);

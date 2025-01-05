@@ -2,16 +2,15 @@ package com.danielkkrafft.wilddungeons.dungeon.components;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonMaterial;
-import com.danielkkrafft.wilddungeons.dungeon.components.room.CombatRoom;
-import com.danielkkrafft.wilddungeons.dungeon.components.room.DungeonRoom;
-import com.danielkkrafft.wilddungeons.dungeon.components.room.EnemyTable;
-import com.danielkkrafft.wilddungeons.dungeon.components.room.SecretRoom;
+import com.danielkkrafft.wilddungeons.dungeon.components.room.*;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
+import com.danielkkrafft.wilddungeons.util.WeightedTable;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
@@ -25,13 +24,13 @@ import java.util.*;
 public class DungeonComponents {
     public interface DungeonComponent { String name(); }
 
-    public record DungeonRoomTemplate(Type type, String name, List<Pair<StructureTemplate, BlockPos>> templates, List<ConnectionPoint> connectionPoints, BlockPos spawnPoint, List<BlockPos> rifts, List<StructureTemplate.StructureBlockInfo> materialBlocks, WeightedPool<DungeonMaterial> materials, EnemyTable enemyTable, double difficulty) implements DungeonComponent {
+    public record DungeonRoomTemplate(Type type, String name, List<Pair<StructureTemplate, BlockPos>> templates, List<ConnectionPoint> connectionPoints, BlockPos spawnPoint, List<BlockPos> rifts, List<BlockPos> offerings, List<StructureTemplate.StructureBlockInfo> materialBlocks, List<StructureTemplate.StructureBlockInfo> lootBlocks, WeightedPool<DungeonMaterial> materials, WeightedTable<EntityType<?>> enemyTable, double difficulty) implements DungeonComponent {
 
         public enum Type {
-            NONE, SECRET, COMBAT
+            NONE, SECRET, COMBAT, SHOP, LOOT
         }
 
-        public static DungeonRoomTemplate build(Type type, String name, List<Pair<String, BlockPos>> structures, WeightedPool<DungeonMaterial> materials, EnemyTable enemyTable, double difficulty) {
+        public static DungeonRoomTemplate build(Type type, String name, List<Pair<String, BlockPos>> structures, WeightedPool<DungeonMaterial> materials, WeightedTable<EntityType<?>> enemyTable, double difficulty) {
 
             List<Pair<StructureTemplate, BlockPos>> templates = new ArrayList<>();
             for (Pair<String, BlockPos> structure : structures) {
@@ -44,8 +43,10 @@ public class DungeonComponents {
             WildDungeons.getLogger().info("LOCATED {} CONNECTION POINTS FOR ROOM: {}", connectionPoints.size(), name);
             List<BlockPos> rifts = TemplateHelper.locateRifts(templates);
             BlockPos spawnPoint = TemplateHelper.locateSpawnPoint(templates);
+            List<BlockPos> offerings = TemplateHelper.locateOfferings(templates);
             List<StructureTemplate.StructureBlockInfo> materialBlocks = TemplateHelper.locateMaterialBlocks(templates);
-            return new DungeonRoomTemplate(type, name, templates, connectionPoints, spawnPoint, rifts, materialBlocks, materials, enemyTable, difficulty);
+            List<StructureTemplate.StructureBlockInfo> lootBlocks = TemplateHelper.locateLootTargets(templates);
+            return new DungeonRoomTemplate(type, name, templates, connectionPoints, spawnPoint, rifts, offerings, materialBlocks, lootBlocks, materials, enemyTable, difficulty);
         }
 
         public List<BoundingBox> getBoundingBoxes(StructurePlaceSettings settings, BlockPos position) {
@@ -68,6 +69,12 @@ public class DungeonComponents {
                 case COMBAT -> {
                     return new CombatRoom(branch, this, level, position, TemplateHelper.EMPTY_BLOCK_POS, settings, connectionPoints);
                 }
+                case SHOP -> {
+                    return new ShopRoom(branch, this, level, position, TemplateHelper.EMPTY_BLOCK_POS, settings, connectionPoints);
+                }
+                case LOOT -> {
+                    return new LootRoom(branch, this, level, position, TemplateHelper.EMPTY_BLOCK_POS, settings, connectionPoints);
+                }
                 case null, default -> {
                     return new DungeonRoom(branch, this, level, position, TemplateHelper.EMPTY_BLOCK_POS, settings, connectionPoints);
                 }
@@ -76,9 +83,9 @@ public class DungeonComponents {
         }
     }
 
-    public record DungeonBranchTemplate(String name, DungeonRegistry.DungeonLayout<DungeonRoomTemplate> roomTemplates, WeightedPool<DungeonMaterial> materials, EnemyTable enemyTable, double difficulty) implements DungeonComponent {
+    public record DungeonBranchTemplate(String name, DungeonRegistry.DungeonLayout<DungeonRoomTemplate> roomTemplates, WeightedPool<DungeonMaterial> materials, WeightedTable<EntityType<?>> enemyTable, double difficulty) implements DungeonComponent {
 
-        public static DungeonBranchTemplate build(String name, DungeonRegistry.DungeonLayout<DungeonRoomTemplate> roomTemplates, WeightedPool<DungeonMaterial> materials, EnemyTable enemyTable, double difficulty) {
+        public static DungeonBranchTemplate build(String name, DungeonRegistry.DungeonLayout<DungeonRoomTemplate> roomTemplates, WeightedPool<DungeonMaterial> materials, WeightedTable<EntityType<?>> enemyTable, double difficulty) {
             return new DungeonBranchTemplate(name, roomTemplates, materials, enemyTable, difficulty);
         }
 
@@ -89,9 +96,9 @@ public class DungeonComponents {
         }
     }
 
-    public record DungeonFloorTemplate(String name, DungeonRegistry.DungeonLayout<DungeonBranchTemplate> branchTemplates, WeightedPool<DungeonMaterial> materials, EnemyTable enemyTable, double difficulty) implements DungeonComponent {
+    public record DungeonFloorTemplate(String name, DungeonRegistry.DungeonLayout<DungeonBranchTemplate> branchTemplates, WeightedPool<DungeonMaterial> materials, WeightedTable<EntityType<?>> enemyTable, double difficulty) implements DungeonComponent {
 
-        public static DungeonFloorTemplate build(String name, DungeonRegistry.DungeonLayout<DungeonBranchTemplate> branchTemplates, WeightedPool<DungeonMaterial> materials, EnemyTable enemyTable, double difficulty) {
+        public static DungeonFloorTemplate build(String name, DungeonRegistry.DungeonLayout<DungeonBranchTemplate> branchTemplates, WeightedPool<DungeonMaterial> materials, WeightedTable<EntityType<?>> enemyTable, double difficulty) {
             return new DungeonFloorTemplate(name, branchTemplates, materials, enemyTable, difficulty);
         }
 
@@ -103,9 +110,9 @@ public class DungeonComponents {
         }
     }
 
-    public record DungeonTemplate(String name, String openBehavior, DungeonRegistry.DungeonLayout<DungeonFloorTemplate> floorTemplates, WeightedPool<DungeonMaterial> materials, EnemyTable enemyTable, double difficulty) implements DungeonComponent {
+    public record DungeonTemplate(String name, String openBehavior, DungeonRegistry.DungeonLayout<DungeonFloorTemplate> floorTemplates, WeightedPool<DungeonMaterial> materials, WeightedTable<EntityType<?>> enemyTable, double difficulty) implements DungeonComponent {
 
-        public static DungeonTemplate build(String name, String openBehavior, DungeonRegistry.DungeonLayout<DungeonFloorTemplate> floorTemplates, WeightedPool<DungeonMaterial> materials, EnemyTable enemyTable, double difficulty) {
+        public static DungeonTemplate build(String name, String openBehavior, DungeonRegistry.DungeonLayout<DungeonFloorTemplate> floorTemplates, WeightedPool<DungeonMaterial> materials, WeightedTable<EntityType<?>> enemyTable, double difficulty) {
             return new DungeonTemplate(name, openBehavior, floorTemplates, materials, enemyTable, difficulty);
         }
 

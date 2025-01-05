@@ -3,7 +3,6 @@ package com.danielkkrafft.wilddungeons.dungeon.components;
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonMaterial;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.DungeonRoom;
-import com.danielkkrafft.wilddungeons.dungeon.components.room.EnemyTable;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.entity.blockentity.RiftBlockEntity;
@@ -11,12 +10,14 @@ import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.registry.WDDimensions;
 import com.danielkkrafft.wilddungeons.util.FileUtil;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
+import com.danielkkrafft.wilddungeons.util.WeightedTable;
 import com.danielkkrafft.wilddungeons.world.dimension.EmptyGenerator;
 import com.danielkkrafft.wilddungeons.world.dimension.tools.InfiniverseAPI;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
@@ -36,7 +37,7 @@ public class DungeonFloor {
     public HashMap<ChunkPos, List<DungeonRoom>> chunkMap = new HashMap<>();
     public Set<WDPlayer> players = new HashSet<>();
 
-    public EnemyTable enemyTable;
+    public WeightedTable<EntityType<?>> enemyTable;
     public double difficulty;
 
     public DungeonFloor(DungeonComponents.DungeonFloorTemplate template, DungeonSession session, BlockPos origin, int index, WeightedPool<String> destinations) {
@@ -46,7 +47,7 @@ public class DungeonFloor {
         this.LEVEL_KEY = buildFloorLevelKey(session.entrance, this);
         this.session = session;
         this.enemyTable = template.enemyTable() == null ? session.enemyTable : template.enemyTable();
-        this.difficulty = session.difficulty * template.difficulty();
+        this.difficulty = session.difficulty * template.difficulty() * Math.max(Math.pow(1.1, session.floors.size()), 1);
         this.level = InfiniverseAPI.get().getOrCreateLevel(DungeonSessionManager.getInstance().server, LEVEL_KEY, () -> WDDimensions.createLevel(DungeonSessionManager.getInstance().server));
         this.origin = origin;
         generateDungeonFloor();
@@ -115,6 +116,7 @@ public class DungeonFloor {
                     if (proposedBox.intersects(box)) {
                         return false;
                     } else if (proposedBox.minY() < EmptyGenerator.MIN_Y || proposedBox.maxY() > EmptyGenerator.MIN_Y + EmptyGenerator.GEN_DEPTH) {
+                        WildDungeons.getLogger().info("OUT OF BOUNDS!");
                         return false;
                     }
                 }

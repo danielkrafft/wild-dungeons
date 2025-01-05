@@ -169,11 +169,7 @@ public class WDPlayer {
         int need = 0;
 
         while (total > 0) {
-            if (level >= 30) {
-                need = 112 + ((int)level - 30) * 9;
-            } else {
-                need = (int)level >= 15 ? 37 + ((int)level - 15) * 5 : 7 + (int)level * 2;
-            }
+            need = pointsNeededForNextLevel((int) level);
 
             if (need <= total) {
                 level += 1;
@@ -186,6 +182,29 @@ public class WDPlayer {
         }
 
         return level;
+    }
+
+    public int pointsNeededForNextLevel(int level) {
+        if (level >= 30) {
+            return 112 + (level - 30) * 9;
+        } else {
+            return level >= 15 ? 37 + (level - 15) * 5 : 7 + level * 2;
+        }
+    }
+
+    public void giveEssenceLevels(int levels, String key) {
+        int currentLevels = Mth.floor(getEssenceLevel(key));
+        int startingLevel = Math.min(currentLevels + levels, currentLevels);
+        int targetLevel = Math.max(currentLevels + levels, currentLevels);
+        this.giveEssencePoints(key, pointsBetweenRange(startingLevel, targetLevel));
+    }
+
+    public int pointsBetweenRange(int startingLevel, int targetLevel) {
+        int totalAdded = 0;
+        for (int i = startingLevel; i < targetLevel; i++) {
+            totalAdded += pointsNeededForNextLevel(i);
+        }
+        return totalAdded;
     }
 
     public void onPlayerMovedBlocks() {

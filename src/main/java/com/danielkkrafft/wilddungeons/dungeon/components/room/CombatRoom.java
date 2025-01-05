@@ -1,12 +1,16 @@
 package com.danielkkrafft.wilddungeons.dungeon.components.room;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.dungeon.DungeonPerk;
+import com.danielkkrafft.wilddungeons.dungeon.DungeonPerks;
 import com.danielkkrafft.wilddungeons.dungeon.components.ConnectionPoint;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonComponents;
+import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
+import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -42,7 +46,6 @@ public class CombatRoom extends DungeonRoom {
     @Override
     public void onEnterInner(WDPlayer player) {
         super.onEnterInner(player);
-        WildDungeons.getLogger().info("ENTERING INNER COMBAT ROOM");
         if (this.started) return;
 
         WildDungeons.getLogger().info("BLOCKING THE EXITS");
@@ -52,7 +55,7 @@ public class CombatRoom extends DungeonRoom {
         });
 
         WildDungeons.getLogger().info("SPAWNING MOBS");
-        List<EntityType<?>> entities = this.enemyTable.getEntities(BASE_QUANTITY, (int) (BASE_DIFFICULTY * this.difficulty));
+        List<EntityType<?>> entities = this.enemyTable.randomResults(BASE_QUANTITY, (int) (BASE_DIFFICULTY * this.difficulty), 2);
 
         entities.forEach(entityType -> {
             LivingEntity entity = (LivingEntity) entityType.create(level);
@@ -105,12 +108,6 @@ public class CombatRoom extends DungeonRoom {
         this.connectionPoints.forEach(point -> {
             if (point.isConnected()) point.unBlock(this.level);
         });
-    }
-
-    @Override
-    public void onEnter(WDPlayer player) {
-        super.onEnter(player);
-        WildDungeons.getLogger().info("ENTERING COMBAT ROOM");
     }
 
     @SubscribeEvent

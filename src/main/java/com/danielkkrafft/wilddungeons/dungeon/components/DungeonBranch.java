@@ -3,12 +3,13 @@ package com.danielkkrafft.wilddungeons.dungeon.components;
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonMaterial;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.DungeonRoom;
-import com.danielkkrafft.wilddungeons.dungeon.components.room.EnemyTable;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
+import com.danielkkrafft.wilddungeons.util.WeightedTable;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
@@ -31,7 +32,7 @@ public class DungeonBranch {
     public BoundingBox boundingBox;
     public Set<WDPlayer> players = new HashSet<>();
 
-    public EnemyTable enemyTable;
+    public WeightedTable<EntityType<?>> enemyTable;
     public double difficulty;
 
     public DungeonBranch(DungeonComponents.DungeonBranchTemplate template, DungeonFloor floor, ServerLevel level, BlockPos origin) {
@@ -76,7 +77,7 @@ public class DungeonBranch {
         while (!pointsToTry.isEmpty()) {
 
             ConnectionPoint entrancePoint = pointsToTry.remove(new Random().nextInt(pointsToTry.size()));
-            List<ConnectionPoint> exitPoints = this.dungeonRooms.isEmpty() ? floor.dungeonBranches.getLast().dungeonRooms.getLast().getValidExitPoints(entrancePoint) : getValidExitPoints(entrancePoint);
+            List<ConnectionPoint> exitPoints = this.dungeonRooms.isEmpty() ? floor.dungeonBranches.getLast().dungeonRooms.getLast().getValidExitPoints(entrancePoint, false) : getValidExitPoints(entrancePoint, false);
 
             List<Pair<ConnectionPoint, StructurePlaceSettings>> validPoints = new ArrayList<>();
             BlockPos.MutableBlockPos position = new BlockPos.MutableBlockPos();
@@ -101,8 +102,8 @@ public class DungeonBranch {
 
             if (validPoints.isEmpty()) continue;
 
-            Pair<ConnectionPoint, StructurePlaceSettings> exitPoint = ConnectionPoint.selectBestPoint(validPoints, this, Y_TARGET, 75.0, 125.0, 100.0, 50.0);
-            placeRoom(exitPoint.getFirst(), exitPoint.getSecond(), templateConnectionPoints, entrancePoint, nextRoom);
+            Pair<ConnectionPoint, StructurePlaceSettings> exitPoint = ConnectionPoint.selectBestPoint(validPoints, this, Y_TARGET, 75.0, 125.0, 200.0, 50.0);
+            placeRoom(exitPoint.getFirst(), exitPoint.getSecond(), templateConnectionPoints, entrancePoint, nextRoom, 1);
             break;
 
         }
@@ -119,11 +120,11 @@ public class DungeonBranch {
         List<ConnectionPoint> entrancePoints = templateConnectionPoints.stream().filter(point -> !Objects.equals(point.getType(), "exit")).toList();
         ConnectionPoint entrancePoint = entrancePoints.get(new Random().nextInt(entrancePoints.size()));
 
-        List<ConnectionPoint> exitPoints = getValidExitPoints(entrancePoint);
+        List<ConnectionPoint> exitPoints = getValidExitPoints(entrancePoint, true);
 
         int i = floor.dungeonBranches.size() - 1;
         while (exitPoints.isEmpty()) {
-            exitPoints.addAll(floor.dungeonBranches.get(i).getValidExitPoints(entrancePoint));
+            exitPoints.addAll(floor.dungeonBranches.get(i).getValidExitPoints(entrancePoint, true));
             WildDungeons.getLogger().info("ADDING MORE EXIT POINTS. SIZE IS NOW {}", exitPoints.size());
             i -= 1;
             if (i == 0) return;
@@ -145,10 +146,10 @@ public class DungeonBranch {
                 BlockPos newPos = pos.offset(exitPoint.getNormal().getX() * iterations, exitPoint.getNormal().getY() * iterations, exitPoint.getNormal().getZ() * iterations);
                 level.setBlock(newPos, Blocks.AIR.defaultBlockState(), 2);
             }
-            position.offset(exitPoint.getNormal());
+            position.move(exitPoint.getDirection(), 1);
             if (iterations > 200) return;
         }
-        placeRoom(exitPoint, settings, templateConnectionPoints, entrancePoint, nextRoom);
+        placeRoom(exitPoint, settings, templateConnectionPoints, entrancePoint, nextRoom, iterations+1);
     }
 
     private boolean maybePlaceInitialRoom(List<ConnectionPoint> templateConnectionPoints) {
@@ -190,18 +191,18 @@ public class DungeonBranch {
         }
     }
 
-    private List<ConnectionPoint> getValidExitPoints(ConnectionPoint entrancePoint) {
+    private List<ConnectionPoint> getValidExitPoints(ConnectionPoint entrancePoint, boolean bypassFailures) {
         List<ConnectionPoint> exitPoints = new ArrayList<>();
         for (DungeonRoom room : dungeonRooms) {
-            exitPoints.addAll(room.getValidExitPoints(entrancePoint));
+            exitPoints.addAll(room.getValidExitPoints(entrancePoint, bypassFailures));
         }
         return exitPoints;
     }
 
-    public void placeRoom(ConnectionPoint exitPoint, StructurePlaceSettings settings, List<ConnectionPoint> allConnectionPoints, ConnectionPoint entrancePoint, DungeonComponents.DungeonRoomTemplate nextRoom) {
+    public void placeRoom(ConnectionPoint exitPoint, StructurePlaceSettings settings, List<ConnectionPoint> allConnectionPoints, ConnectionPoint entrancePoint, DungeonComponents.DungeonRoomTemplate nextRoom, int offset) {
         ConnectionPoint proposedPoint = ConnectionPoint.copy(entrancePoint);
         proposedPoint.transform(settings, TemplateHelper.EMPTY_BLOCK_POS, TemplateHelper.EMPTY_BLOCK_POS);
-        BlockPos position = ConnectionPoint.getOffset(proposedPoint, exitPoint).offset(exitPoint.getNormal());
+        BlockPos position = ConnectionPoint.getOffset(proposedPoint, exitPoint).offset(exitPoint.getNormal().multiply(offset));
 
         exitPoint.setConnectedPoint(entrancePoint);
         entrancePoint.setConnectedPoint(exitPoint);
@@ -225,6 +226,9 @@ public class DungeonBranch {
 
     public void onEnter(WDPlayer player) {
         this.players.add(player);
+        for (DungeonRoom room : this.dungeonRooms) {
+            room.onBranchEnter(player);
+        }
     }
 
     public void onExit(WDPlayer player) {
