@@ -3,29 +3,26 @@ package com.danielkkrafft.wilddungeons;
 import com.danielkkrafft.wilddungeons.block.WDFluids;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonPerks;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.CombatRoom;
-import com.danielkkrafft.wilddungeons.entity.renderer.OfferingRenderer;
+import com.danielkkrafft.wilddungeons.entity.boss.BreezeGolem;
+import com.danielkkrafft.wilddungeons.entity.boss.MutantBogged;
+import com.danielkkrafft.wilddungeons.entity.renderer.*;
 import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundOpenConnectionBlockUIPacket;
 import com.danielkkrafft.wilddungeons.network.serverbound.ServerboundUpdateConnectionBlockPacket;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.danielkkrafft.wilddungeons.block.WDBlocks;
 import com.danielkkrafft.wilddungeons.dungeon.Alignments;
-import com.danielkkrafft.wilddungeons.registry.WDEntities;
+import com.danielkkrafft.wilddungeons.entity.WDEntities;
 import com.danielkkrafft.wilddungeons.registry.WDBlockEntities;
-import com.danielkkrafft.wilddungeons.entity.renderer.EssenceOrbRenderer;
-import com.danielkkrafft.wilddungeons.entity.renderer.RiftRenderer;
 import com.danielkkrafft.wilddungeons.registry.WDEvents;
 import com.danielkkrafft.wilddungeons.registry.WDItems;
 import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundUpdateWDPlayerPacket;
+import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
 import com.danielkkrafft.wilddungeons.ui.CustomHUDHandler;
 import com.danielkkrafft.wilddungeons.ui.EssenceBar;
 import com.danielkkrafft.wilddungeons.util.FileUtil;
 import com.danielkkrafft.wilddungeons.world.dimension.EmptyGenerator;
 import com.danielkkrafft.wilddungeons.world.dimension.tools.UpdateDimensionsPacket;
-import com.mojang.blaze3d.shaders.FogShape;
-import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Registry;
@@ -42,14 +39,11 @@ import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtension
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.RegisterEvent;
-import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -57,8 +51,6 @@ import com.mojang.logging.LogUtils;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
-
-import java.util.HexFormat;
 
 @Mod(WildDungeons.MODID)
 public class WildDungeons {
@@ -74,6 +66,7 @@ public class WildDungeons {
         WDFluids.FLUID_TYPES.register(modEventBus);
         WDFluids.FLUIDS.register(modEventBus);
         WDBlocks.BLOCKS.register(modEventBus);
+        WDSoundEvents.SOUND_EVENTS.register(modEventBus);
 
         modEventBus.register(WildDungeons.class);
 
@@ -119,6 +112,11 @@ public class WildDungeons {
     public static void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(WDEntities.ESSENCE_ORB.get(), EssenceOrbRenderer::new);
         event.registerEntityRenderer(WDEntities.OFFERING.get(), OfferingRenderer::new);
+        event.registerEntityRenderer(WDEntities.BREEZE_GOLEM.get(), BreezeGolemRenderer::new);
+        event.registerEntityRenderer(WDEntities.MUTANT_BOGGED.get(), MutantBoggedRenderer::new);
+        event.registerEntityRenderer(WDEntities.PIERCING_ARROW.get(), PiercingArrowRenderer::new);
+        event.registerEntityRenderer(WDEntities.WIND_CHARGE_PROJECTILE.get(), WindChargeProjectileRenderer::new);
+
         event.registerBlockEntityRenderer(WDBlockEntities.RIFT_BLOCK_ENTITY.get(), RiftRenderer::new);
     }
 
@@ -156,6 +154,13 @@ public class WildDungeons {
         ItemBlockRenderTypes.setRenderLayer(WDFluids.LIFE_LIQUID.get(), RenderType.translucent());
         ItemBlockRenderTypes.setRenderLayer(WDFluids.FLOWING_LIFE_LIQUID.get(), RenderType.translucent());
 
+    }
+
+    @SubscribeEvent
+    public static void entityAttributeEvent(EntityAttributeCreationEvent e)
+    {
+        e.put(WDEntities.BREEZE_GOLEM.get(), BreezeGolem.setAttributes());
+        e.put(WDEntities.MUTANT_BOGGED.get(), MutantBogged.setAttributes());
     }
 
     public static ResourceLocation rl(String path) {

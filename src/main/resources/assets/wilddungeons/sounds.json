@@ -1,0 +1,91 @@
+{
+  "entity.breeze_golem.ambient": {
+    "sounds": [
+      {"name": "wilddungeons:entity/breeze_golem_ambient1"},
+      {"name": "wilddungeons:entity/breeze_golem_ambient2"},
+      {"name": "wilddungeons:entity/breeze_golem_ambient3"},
+      {"name": "wilddungeons:entity/breeze_golem_ambient4"}
+    ]
+  },
+  "entity.breeze_golem.cannon.charge": {
+    "sounds": [
+      {"name": "wilddungeons:entity/breeze_golem_cannon_charge"}
+    ]
+  },
+  "entity.breeze_golem.core": {
+    "sounds": [
+      {"name": "wilddungeons:entity/breeze_golem_core"}
+    ]
+  },
+  "entity.breeze_golem.cannon.shoot": {
+    "sounds": [
+      {"name": "wilddungeons:entity/breeze_golem_cannon_shoot"}
+    ]
+  },
+  "entity.breeze_golem.cannon.start": {
+    "sounds": [
+      {"name": "wilddungeons:entity/breeze_golem_cannon_start"}
+    ]
+  },
+  "entity.breeze_golem.death": {
+    "sounds": [
+      {"name": "wilddungeons:entity/breeze_golem_death"}
+    ]
+  },
+  "entity.breeze_golem.walk": {
+    "sounds": [
+      {"name": "wilddungeons:entity/breeze_golem_walk"}
+    ]
+  },
+  "entity.mutant_bogged.ambient": {
+    "sounds": [
+      {"name": "wilddungeons:entity/mutant_bogged_ambient1"},
+      {"name": "wilddungeons:entity/mutant_bogged_ambient2"},
+      {"name": "wilddungeons:entity/mutant_bogged_ambient3"},
+      {"name": "wilddungeons:entity/mutant_bogged_ambient4"}
+    ]
+  },
+  "entity.mutant_bogged.arrow_volley": {
+    "sounds": [
+      {"name": "wilddungeons:entity/mutant_bogged_arrow_volley"}
+    ]
+  },
+  "entity.mutant_bogged.charged_arrow": {
+    "sounds": [
+      {"name": "wilddungeons:entity/mutant_bogged_charged_arrow"}
+    ]
+  },
+  "entity.mutant_bogged.death": {
+    "sounds": [
+      {"name": "wilddungeons:entity/mutant_bogged_death"}
+    ]
+  },
+  "entity.mutant_bogged.dig": {
+    "sounds": [
+      {"name": "wilddungeons:entity/mutant_bogged_dig"}
+    ]
+  },
+  "entity.mutant_bogged.hit": {
+    "sounds": [
+      {"name": "wilddungeons:entity/mutant_bogged_hit1"},
+      {"name": "wilddungeons:entity/mutant_bogged_hit2"},
+      {"name": "wilddungeons:entity/mutant_bogged_hit3"},
+      {"name": "wilddungeons:entity/mutant_bogged_hit4"}
+    ]
+  },
+  "entity.mutant_bogged.walk": {
+    "sounds": [
+      {"name": "wilddungeons:entity/mutant_bogged_walk1"},
+      {"name": "wilddungeons:entity/mutant_bogged_walk2"},
+      {"name": "wilddungeons:entity/mutant_bogged_walk3"},
+      {"name": "wilddungeons:entity/mutant_bogged_walk4"}
+    ]
+  },
+  "entity.wind_charge.impact": {
+    "sounds": [
+      {"name": "wilddungeons:entity/wind_charge1"},
+      {"name": "wilddungeons:entity/wind_charge2"},
+      {"name": "wilddungeons:entity/wind_charge3"}
+    ]
+  }
+}
