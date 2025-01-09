@@ -90,7 +90,7 @@ public class BreezeGolem extends Monster implements RangedAttackMob, GeoEntity
     private static final EntityDataAccessor<Integer> TICKSINVULNERABLE = SynchedEntityData.defineId(BreezeGolem.class,EntityDataSerializers.INT);
     private static final int SUMMONTICKS = 50;//5s
     private final ServerBossEvent bossEvent = new ServerBossEvent(
-            getDisplayName(), BossEvent.BossBarColor.RED, BossEvent.BossBarOverlay.PROGRESS
+            getDisplayName(), BossEvent.BossBarColor.BLUE, BossEvent.BossBarOverlay.PROGRESS
     );
 
     @Override

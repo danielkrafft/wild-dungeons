@@ -1,5 +1,6 @@
 package com.danielkkrafft.wilddungeons.dungeon;
 
+import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import net.minecraft.server.level.ServerPlayer;
@@ -17,7 +18,8 @@ public class DungeonPerks {
     public enum Perks {
         SWORD_DAMAGE_INCREASE(0, new Vector2i(0, 0)),
         AXE_DAMAGE_INCREASE(1, new Vector2i(1, 0)),
-        BOW_DAMAGE_INCREASE(2, new Vector2i(2, 0));
+        BOW_DAMAGE_INCREASE(2, new Vector2i(2, 0)),
+        EXTRA_LIFE(3, new Vector2i(3, 0));
 
         private final int index;
         private final Vector2i texCoords;
@@ -29,6 +31,12 @@ public class DungeonPerks {
     private static final HashMap<Integer, Perks> ID_MAP = new HashMap<>();
     public static Perks getById(int id) {
         return ID_MAP.get(id);
+    }
+
+    public static void onPerk(Perks perk, DungeonSession session) {
+        switch (perk) {
+            case EXTRA_LIFE -> session.offsetLives(1);
+        }
     }
 
     @SubscribeEvent

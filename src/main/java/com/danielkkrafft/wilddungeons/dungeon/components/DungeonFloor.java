@@ -11,6 +11,7 @@ import com.danielkkrafft.wilddungeons.registry.WDDimensions;
 import com.danielkkrafft.wilddungeons.util.FileUtil;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.util.WeightedTable;
+import com.danielkkrafft.wilddungeons.util.debug.WDProfiler;
 import com.danielkkrafft.wilddungeons.world.dimension.EmptyGenerator;
 import com.danielkkrafft.wilddungeons.world.dimension.tools.InfiniverseAPI;
 import net.minecraft.core.BlockPos;
@@ -41,11 +42,12 @@ public class DungeonFloor {
     public double difficulty;
 
     public DungeonFloor(DungeonComponents.DungeonFloorTemplate template, DungeonSession session, BlockPos origin, int index, WeightedPool<String> destinations) {
+
+        this.session = session;
         this.template = template;
         this.materials = template.materials() == null ? session.materials : template.materials();
         this.index = index;
         this.LEVEL_KEY = buildFloorLevelKey(session.entrance, this);
-        this.session = session;
         this.enemyTable = template.enemyTable() == null ? session.enemyTable : template.enemyTable();
         this.difficulty = session.difficulty * template.difficulty() * Math.max(Math.pow(1.1, session.floors.size()), 1);
         this.level = InfiniverseAPI.get().getOrCreateLevel(DungeonSessionManager.getInstance().server, LEVEL_KEY, () -> WDDimensions.createLevel(DungeonSessionManager.getInstance().server));
@@ -68,6 +70,7 @@ public class DungeonFloor {
             }
         }
 
+        WDProfiler.INSTANCE.logTimestamp("DungeonFloor::new");
     }
 
     public void shutdown() {
@@ -76,7 +79,7 @@ public class DungeonFloor {
     }
 
     public static ResourceKey<Level> buildFloorLevelKey(BlockPos entrance, DungeonFloor floor) {
-        return ResourceKey.create(Registries.DIMENSION, WildDungeons.rl(floor.template.name() + "_" + floor.index + entrance.getX() + entrance.getY() + entrance.getZ()));
+        return ResourceKey.create(Registries.DIMENSION, WildDungeons.rl(DungeonSessionManager.buildDungeonSessionKey(floor.session.entrance) + "_" + floor.template.name() + "_" + floor.index + entrance.getX() + entrance.getY() + entrance.getZ()));
     }
 
     private void generateDungeonFloor() {

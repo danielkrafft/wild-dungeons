@@ -1,8 +1,8 @@
 {
   "parent": "minecraft:block/cube_bottom_top",
   "textures": {
-    "bottom": "danielkrafftmod:block/heavy_rune_bottom",
-    "side": "danielkrafftmod:block/heavy_rune_side",
-    "top": "danielkrafftmod:block/heavy_rune_top"
+    "bottom": "wilddungeons:block/heavy_rune_bottom",
+    "side": "wilddungeons:block/heavy_rune_side",
+    "top": "wilddungeons:block/heavy_rune_top"
   }
 }

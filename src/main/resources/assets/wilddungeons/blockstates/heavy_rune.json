@@ -1,7 +1,7 @@
 {
   "variants": {
     "": {
-      "model": "danielkrafftmod:block/heavy_rune"
+      "model": "wilddungeons:block/heavy_rune"
     }
   }
 }

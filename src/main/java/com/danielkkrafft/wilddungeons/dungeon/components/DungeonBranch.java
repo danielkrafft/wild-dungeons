@@ -6,6 +6,7 @@ import com.danielkkrafft.wilddungeons.dungeon.components.room.DungeonRoom;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.util.WeightedTable;
+import com.danielkkrafft.wilddungeons.util.debug.WDProfiler;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -18,7 +19,7 @@ import java.util.*;
 
 public class DungeonBranch {
     private static final int OPEN_CONNECTIONS_TARGET = 6;
-    private static final int Y_TARGET = 64;
+    private static final int Y_TARGET = 128;
 
     public List<DungeonRoom> dungeonRooms = new ArrayList<>();
     public WeightedPool<DungeonMaterial> materials;
@@ -45,6 +46,8 @@ public class DungeonBranch {
         this.origin = origin;
         generateDungeonBranch();
         setupBoundingBox();
+
+        WDProfiler.INSTANCE.logTimestamp("DungeonBranch::new");
     }
 
     private void generateDungeonBranch() {
@@ -60,6 +63,8 @@ public class DungeonBranch {
 
         this.dungeonRooms.forEach(DungeonRoom::processConnectionPoints);
         WildDungeons.getLogger().info("PLACED {} ROOMS IN {} TRIES", dungeonRooms.size(), tries);
+
+        WDProfiler.INSTANCE.logTimestamp("DungeonBranch::generateDungeonBranch");
     }
 
     private void populateNextRoom() {
@@ -77,7 +82,7 @@ public class DungeonBranch {
         while (!pointsToTry.isEmpty()) {
 
             ConnectionPoint entrancePoint = pointsToTry.remove(new Random().nextInt(pointsToTry.size()));
-            List<ConnectionPoint> exitPoints = this.dungeonRooms.isEmpty() ? floor.dungeonBranches.getLast().dungeonRooms.getLast().getValidExitPoints(entrancePoint, false) : getValidExitPoints(entrancePoint, false);
+            List<ConnectionPoint> exitPoints = this.dungeonRooms.isEmpty() ? floor.dungeonBranches.getLast().dungeonRooms.getLast().getValidExitPoints(nextRoom, entrancePoint, false) : getValidExitPoints(nextRoom, entrancePoint, false);
 
             List<Pair<ConnectionPoint, StructurePlaceSettings>> validPoints = new ArrayList<>();
             BlockPos.MutableBlockPos position = new BlockPos.MutableBlockPos();
@@ -102,12 +107,13 @@ public class DungeonBranch {
 
             if (validPoints.isEmpty()) continue;
 
-            Pair<ConnectionPoint, StructurePlaceSettings> exitPoint = ConnectionPoint.selectBestPoint(validPoints, this, Y_TARGET, 75.0, 125.0, 200.0, 50.0);
+            Pair<ConnectionPoint, StructurePlaceSettings> exitPoint = ConnectionPoint.selectBestPoint(validPoints, this, Y_TARGET, 70.0, 130.0, 200.0, 30.0);
             placeRoom(exitPoint.getFirst(), exitPoint.getSecond(), templateConnectionPoints, entrancePoint, nextRoom, 1);
             break;
 
         }
 
+        WDProfiler.INSTANCE.logTimestamp("DungeonBranch::populateNextRoom");
     }
 
     private void forceLastRoom() {
@@ -120,11 +126,11 @@ public class DungeonBranch {
         List<ConnectionPoint> entrancePoints = templateConnectionPoints.stream().filter(point -> !Objects.equals(point.getType(), "exit")).toList();
         ConnectionPoint entrancePoint = entrancePoints.get(new Random().nextInt(entrancePoints.size()));
 
-        List<ConnectionPoint> exitPoints = getValidExitPoints(entrancePoint, true);
+        List<ConnectionPoint> exitPoints = getValidExitPoints(nextRoom, entrancePoint, true);
 
         int i = floor.dungeonBranches.size() - 1;
         while (exitPoints.isEmpty()) {
-            exitPoints.addAll(floor.dungeonBranches.get(i).getValidExitPoints(entrancePoint, true));
+            exitPoints.addAll(floor.dungeonBranches.get(i).getValidExitPoints(nextRoom, entrancePoint, true));
             WildDungeons.getLogger().info("ADDING MORE EXIT POINTS. SIZE IS NOW {}", exitPoints.size());
             i -= 1;
             if (i == 0) return;
@@ -150,6 +156,8 @@ public class DungeonBranch {
             if (iterations > 200) return;
         }
         placeRoom(exitPoint, settings, templateConnectionPoints, entrancePoint, nextRoom, iterations+1);
+
+        WDProfiler.INSTANCE.logTimestamp("DungeonBranch::forceLastRoom");
     }
 
     private boolean maybePlaceInitialRoom(List<ConnectionPoint> templateConnectionPoints) {
@@ -176,26 +184,30 @@ public class DungeonBranch {
             }
         }
 
+        WDProfiler.INSTANCE.logTimestamp("DungeonBranch::selectNextRoom");
         return nextRoom;
     }
 
     private boolean validateNextPoint(ConnectionPoint exitPoint, StructurePlaceSettings settings, BlockPos position, DungeonComponents.DungeonRoomTemplate nextRoom) {
 
         List<BoundingBox> proposedBoxes = nextRoom.getBoundingBoxes(settings, position);
+        boolean flag = true;
         if (!floor.isBoundingBoxValid(proposedBoxes, dungeonRooms)) {
             exitPoint.incrementFailures();
-            return false;
-        } else {
-            return true;
-
+            flag = false;
         }
+
+        WDProfiler.INSTANCE.logTimestamp("DungeonBranch::validateNextPoint");
+        return flag;
     }
 
-    private List<ConnectionPoint> getValidExitPoints(ConnectionPoint entrancePoint, boolean bypassFailures) {
+    private List<ConnectionPoint> getValidExitPoints(DungeonComponents.DungeonRoomTemplate nextRoom, ConnectionPoint entrancePoint, boolean bypassFailures) {
         List<ConnectionPoint> exitPoints = new ArrayList<>();
         for (DungeonRoom room : dungeonRooms) {
-            exitPoints.addAll(room.getValidExitPoints(entrancePoint, bypassFailures));
+            exitPoints.addAll(room.getValidExitPoints(nextRoom, entrancePoint, bypassFailures));
         }
+
+        WDProfiler.INSTANCE.logTimestamp("DungeonBranch::getValidExitPoints");
         return exitPoints;
     }
 
@@ -213,6 +225,7 @@ public class DungeonBranch {
         room.index = dungeonRooms.size();
         dungeonRooms.add(room);
         room.onGenerate();
+        WDProfiler.INSTANCE.logTimestamp("DungeonBranch::placeRoom");
     }
 
     public void setupBoundingBox() {
@@ -222,6 +235,7 @@ public class DungeonBranch {
                 this.boundingBox.encapsulate(box);
             }
         }
+        WDProfiler.INSTANCE.logTimestamp("DungeonBranch::setupBoundingBox");
     }
 
     public void onEnter(WDPlayer player) {

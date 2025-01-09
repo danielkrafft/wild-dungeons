@@ -18,6 +18,7 @@ import com.danielkkrafft.wilddungeons.registry.WDItems;
 import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundUpdateWDPlayerPacket;
 import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
 import com.danielkkrafft.wilddungeons.ui.CustomHUDHandler;
+import com.danielkkrafft.wilddungeons.ui.DungeonLifeCounter;
 import com.danielkkrafft.wilddungeons.ui.EssenceBar;
 import com.danielkkrafft.wilddungeons.util.FileUtil;
 import com.danielkkrafft.wilddungeons.world.dimension.EmptyGenerator;
@@ -99,6 +100,7 @@ public class WildDungeons {
     @SubscribeEvent
     public static void registerOverlays(RegisterGuiLayersEvent event) {
         event.registerAbove(VanillaGuiLayers.EXPERIENCE_BAR, rl("essence_bar"), EssenceBar.INSTANCE);
+        event.registerAbove(VanillaGuiLayers.HOTBAR, rl("life_counter"), DungeonLifeCounter.INSTANCE);
     }
 
     @SubscribeEvent

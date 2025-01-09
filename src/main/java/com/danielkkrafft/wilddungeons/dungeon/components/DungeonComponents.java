@@ -110,10 +110,10 @@ public class DungeonComponents {
         }
     }
 
-    public record DungeonTemplate(String name, String openBehavior, DungeonRegistry.DungeonLayout<DungeonFloorTemplate> floorTemplates, WeightedPool<DungeonMaterial> materials, WeightedTable<EntityType<?>> enemyTable, double difficulty) implements DungeonComponent {
+    public record DungeonTemplate(String name, String openBehavior, DungeonRegistry.DungeonLayout<DungeonFloorTemplate> floorTemplates, WeightedPool<DungeonMaterial> materials, WeightedTable<EntityType<?>> enemyTable, double difficulty, DungeonSession.DungeonExitBehavior exitBehavior, WeightedPool<DungeonTemplate> nextDungeon) implements DungeonComponent {
 
-        public static DungeonTemplate build(String name, String openBehavior, DungeonRegistry.DungeonLayout<DungeonFloorTemplate> floorTemplates, WeightedPool<DungeonMaterial> materials, WeightedTable<EntityType<?>> enemyTable, double difficulty) {
-            return new DungeonTemplate(name, openBehavior, floorTemplates, materials, enemyTable, difficulty);
+        public static DungeonTemplate build(String name, String openBehavior, DungeonRegistry.DungeonLayout<DungeonFloorTemplate> floorTemplates, WeightedPool<DungeonMaterial> materials, WeightedTable<EntityType<?>> enemyTable, double difficulty, DungeonSession.DungeonExitBehavior exitBehavior, WeightedPool<DungeonTemplate> nextDungeon) {
+            return new DungeonTemplate(name, openBehavior, floorTemplates, materials, enemyTable, difficulty, exitBehavior, nextDungeon);
         }
 
         public DungeonTemplate pool(WeightedPool<DungeonTemplate> pool, Integer weight) {pool.add(this, weight); return this;}

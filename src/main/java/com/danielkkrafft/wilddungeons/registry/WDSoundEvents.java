@@ -26,4 +26,5 @@ public class WDSoundEvents {
     public static final Holder<SoundEvent> MUTANT_BOGGED_WALK = SOUND_EVENTS.register("entity.mutant_bogged.walk", SoundEvent::createVariableRangeEvent);
     public static final Holder<SoundEvent> MUTANT_BOGGED_ARROW_VOLLEY = SOUND_EVENTS.register("entity.mutant_bogged.arrow_volley", SoundEvent::createVariableRangeEvent);
     public static final Holder<SoundEvent> MUTANT_BOGGED_CHARGED_ARROW = SOUND_EVENTS.register("entity.mutant_bogged.charged_arrow", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> MUTANT_BOGGED_GROWL = SOUND_EVENTS.register("entity.mutant_bogged.growl", SoundEvent::createVariableRangeEvent);
 }

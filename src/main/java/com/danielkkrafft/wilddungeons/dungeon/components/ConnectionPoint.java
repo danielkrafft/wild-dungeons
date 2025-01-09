@@ -2,6 +2,8 @@ package com.danielkkrafft.wilddungeons.dungeon.components;
 
 import com.danielkkrafft.wilddungeons.dungeon.components.room.DungeonRoom;
 import com.danielkkrafft.wilddungeons.entity.blockentity.ConnectionBlockEntity;
+import com.danielkkrafft.wilddungeons.util.debug.WDProfiler;
+import com.danielkkrafft.wilddungeons.world.dimension.EmptyGenerator;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
@@ -10,6 +12,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -56,6 +59,8 @@ public class ConnectionPoint {
         newPoint.direction = direction;
         newPoint.boundingBox = new BoundingBox(position);
         newPoint.positions.add(position);
+
+        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::create");
         return newPoint;
     }
 
@@ -72,6 +77,8 @@ public class ConnectionPoint {
         newPoint.boundingBox = oldPoint.boundingBox;
         newPoint.positions = oldPoint.positions;
         newPoint.unBlockedBlockStates = oldPoint.unBlockedBlockStates;
+
+        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::copy");
         return newPoint;
     }
 
@@ -88,17 +95,22 @@ public class ConnectionPoint {
            newBlockStates.put(StructureTemplate.transform(pos, settings.getMirror(), settings.getRotation(), offset).offset(position), state);
         });
         unBlockedBlockStates = newBlockStates;
+        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::transform");
     }
 
-    public static boolean arePointsCompatible(ConnectionPoint en, ConnectionPoint ex, boolean bypassFailures) {
+    public static boolean arePointsCompatible(DungeonComponents.DungeonRoomTemplate nextRoom, ConnectionPoint en, ConnectionPoint ex, boolean bypassFailures) {
         List<Boolean> conditions = List.of(
                 !ex.isConnected(),
                 !Objects.equals(ex.type, "entrance"),
                 ex.failures < 10 || bypassFailures,
                 Objects.equals(en.pool, ex.pool),
                 en.getAxis() != Direction.Axis.Y || ex.direction == en.direction.getOpposite(),
-                en.getSize().equals(ex.getSize())
+                en.getSize().equals(ex.getSize()),
+                nextRoom.getBoundingBoxes(TemplateHelper.EMPTY_DUNGEON_SETTINGS, TemplateHelper.EMPTY_BLOCK_POS).stream().allMatch(box -> Mth.abs(EmptyGenerator.MIN_Y - ex.boundingBox.minY()) > box.getYSpan())
+
         );
+
+        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::arePointsCompatible");
         return conditions.stream().allMatch(condition -> condition);
     }
 
@@ -107,7 +119,7 @@ public class ConnectionPoint {
         int totalFloorDistance = pointPool.stream().mapToInt(pair -> pair.getFirst().getOrigin().distManhattan(branch.floor.origin)).sum();
         int totalHeightDistance = pointPool.stream().mapToInt(pair -> Math.abs(pair.getFirst().getOrigin().getY() - yTarget)).sum();
 
-        return pointPool.stream().map(pair -> {
+        Pair<ConnectionPoint, StructurePlaceSettings> result = pointPool.stream().map(pair -> {
             int distanceToBranchOrigin = branch.dungeonRooms.isEmpty() ? 0 : pair.getFirst().getOrigin().distManhattan(branch.dungeonRooms.getFirst().position);
             int distanceToFloorOrigin = pair.getFirst().getOrigin().distManhattan(branch.floor.origin);
             int distanceToYTarget = Math.abs(pair.getFirst().getOrigin().getY() - yTarget);
@@ -120,6 +132,9 @@ public class ConnectionPoint {
 
             return new Pair<>(pair, score);
         }).max(Comparator.comparingInt(Pair::getSecond)).map(Pair::getFirst).orElse(null);
+
+        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::selectBestPoint");
+        return result;
     }
 
     public static BlockPos getOffset(ConnectionPoint en, ConnectionPoint ex) {
@@ -153,14 +168,18 @@ public class ConnectionPoint {
                         .setValue(BlockStateProperties.HALF, blockState.getValue(BlockStateProperties.HALF))
                         .setValue(BlockStateProperties.STAIRS_SHAPE, blockState.getValue(BlockStateProperties.STAIRS_SHAPE));
 
+                WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::setupBlockstates");
                 blockState = TemplateHelper.fixBlockStateProperties(blockState, settings);
                 this.unBlockedBlockStates.put(pos, blockState);
             }
         }
+
+        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::setupBlockstates");
     }
 
     public void block(ServerLevel level) {
         positions.forEach((pos) -> level.setBlock(pos, this.room.material.getBasic(0), 2));
+        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::block");
     }
 
     public void hide(ServerLevel level) {
@@ -169,5 +188,6 @@ public class ConnectionPoint {
 
     public void unBlock(ServerLevel level) {
         unBlockedBlockStates.forEach((pos, blockState) -> level.setBlock(pos, blockState, 2));
+        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::unBlock");
     }
 }

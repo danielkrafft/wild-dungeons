@@ -32,13 +32,14 @@ public class DungeonMaterial {
     public BlockState getHidden(int index) {return hiddenBlockStates.get(index).getRandom();}
 
     public BlockState replace(BlockState input) {
-        BlockState result = getBasic(0);
+        BlockState result = input;
         if (input.getBlock() == Blocks.STONE_BRICKS) {result = getBasic(0);}
-        if (input.getBlock() == Blocks.STONE_BRICK_STAIRS) {result = getStair(0);}
-        if (input.getBlock() == Blocks.STONE_BRICK_SLAB) {result = getSlab(0);}
-        if (input.getBlock() == Blocks.STONE_BRICK_WALL) {result = getWall(0);}
-        if (input.getBlock() == Blocks.SEA_LANTERN) {result = getLight(0);}
-        if (input.getBlock() == Blocks.CRACKED_STONE_BRICKS) {result = getHidden(0);}
+        else if (input.getBlock() == Blocks.STONE_BRICK_STAIRS) {result = getStair(0);}
+        else if (input.getBlock() == Blocks.STONE_BRICK_SLAB) {result = getSlab(0);}
+        else if (input.getBlock() == Blocks.STONE_BRICK_WALL) {result = getWall(0);}
+        else if (input.getBlock() == Blocks.SEA_LANTERN) {result = getLight(0);}
+        else if (input.getBlock() == Blocks.CRACKED_STONE_BRICKS) {result = getHidden(0);}
+        else {return result;}
 
         for (Property<?> property : input.getProperties()) {
             if (result.hasProperty(property)) {

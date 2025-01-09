@@ -29,6 +29,7 @@ public class DungeonPerk {
         } else {
             session.perks.put(perk, new DungeonPerk(perk));
         }
+        DungeonPerks.onPerk(perk, session);
 
     }
 

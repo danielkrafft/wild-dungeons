@@ -1,7 +1,7 @@
 {
   "variants": {
     "": {
-      "model": "danielkrafftmod:block/rotten_moss"
+      "model": "wilddungeons:block/rotten_moss"
     }
   }
 }

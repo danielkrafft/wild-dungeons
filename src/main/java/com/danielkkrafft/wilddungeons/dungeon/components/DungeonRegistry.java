@@ -4,6 +4,7 @@ import com.danielkkrafft.wilddungeons.dungeon.DungeonMaterial;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonMaterials;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.EnemyTables;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonOpenBehavior;
+import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
@@ -118,13 +119,13 @@ public class DungeonRegistry {
 
         DUNGEON_REGISTRY.add(DungeonComponents.DungeonTemplate.build("dungeon_1", DungeonOpenBehavior.NONE,
                 new DungeonLayout<DungeonComponents.DungeonFloorTemplate>()
-                        .add(FLOOR_POOL, 3),
+                        .add(FLOOR_POOL, 1),
                 new WeightedPool<DungeonMaterial>()
                         .add(DungeonMaterials.DEEP_DARK, 1)
                         .add(DungeonMaterials.PRISMARINE, 1)
                         .add(DungeonMaterials.OAK_WOOD, 1)
                         .add(DungeonMaterials.SANDSTONE, 1)
-                        .add(DungeonMaterials.STONE_BRICK, 1), EnemyTables.BASIC_TABLE, 1.0)
+                        .add(DungeonMaterials.STONE_BRICK, 1), EnemyTables.BASIC_TABLE, 1.0, DungeonSession.DungeonExitBehavior.NEW_DUNGEON, DUNGEON_POOL)
                 .pool(DUNGEON_POOL, 1));
     }
 

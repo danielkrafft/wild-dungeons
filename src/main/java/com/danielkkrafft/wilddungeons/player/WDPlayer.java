@@ -32,6 +32,7 @@ public class WDPlayer {
     private int currentFloor = -1;
     private int currentBranch = -1;
     private int currentRoom = -1;
+    private int currentLives = 0;
 
     private long blockPos = 0;
 
@@ -54,13 +55,19 @@ public class WDPlayer {
     public int getDepth() {return this.positions.size();};
 
     public DungeonSession getCurrentDungeon() {return Objects.equals(this.currentDungeon, "none") ? null : DungeonSessionManager.getInstance().getDungeonSession(this.currentDungeon);}
-    public void setCurrentDungeon(DungeonSession session) {this.currentDungeon = session == null ? "none" : DungeonSessionManager.buildDungeonSessionKey(session.entrance);}
+    public void setCurrentDungeon(DungeonSession session) {
+        this.currentDungeon = session == null ? "none" : DungeonSessionManager.buildDungeonSessionKey(session.entrance);
+        WildDungeons.getLogger().info("SETTING CURRENT DUNGEON TO {}", this.currentDungeon);
+    }
     public DungeonFloor getCurrentFloor() {return this.currentFloor == -1 ? null : this.getCurrentDungeon().floors.get(this.currentFloor);}
     public void setCurrentFloor(DungeonFloor floor) {this.currentFloor = floor == null ? -1 : floor.index;}
     public DungeonBranch getCurrentBranch() {return this.currentBranch == -1 ? null : this.getCurrentFloor().dungeonBranches.get(this.currentBranch);}
     public void setCurrentBranch(DungeonBranch branch) {this.currentBranch = branch == null ? -1 : branch.index;}
     public DungeonRoom getCurrentRoom() {return this.currentRoom == -1 ? null : this.getCurrentBranch().dungeonRooms.get(this.currentRoom);}
     public void setCurrentRoom(DungeonRoom room) {this.currentRoom = room == null ? -1 : room.index;}
+    public int getCurrentLives() {return this.currentLives;}
+    public void setCurrentLives(int currentLives) {this.currentLives = currentLives;}
+
     public ServerPlayer getServerPlayer() {return DungeonSessionManager.getInstance().server.getPlayerList().getPlayer(java.util.UUID.fromString(this.UUID));}
 
     public WDPlayer(String playerUUID){this.UUID = playerUUID;}
@@ -78,12 +85,15 @@ public class WDPlayer {
 
     public void rootRespawn(MinecraftServer server) {
         if (respawns.isEmpty() || positions.isEmpty()) return;
+        WildDungeons.getLogger().info("ROOT RESPAWNING");
         SavedTransform newPosition = positions.get(-1);
         WDPlayer.setRespawnPosition(respawns.get(-1), getServerPlayer(server));
-        this.currentDungeon = null;
+        this.setCurrentDungeon(null);
         this.currentFloor = -1;
         this.currentBranch = -1;
         this.currentRoom = -1;
+        this.currentLives = 0;
+        this.riftCooldown = 100;
         respawns = new HashMap<>();
         positions = new HashMap<>();
         CommandUtil.executeTeleportCommand(getServerPlayer(server), newPosition);
@@ -114,11 +124,15 @@ public class WDPlayer {
         tag.put("respawns", respawnsTag);
         tag.put("positions", positionsTag);
         tag.putString("recentEssence", this.recentEssence);
+        WildDungeons.getLogger().info("SERIALIZING CURRENT DUNGEON: {}", this.currentDungeon);
         tag.putString("currentDungeon", this.currentDungeon);
         tag.putInt("currentFloor", this.currentFloor);
         tag.putInt("currentBranch", this.currentBranch);
         tag.putInt("currentRoom", this.currentRoom);
+        tag.putInt("currentLives", this.currentLives);
         tag.putString("uuid", this.UUID);
+
+        WildDungeons.getLogger().info("SAVING PLAYER WITH LIVES: {}", this.currentLives);
         return tag;
     }
 
@@ -141,26 +155,25 @@ public class WDPlayer {
             newPositions.put(i, new SavedTransform(positionsTag.getCompound(String.valueOf(i))));
         }
 
+        this.riftCooldown = 100;
         this.essenceTotals = newEssenceTotals;
         this.respawns = newRespawns;
         this.positions = newPositions;
         this.recentEssence = tag.getString("recentEssence");
         this.currentDungeon = tag.getString("currentDungeon");
+        WildDungeons.getLogger().info("SET CURRENT DUNGEON FROM TAG: {}", this.currentDungeon);
         this.currentFloor = tag.getInt("currentFloor");
         this.currentBranch = tag.getInt("currentBranch");
         this.currentRoom = tag.getInt("currentRoom");
+        this.currentLives = tag.getInt("currentLives");
         this.UUID = tag.getString("uuid");
+
+        WildDungeons.getLogger().info("CREATED PLAYER WITH LIVES: {}", this.currentLives);
     }
 
     public void giveEssencePoints(String key, int points) {
-        WildDungeons.getLogger().info("ADDING " + points + " WORTH OF " + key + " EXPERIENCE");
-        WildDungeons.getLogger().info("ESSENCE TOTAL IS CURRENTLY " + getEssenceTotal(key));
-        WildDungeons.getLogger().info("ESSENCE LEVEL IS CURRENTLY " + getEssenceLevel(key));
         this.setRecentEssence(key);
         this.setEssenceTotal(key, Mth.clamp(this.getEssenceTotal(key) + points, 0, Integer.MAX_VALUE));
-
-        WildDungeons.getLogger().info("ESSENCE TOTAL IS NOW " + getEssenceTotal(key));
-        WildDungeons.getLogger().info("ESSENCE LEVEL IS NOW " + getEssenceLevel(key));
     }
 
     public float getEssenceLevel(String key) {

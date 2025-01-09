@@ -407,13 +407,17 @@ public class MutantBogged extends Monster implements RangedAttackMob, GeoEntity
     public boolean hurt(@NotNull DamageSource source, float damage)
     {
         //immune to all except wither, void
+        if (source.getEntity() instanceof Player) {
+            super.hurt(source, damage*0.5f);
+            return true;
+        }
         if (!(source.isCreativePlayer()||source.is(DamageTypes.GENERIC_KILL)||source.is(DamageTypes.WITHER)||source.is(DamageTypes.FELL_OUT_OF_WORLD))||source.is(DamageTypes.OUTSIDE_BORDER)) return false;
         return super.hurt(source, damage);
     }
     @Override
     protected @org.jetbrains.annotations.Nullable SoundEvent getAmbientSound()
     {
-        return WDSoundEvents.MUTANT_BOGGED_AMBIENT.value();
+        return WDSoundEvents.MUTANT_BOGGED_GROWL.value();
     }
 
     @Override

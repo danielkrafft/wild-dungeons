@@ -9,6 +9,6 @@ public class BreezeGolemSmokeModel<T extends BreezeGolem> extends ClientModel<T>
     {
         super(WildDungeons.rl("animation/entity/breeze_golem.animation.json"),
                 WildDungeons.rl("geo/entity/breeze_golem_smoke.geo.json"),
-                WildDungeons.rl("textures/entity/breeze_golem.png"));
+                WildDungeons.rl("textures/entity/breeze_golem_smoke.png"));
     }
 }

@@ -10,6 +10,7 @@ import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import com.danielkkrafft.wilddungeons.util.WeightedTable;
+import com.danielkkrafft.wilddungeons.util.debug.WDProfiler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
@@ -53,29 +54,33 @@ public class DungeonRoom {
     public double difficulty;
 
     public DungeonRoom(DungeonBranch branch, DungeonComponents.DungeonRoomTemplate dungeonRoomTemplate, ServerLevel level, BlockPos position, BlockPos offset, StructurePlaceSettings settings, List<ConnectionPoint> allConnectionPoints) {
-        dungeonRoomTemplate.templates().forEach(template -> {
-            BlockPos newOffset = StructureTemplate.transform(template.getSecond(), settings.getMirror(), settings.getRotation(), TemplateHelper.EMPTY_BLOCK_POS);
-            BlockPos newPosition = position.offset(newOffset);
-            template.getFirst().placeInWorld(level, newPosition, template.getSecond(), settings, DungeonSessionManager.getInstance().server.overworld().getRandom(), 2);
-        });
         this.template = dungeonRoomTemplate;
         this.branch = branch;
+        this.material = dungeonRoomTemplate.materials() == null ?
+                this.branch.materials.getRandom() :
+                this.template.materials().getRandom();
+        this.settings = settings;
+
         this.enemyTable = dungeonRoomTemplate.enemyTable() == null ? branch.enemyTable : dungeonRoomTemplate.enemyTable();
         this.difficulty = branch.difficulty * dungeonRoomTemplate.difficulty();
         this.level = level;
         this.position = position;
         this.offset = offset;
-        this.settings = settings;
         this.rotated = settings.getRotation() == Rotation.CLOCKWISE_90 || settings.getRotation() == Rotation.COUNTERCLOCKWISE_90;
         this.boundingBoxes = dungeonRoomTemplate.getBoundingBoxes(settings, position);
-        this.material = dungeonRoomTemplate.materials() == null ?
-                this.branch.materials.getRandom() :
-                this.template.materials().getRandom();
+
+        dungeonRoomTemplate.templates().forEach(template -> {
+            BlockPos newOffset = StructureTemplate.transform(template.getSecond(), settings.getMirror(), settings.getRotation(), TemplateHelper.EMPTY_BLOCK_POS);
+            BlockPos newPosition = position.offset(newOffset);
+            TemplateHelper.placeInWorld(template.getFirst(), this, this.material, level, newPosition, template.getSecond(), settings, DungeonSessionManager.getInstance().server.overworld().getRandom(), 2);
+            //template.getFirst().placeInWorld(level, newPosition, template.getSecond(), settings, DungeonSessionManager.getInstance().server.overworld().getRandom(), 2);
+        });
+
 
         dungeonRoomTemplate.rifts().forEach(pos -> {
             this.rifts.add(StructureTemplate.transform(pos, settings.getMirror(), settings.getRotation(), offset).offset(position));
         });
-        this.processMaterialBlocks(this.material);
+        //this.processMaterialBlocks(this.material);
         this.processOfferings();
         this.processLootBlocks();
 
@@ -91,6 +96,7 @@ public class DungeonRoom {
         }
         this.handleChunkMap();
 
+        WDProfiler.INSTANCE.logTimestamp("DungeonRoom::new");
     }
 
     public void processConnectionPoints() {
@@ -99,6 +105,7 @@ public class DungeonRoom {
             if (point.isConnected()) point.unBlock(this.level);
             if (!point.isConnected()) point.block(this.level);
         }
+        WDProfiler.INSTANCE.logTimestamp("DungeonRoom::processConnectionPoints");
     }
 
     public void processMaterialBlocks(DungeonMaterial material) {
@@ -106,12 +113,15 @@ public class DungeonRoom {
         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
         materialBlocks.forEach(structureBlockInfo -> {
             mutableBlockPos.set(TemplateHelper.transform(structureBlockInfo.pos(), this));
-            level.setBlock(mutableBlockPos, TemplateHelper.fixBlockStateProperties(material.replace(structureBlockInfo.state()), this.settings), 2);
+
+            WDProfiler.INSTANCE.logTimestamp("DungeonRoom::processMaterialBlocks");
+            level.setBlock(mutableBlockPos, TemplateHelper.fixBlockStateProperties(material.replace(structureBlockInfo.state()), this.settings), 0);
 
             if (level.getBlockState(mutableBlockPos.move(0, 1,0)) == Blocks.AIR.defaultBlockState() && level.getBlockState(mutableBlockPos.move(0, 1,0)) == Blocks.AIR.defaultBlockState()) {
                 spawnablePosList.add(mutableBlockPos.offset(0, -1, 0));
             }
         });
+        WDProfiler.INSTANCE.logTimestamp("DungeonRoom::processMaterialBlocks");
     }
 
     public void processLootBlocks() {
@@ -143,6 +153,8 @@ public class DungeonRoom {
                 remainingChests -= 1;
             }
         }
+
+        WDProfiler.INSTANCE.logTimestamp("DungeonRoom::processLootBlocks");
     }
 
     public void processOfferings() {
@@ -152,15 +164,18 @@ public class DungeonRoom {
             level.setBlock(TemplateHelper.transform(pos, this), Blocks.AIR.defaultBlockState(), 2);
         });
 
+        WDProfiler.INSTANCE.logTimestamp("DungeonRoom::processOfferings");
     }
 
-    public List<ConnectionPoint> getValidExitPoints(ConnectionPoint entrancePoint, boolean bypassFailures) {
+    public List<ConnectionPoint> getValidExitPoints(DungeonComponents.DungeonRoomTemplate nextRoom, ConnectionPoint entrancePoint, boolean bypassFailures) {
         List<ConnectionPoint> exitPoints = new ArrayList<>();
         for (ConnectionPoint point : connectionPoints) {
-            if (ConnectionPoint.arePointsCompatible(entrancePoint, point, bypassFailures)) {
+            if (ConnectionPoint.arePointsCompatible(nextRoom, entrancePoint, point, bypassFailures)) {
                 exitPoints.add(point);
             }
         }
+
+        WDProfiler.INSTANCE.logTimestamp("DungeonRoom::getValidExitPoints");
         return exitPoints;
     }
 
@@ -178,6 +193,7 @@ public class DungeonRoom {
             }
         }
         chunkPosSet.forEach(pos -> this.branch.floor.chunkMap.computeIfAbsent(pos, k -> new ArrayList<>()).add(this));
+        WDProfiler.INSTANCE.logTimestamp("DungeonRoom::handleChunkMap");
     }
 
     public boolean isPosInsideShell(BlockPos pos) {

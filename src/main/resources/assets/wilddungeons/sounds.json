@@ -65,6 +65,11 @@
       {"name": "wilddungeons:entity/mutant_bogged_dig"}
     ]
   },
+  "entity.mutant_bogged.growl": {
+    "sounds": [
+      {"name": "wilddungeons:entity/mutant_bogged_growl"}
+    ]
+  },
   "entity.mutant_bogged.hit": {
     "sounds": [
       {"name": "wilddungeons:entity/mutant_bogged_hit1"},

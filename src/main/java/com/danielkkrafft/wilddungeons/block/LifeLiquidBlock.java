@@ -20,7 +20,7 @@ public class LifeLiquidBlock extends LiquidBlock {
         super.entityInside(state, level, pos, entity);
 
         if (entity instanceof LivingEntity livingEntity) {
-            livingEntity.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 10, 0));
+            livingEntity.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 10, 2));
         }
     }
 }

@@ -18,7 +18,7 @@ public class BreezeGolemRenderer extends GeoEntityRenderer<BreezeGolem>
     public BreezeGolemRenderer(EntityRendererProvider.Context renderManager)
     {
         super(renderManager,new BreezeGolemModel());
-        addRenderLayer(new BreezeGolemLayer<>(this));
+        //addRenderLayer(new BreezeGolemLayer<>(this));
     }
     @Override
     public void actuallyRender(PoseStack poseStack, BreezeGolem entity, BakedGeoModel model, @Nullable RenderType renderType, MultiBufferSource bufferSource, @Nullable VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int colour)
