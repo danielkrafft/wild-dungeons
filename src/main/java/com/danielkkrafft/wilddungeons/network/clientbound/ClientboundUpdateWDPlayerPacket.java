@@ -3,6 +3,7 @@ package com.danielkkrafft.wilddungeons.network.clientbound;
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
+import com.danielkkrafft.wilddungeons.util.Serializer;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
@@ -26,7 +27,8 @@ public record ClientboundUpdateWDPlayerPacket(CompoundTag data) implements Custo
 
     public void handle(IPayloadContext context) {
         context.enqueueWork(() -> {
-            WDPlayerManager.getInstance().replaceWDPlayer(Minecraft.getInstance().player.getStringUUID(), new WDPlayer(data));
+            WDPlayerManager.getInstance().replaceWDPlayer(Minecraft.getInstance().player.getStringUUID(), Serializer.fromCompoundTag(data));
+            //WDPlayerManager.getInstance().replaceWDPlayer(Minecraft.getInstance().player.getStringUUID(), new WDPlayer(data));
         });
     }
 }

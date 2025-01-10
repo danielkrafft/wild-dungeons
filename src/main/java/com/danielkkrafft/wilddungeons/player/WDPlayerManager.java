@@ -5,26 +5,23 @@ import com.danielkkrafft.wilddungeons.dungeon.components.room.DungeonRoom;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundUpdateWDPlayerPacket;
+import com.danielkkrafft.wilddungeons.util.Serializer;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.stats.Stats;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.FireBlock;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.EffectCures;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
-import net.neoforged.neoforge.event.level.ExplosionEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.*;
@@ -52,7 +49,8 @@ public class WDPlayerManager {
         for (int i = 0; i < playerUUIDs.size(); i++) {
             WDPlayer player = getInstance().getOrCreateWDPlayer(playerUUIDs.get(i));
             WildDungeons.getLogger().info("SYNCING PLAYER {} OF {}", i, playerUUIDs.size());
-            PacketDistributor.sendToPlayer(player.getServerPlayer(), new ClientboundUpdateWDPlayerPacket(player.toCompoundTag()));
+            PacketDistributor.sendToPlayer(player.getServerPlayer(), new ClientboundUpdateWDPlayerPacket(Serializer.toCompoundTag(player)));
+            //PacketDistributor.sendToPlayer(player.getServerPlayer(), new ClientboundUpdateWDPlayerPacket(player.toCompoundTag()));
         }
     }
 

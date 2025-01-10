@@ -3,6 +3,7 @@ package com.danielkkrafft.wilddungeons.entity;
 import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundUpdateWDPlayerPacket;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
+import com.danielkkrafft.wilddungeons.util.Serializer;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -116,7 +117,8 @@ public class EssenceOrb extends ExperienceOrb implements IEntityWithComplexSpawn
         String key = "essence:" + type;
         wdPlayer.giveEssencePoints(key, value);
 
-        PacketDistributor.sendToPlayer(player, new ClientboundUpdateWDPlayerPacket(wdPlayer.toCompoundTag()));
+        PacketDistributor.sendToPlayer(player, new ClientboundUpdateWDPlayerPacket(Serializer.toCompoundTag(wdPlayer)));
+        //PacketDistributor.sendToPlayer(player, new ClientboundUpdateWDPlayerPacket(wdPlayer.toCompoundTag()));
     }
 }
 

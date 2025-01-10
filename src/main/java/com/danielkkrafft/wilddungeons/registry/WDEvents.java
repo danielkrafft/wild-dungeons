@@ -10,6 +10,7 @@ import com.danielkkrafft.wilddungeons.entity.boss.MutantBogged;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.danielkkrafft.wilddungeons.util.FileUtil;
+import com.danielkkrafft.wilddungeons.util.SaveFile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
@@ -50,8 +51,7 @@ public class WDEvents {
     @SubscribeEvent
     public static void onServerAboutToStart(ServerAboutToStartEvent event) {
         FileUtil.setWorldPath(event.getServer().getWorldPath(LevelResource.ROOT));
-        FileUtil.SaveFile.load();
-
+        SaveFile.INSTANCE.load();
     }
 
     @SubscribeEvent
@@ -71,8 +71,7 @@ public class WDEvents {
         if (event.getLevel().isClientSide() || !event.getLevel().registryAccess().registryOrThrow(Registries.DIMENSION_TYPE).get(BuiltinDimensionTypes.OVERWORLD).equals(event.getLevel().dimensionType()))
             return;
 
-        FileUtil.SaveFile.save();
-
+        SaveFile.INSTANCE.save();
     }
 
     @SubscribeEvent

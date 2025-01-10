@@ -19,6 +19,8 @@ public class SavedTransform {
     private double pitch;
     private ResourceKey<Level> dimension;
 
+    public SavedTransform() {}
+
     public SavedTransform(ServerPlayer player) {
         this.position = new Vec3(MathUtil.round(player.getX(), 2), MathUtil.round(player.getY(), 2), MathUtil.round(player.getZ(), 2));
         this.yaw = MathUtil.round(WDPlayer.calcYaw((Player) player), 2);

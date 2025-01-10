@@ -21,6 +21,7 @@ import com.danielkkrafft.wilddungeons.ui.CustomHUDHandler;
 import com.danielkkrafft.wilddungeons.ui.DungeonLifeCounter;
 import com.danielkkrafft.wilddungeons.ui.EssenceBar;
 import com.danielkkrafft.wilddungeons.util.FileUtil;
+import com.danielkkrafft.wilddungeons.util.Serializer;
 import com.danielkkrafft.wilddungeons.world.dimension.EmptyGenerator;
 import com.danielkkrafft.wilddungeons.world.dimension.tools.UpdateDimensionsPacket;
 import net.minecraft.client.Minecraft;
@@ -58,9 +59,9 @@ public class WildDungeons {
     public static final String MODID = "wilddungeons";
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(Registries.ENTITY_TYPE, MODID);
-
     public WildDungeons(IEventBus modEventBus, ModContainer modContainer) {
+        Serializer.setup();
+
         WDEntities.ENTITIES.register(modEventBus);
         WDBlockEntities.BLOCK_ENTITY_TYPES.register(modEventBus);
         WDItems.ITEMS.register(modEventBus);

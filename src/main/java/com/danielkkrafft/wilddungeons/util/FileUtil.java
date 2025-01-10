@@ -4,11 +4,12 @@ import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtAccounter;
+import net.minecraft.nbt.NbtIo;
+import org.checkerframework.checker.units.qual.C;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Reader;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -121,6 +122,26 @@ public class FileUtil {
         } catch (IOException e) {
             e.printStackTrace();
 
+        }
+    }
+
+    public static void writeNbt(CompoundTag nbt, File file) {
+        try {
+            FileOutputStream outputStream = new FileOutputStream(file);
+            NbtIo.writeCompressed(nbt, outputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static CompoundTag readNbt(File file) {
+        try {
+            if (!file.exists()) return new CompoundTag();
+            FileInputStream inputStream = new FileInputStream(file);
+            return NbtIo.readCompressed(inputStream, NbtAccounter.unlimitedHeap());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
