@@ -70,6 +70,9 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     private DungeonPerks.Perks perk = null;
     public DungeonPerks.Perks getPerk() {
         if (this.perk == null) {
+            WildDungeons.getLogger().info("Perk ID: {}", this.id);
+            if (this.id < 0 || this.id >= DungeonPerks.Perks.values().length)
+                this.id = 0;
             perk = DungeonPerks.getById(this.id);
         }
         return perk;
