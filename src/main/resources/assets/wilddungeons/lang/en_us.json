@@ -8,6 +8,13 @@
   "block.wilddungeons.rift_block": "Rift Block",
   "block.wilddungeons.heavy_rune": "Heavy Rune",
   "block.wilddungeons.rotten_moss": "Rotten Moss",
+  "block.wilddungeons.wd_basic": "Wild Dungeon Block",
+  "block.wilddungeons.wd_stairs": "Wild Dungeon Stairs",
+  "block.wilddungeons.wd_slab": "Wild Dungeon Slab",
+  "block.wilddungeons.wd_wall": "Wild Dungeon Wall",
+  "block.wilddungeons.wd_light": "Wild Dungeon Light",
+  "block.wilddungeons.wd_secret": "Wild Dungeon Secret Block",
+
 
   "entity.wilddungeons.essence_orb": "Essence Orb",
   "entity.wilddungeons.offering": "Offering",
@@ -19,5 +26,7 @@
   "connection_block.unblocked_label": "Unblocked Blockstate:",
   "connection_block.entrance_label": "Entrance",
   "connection_block.exit_label": "Exit",
-  "connection_block.pool_label": "Pool:"
+  "connection_block.pool_label": "Pool:",
+
+  "itemGroup.wilddungeons": "Wild Dungeons"
 }
