@@ -24,8 +24,8 @@ public class SaveFile {
         saving = true;
         this.players = WDPlayerManager.getInstance().getPlayers();
         this.sessions = new HashMap<>();
-        DungeonSessionManager.getInstance().getSessions().entrySet().forEach(e -> {
-            if (e.getValue().isSafeToSerialize()) this.sessions.put(e.getKey(), e.getValue());
+        DungeonSessionManager.getInstance().getSessions().forEach((key, value) -> {
+            if (value.isSafeToSerialize()) this.sessions.put(key, value);
         });
 
         FileUtil.writeNbt(Serializer.toCompoundTag(this), getSaveFile());
