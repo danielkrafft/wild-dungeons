@@ -1,26 +1,27 @@
 package com.danielkkrafft.wilddungeons;
 
+import com.danielkkrafft.wilddungeons.block.WDBlocks;
 import com.danielkkrafft.wilddungeons.block.WDFluids;
+import com.danielkkrafft.wilddungeons.dungeon.Alignments;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonPerk;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.CombatRoom;
+import com.danielkkrafft.wilddungeons.entity.WDEntities;
 import com.danielkkrafft.wilddungeons.entity.boss.BreezeGolem;
 import com.danielkkrafft.wilddungeons.entity.boss.MutantBogged;
 import com.danielkkrafft.wilddungeons.entity.renderer.*;
 import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundOpenConnectionBlockUIPacket;
+import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundUpdateWDPlayerPacket;
 import com.danielkkrafft.wilddungeons.network.serverbound.ServerboundUpdateConnectionBlockPacket;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
-import com.danielkkrafft.wilddungeons.block.WDBlocks;
-import com.danielkkrafft.wilddungeons.dungeon.Alignments;
-import com.danielkkrafft.wilddungeons.entity.WDEntities;
 import com.danielkkrafft.wilddungeons.registry.WDBlockEntities;
 import com.danielkkrafft.wilddungeons.registry.WDEvents;
 import com.danielkkrafft.wilddungeons.registry.WDItems;
-import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundUpdateWDPlayerPacket;
 import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
 import com.danielkkrafft.wilddungeons.util.FileUtil;
 import com.danielkkrafft.wilddungeons.util.Serializer;
 import com.danielkkrafft.wilddungeons.world.dimension.EmptyGenerator;
 import com.danielkkrafft.wilddungeons.world.dimension.tools.UpdateDimensionsPacket;
+import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
@@ -28,27 +29,21 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.item.CreativeModeTabs;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.slf4j.Logger;
-
-import com.mojang.logging.LogUtils;
-
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.common.Mod;
 
 @Mod(WildDungeons.MODID)
 public class WildDungeons {
