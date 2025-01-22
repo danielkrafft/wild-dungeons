@@ -265,7 +265,7 @@ public class DungeonRegistry {
         DUNGEON_FLOOR_REGISTRY.add(DungeonFloorTemplate.build("test_floor",
                 new DungeonLayout<DungeonBranchTemplate>()
                         .addSimple(DUNGEON_BRANCH_REGISTRY.get("starter_room_branch"))
-                        .add(new WeightedPool<DungeonBranchTemplate>().add(DUNGEON_BRANCH_REGISTRY.get("all_branch"), 1), 10)
+                        .add(new WeightedPool<DungeonBranchTemplate>().add(DUNGEON_BRANCH_REGISTRY.get("all_branch"), 1), 1)
                         .addSimple(DUNGEON_BRANCH_REGISTRY.get("ending_room_branch")), null, null, 1.0)
                 .pool(FLOOR_POOL, 1));
 

@@ -2,6 +2,10 @@ package com.danielkkrafft.wilddungeons.util;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.components.ConnectionPoint;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
+import com.danielkkrafft.wilddungeons.dungeon.components.room.*;
+import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.player.SavedTransform;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import net.minecraft.core.BlockPos;
@@ -10,9 +14,11 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Vector2i;
 import sun.reflect.ReflectionFactory;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -22,6 +28,7 @@ import java.util.*;
 public class Serializer
 {
     public static final HashMap<String, Class<?>> ACCEPTABLE_CLASS_REFERENCES = new HashMap<>();
+    private static final HashMap<String, List<Field>> CLASS_FIELDS = new HashMap<>();
 
     public static void setup() {
         addCustom(WDPlayer.class);
@@ -33,15 +40,33 @@ public class Serializer
         addCustom(Vec3i.class);
         addCustom(ConnectionPoint.class);
         addCustom(BlockPos.class);
-        addCustom(Direction.class);
         addCustom(BoundingBox.class);
-        addCustom(Direction.AxisDirection.class);
-        addCustom(Direction.Axis.class);
-        addCustom(PushReaction.class);
+        addCustom(DungeonSession.class);
+        addCustom(DungeonFloor.class);
+        addCustom(DungeonBranch.class);
+        addCustom(DungeonRoom.class);
+        addCustom(Vector2i.class);
+        addCustom(ChunkPos.class);
+        addCustom(LootRoom.class);
+        addCustom(ShopRoom.class);
+        addCustom(CombatRoom.class);
+        addCustom(SecretRoom.class);
     }
 
     private static void addCustom(Class<?> clazz) {
-        ACCEPTABLE_CLASS_REFERENCES.put(clazz.getName(), clazz);
+        while (clazz != null) {
+            if (clazz.isEnum()) break;
+            List<Field> fields = new ArrayList<>();
+            ACCEPTABLE_CLASS_REFERENCES.put(clazz.getName(), clazz);
+            for (Field field : clazz.getDeclaredFields()) {
+                if (Modifier.isStatic(field.getModifiers())) continue;
+                if (field.isAnnotationPresent(IgnoreSerialization.class)) continue;
+                field.setAccessible(true);
+                fields.add(field);
+            }
+            CLASS_FIELDS.put(clazz.getName(), fields);
+            clazz = clazz.getSuperclass();
+        }
     }
 
     public static CompoundTag toCompoundTag(Object obj)
@@ -172,14 +197,15 @@ public class Serializer
             entry.putString("type", "custom");
             CompoundTag nestedTag = new CompoundTag();
 
-            Class<?> clazz = objectValue.getClass();
+            Class<?> clazz = ACCEPTABLE_CLASS_REFERENCES.get(objectValue.getClass().getName());
+            if (clazz == null) {
+                WildDungeons.getLogger().info("THE CLASS: {} WAS NOT SETUP FOR SERIALIZATION", objectValue.getClass().getName());
+                return;
+            }
             String className = clazz.getName();
 
-            while (clazz != null) {
-                for (Field field : clazz.getDeclaredFields()) {
-                    if (Modifier.isStatic(field.getModifiers())) continue;
-                    if (field.isAnnotationPresent(IgnoreSerialization.class)) continue;
-                    field.setAccessible(true);
+            while (clazz != null && CLASS_FIELDS.containsKey(clazz.getName())) {
+                for (Field field : CLASS_FIELDS.get(clazz.getName())) {
                     Object fieldValue = field.get(objectValue);
                     serializeAndAdd(field.getName(), fieldValue, nestedTag);
                 }
@@ -302,11 +328,8 @@ public class Serializer
             ReflectionFactory rf = ReflectionFactory.getReflectionFactory();
             Object instance = clazz.cast(rf.newConstructorForSerialization(clazz, Object.class.getDeclaredConstructor()).newInstance());
             while (clazz != null) {
-                for (Field field : clazz.getDeclaredFields())
+                for (Field field : CLASS_FIELDS.get(clazz.getName()))
                 {
-                    if (Modifier.isStatic(field.getModifiers())) continue;
-                    if (field.isAnnotationPresent(IgnoreSerialization.class)) continue;
-                    field.setAccessible(true);
                     field.set(instance, deserialize(field.getName(), nestedTag));
                 }
                 clazz = clazz.getSuperclass();
