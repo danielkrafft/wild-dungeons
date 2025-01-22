@@ -32,16 +32,16 @@ public class DebugItem extends Item {
 
         WildDungeons.getLogger().info("CURRENT DUNGEON SESSIONS: {}", DungeonSessionManager.getInstance().getSessionNames());
         WildDungeons.getLogger().info("CURRENT WDPlayers: {}", WDPlayerManager.getInstance().getPlayerNames(level.getServer()));
-        WildDungeons.getLogger().info("CURRENT DUNGEON: {}", dungeonSession == null ? "none" : dungeonSession.template.name());
+        WildDungeons.getLogger().info("CURRENT DUNGEON: {}", dungeonSession == null ? "none" : dungeonSession.getTemplate().name());
         WildDungeons.getLogger().info("CURRENT PLAYERS IN DUNGEON: {}", dungeonSession == null ? "none" : dungeonSession.getPlayers());
 
-        WildDungeons.getLogger().info("CURRENT FLOOR: {}", dungeonFloor == null ? "none" : dungeonFloor.template.name());
-        WildDungeons.getLogger().info("CURRENT BRANCH: {}", dungeonBranch == null ? "none" : dungeonBranch.template.name());
-        WildDungeons.getLogger().info("CURRENT ROOM: {}", dungeonRoom == null ? "none" : dungeonRoom.template.name());
-        WildDungeons.getLogger().info("CURRENT ROOM DIFFICULTY: {}", dungeonRoom == null ? "none" : dungeonRoom.difficulty);
+        WildDungeons.getLogger().info("CURRENT FLOOR: {}", dungeonFloor == null ? "none" : dungeonFloor.getTemplate().name());
+        WildDungeons.getLogger().info("CURRENT BRANCH: {}", dungeonBranch == null ? "none" : dungeonBranch.getTemplate().name());
+        WildDungeons.getLogger().info("CURRENT ROOM: {}", dungeonRoom == null ? "none" : dungeonRoom.getTemplate().name());
+        WildDungeons.getLogger().info("CURRENT ROOM DIFFICULTY: {}", dungeonRoom == null ? "none" : dungeonRoom.getDifficulty());
         WildDungeons.getLogger().info("CURRENT POSITIONS: {}", WDPlayerManager.getInstance().getPlayers().get(player.getStringUUID()).getPositions().values().stream().map(SavedTransform::getBlockPos).toList());
         WildDungeons.getLogger().info("CURRENT RESPAWNS: {}", WDPlayerManager.getInstance().getPlayers().get(player.getStringUUID()).getRespawns().values().stream().map(SavedTransform::getBlockPos).toList());
-        WildDungeons.getLogger().info("CURRENT LIVES: {}", dungeonSession == null ? "none" : dungeonSession.lives);
+        WildDungeons.getLogger().info("CURRENT LIVES: {}", dungeonSession == null ? "none" : dungeonSession.getLives());
 
         return InteractionResultHolder.pass(player.getItemInHand(usedHand));
     }

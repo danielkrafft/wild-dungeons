@@ -1,8 +1,9 @@
 package com.danielkkrafft.wilddungeons.dungeon.components.room;
 
+import com.danielkkrafft.wilddungeons.dungeon.DungeonRoomTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.ConnectionPoint;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
-import com.danielkkrafft.wilddungeons.dungeon.components.DungeonComponents;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.dungeon.components.TemplateHelper;
 import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
@@ -26,14 +27,14 @@ public class LootRoom extends DungeonRoom {
     public Set<Offering> alive = new HashSet<>();;
     public List<Offering.OfferingTemplate> toSpawn = new ArrayList<>();
 
-    public LootRoom(DungeonBranch branch, DungeonComponents.DungeonRoomTemplate dungeonRoomTemplate, ServerLevel level, BlockPos position, BlockPos offset, StructurePlaceSettings settings, List<ConnectionPoint> allConnectionPoints) {
-        super(branch, dungeonRoomTemplate, level, position, offset, settings, allConnectionPoints);
+    public LootRoom(DungeonBranch branch, String templateKey, ServerLevel level, BlockPos position, StructurePlaceSettings settings, List<ConnectionPoint> allConnectionPoints) {
+        super(branch, templateKey, level, position, settings, allConnectionPoints);
     }
 
     @Override
     public void tick() {
         super.tick();
-        if (!started || this.players.isEmpty() || this.clear) return;
+        if (!started || this.getPlayers().isEmpty() || this.isClear()) return;
 
         if (alive.isEmpty()) {this.onClear(); return;}
         if (checkTimer == 0) {purgeEntitySet(); checkTimer = SET_PURGE_INTERVAL;}
@@ -46,8 +47,8 @@ public class LootRoom extends DungeonRoom {
         if (this.started) return;
         this.started = true;
 
-        this.connectionPoints.forEach(point -> {
-            if (point.isConnected()) point.block(this.level);
+        this.getConnectionPoints().forEach(point -> {
+            if (point.isConnected()) point.block(this.getBranch().getFloor().getLevel());
         });
 
     }
@@ -57,12 +58,12 @@ public class LootRoom extends DungeonRoom {
         super.onBranchEnter(player);
         if (this.generated) return;
 
-        this.toSpawn = OfferingTables.PERK_OFFERING_TABLE.randomResults(this.template.offerings().size(), this.template.offerings().size(), 1);
-        for (BlockPos pos : this.template.offerings()) {
-            Offering next = toSpawn.removeFirst().asOffering(this.level);
+        this.toSpawn = OfferingTables.PERK_OFFERING_TABLE.randomResults(this.getTemplate().offerings().size(), this.getTemplate().offerings().size(), 1);
+        for (BlockPos pos : this.getTemplate().offerings()) {
+            Offering next = toSpawn.removeFirst().asOffering(this.getBranch().getFloor().getLevel());
             next.setPos(Vec3.atBottomCenterOf(TemplateHelper.transform(pos, this)).add(0.0, 0.5, 0.0));
             this.alive.add(next);
-            level.addFreshEntity(next);
+            this.getBranch().getFloor().getLevel().addFreshEntity(next);
         }
         this.generated = true;
     }
@@ -70,8 +71,8 @@ public class LootRoom extends DungeonRoom {
     @Override
     public void onClear() {
         super.onClear();
-        this.connectionPoints.forEach(point -> {
-            if (point.isConnected()) point.unBlock(this.level);
+        this.getConnectionPoints().forEach(point -> {
+            if (point.isConnected()) point.unBlock(this.getBranch().getFloor().getLevel());
         });
     }
 

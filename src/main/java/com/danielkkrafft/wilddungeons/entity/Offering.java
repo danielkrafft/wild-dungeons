@@ -1,25 +1,27 @@
 package com.danielkkrafft.wilddungeons.entity;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.dungeon.DungeonPerk;
-import com.danielkkrafft.wilddungeons.dungeon.DungeonPerks;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonPerkTemplate;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.LootRoom;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -29,7 +31,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
 
     public Type type = Type.ITEM;
     public int amount;
-    public int id;
+    public String id;
     public boolean purchased = false;
 
     public CostType costType;
@@ -50,7 +52,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
         super(entityType, level);
     }
 
-    public Offering(Level level, Type type, int amount, int id, CostType costType, int costAmount) {
+    public Offering(Level level, Type type, int amount, String id, CostType costType, int costAmount) {
         super(WDEntities.OFFERING.get(), level);
         this.type = type;
         this.amount = amount;
@@ -62,15 +64,15 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     private ItemStack itemStack = null;
     public ItemStack getItemStack() {
         if (this.itemStack == null) {
-            itemStack = new ItemStack(Item.byId(this.id), this.amount);
+            itemStack = new ItemStack(BuiltInRegistries.ITEM.get(ResourceKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.withDefaultNamespace(this.id))), this.amount);;
         }
         return itemStack;
     }
 
-    private DungeonPerks.Perks perk = null;
-    public DungeonPerks.Perks getPerk() {
+    private DungeonPerkTemplate perk = null;
+    public DungeonPerkTemplate getPerk() {
         if (this.perk == null) {
-            perk = DungeonPerks.getById(this.id);
+            perk = DungeonRegistry.DUNGEON_PERK_REGISTRY.get(this.id);
         }
         return perk;
     }
@@ -106,7 +108,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     protected void addAdditionalSaveData(CompoundTag compound) {
         compound.putString("Type", String.valueOf(this.type));
         compound.putInt("Amount", this.amount);
-        compound.putInt("ID", this.id);
+        compound.putString("ID", this.id);
         compound.putString("CostType", String.valueOf(this.costType));
         compound.putInt("CostAmount", this.costAmount);
     }
@@ -115,7 +117,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     protected void readAdditionalSaveData(CompoundTag compound) {
         this.type = Type.valueOf(compound.getString("Type"));
         this.amount = compound.getInt("Amount");
-        this.id = compound.getInt("ID");
+        this.id = compound.getString("ID");
         this.costType = CostType.valueOf(compound.getString("CostType"));
         this.costAmount = compound.getInt("CostAmount");
     }
@@ -124,7 +126,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
         buffer.writeUtf(String.valueOf(this.type));
         buffer.writeInt(this.amount);
-        buffer.writeInt(this.id);
+        buffer.writeUtf(this.id);
         buffer.writeUtf(String.valueOf(this.costType));
         buffer.writeInt(this.costAmount);
     }
@@ -133,7 +135,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     public void readSpawnData(RegistryFriendlyByteBuf buffer) {
         this.type = Type.valueOf(buffer.readUtf());
         this.amount = buffer.readInt();
-        this.id = buffer.readInt();
+        this.id = buffer.readUtf();
         this.costType = CostType.valueOf(buffer.readUtf());
         this.costAmount = buffer.readInt();
     }
@@ -165,7 +167,8 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
             }
 
             if (this.type == Type.PERK) {
-                DungeonPerk.addPerk(player.getCurrentDungeon(), this.getPerk());
+
+                player.getCurrentDungeon().givePerk(this.getPerk());
             }
 
             switch (this.costType) {
@@ -183,7 +186,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
         }
     }
 
-    public record OfferingTemplate(Type type, int amount, int id, CostType costType, int costAmount, float deviance) {
+    public record OfferingTemplate(Type type, int amount, String id, CostType costType, int costAmount, float deviance) {
 
         public Offering asOffering(Level level) {
             int adjustedAmount = RandomUtil.randIntBetween((int) (amount / deviance), (int) (amount * deviance));

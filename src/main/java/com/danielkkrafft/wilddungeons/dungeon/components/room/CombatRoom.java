@@ -1,16 +1,12 @@
 package com.danielkkrafft.wilddungeons.dungeon.components.room;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.dungeon.DungeonPerk;
-import com.danielkkrafft.wilddungeons.dungeon.DungeonPerks;
+import com.danielkkrafft.wilddungeons.dungeon.DungeonRoomTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.ConnectionPoint;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
-import com.danielkkrafft.wilddungeons.dungeon.components.DungeonComponents;
-import com.danielkkrafft.wilddungeons.entity.Offering;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
-import com.danielkkrafft.wilddungeons.util.RandomUtil;
-import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -39,8 +35,8 @@ public class CombatRoom extends DungeonRoom {
 
     public boolean started = false;
 
-    public CombatRoom(DungeonBranch branch, DungeonComponents.DungeonRoomTemplate dungeonRoomTemplate, ServerLevel level, BlockPos position, BlockPos offset, StructurePlaceSettings settings, List<ConnectionPoint> allConnectionPoints) {
-        super(branch, dungeonRoomTemplate, level, position, offset, settings, allConnectionPoints);
+    public CombatRoom(DungeonBranch branch, String templateKey, ServerLevel level, BlockPos position, StructurePlaceSettings settings, List<ConnectionPoint> allConnectionPoints) {
+        super(branch, templateKey, level, position, settings, allConnectionPoints);
     }
 
     @Override
@@ -50,15 +46,15 @@ public class CombatRoom extends DungeonRoom {
 
         WildDungeons.getLogger().info("BLOCKING THE EXITS");
         //Block all the exits once a player has entered
-        this.connectionPoints.forEach(point -> {
-            if (point.isConnected()) point.block(this.level);
+        this.getConnectionPoints().forEach(point -> {
+            if (point.isConnected()) point.block(this.getBranch().getFloor().getLevel());
         });
 
         WildDungeons.getLogger().info("SPAWNING MOBS");
-        List<EntityType<?>> entities = this.enemyTable.randomResults(BASE_QUANTITY, (int) (BASE_DIFFICULTY * this.difficulty), 2);
+        List<EntityType<?>> entities = this.getEnemyTable().randomResults(BASE_QUANTITY, (int) (BASE_DIFFICULTY * this.getDifficulty()), 2);
 
         entities.forEach(entityType -> {
-            LivingEntity entity = (LivingEntity) entityType.create(level);
+            LivingEntity entity = (LivingEntity) entityType.create(this.getBranch().getFloor().getLevel());
             if (entity != null) {
                 toSpawn.add(entity);
             }
@@ -67,17 +63,15 @@ public class CombatRoom extends DungeonRoom {
     }
 
     public void spawnNext() {
-        for (int i = 0; i < Math.floor(groupSize * this.difficulty); i++) {
+        for (int i = 0; i < Math.floor(groupSize * this.getDifficulty()); i++) {
             if (toSpawn.isEmpty()) return;
             LivingEntity entity = toSpawn.removeFirst();
-            List<BlockPos> validPoints = new ArrayList<>();
-            validPoints.add(this.spawnablePosList.get(RandomUtil.randIntBetween(0, this.spawnablePosList.size()-1)));
-            validPoints.add(this.spawnablePosList.get(RandomUtil.randIntBetween(0, this.spawnablePosList.size()-1)));
+            List<BlockPos> validPoints = this.sampleSpawnablePositions(getBranch().getFloor().getLevel(), 3);
 
             BlockPos finalPos = validPoints.stream().map(pos -> {
                 int score = 0;
 
-                for (WDPlayer wdPlayer : this.players) {
+                for (WDPlayer wdPlayer : this.getPlayers()) {
                     score += pos.distManhattan(wdPlayer.getServerPlayer().blockPosition());
                 }
 
@@ -87,14 +81,14 @@ public class CombatRoom extends DungeonRoom {
 
             entity.setPos(Vec3.atCenterOf(finalPos));
             alive.add(entity);
-            level.addWithUUID(entity);
+            this.getBranch().getFloor().getLevel().addWithUUID(entity);
         }
     }
 
     @Override
     public void tick() {
         super.tick();
-        if (!started || this.players.isEmpty() || this.clear) return;
+        if (!started || this.getPlayers().isEmpty() || this.isClear()) return;
         if (alive.isEmpty() && toSpawn.isEmpty()) {this.onClear(); return;}
         if (checkTimer == 0) {purgeEntitySet(); checkTimer = SET_PURGE_INTERVAL;}
         if (spawnTimer == 0 || alive.isEmpty()) {spawnNext(); spawnTimer = SPAWN_INTERVAL;}
@@ -105,8 +99,8 @@ public class CombatRoom extends DungeonRoom {
     @Override
     public void onClear() {
         super.onClear();
-        this.connectionPoints.forEach(point -> {
-            if (point.isConnected()) point.unBlock(this.level);
+        this.getConnectionPoints().forEach(point -> {
+            if (point.isConnected()) point.unBlock(this.getBranch().getFloor().getLevel());
         });
     }
 

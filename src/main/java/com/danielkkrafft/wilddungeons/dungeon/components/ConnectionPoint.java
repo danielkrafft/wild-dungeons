@@ -1,7 +1,12 @@
 package com.danielkkrafft.wilddungeons.dungeon.components;
 
+import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.dungeon.DungeonRoomTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.DungeonRoom;
+import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.entity.blockentity.ConnectionBlockEntity;
+import com.danielkkrafft.wilddungeons.util.IgnoreSerialization;
+import com.danielkkrafft.wilddungeons.util.Serializer;
 import com.danielkkrafft.wilddungeons.util.debug.WDProfiler;
 import com.danielkkrafft.wilddungeons.world.dimension.EmptyGenerator;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -11,6 +16,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.Blocks;
@@ -28,86 +34,120 @@ public class ConnectionPoint {
     private String pool = "all";
     private String type = "both";
 
-    private DungeonRoom room = null;
-    private Direction direction;
-    private ConnectionPoint connectedPoint = null;
+    private int roomIndex;
+    private int connectedRoomIndex;
+    private int branchIndex;
+    private int floorIndex;
+    private String sessionKey;
+    private int index;
+    private int connectedPointIndex = -1;
+    private String direction;
     private int failures = 0;
 
     private BoundingBox boundingBox;
-    private List<BlockPos> positions = new ArrayList<>();
-    private HashMap<BlockPos, BlockState> unBlockedBlockStates = new HashMap<>();
+    private HashMap<BlockPos, String> unBlockedBlockStates = new HashMap<>();
+
+    @IgnoreSerialization
+    private DungeonRoom room = null;
 
     public String getType() {return this.type;}
     public void setType(String type) {this.type = type;}
     public void setPool(String pool) {this.pool = pool;}
-    public DungeonRoom getRoom() {return this.room;}
-    public void setRoom(DungeonRoom room) {this.room = room;}
-    public Direction getDirection() {return this.direction;}
-    public Vec3i getNormal() {return this.direction.getNormal();}
-    public Direction.Axis getAxis() {return this.direction.getAxis();}
-    public boolean isConnected() {return this.connectedPoint != null;}
-    public ConnectionPoint getConnectedPoint() {return this.connectedPoint;}
-    public void setConnectedPoint(ConnectionPoint connectedPoint) {this.connectedPoint = connectedPoint;}
+    public int getRoomIndex() {return this.roomIndex;}
+    public int getBranchIndex() {return this.branchIndex;}
+    public DungeonRoom getRoom() {
+        return this.room != null ? this.room :
+                DungeonSessionManager.getInstance().getDungeonSession(this.sessionKey)
+                        .getFloors().get(this.floorIndex)
+                        .getBranches().get(this.branchIndex)
+                        .getRooms().get(this.roomIndex);
+    }
+    public void setRoom(DungeonRoom room) {this.room = room; this.roomIndex = room.getIndex(); this.branchIndex = room.getBranch().getIndex(); this.floorIndex = room.getBranch().getFloor().getIndex(); this.sessionKey = room.getSession().getSessionKey();}
+    public boolean isConnected() {return this.connectedPointIndex != -1;}
+    public ConnectionPoint getConnectedPoint() {return this.getRoom().getBranch().getRooms().get(this.connectedRoomIndex).getConnectionPoints().get(this.connectedPointIndex);}
+    public void setConnectedPoint(ConnectionPoint connectedPoint) {this.connectedPointIndex = connectedPoint.index; this.connectedRoomIndex = connectedPoint.getRoom().getIndex();}
     public void incrementFailures() {this.failures += 1;}
-    public BlockPos getOrigin() {return new BlockPos(this.boundingBox.minX(), this.boundingBox.minY(), this.boundingBox.minZ());}
-    public void addPosition(BlockPos pos) {this.positions.add(pos); this.boundingBox.encapsulate(pos);}
-    public List<BlockPos> getPositions() {return this.positions;}
+    public BlockPos getOrigin(StructurePlaceSettings settings, BlockPos position) {BoundingBox transBox = getBoundingBox(settings, position); return new BlockPos(transBox.minX(), transBox.minY(), transBox.minZ());}
+    public void addPosition(BlockPos pos) {this.boundingBox.encapsulate(pos);}
+    public void setIndex(int index) {this.index = index;}
+    public int getIndex() {return this.index;}
     private ConnectionPoint() {}
+
+    public BoundingBox getBoundingBox(StructurePlaceSettings settings, BlockPos position) {
+        BlockPos min = StructureTemplate.transform(new BlockPos(this.boundingBox.minX(), this.boundingBox.minY(), this.boundingBox.minZ()), settings.getMirror(), settings.getRotation(), TemplateHelper.EMPTY_BLOCK_POS);
+        BlockPos max = StructureTemplate.transform(new BlockPos(this.boundingBox.maxX(), this.boundingBox.maxY(), this.boundingBox.maxZ()), settings.getMirror(), settings.getRotation(), TemplateHelper.EMPTY_BLOCK_POS);
+
+        BoundingBox result = new BoundingBox(Math.min(min.getX(), max.getX()) + position.getX(), Math.min(min.getY(), max.getY()) + position.getY(), Math.min(min.getZ(), max.getZ()) + position.getZ(), Math.max(max.getX(), min.getX()) + position.getX(), Math.max(max.getY(), min.getY()) + position.getY(), Math.max(max.getZ(), min.getZ()) + position.getZ());
+        return result;
+    }
+
+    public List<BlockPos> getPositions(StructurePlaceSettings settings, BlockPos position) {
+        List<BlockPos> result = new ArrayList<>();
+        BoundingBox transBox = getBoundingBox(settings, position);
+        for (int x = transBox.minX(); x <= transBox.maxX(); x++) {
+            for (int y = transBox.minY(); y <= transBox.maxY(); y++) {
+                for (int z = transBox.minZ(); z <= transBox.maxZ(); z++) {
+                    result.add(new BlockPos(x, y , z));
+                }
+            }
+        }
+        return result;
+    }
+
+//    public List<BlockPos> getPositions(BoundingBox custom) {
+//        List<BlockPos> result = new ArrayList<>();
+//        for (int x = custom.minX(); x < custom.maxX(); x++) {
+//            for (int y = custom.minY(); y < custom.maxY(); y++) {
+//                for (int z = custom.minZ(); z < custom.maxZ(); z++) {
+//                    result.add(new BlockPos(x, y , z));
+//                }
+//            }
+//        }
+//        return result;
+//    }
+
+    public Direction getDirection(StructurePlaceSettings settings) {
+        Direction direction;
+        direction = TemplateHelper.mirrorDirection(Direction.byName(this.direction), settings.getMirror());
+        direction = TemplateHelper.rotateDirection(Direction.byName(direction.getName()), settings.getRotation());
+        return direction;
+    }
 
     public static ConnectionPoint create(BlockPos position, Direction direction) {
         ConnectionPoint newPoint = new ConnectionPoint();
-        newPoint.direction = direction;
+        newPoint.direction = direction.getName();
         newPoint.boundingBox = new BoundingBox(position);
-        newPoint.positions.add(position);
 
         WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::create");
         return newPoint;
     }
 
     public static ConnectionPoint copy(ConnectionPoint oldPoint) {
-        ConnectionPoint newPoint = new ConnectionPoint();
-        newPoint.pool = oldPoint.pool;
-        newPoint.type = oldPoint.type;
-
+        CompoundTag oldTag = Serializer.toCompoundTag(oldPoint);
+        ConnectionPoint newPoint = Serializer.fromCompoundTag(oldTag);
         newPoint.room = oldPoint.room;
-        newPoint.direction = oldPoint.direction;
-        newPoint.connectedPoint = oldPoint.connectedPoint;
-        newPoint.failures = oldPoint.failures;
-
-        newPoint.boundingBox = oldPoint.boundingBox;
-        newPoint.positions = oldPoint.positions;
-        newPoint.unBlockedBlockStates = oldPoint.unBlockedBlockStates;
-
-        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::copy");
         return newPoint;
     }
 
-    public void transform(StructurePlaceSettings settings, BlockPos position, BlockPos offset) {
-        direction = TemplateHelper.mirrorDirection(direction, settings.getMirror());
-        direction = TemplateHelper.rotateDirection(direction, settings.getRotation());
-
-        positions = positions.stream().map(pos -> StructureTemplate.transform(pos, settings.getMirror(), settings.getRotation(), offset).offset(position)).toList();
-        boundingBox = new BoundingBox(positions.getFirst());
-        positions.forEach((pos) -> boundingBox.encapsulate(pos));
-
-        HashMap<BlockPos, BlockState> newBlockStates = new HashMap<>();
-        unBlockedBlockStates.forEach((pos, state) -> {
-           newBlockStates.put(StructureTemplate.transform(pos, settings.getMirror(), settings.getRotation(), offset).offset(position), state);
-        });
-        unBlockedBlockStates = newBlockStates;
-        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::transform");
+    public static BlockState blockStateFromString(String state) {
+        BlockState blockState;
+        try { blockState = BlockStateParser.parseForBlock(BuiltInRegistries.BLOCK.asLookup(), state, true).blockState();
+        } catch (CommandSyntaxException e) { blockState = Blocks.AIR.defaultBlockState();}
+        return blockState;
     }
 
-    public static boolean arePointsCompatible(DungeonComponents.DungeonRoomTemplate nextRoom, ConnectionPoint en, ConnectionPoint ex, boolean bypassFailures) {
+    public static String toString(BlockState state) {
+        return BlockStateParser.serialize(state);
+    }
+
+    public static boolean arePointsCompatible(StructurePlaceSettings settings, BlockPos position, DungeonRoomTemplate nextRoom, ConnectionPoint en, ConnectionPoint ex, boolean bypassFailures) {
         List<Boolean> conditions = List.of(
                 !ex.isConnected(),
                 !Objects.equals(ex.type, "entrance"),
                 ex.failures < 10 || bypassFailures,
                 Objects.equals(en.pool, ex.pool),
-                en.getAxis() != Direction.Axis.Y || ex.direction == en.direction.getOpposite(),
-                en.getSize().equals(ex.getSize()),
-                nextRoom.getBoundingBoxes(TemplateHelper.EMPTY_DUNGEON_SETTINGS, TemplateHelper.EMPTY_BLOCK_POS).stream().allMatch(box -> Mth.abs(EmptyGenerator.MIN_Y - ex.boundingBox.minY()) > box.getYSpan())
-
+                en.getDirection(settings).getAxis() != Direction.Axis.Y || ex.getDirection(ex.getRoom().getSettings()).getName() == en.getDirection(settings).getOpposite().getName(),
+                en.getSize(settings, position).equals(ex.getSize(ex.getRoom().getSettings(), ex.getRoom().getPosition()))
         );
 
         WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::arePointsCompatible");
@@ -115,14 +155,14 @@ public class ConnectionPoint {
     }
 
     public static Pair<ConnectionPoint, StructurePlaceSettings> selectBestPoint(List<Pair<ConnectionPoint, StructurePlaceSettings>> pointPool, DungeonBranch branch, int yTarget, double branchWeight, double floorWeight, double heightWeight, double randomWeight) {
-        int totalBranchDistance = pointPool.stream().mapToInt(pair -> branch.dungeonRooms.isEmpty() ? 0 : pair.getFirst().getOrigin().distManhattan(branch.dungeonRooms.getFirst().position)).sum();
-        int totalFloorDistance = pointPool.stream().mapToInt(pair -> pair.getFirst().getOrigin().distManhattan(branch.floor.origin)).sum();
-        int totalHeightDistance = pointPool.stream().mapToInt(pair -> Math.abs(pair.getFirst().getOrigin().getY() - yTarget)).sum();
+        int totalBranchDistance = pointPool.stream().mapToInt(pair -> branch.getRooms().isEmpty() ? 0 : pair.getFirst().getOrigin(pair.getFirst().getRoom().getSettings(), pair.getFirst().getRoom().getPosition()).distManhattan(branch.getRooms().getFirst().getPosition())).sum();
+        int totalFloorDistance = pointPool.stream().mapToInt(pair -> pair.getFirst().getOrigin(pair.getFirst().getRoom().getSettings(), pair.getFirst().getRoom().getPosition()).distManhattan(branch.getFloor().getOrigin())).sum();
+        int totalHeightDistance = pointPool.stream().mapToInt(pair -> Math.abs(pair.getFirst().getOrigin(pair.getFirst().getRoom().getSettings(), pair.getFirst().getRoom().getPosition()).getY() - yTarget)).sum();
 
         Pair<ConnectionPoint, StructurePlaceSettings> result = pointPool.stream().map(pair -> {
-            int distanceToBranchOrigin = branch.dungeonRooms.isEmpty() ? 0 : pair.getFirst().getOrigin().distManhattan(branch.dungeonRooms.getFirst().position);
-            int distanceToFloorOrigin = pair.getFirst().getOrigin().distManhattan(branch.floor.origin);
-            int distanceToYTarget = Math.abs(pair.getFirst().getOrigin().getY() - yTarget);
+            int distanceToBranchOrigin = branch.getRooms().isEmpty() ? 0 : pair.getFirst().getOrigin(pair.getFirst().getRoom().getSettings(), pair.getFirst().getRoom().getPosition()).distManhattan(branch.getRooms().getFirst().getPosition());
+            int distanceToFloorOrigin = pair.getFirst().getOrigin(pair.getFirst().getRoom().getSettings(), pair.getFirst().getRoom().getPosition()).distManhattan(branch.getFloor().getOrigin());
+            int distanceToYTarget = Math.abs(pair.getFirst().getOrigin(pair.getFirst().getRoom().getSettings(), pair.getFirst().getRoom().getPosition()).getY() - yTarget);
 
             int score = 0;
             score += (int) (branchWeight * distanceToBranchOrigin / totalBranchDistance);
@@ -137,40 +177,32 @@ public class ConnectionPoint {
         return result;
     }
 
-    public static BlockPos getOffset(ConnectionPoint en, ConnectionPoint ex) {
-        return new BlockPos(ex.boundingBox.minX() - en.boundingBox.minX(), ex.boundingBox.minY() - en.boundingBox.minY(), ex.boundingBox.minZ() - en.boundingBox.minZ());
+    public static BlockPos getOffset(StructurePlaceSettings settings, BlockPos position, ConnectionPoint en, ConnectionPoint ex) {
+        BoundingBox enTransBox = en.getBoundingBox(settings, position);
+        BoundingBox exTransBox = ex.getBoundingBox(ex.room.getSettings(), ex.room.getPosition());
+        return new BlockPos(exTransBox.minX() - enTransBox.minX(), exTransBox.minY() - enTransBox.minY(), exTransBox.minZ() - enTransBox.minZ());
     }
 
-    public Vector2i getSize() {
-        int x = this.boundingBox.getXSpan();
-        int y = this.boundingBox.getYSpan();
-        int z = this.boundingBox.getZSpan();
+    public Vector2i getSize(StructurePlaceSettings settings, BlockPos position) {
+        int x = this.getBoundingBox(settings, position).getXSpan();
+        int y = this.getBoundingBox(settings, position).getYSpan();
+        int z = this.getBoundingBox(settings, position).getZSpan();
 
-        return switch (this.direction) {
+        Vector2i result = switch (getDirection(settings)) {
             case UP, DOWN -> new Vector2i(x, z);
             case NORTH, SOUTH -> new Vector2i(x, y);
             case EAST, WEST -> new Vector2i(z, y);
         };
+
+        return result;
     }
 
-    public void setupBlockstates(ServerLevel level, StructurePlaceSettings settings) {
-        for (BlockPos pos : this.positions) {
+    public void setupBlockstates(StructurePlaceSettings settings, BlockPos position, ServerLevel level) {
+        for (BlockPos pos : this.getPositions(settings, position)) {
             BlockEntity blockEntity = level.getBlockEntity(pos);
 
             if (blockEntity instanceof ConnectionBlockEntity connectionBlockEntity) {
-                BlockState blockState;
-                try { blockState = BlockStateParser.parseForBlock(BuiltInRegistries.BLOCK.asLookup(), connectionBlockEntity.unblockedBlockstate, true).blockState();
-                } catch (CommandSyntaxException e) { blockState = Blocks.AIR.defaultBlockState();}
-
-                if (blockState.getBlock().equals(Blocks.STONE_BRICKS)) blockState = this.room.material.getBasic(0);
-                if (blockState.getBlock().equals(Blocks.STONE_BRICK_STAIRS)) blockState = this.room.material.getStair(0)
-                        .setValue(BlockStateProperties.HORIZONTAL_FACING, blockState.getValue(BlockStateProperties.HORIZONTAL_FACING))
-                        .setValue(BlockStateProperties.HALF, blockState.getValue(BlockStateProperties.HALF))
-                        .setValue(BlockStateProperties.STAIRS_SHAPE, blockState.getValue(BlockStateProperties.STAIRS_SHAPE));
-
-                WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::setupBlockstates");
-                blockState = TemplateHelper.fixBlockStateProperties(blockState, settings);
-                this.unBlockedBlockStates.put(pos, blockState);
+                this.unBlockedBlockStates.put(pos, connectionBlockEntity.unblockedBlockstate);
             }
         }
 
@@ -178,16 +210,20 @@ public class ConnectionPoint {
     }
 
     public void block(ServerLevel level) {
-        positions.forEach((pos) -> level.setBlock(pos, this.room.material.getBasic(0), 2));
+        getPositions(this.getRoom().getSettings(), this.getRoom().getPosition()).forEach((pos) -> level.setBlock(pos, this.getRoom().getMaterial().getBasic(0), 2));
         WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::block");
     }
 
+    public void complete() {
+        this.room = null;
+    }
+
     public void hide(ServerLevel level) {
-        positions.forEach((pos) -> level.setBlock(pos, this.room.material.getHidden(0), 2));
+        getPositions(this.getRoom().getSettings(), this.getRoom().getPosition()).forEach((pos) -> level.setBlock(pos, this.getRoom().getMaterial().getHidden(0), 2));
     }
 
     public void unBlock(ServerLevel level) {
-        unBlockedBlockStates.forEach((pos, blockState) -> level.setBlock(pos, blockState, 2));
+        unBlockedBlockStates.forEach((pos, blockState) -> level.setBlock(pos, TemplateHelper.fixBlockStateProperties(blockStateFromString(blockState), this.getRoom().getSettings()), 2));
         WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::unBlock");
     }
 }

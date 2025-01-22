@@ -63,8 +63,8 @@ public class TemplateHelper {
 
                 ConnectionPoint targetPoint = null;
                 for (ConnectionPoint point : connectionPoints) {
-                    if (point.getDirection() != blockDirection) continue;
-                    if (point.getPositions().stream().noneMatch(pos -> block.pos().closerThan(pos, 2.0))) continue;
+                    if (point.getDirection(EMPTY_DUNGEON_SETTINGS) != blockDirection) continue;
+                    if (point.getPositions(EMPTY_DUNGEON_SETTINGS, EMPTY_BLOCK_POS).stream().noneMatch(pos -> block.pos().closerThan(pos, 2.0))) continue;
                     targetPoint = point;
                 }
 
@@ -107,21 +107,18 @@ public class TemplateHelper {
     public static StructurePlaceSettings handleRoomTransformation(ConnectionPoint entrancePoint, ConnectionPoint exitPoint, RandomSource random) {
         StructurePlaceSettings settings = new StructurePlaceSettings();
 
-        if (entrancePoint.getAxis() == Direction.Axis.Y) {
-            settings.setMirror(exitPoint.getRoom().settings.getMirror());
-            settings.setRotation(exitPoint.getRoom().settings.getRotation());
+        if (entrancePoint.getDirection(settings).getAxis() == Direction.Axis.Y) {
+            settings.setMirror(exitPoint.getRoom().getSettings().getMirror());
+            settings.setRotation(exitPoint.getRoom().getSettings().getRotation());
             return settings;
         }
 
         settings.setMirror(Util.getRandom(Mirror.values(), random));
-
-        ConnectionPoint mirroredPoint = ConnectionPoint.copy(entrancePoint);
-        mirroredPoint.transform(settings, EMPTY_BLOCK_POS, EMPTY_BLOCK_POS);
-        if (exitPoint.getDirection() == mirroredPoint.getDirection()) {
+        if (exitPoint.getDirection(exitPoint.getRoom().getSettings()) == entrancePoint.getDirection(settings)) {
             settings.setRotation(Rotation.CLOCKWISE_180);
-        } else if (exitPoint.getDirection() == mirroredPoint.getDirection().getClockWise()) {
+        } else if (exitPoint.getDirection(exitPoint.getRoom().getSettings()) == entrancePoint.getDirection(settings).getClockWise()) {
             settings.setRotation(Rotation.COUNTERCLOCKWISE_90);
-        } else if (exitPoint.getDirection() == mirroredPoint.getDirection().getCounterClockWise()) {
+        } else if (exitPoint.getDirection(exitPoint.getRoom().getSettings()) == entrancePoint.getDirection(settings).getCounterClockWise()) {
             settings.setRotation(Rotation.CLOCKWISE_90);
         }
 
@@ -129,7 +126,7 @@ public class TemplateHelper {
     }
 
     public static BlockPos transform(BlockPos input, DungeonRoom room) {
-        return StructureTemplate.transform(input, room.settings.getMirror(), room.settings.getRotation(), room.offset).offset(room.position);
+        return StructureTemplate.transform(input, room.getSettings().getMirror(), room.getSettings().getRotation(), EMPTY_BLOCK_POS).offset(room.getPosition());
     }
 
     public static BlockPos locateSpawnPoint(List<Pair<StructureTemplate, BlockPos>> templates) {
@@ -274,7 +271,6 @@ public class TemplateHelper {
                         }
 
                         if (serverLevel.setBlock(blockpos, blockstate, flags)) {
-                            room.spawnablePosList.add(blockpos);
                             i = Math.min(i, blockpos.getX());
                             j = Math.min(j, blockpos.getY());
                             k = Math.min(k, blockpos.getZ());

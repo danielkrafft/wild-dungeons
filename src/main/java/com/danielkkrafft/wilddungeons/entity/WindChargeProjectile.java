@@ -1,6 +1,5 @@
 package com.danielkkrafft.wilddungeons.entity;
 
-import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
 import com.danielkkrafft.wilddungeons.util.UtilityMethods;
 import net.minecraft.client.Minecraft;

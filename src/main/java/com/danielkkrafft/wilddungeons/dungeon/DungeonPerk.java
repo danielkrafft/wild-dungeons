@@ -1,7 +1,9 @@
 package com.danielkkrafft.wilddungeons.dungeon;
 
-import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonPerkTemplate;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
+import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import net.minecraft.server.level.ServerPlayer;
@@ -13,24 +15,56 @@ import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 
 public class DungeonPerk {
 
-    public DungeonPerks.Perks perk;
-    public int count = 1;
+    public String name;
+    public int count = 0;
+    public String sessionKey;
 
-    public DungeonPerk(DungeonPerks.Perks perk) {
-        this.perk = perk;
+    public DungeonPerk(String name, String sessionKey) {
+        this.name = name;
+        this.sessionKey = sessionKey;
     }
 
-    public static void addPerk(DungeonSession session, DungeonPerks.Perks perk) {
+    public void onCollect() {
+        if (this.name.equals("EXTRA_LIFE")) {getSession().offsetLives(1);}
+    }
 
-        WildDungeons.getLogger().info("ADDING PERK: {}", perk);
+    public DungeonSession getSession() {
+        return DungeonSessionManager.getInstance().getDungeonSession(this.sessionKey);
+    }
 
-        if (session.perks.containsKey(perk)) {
-            session.perks.get(perk).count += 1;
-        } else {
-            session.perks.put(perk, new DungeonPerk(perk));
+    public DungeonPerkTemplate getTemplate() {return DungeonRegistry.DUNGEON_PERK_REGISTRY.get(this.name);
+    }
+
+    @SubscribeEvent
+    public static void onHit(LivingDamageEvent.Pre event) {
+        if (event.getSource().getEntity() instanceof ServerPlayer serverPlayer) {
+            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(serverPlayer);
+
+            if (wdPlayer.getCurrentDungeon() == null) return;
+            if (serverPlayer.getWeaponItem().getItem() instanceof SwordItem) {
+
+                if (wdPlayer.getCurrentDungeon().getPerks().containsKey("SWORD_DAMAGE_INCREASE")) {
+                    DungeonPerk perk = wdPlayer.getCurrentDungeon().getPerks().get("SWORD_DAMAGE_INCREASE");
+                    event.setNewDamage((float) (event.getOriginalDamage() * Math.pow(1.1, perk.count)));
+                }
+
+            } else if (serverPlayer.getWeaponItem().getItem() instanceof AxeItem) {
+
+                if (wdPlayer.getCurrentDungeon().getPerks().containsKey("AXE_DAMAGE_INCREASE")) {
+                    DungeonPerk perk = wdPlayer.getCurrentDungeon().getPerks().get("AXE_DAMAGE_INCREASE");
+                    event.setNewDamage((float) (event.getOriginalDamage() * Math.pow(1.1, perk.count)));
+                }
+
+            } else if (event.getSource().is(DamageTypes.ARROW)) {
+
+                if (wdPlayer.getCurrentDungeon().getPerks().containsKey("AXE_DAMAGE_INCREASE")) {
+                    DungeonPerk perk = wdPlayer.getCurrentDungeon().getPerks().get("AXE_DAMAGE_INCREASE");
+                    event.setNewDamage((float) (event.getOriginalDamage() * Math.pow(1.1, perk.count)));
+                }
+
+            }
+
         }
-        DungeonPerks.onPerk(perk, session);
-
     }
 
 }
