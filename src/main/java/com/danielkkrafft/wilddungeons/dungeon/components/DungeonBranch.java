@@ -55,7 +55,7 @@ public class DungeonBranch {
     public DungeonBranch(String templateKey, DungeonFloor floor, BlockPos origin) {
         this.floor = floor;
         this.setIndex(this.floor.getBranches().size());
-
+        this.floor.getBranches().add(this);
         this.templateKey = templateKey;
 
         this.floorIndex = floor.getIndex();
@@ -103,7 +103,9 @@ public class DungeonBranch {
         while (!pointsToTry.isEmpty()) {
 
             ConnectionPoint entrancePoint = pointsToTry.remove(new Random().nextInt(pointsToTry.size()));
-            List<ConnectionPoint> exitPoints = this.dungeonRooms.isEmpty() ? floor.getBranches().getLast().dungeonRooms.getLast().getValidExitPoints(TemplateHelper.EMPTY_DUNGEON_SETTINGS, TemplateHelper.EMPTY_BLOCK_POS, nextRoom, entrancePoint, false) : getValidExitPoints(TemplateHelper.EMPTY_DUNGEON_SETTINGS, nextRoom, entrancePoint, false);
+            List<ConnectionPoint> exitPoints = this.dungeonRooms.isEmpty() ?
+                    floor.getBranches().get(floor.getBranches().size()-2).dungeonRooms.getLast().getValidExitPoints(TemplateHelper.EMPTY_DUNGEON_SETTINGS, TemplateHelper.EMPTY_BLOCK_POS, nextRoom, entrancePoint, false)
+                    : getValidExitPoints(TemplateHelper.EMPTY_DUNGEON_SETTINGS, nextRoom, entrancePoint, false);
 
 
             List<Pair<ConnectionPoint, StructurePlaceSettings>> validPoints = new ArrayList<>();
@@ -187,11 +189,9 @@ public class DungeonBranch {
     }
 
     private boolean maybePlaceInitialRoom(List<ConnectionPoint> templateConnectionPoints) {
-        if (dungeonRooms.isEmpty() && floor.getBranches().isEmpty()) {
+        WildDungeons.getLogger().info("ATTEMPTING TO PLACE INITIAL ROOM");
+        if (dungeonRooms.isEmpty() && floor.getBranches().size() == 1) {
             DungeonRoom room = getTemplate().roomTemplates().getLast().getRandom().placeInWorld(this, floor.getLevel(), origin, new StructurePlaceSettings(), templateConnectionPoints);
-            room.setIndex(dungeonRooms.size());
-            dungeonRooms.add(room);
-
             openConnections += room.getConnectionPoints().size();
             return true;
         }
@@ -217,7 +217,7 @@ public class DungeonBranch {
 
         List<BoundingBox> proposedBoxes = nextRoom.getBoundingBoxes(settings, position);
         boolean flag = true;
-        if (!floor.isBoundingBoxValid(proposedBoxes, dungeonRooms)) {
+        if (!floor.isBoundingBoxValid(proposedBoxes)) {
             exitPoint.incrementFailures();
             flag = false;
         }
@@ -248,7 +248,6 @@ public class DungeonBranch {
         newEntrancePoint.setConnectedPoint(exitPoint);
         exitPoint.unBlock(floor.getLevel());
         openConnections += nextRoom.connectionPoints().size() - 2;
-        dungeonRooms.add(room);
         room.onGenerate();
         WDProfiler.INSTANCE.logTimestamp("DungeonBranch::placeRoom");
     }

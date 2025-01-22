@@ -6,6 +6,7 @@ import com.danielkkrafft.wilddungeons.dungeon.DungeonTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonPerkTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRegistry;
+import com.danielkkrafft.wilddungeons.dungeon.components.TemplateHelper;
 import com.danielkkrafft.wilddungeons.entity.blockentity.RiftBlockEntity;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
@@ -71,8 +72,7 @@ public class DungeonSession {
                 new WeightedPool<String>().add("win", 1) :
                 new WeightedPool<String>().add(""+(index+1), 1);
 
-        DungeonFloor floor = getTemplate().floorTemplates().get(floors.size()).getRandom().placeInWorld(this, new BlockPos(0,0,0), index, destinations);
-        floors.add(floor);
+        getTemplate().floorTemplates().get(floors.size()).getRandom().placeInWorld(this, TemplateHelper.EMPTY_BLOCK_POS, destinations);
 
         this.floors.forEach(dungeonFloor -> {
             dungeonFloor.getBranches().forEach(branch -> {

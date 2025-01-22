@@ -71,6 +71,7 @@ public class DungeonRoom {
     public DungeonRoom(DungeonBranch branch, String templateKey, ServerLevel level, BlockPos position, StructurePlaceSettings settings, List<ConnectionPoint> allConnectionPoints) {
         this.branch = branch;
         this.setIndex(this.branch.getRooms().size());
+        this.branch.getRooms().add(this);
 
         this.templateKey = templateKey;
         WildDungeons.getLogger().info("BRANCH ROOM MATERIALS: {}", branch.getMaterials().size());
