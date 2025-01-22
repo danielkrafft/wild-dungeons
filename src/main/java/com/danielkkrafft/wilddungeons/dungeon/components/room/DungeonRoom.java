@@ -71,6 +71,7 @@ public class DungeonRoom {
     public DungeonRoom(DungeonBranch branch, String templateKey, ServerLevel level, BlockPos position, StructurePlaceSettings settings, List<ConnectionPoint> allConnectionPoints) {
         this.branch = branch;
         this.setIndex(this.branch.getRooms().size());
+        this.branch.getRooms().add(this);
 
         this.templateKey = templateKey;
         WildDungeons.getLogger().info("BRANCH ROOM MATERIALS: {}", branch.getMaterials().size());
@@ -147,7 +148,8 @@ public class DungeonRoom {
                     mutableBlockPos.set(randX, y+1, randZ);
                     if (level.getBlockState(mutableBlockPos) == Blocks.AIR.defaultBlockState())
                     {
-                        result.add(mutableBlockPos.immutable());
+                        result.add(mutableBlockPos.below());
+                        break;
                     }
                 }
             }
@@ -272,9 +274,7 @@ public class DungeonRoom {
         this.innerPlayerUUIDs.put(player.getUUID(), false);
     }
     public void onBranchEnter(WDPlayer player) {}
-    public void onEnterInner(WDPlayer player) {
-        WildDungeons.getLogger().info("ENTERING ROOM {} INNER SHELL", this.getTemplate().name());
-    }
+    public void onEnterInner(WDPlayer player) {}
     public void onExit(WDPlayer player) {
         this.playerUUIDs.remove(player.getUUID());
         this.innerPlayerUUIDs.remove(player.getUUID());

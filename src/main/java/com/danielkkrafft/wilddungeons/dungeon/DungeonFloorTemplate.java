@@ -18,8 +18,8 @@ public record DungeonFloorTemplate(String name, DungeonRegistry.DungeonLayout<Du
 
     public DungeonFloorTemplate pool(WeightedPool<DungeonFloorTemplate> pool, Integer weight) {pool.add(this, weight); return this;}
 
-    public DungeonFloor placeInWorld(DungeonSession session, BlockPos position, int index, WeightedPool<String> destinations) {
+    public DungeonFloor placeInWorld(DungeonSession session, BlockPos position, WeightedPool<String> destinations) {
         WildDungeons.getLogger().info("PLACING FLOOR: {}", this.name());
-        return new DungeonFloor(this.name, session.getSessionKey(), position, index, destinations);
+        return new DungeonFloor(this.name, session.getSessionKey(), position, destinations);
     }
 }
