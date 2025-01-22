@@ -1,5 +1,7 @@
 package com.danielkkrafft.wilddungeons.dungeon;
 
+import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonComponent;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -7,7 +9,9 @@ import net.minecraft.world.level.block.state.properties.Property;
 
 import java.util.List;
 
-public class DungeonMaterial {
+public class DungeonMaterial implements DungeonComponent {
+    public String name;
+
     public List<WeightedPool<BlockState>> basicBlockStates;
     public List<WeightedPool<BlockState>> stairBlockStates;
     public List<WeightedPool<BlockState>> slabBlockStates;
@@ -15,7 +19,9 @@ public class DungeonMaterial {
     public List<WeightedPool<BlockState>> lightBlockStates;
     public List<WeightedPool<BlockState>> hiddenBlockStates;
 
-    public DungeonMaterial (List<WeightedPool<BlockState>> basicBlockStates, List<WeightedPool<BlockState>> stairBlockStates, List<WeightedPool<BlockState>> slabBlockStates, List<WeightedPool<BlockState>> wallBlockStates, List<WeightedPool<BlockState>> lightBlockStates, List<WeightedPool<BlockState>> hiddenBlockStates) {
+    public DungeonMaterial (String name, List<WeightedPool<BlockState>> basicBlockStates, List<WeightedPool<BlockState>> stairBlockStates, List<WeightedPool<BlockState>> slabBlockStates, List<WeightedPool<BlockState>> wallBlockStates, List<WeightedPool<BlockState>> lightBlockStates, List<WeightedPool<BlockState>> hiddenBlockStates) {
+        this.name = name;
+        WildDungeons.getLogger().info("SETTING NAME TO: {}", name());
         this.basicBlockStates = basicBlockStates;
         this.stairBlockStates = stairBlockStates;
         this.slabBlockStates = slabBlockStates;
@@ -50,4 +56,7 @@ public class DungeonMaterial {
         return result;
     }
 
+    @Override
+    public String name() {return this.name;}
+    public DungeonMaterial pool(WeightedPool<DungeonMaterial> pool, Integer weight) {pool.add(this, weight); return this;}
 }

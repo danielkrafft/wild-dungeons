@@ -1,11 +1,8 @@
 package com.danielkkrafft.wilddungeons.network.clientbound;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.player.WDPlayer;
-import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
-import com.danielkkrafft.wilddungeons.ui.ConnectionBlockEditScreen;
+import com.danielkkrafft.wilddungeons.network.ClientPacketHandler;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -28,13 +25,7 @@ public record ClientboundOpenConnectionBlockUIPacket(CompoundTag data) implement
 
     public void handle(IPayloadContext context) {
         context.enqueueWork(() -> {
-            Minecraft.getInstance().setScreen(new ConnectionBlockEditScreen(
-                    data.getString("unblockedBlockstate"),
-                    data.getString("pool"),
-                    data.getString("type"),
-                    data.getInt("x"),
-                    data.getInt("y"),
-                    data.getInt("z")));
+            ClientPacketHandler.handleOpenConnectionBlockUI(data);
         });
     }
 }

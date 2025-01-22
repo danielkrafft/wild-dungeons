@@ -9,7 +9,6 @@ import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.util.CommandUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -49,22 +48,17 @@ public class WDPlayer {
 
     public String getUUID() {return this.UUID;}
 
-    public void storeRespawn(Integer integer, SavedTransform transform) {respawns.put(integer, transform);}
-    public void storePosition(Integer integer, SavedTransform transform) {positions.put(integer, transform);}
-
-    public int getDepth() {return this.positions.size();};
-
     public DungeonSession getCurrentDungeon() {return Objects.equals(this.currentDungeon, "none") ? null : DungeonSessionManager.getInstance().getDungeonSession(this.currentDungeon);}
     public void setCurrentDungeon(DungeonSession session) {
-        this.currentDungeon = session == null ? "none" : DungeonSessionManager.buildDungeonSessionKey(session.entrance);
+        this.currentDungeon = session == null ? "none" : DungeonSessionManager.buildDungeonSessionKey(session.getEntrancePos());
         WildDungeons.getLogger().info("SETTING CURRENT DUNGEON TO {}", this.currentDungeon);
     }
-    public DungeonFloor getCurrentFloor() {return this.currentFloor == -1 ? null : this.getCurrentDungeon().floors.get(this.currentFloor);}
-    public void setCurrentFloor(DungeonFloor floor) {this.currentFloor = floor == null ? -1 : floor.index;}
-    public DungeonBranch getCurrentBranch() {return this.currentBranch == -1 ? null : this.getCurrentFloor().dungeonBranches.get(this.currentBranch);}
-    public void setCurrentBranch(DungeonBranch branch) {this.currentBranch = branch == null ? -1 : branch.index;}
-    public DungeonRoom getCurrentRoom() {return this.currentRoom == -1 ? null : this.getCurrentBranch().dungeonRooms.get(this.currentRoom);}
-    public void setCurrentRoom(DungeonRoom room) {this.currentRoom = room == null ? -1 : room.index;}
+    public DungeonFloor getCurrentFloor() {return this.currentFloor == -1 ? null : this.getCurrentDungeon().getFloors().get(this.currentFloor);}
+    public void setCurrentFloor(DungeonFloor floor) {this.currentFloor = floor == null ? -1 : floor.getIndex();}
+    public DungeonBranch getCurrentBranch() {return this.currentBranch == -1 ? null : this.getCurrentFloor().getBranches().get(this.currentBranch);}
+    public void setCurrentBranch(DungeonBranch branch) {this.currentBranch = branch == null ? -1 : branch.getIndex();}
+    public DungeonRoom getCurrentRoom() {return this.currentRoom == -1 ? null : this.getCurrentBranch().getRooms().get(this.currentRoom);}
+    public void setCurrentRoom(DungeonRoom room) {this.currentRoom = room == null ? -1 : room.getIndex();}
     public int getCurrentLives() {return this.currentLives;}
     public void setCurrentLives(int currentLives) {this.currentLives = currentLives;}
 
@@ -101,74 +95,6 @@ public class WDPlayer {
 
     public ServerPlayer getServerPlayer(MinecraftServer server) {
         return server.getPlayerList().getPlayer(java.util.UUID.fromString(UUID));
-    }
-
-    public CompoundTag toCompoundTag() {
-        CompoundTag tag = new CompoundTag();
-        CompoundTag essenceTag = new CompoundTag();
-        for (String key : essenceTotals.keySet()) {
-            essenceTag.putInt(key, essenceTotals.get(key));
-        }
-
-        CompoundTag respawnsTag = new CompoundTag();
-        for (int i = -1; i < respawns.size()-1; i++) {
-            respawnsTag.put(""+i, respawns.get(i).serialize());
-        }
-
-        CompoundTag positionsTag = new CompoundTag();
-        for (int i = -1; i < positions.size()-1; i++) {
-            positionsTag.put(""+i, positions.get(i).serialize());
-        }
-
-        tag.put("essenceTotals", essenceTag);
-        tag.put("respawns", respawnsTag);
-        tag.put("positions", positionsTag);
-        tag.putString("recentEssence", this.recentEssence);
-        WildDungeons.getLogger().info("SERIALIZING CURRENT DUNGEON: {}", this.currentDungeon);
-        tag.putString("currentDungeon", this.currentDungeon);
-        tag.putInt("currentFloor", this.currentFloor);
-        tag.putInt("currentBranch", this.currentBranch);
-        tag.putInt("currentRoom", this.currentRoom);
-        tag.putInt("currentLives", this.currentLives);
-        tag.putString("uuid", this.UUID);
-
-        WildDungeons.getLogger().info("SAVING PLAYER WITH LIVES: {}", this.currentLives);
-        return tag;
-    }
-
-    public WDPlayer(CompoundTag tag) {
-        CompoundTag essenceTag = tag.getCompound("essenceTotals");
-        HashMap<String, Integer> newEssenceTotals = new HashMap<>();
-        for (String key : essenceTag.getAllKeys()) {
-            newEssenceTotals.put(key, essenceTag.getInt(key));
-        }
-
-        CompoundTag respawnsTag = tag.getCompound("respawns");
-        HashMap<Integer, SavedTransform> newRespawns = new HashMap<>();
-        for (int i = -1; i < respawnsTag.size()-1; i++) {
-            newRespawns.put(i, new SavedTransform(respawnsTag.getCompound(String.valueOf(i))));
-        }
-
-        CompoundTag positionsTag = tag.getCompound("positions");
-        HashMap<Integer, SavedTransform> newPositions = new HashMap<>();
-        for (int i = -1; i < positionsTag.size()-1; i++) {
-            newPositions.put(i, new SavedTransform(positionsTag.getCompound(String.valueOf(i))));
-        }
-
-        this.riftCooldown = 100;
-        this.essenceTotals = newEssenceTotals;
-        this.respawns = newRespawns;
-        this.positions = newPositions;
-        this.recentEssence = tag.getString("recentEssence");
-        this.currentDungeon = tag.getString("currentDungeon");
-        WildDungeons.getLogger().info("SET CURRENT DUNGEON FROM TAG: {}", this.currentDungeon);
-        this.currentFloor = tag.getInt("currentFloor");
-        this.currentBranch = tag.getInt("currentBranch");
-        this.currentRoom = tag.getInt("currentRoom");
-        this.currentLives = tag.getInt("currentLives");
-        this.UUID = tag.getString("uuid");
-
-        WildDungeons.getLogger().info("CREATED PLAYER WITH LIVES: {}", this.currentLives);
     }
 
     public void giveEssencePoints(String key, int points) {
@@ -222,6 +148,7 @@ public class WDPlayer {
 
     public void onPlayerMovedBlocks() {
         this.handleCurrentRoom();
+        WildDungeons.getLogger().info("CURRENT ROOM IS {}:", this.getCurrentRoom() == null ? "none" : this.getCurrentRoom().getTemplate().name());
     }
 
     public void handleCurrentRoom() {
@@ -229,16 +156,17 @@ public class WDPlayer {
         DungeonRoom oldRoom = this.getCurrentRoom();
         DungeonBranch oldBranch = this.getCurrentBranch();
         Vec3i position = getServerPlayer().blockPosition();
-        for (DungeonRoom room : this.getCurrentFloor().chunkMap.getOrDefault(getServerPlayer().chunkPosition(), new ArrayList<>())) {
-            for (BoundingBox box : room.boundingBoxes) {
+        List<DungeonRoom> rooms = this.getCurrentFloor().getChunkMap().getOrDefault(getServerPlayer().chunkPosition(), new ArrayList<>()).stream().map(v -> this.getCurrentFloor().getBranches().get(v.x).getRooms().get(v.y)).toList();
+        for (DungeonRoom room : rooms) {
+            for (BoundingBox box : room.getBoundingBoxes()) {
                 if (box.isInside(position)) {
                     this.setCurrentRoom(room);
                     if (room != oldRoom) {
                         room.onEnter(this);
                         if (oldRoom != null) oldRoom.onExit(this);
-                        if (room.branch != oldBranch) {
-                            this.setCurrentBranch(room.branch);
-                            room.branch.onEnter(this);
+                        if (room.getBranch() != oldBranch) {
+                            this.setCurrentBranch(room.getBranch());
+                            room.getBranch().onEnter(this);
                             if (oldBranch != null) oldBranch.onExit(this);
                         }
                     }
@@ -263,7 +191,7 @@ public class WDPlayer {
     }
 
     public void travelToFloor(WDPlayer wdPlayer, DungeonFloor oldFloor, DungeonFloor newFloor) {
-        WildDungeons.getLogger().info("TRAVELING TO FLOOR {}", newFloor.template.name());
+        WildDungeons.getLogger().info("TRAVELING TO FLOOR {}", newFloor.getTemplate().name());
         ServerPlayer serverPlayer = this.getServerPlayer();
 
         SavedTransform oldRespawn = SavedTransform.fromRespawn(serverPlayer);
@@ -272,11 +200,11 @@ public class WDPlayer {
             respawns.put(-1, oldRespawn);
             positions.put(-1, oldPosition);
         } else {
-            respawns.put(oldFloor.index, oldRespawn);
-            positions.put(oldFloor.index, oldPosition);
+            respawns.put(oldFloor.getIndex(), oldRespawn);
+            positions.put(oldFloor.getIndex(), oldPosition);
         }
 
-        SavedTransform newPosition = positions.getOrDefault(newFloor.index, new SavedTransform(new Vec3(newFloor.spawnPoint.getX(), newFloor.spawnPoint.getY(), newFloor.spawnPoint.getZ()), 0.0, 0.0, newFloor.LEVEL_KEY));
+        SavedTransform newPosition = positions.getOrDefault(newFloor.getIndex(), new SavedTransform(new Vec3(newFloor.getSpawnPoint().getX(), newFloor.getSpawnPoint().getY(), newFloor.getSpawnPoint().getZ()), 0.0, 0.0, newFloor.getLevelKey()));
         WDPlayer.setRespawnPosition(newPosition, serverPlayer);
 
         if (wdPlayer.getCurrentFloor() != null) wdPlayer.getCurrentFloor().onExit(wdPlayer);

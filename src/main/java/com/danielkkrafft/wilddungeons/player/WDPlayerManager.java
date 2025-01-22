@@ -91,10 +91,10 @@ public class WDPlayerManager {
             DungeonRoom room = wdPlayer.getCurrentRoom();
             if (room == null) continue;
             WildDungeons.getLogger().info("FOUND DUNGEON ROOM WITH DESTRUCTION RULE: {}", room.getDestructionRule());
-            if (room.alwaysBreakable.contains(pos)) return false;
+            if (room.getAlwaysBreakable().contains(pos)) return false;
 
             if (room.getDestructionRule() == DungeonRoom.DestructionRule.DEFAULT) {
-                for (BoundingBox box : room.boundingBoxes) {
+                for (BoundingBox box : room.getBoundingBoxes()) {
                     if (box.isInside(pos)) return false;
                 }
             }
@@ -125,7 +125,8 @@ public class WDPlayerManager {
                 player.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 100, 1));
                 player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 800, 0));
                 player.level().broadcastEntityEvent(player, (byte)35);
-                player.teleportTo(player.getRespawnPosition().getX(), player.getRespawnPosition().getY(), player.getRespawnPosition().getZ());
+                BlockPos respawnPoint = wdPlayer.getCurrentBranch().getSpawnPoint();
+                player.teleportTo(respawnPoint.getX(), respawnPoint.getY(), respawnPoint.getZ());
                 wdPlayer.getCurrentDungeon().offsetLives(-1);
             } else {
                 wdPlayer.getCurrentDungeon().offsetLives(-1);
