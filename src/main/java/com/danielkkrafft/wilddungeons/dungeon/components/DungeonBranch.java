@@ -25,7 +25,7 @@ public class DungeonBranch {
 
     private static final int OPEN_CONNECTIONS_TARGET = 6;
     private static final int Y_TARGET = 128;
-
+    @IgnoreSerialization
     private List<DungeonRoom> dungeonRooms = new ArrayList<>();
     private String templateKey;
     private int floorIndex;
@@ -275,5 +275,10 @@ public class DungeonBranch {
 
     public void tick() {
         if (!this.playerUUIDs.isEmpty()) dungeonRooms.forEach(DungeonRoom::tick);
+    }
+
+    public void addRoom(DungeonRoom room) {
+        if (this.dungeonRooms == null) this.dungeonRooms = new ArrayList<>();
+        this.dungeonRooms.add(room);
     }
 }
