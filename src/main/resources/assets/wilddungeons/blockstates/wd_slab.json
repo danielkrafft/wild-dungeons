@@ -1,0 +1,13 @@
+﻿{
+  "variants": {
+    "type=bottom": {
+      "model": "wilddungeons:block/wd_slab"
+    },
+    "type=double": {
+      "model": "wilddungeons:block/wd_basic"
+    },
+    "type=top": {
+      "model": "wilddungeons:block/wd_slab_top"
+    }
+  }
+}

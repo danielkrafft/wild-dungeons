@@ -28,6 +28,8 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLPaths;
@@ -35,6 +37,7 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
@@ -61,6 +64,7 @@ public class WildDungeons {
         WDFluids.FLUID_TYPES.register(modEventBus);
         WDFluids.FLUIDS.register(modEventBus);
         WDBlocks.BLOCKS.register(modEventBus);
+        WDBlocks.CREATIVE_MODE_TABS.register(modEventBus);
         WDSoundEvents.SOUND_EVENTS.register(modEventBus);
 
         modEventBus.register(WildDungeons.class);
@@ -69,7 +73,6 @@ public class WildDungeons {
         NeoForge.EVENT_BUS.register(WDPlayerManager.class);
         NeoForge.EVENT_BUS.register(CombatRoom.class);
         NeoForge.EVENT_BUS.register(DungeonPerk.class);
-
     }
 
     @SubscribeEvent
