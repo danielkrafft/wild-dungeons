@@ -1,13 +1,9 @@
 package com.danielkkrafft.wilddungeons.dungeon.session;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.dungeon.DungeonMaterial;
-import com.danielkkrafft.wilddungeons.dungeon.components.DungeonComponents;
-import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
@@ -18,6 +14,7 @@ import java.util.Map;
 public class DungeonSessionManager {
 
     private static final DungeonSessionManager INSTANCE = new DungeonSessionManager();
+
     private Map<String, DungeonSession> sessions = new HashMap<>();
     public MinecraftServer server;
 
@@ -27,8 +24,8 @@ public class DungeonSessionManager {
         return sessions.getOrDefault(key, null);
     }
 
-    public DungeonSession getOrCreateDungeonSession(BlockPos entrance, ServerLevel entranceLevel, DungeonComponents.DungeonTemplate template) {
-        return sessions.computeIfAbsent(buildDungeonSessionKey(entrance), k -> new DungeonSession(entrance, entranceLevel, template));
+    public DungeonSession getOrCreateDungeonSession(BlockPos entrance, ResourceKey<Level> entranceLevelKey, String template) {
+        return sessions.computeIfAbsent(buildDungeonSessionKey(entrance), k -> new DungeonSession(entrance, entranceLevelKey, template));
     }
 
     public static String buildDungeonSessionKey(BlockPos entrance) {
@@ -57,7 +54,7 @@ public class DungeonSessionManager {
         List<String> sessionsToRemove = new ArrayList<>();
         INSTANCE.sessions.forEach((key, session) -> {
             session.tick();
-            if (session.markedForShutdown) {
+            if (session.isMarkedForShutdown()) {
                 sessionsToRemove.add(key);
             }
         });

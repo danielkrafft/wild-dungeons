@@ -165,8 +165,8 @@ public class BreezeGolem extends Monster implements RangedAttackMob, GeoEntity
         goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 10));
         goalSelector.addGoal(7, new RandomLookAroundGoal(this));
         targetSelector.addGoal(1, new HurtByTargetGoal(this, MutantBogged.class,BreezeGolem.class));
-        //targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 0, false, false, li->!(li instanceof BreezeGolem||li instanceof MutantBogged)));
-        targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, LivingEntity.class, false, false));
+        targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 0, false, false, li->!(li instanceof BreezeGolem)));
+        //targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, LivingEntity.class, false, false));
     }
     @Override
     protected @NotNull PathNavigation createNavigation(@NotNull Level level) {

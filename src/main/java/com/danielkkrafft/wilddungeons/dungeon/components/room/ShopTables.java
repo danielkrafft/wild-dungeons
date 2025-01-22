@@ -1,6 +1,5 @@
 package com.danielkkrafft.wilddungeons.dungeon.components.room;
 
-import com.danielkkrafft.wilddungeons.dungeon.DungeonPerks;
 import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.util.WeightedTable;
@@ -10,68 +9,68 @@ import net.minecraft.world.item.Items;
 public class ShopTables {
 
     public static final Offering.OfferingTemplate ARROWS = new Offering.OfferingTemplate(
-            Offering.Type.ITEM, 32, Item.getId(Items.ARROW), Offering.CostType.XP_LEVEL, 4, 1.5f);
+            Offering.Type.ITEM, 32, "arrow", Offering.CostType.XP_LEVEL, 4, 1.5f);
 
     public static final Offering.OfferingTemplate STEAKS = new Offering.OfferingTemplate(
-            Offering.Type.ITEM, 8, Item.getId(Items.COOKED_BEEF), Offering.CostType.XP_LEVEL, 4, 1.5f);
+            Offering.Type.ITEM, 8, "cooked_beef", Offering.CostType.XP_LEVEL, 4, 1.5f);
 
     public static final Offering.OfferingTemplate BAKED_POTATOES = new Offering.OfferingTemplate(
-            Offering.Type.ITEM, 24, Item.getId(Items.BAKED_POTATO), Offering.CostType.XP_LEVEL, 4, 1.5f);
+            Offering.Type.ITEM, 24, "baked_potato", Offering.CostType.XP_LEVEL, 4, 1.5f);
 
     public static final Offering.OfferingTemplate IRON_INGOTS = new Offering.OfferingTemplate(
-            Offering.Type.ITEM, 4, Item.getId(Items.IRON_INGOT), Offering.CostType.XP_LEVEL, 4, 1.5f);
+            Offering.Type.ITEM, 4, "iron_ingot", Offering.CostType.XP_LEVEL, 4, 1.5f);
 
 
     public static final Offering.OfferingTemplate EMERALDS = new Offering.OfferingTemplate(
-            Offering.Type.ITEM, 24, Item.getId(Items.EMERALD), Offering.CostType.XP_LEVEL, 8, 1.5f);
+            Offering.Type.ITEM, 24, "emerald", Offering.CostType.XP_LEVEL, 8, 1.5f);
 
     public static final Offering.OfferingTemplate BLAZE_RODS = new Offering.OfferingTemplate(
-            Offering.Type.ITEM, 8, Item.getId(Items.BLAZE_ROD), Offering.CostType.NETHER_XP_LEVEL, 4, 1.5f);
+            Offering.Type.ITEM, 8, "blaze_rod", Offering.CostType.NETHER_XP_LEVEL, 4, 1.5f);
 
     public static final Offering.OfferingTemplate ENDER_PEARLS = new Offering.OfferingTemplate(
-            Offering.Type.ITEM, 8, Item.getId(Items.ENDER_PEARL), Offering.CostType.END_XP_LEVEL, 4, 1.5f);
+            Offering.Type.ITEM, 8, "ender_pearl", Offering.CostType.END_XP_LEVEL, 4, 1.5f);
 
     public static final Offering.OfferingTemplate COAL = new Offering.OfferingTemplate(
-            Offering.Type.ITEM, 48, Item.getId(Items.COAL), Offering.CostType.XP_LEVEL, 4, 1.5f);
+            Offering.Type.ITEM, 48, "coal", Offering.CostType.XP_LEVEL, 4, 1.5f);
 
     public static final Offering.OfferingTemplate EXTRA_LIFE_NORMAL = new Offering.OfferingTemplate(
-            Offering.Type.PERK, 1, DungeonPerks.Perks.EXTRA_LIFE.getIndex(), Offering.CostType.XP_LEVEL, 8, 1.5f);
+            Offering.Type.PERK, 1, "EXTRA_LIFE", Offering.CostType.XP_LEVEL, 8, 1.5f);
 
     public static final Offering.OfferingTemplate EXTRA_LIFE_NETHER = new Offering.OfferingTemplate(
-            Offering.Type.PERK, 1, DungeonPerks.Perks.EXTRA_LIFE.getIndex(), Offering.CostType.NETHER_XP_LEVEL, 4, 1.5f);
+            Offering.Type.PERK, 1, "EXTRA_LIFE", Offering.CostType.NETHER_XP_LEVEL, 4, 1.5f);
 
     public static final Offering.OfferingTemplate EXTRA_LIFE_END = new Offering.OfferingTemplate(
-            Offering.Type.PERK, 1, DungeonPerks.Perks.EXTRA_LIFE.getIndex(), Offering.CostType.END_XP_LEVEL, 4, 1.5f);
+            Offering.Type.PERK, 1, "EXTRA_LIFE", Offering.CostType.END_XP_LEVEL, 4, 1.5f);
 
 
     public static final Offering.OfferingTemplate SWORD_DAMAGE_INCREASE_NORMAL = new Offering.OfferingTemplate(
-            Offering.Type.PERK, 1, DungeonPerks.Perks.SWORD_DAMAGE_INCREASE.getIndex(), Offering.CostType.XP_LEVEL, 15, 1.5f);
+            Offering.Type.PERK, 1, "SWORD_DAMAGE_INCREASE", Offering.CostType.XP_LEVEL, 15, 1.5f);
 
     public static final Offering.OfferingTemplate SWORD_DAMAGE_INCREASE_NETHER = new Offering.OfferingTemplate(
-            Offering.Type.PERK, 1, DungeonPerks.Perks.SWORD_DAMAGE_INCREASE.getIndex(), Offering.CostType.NETHER_XP_LEVEL, 8, 1.5f);
+            Offering.Type.PERK, 1, "SWORD_DAMAGE_INCREASE", Offering.CostType.NETHER_XP_LEVEL, 8, 1.5f);
 
     public static final Offering.OfferingTemplate SWORD_DAMAGE_INCREASE_END = new Offering.OfferingTemplate(
-            Offering.Type.PERK, 1, DungeonPerks.Perks.SWORD_DAMAGE_INCREASE.getIndex(), Offering.CostType.END_XP_LEVEL, 8, 1.5f);
+            Offering.Type.PERK, 1, "SWORD_DAMAGE_INCREASE", Offering.CostType.END_XP_LEVEL, 8, 1.5f);
 
 
     public static final Offering.OfferingTemplate AXE_DAMAGE_INCREASE_NORMAL = new Offering.OfferingTemplate(
-            Offering.Type.PERK, 1, DungeonPerks.Perks.AXE_DAMAGE_INCREASE.getIndex(), Offering.CostType.XP_LEVEL, 15, 1.5f);
+            Offering.Type.PERK, 1, "AXE_DAMAGE_INCREASE", Offering.CostType.XP_LEVEL, 15, 1.5f);
 
     public static final Offering.OfferingTemplate AXE_DAMAGE_INCREASE_NETHER = new Offering.OfferingTemplate(
-            Offering.Type.PERK, 1, DungeonPerks.Perks.AXE_DAMAGE_INCREASE.getIndex(), Offering.CostType.NETHER_XP_LEVEL, 8, 1.5f);
+            Offering.Type.PERK, 1, "AXE_DAMAGE_INCREASE", Offering.CostType.NETHER_XP_LEVEL, 8, 1.5f);
 
     public static final Offering.OfferingTemplate AXE_DAMAGE_INCREASE_END = new Offering.OfferingTemplate(
-            Offering.Type.PERK, 1, DungeonPerks.Perks.AXE_DAMAGE_INCREASE.getIndex(), Offering.CostType.END_XP_LEVEL, 8, 1.5f);
+            Offering.Type.PERK, 1, "AXE_DAMAGE_INCREASE", Offering.CostType.END_XP_LEVEL, 8, 1.5f);
 
 
     public static final Offering.OfferingTemplate BOW_DAMAGE_INCREASE_NORMAL = new Offering.OfferingTemplate(
-            Offering.Type.PERK, 1, DungeonPerks.Perks.BOW_DAMAGE_INCREASE.getIndex(), Offering.CostType.XP_LEVEL, 15, 1.5f);
+            Offering.Type.PERK, 1, "BOW_DAMAGE_INCREASE", Offering.CostType.XP_LEVEL, 15, 1.5f);
 
     public static final Offering.OfferingTemplate BOW_DAMAGE_INCREASE_NETHER = new Offering.OfferingTemplate(
-            Offering.Type.PERK, 1, DungeonPerks.Perks.BOW_DAMAGE_INCREASE.getIndex(), Offering.CostType.NETHER_XP_LEVEL, 8, 1.5f);
+            Offering.Type.PERK, 1, "BOW_DAMAGE_INCREASE", Offering.CostType.NETHER_XP_LEVEL, 8, 1.5f);
 
     public static final Offering.OfferingTemplate BOW_DAMAGE_INCREASE_END = new Offering.OfferingTemplate(
-            Offering.Type.PERK, 1, DungeonPerks.Perks.BOW_DAMAGE_INCREASE.getIndex(), Offering.CostType.END_XP_LEVEL, 8, 1.5f);
+            Offering.Type.PERK, 1, "BOW_DAMAGE_INCREASE", Offering.CostType.END_XP_LEVEL, 8, 1.5f);
 
 
 

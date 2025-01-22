@@ -160,35 +160,5 @@ public class FileUtil {
             dungeonsFolder.mkdir();
 
     }
-
-    public static class SaveFile {
-        private Map<String, WDPlayer> players;
-
-        public SaveFile(){}
-
-        public void setPlayers(Map<String, WDPlayer> players) {this.players = players;}
-
-        public static void save() {
-            File saveFile = FileUtil.getWorldPath().resolve("data").resolve("dungeons.json").toFile();
-            SaveFile save = new SaveFile();
-
-            save.setPlayers(WDPlayerManager.getInstance().getPlayers());
-            FileUtil.writeJson(save, saveFile);
-        }
-
-        public static void load() {
-
-            File saveFile = FileUtil.getWorldPath().resolve("data").resolve("dungeons.json").toFile();
-            SaveFile save = FileUtil.readJson(SaveFile.class, saveFile);
-
-            if (save == null) {
-                WDPlayerManager.getInstance().setPlayers(new HashMap<>());
-            } else {
-                WDPlayerManager.getInstance().setPlayers(save.players);
-            }
-
-        }
-
-    }
 }
 

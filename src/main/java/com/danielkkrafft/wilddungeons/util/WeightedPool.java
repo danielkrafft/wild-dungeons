@@ -10,6 +10,7 @@ public class WeightedPool<T> {
     private final List<Pair<T, Integer>> pool;
     public WeightedPool() { pool = new ArrayList<>(); }
     public WeightedPool<T> add(T item, int weight) { pool.add(Pair.of(item, weight)); return this; }
+    public int size() {return this.pool.size();}
 
     public T getRandom() {
         List<Integer> cumulativeWeights = new ArrayList<>();
