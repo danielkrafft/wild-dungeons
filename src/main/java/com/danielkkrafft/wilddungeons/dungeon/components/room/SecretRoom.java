@@ -2,7 +2,6 @@ package com.danielkkrafft.wilddungeons.dungeon.components.room;
 
 import com.danielkkrafft.wilddungeons.dungeon.components.ConnectionPoint;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
-import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
@@ -27,7 +26,7 @@ public class SecretRoom extends DungeonRoom {
         }
         if (entryPoint != null) {
             entryPoint.getConnectedPoint().hide(super.getBranch().getFloor().getLevel());
-            entryPoint.getConnectedPoint().getRoom().getAlwaysBreakable().addAll(entryPoint.getConnectedPoint().getPositions(entryPoint.getRoom().getSettings(), entryPoint.getRoom().getPosition()));
+            entryPoint.getConnectedPoint().getRoom().getAlwaysBreakable().addAll(entryPoint.getConnectedPoint().getPositions(entryPoint.getConnectedPoint().getRoom().getSettings(), entryPoint.getConnectedPoint().getRoom().getPosition()));
         }
     }
 }

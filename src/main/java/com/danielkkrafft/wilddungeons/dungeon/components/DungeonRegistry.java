@@ -202,7 +202,7 @@ public class DungeonRegistry {
         DUNGEON_ROOM_REGISTRY.add(DungeonRoomTemplate.build(DungeonRoomTemplate.Type.NONE,"stone/medium_4", List.of(
                 Pair.of("stone/medium_4_comp_1", TemplateHelper.EMPTY_BLOCK_POS),
                 Pair.of("stone/medium_4_comp_2", new BlockPos(4, 0, -17))), null, null, 1.0).pool(MEDIUM_ROOM_POOL, 1));
-        DUNGEON_ROOM_REGISTRY.add(DungeonRoomTemplate.build(DungeonRoomTemplate.Type.NONE,"stone/large_1", List.of(Pair.of("stone/large_1", TemplateHelper.EMPTY_BLOCK_POS)), null, null, 1.0).pool(COMBAT_ROOM_POOL, 1));
+        DUNGEON_ROOM_REGISTRY.add(DungeonRoomTemplate.build(DungeonRoomTemplate.Type.COMBAT,"stone/large_1", List.of(Pair.of("stone/large_1", TemplateHelper.EMPTY_BLOCK_POS)), null, null, 1.0).pool(COMBAT_ROOM_POOL, 1));
         DUNGEON_ROOM_REGISTRY.add(DungeonRoomTemplate.build(DungeonRoomTemplate.Type.NONE,"stone/start", List.of(Pair.of("stone/start", TemplateHelper.EMPTY_BLOCK_POS)), null, null, 1.0));
         DUNGEON_ROOM_REGISTRY.add(DungeonRoomTemplate.build(DungeonRoomTemplate.Type.NONE,"stone/boss", List.of(
                 Pair.of("stone/boss_comp_1", TemplateHelper.EMPTY_BLOCK_POS),
