@@ -197,6 +197,9 @@ public class ConnectionPoint {
             BlockEntity blockEntity = level.getBlockEntity(pos);
 
             if (blockEntity instanceof ConnectionBlockEntity connectionBlockEntity) {
+                BlockState blockState = blockStateFromString(connectionBlockEntity.unblockedBlockstate);
+                blockState = this.getRoom().getMaterial().replace(blockState);
+                connectionBlockEntity.unblockedBlockstate = toString(blockState);
                 this.unBlockedBlockStates.put(pos, connectionBlockEntity.unblockedBlockstate);
             }
         }
@@ -219,11 +222,6 @@ public class ConnectionPoint {
 
     public void unBlock(ServerLevel level) {
         unBlockedBlockStates.forEach((pos, blockState) -> level.setBlock(pos, TemplateHelper.fixBlockStateProperties(blockStateFromString(blockState), this.getRoom().getSettings()), 2));
-        getPositions(this.getRoom().getSettings(), this.getRoom().getPosition()).forEach((pos) -> {
-            BlockState state = level.getBlockState(pos);
-            if (state.getBlock() == Blocks.AIR) return;//minor optimization
-            level.setBlock(pos, this.getRoom().getMaterial().replace(state), 2);
-        });
         WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::unBlock");
     }
 }
