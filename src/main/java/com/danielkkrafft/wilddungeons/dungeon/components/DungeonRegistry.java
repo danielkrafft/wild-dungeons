@@ -284,7 +284,7 @@ public class DungeonRegistry {
                 ALL_MATERIAL_POOL,
                 EnemyTables.BASIC_TABLE,
                 1.0,
-                DungeonSession.DungeonExitBehavior.NOTHING,
+                DungeonSession.DungeonExitBehavior.DESTROY_RIFT,
                 DUNGEON_POOL).pool(DUNGEON_POOL, 1));
 
         DUNGEON_REGISTRY.add(DungeonTemplate.build("shop_dungeon", DungeonOpenBehavior.NONE, new DungeonLayout<DungeonFloorTemplate>()
