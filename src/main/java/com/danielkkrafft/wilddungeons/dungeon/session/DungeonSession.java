@@ -100,7 +100,10 @@ public class DungeonSession {
         if (floors.isEmpty()) generateFloor(0);
         floors.getFirst().onEnter(wdPlayer);
         shutdownTimer = SHUTDOWN_TIME;
-        if (this.playerStats.containsKey(wdPlayer.getUUID())) return;
+        if (this.playerStats.containsKey(wdPlayer.getUUID())){
+            WDPlayerManager.syncAll(this.playerUUIDs.stream().toList());//only sync if player reenters because we sync all new players anyway
+            return;
+        }
         this.playerStats.put(wdPlayer.getUUID(), new DungeonStats());
         this.offsetLives(LIVES_PER_PLAYER);
     }
