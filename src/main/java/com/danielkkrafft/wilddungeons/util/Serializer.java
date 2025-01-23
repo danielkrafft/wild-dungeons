@@ -4,6 +4,7 @@ import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.components.ConnectionPoint;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.*;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.player.SavedTransform;
@@ -53,6 +54,7 @@ public class Serializer
         addCustom(SaveSystem.DungeonFloorFile.class);
         addCustom(SaveSystem.DungeonBranchFile.class);
         addCustom(SaveSystem.DungeonRoomFile.class);
+        addCustom(DungeonSession.DungeonStats.class);
     }
 
     private static void addCustom(Class<?> clazz) {

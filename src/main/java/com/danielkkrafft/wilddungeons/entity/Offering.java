@@ -1,9 +1,9 @@
 package com.danielkkrafft.wilddungeons.entity;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.dungeon.DungeonTemplate;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
-import com.danielkkrafft.wilddungeons.dungeon.components.DungeonPerkTemplate;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonPerkTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.LootRoom;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
@@ -276,15 +276,6 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
             }
         }
 
-    }
-
-    public record OfferingTemplate(Type type, int amount, String id, CostType costType, int costAmount, float deviance) {
-
-        public Offering asOffering(Level level) {
-            int adjustedAmount = RandomUtil.randIntBetween((int) (amount / deviance), (int) (amount * deviance));
-            int adjustedCost = RandomUtil.randIntBetween((int) (costAmount / deviance), (int) (costAmount * deviance));
-            return new Offering(level, type, adjustedAmount, id, costType, adjustedCost);
-        }
     }
 
 }

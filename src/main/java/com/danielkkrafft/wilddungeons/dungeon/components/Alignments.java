@@ -1,4 +1,4 @@
-package com.danielkkrafft.wilddungeons.dungeon;
+package com.danielkkrafft.wilddungeons.dungeon.components;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import net.minecraft.resources.ResourceLocation;

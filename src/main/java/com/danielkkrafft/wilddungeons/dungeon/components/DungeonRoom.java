@@ -1,9 +1,8 @@
-package com.danielkkrafft.wilddungeons.dungeon.components.room;
+package com.danielkkrafft.wilddungeons.dungeon.components;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.dungeon.DungeonMaterial;
-import com.danielkkrafft.wilddungeons.dungeon.DungeonRoomTemplate;
-import com.danielkkrafft.wilddungeons.dungeon.components.*;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.entity.Offering;
@@ -112,7 +111,7 @@ public class DungeonRoom {
             this.riftUUIDs.add(rift.getStringUUID());
         });
 
-        List<Offering.OfferingTemplate> entries = ShopTables.BASIC_TABLE.randomResults(this.getTemplate().offerings().size(), (int) this.getDifficulty() * this.getTemplate().offerings().size(), 1.2f);
+        List<DungeonRegistry.OfferingTemplate> entries = DungeonRegistry.OFFERING_TEMPLATE_TABLE_REGISTRY.get("BASIC_SHOP_TABLE").randomResults(this.getTemplate().offerings().size(), (int) this.getDifficulty() * this.getTemplate().offerings().size(), 1.2f);
         getTemplate().offerings().forEach(pos -> {
             if (entries.isEmpty()) return;
             Offering next = entries.removeFirst().asOffering(this.getBranch().getFloor().getLevel());
@@ -191,7 +190,7 @@ public class DungeonRoom {
 
         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
         int remainingChests = maxChests;
-        List<LootTables.LootEntry> entries = LootTables.BASIC_LOOT_TABLE.randomResults(5, (int) (5 * this.getDifficulty()), 1.5f);
+        List<DungeonRegistry.LootEntry> entries = DungeonRegistry.LOOT_TABLE_REGISTRY.get("BASIC_LOOT_TABLE").randomResults(5, (int) (5 * this.getDifficulty()), 1.5f);
 
         for (StructureTemplate.StructureBlockInfo structureBlockInfo : chosenBlocks) {
             mutableBlockPos.set(TemplateHelper.transform(structureBlockInfo.pos(), this));

@@ -1,7 +1,7 @@
 package com.danielkkrafft.wilddungeons.entity.renderer;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.dungeon.Alignments;
+import com.danielkkrafft.wilddungeons.dungeon.components.Alignments;
 import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;

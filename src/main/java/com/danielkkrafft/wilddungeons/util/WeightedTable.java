@@ -1,5 +1,6 @@
 package com.danielkkrafft.wilddungeons.util;
 
+import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonComponent;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.util.Mth;
 
@@ -7,9 +8,10 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class WeightedTable<T> {
+public class WeightedTable<T> implements DungeonComponent {
 
     List<Pair<Integer, WeightedPool<T>>> weightMap = new ArrayList<>();
+    public String name;
     public WeightedTable() {}
 
     public WeightedTable<T> add(WeightedPool<T> pool, Integer quality) {
@@ -43,4 +45,10 @@ public class WeightedTable<T> {
 
     }
 
+    public WeightedTable<T> setName(String name) {this.name = name; return this;}
+
+    @Override
+    public String name() {
+        return this.name;
+    }
 }

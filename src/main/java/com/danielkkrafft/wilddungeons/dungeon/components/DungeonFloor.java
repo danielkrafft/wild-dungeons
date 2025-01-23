@@ -1,10 +1,8 @@
 package com.danielkkrafft.wilddungeons.dungeon.components;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.dungeon.DungeonBranchTemplate;
-import com.danielkkrafft.wilddungeons.dungeon.DungeonFloorTemplate;
-import com.danielkkrafft.wilddungeons.dungeon.DungeonMaterial;
-import com.danielkkrafft.wilddungeons.dungeon.components.room.DungeonRoom;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonBranchTemplate;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonFloorTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.entity.Offering;

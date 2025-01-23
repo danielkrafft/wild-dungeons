@@ -2,6 +2,8 @@ package com.danielkkrafft.wilddungeons.dungeon.components.room;
 
 import com.danielkkrafft.wilddungeons.dungeon.components.ConnectionPoint;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRegistry;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
 import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import net.minecraft.core.BlockPos;
@@ -51,7 +53,7 @@ public class LootRoom extends DungeonRoom {
         super.onBranchEnter(player);
         if (this.generated) return;
 
-        List<Offering.OfferingTemplate> toSpawn = OfferingTables.PERK_OFFERING_TABLE.randomResults(this.getTemplate().offerings().size(), this.getTemplate().offerings().size(), 1);
+        List<DungeonRegistry.OfferingTemplate> toSpawn = DungeonRegistry.OFFERING_TEMPLATE_TABLE_REGISTRY.get("FREE_PERK_OFFERING_TABLE").randomResults(this.getTemplate().offerings().size(), this.getTemplate().offerings().size(), 1);
         for (Vec3 pos : this.getTemplate().offerings()) {
             Offering next = toSpawn.removeFirst().asOffering(this.getBranch().getFloor().getLevel());
             next.setPos(pos);

@@ -2,8 +2,8 @@ package com.danielkkrafft.wilddungeons;
 
 import com.danielkkrafft.wilddungeons.block.WDBlocks;
 import com.danielkkrafft.wilddungeons.block.WDFluids;
-import com.danielkkrafft.wilddungeons.dungeon.Alignments;
-import com.danielkkrafft.wilddungeons.dungeon.DungeonPerk;
+import com.danielkkrafft.wilddungeons.dungeon.components.Alignments;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonPerk;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.CombatRoom;
 import com.danielkkrafft.wilddungeons.entity.WDEntities;
 import com.danielkkrafft.wilddungeons.entity.boss.BreezeGolem;

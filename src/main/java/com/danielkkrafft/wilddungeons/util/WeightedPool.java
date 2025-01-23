@@ -1,16 +1,18 @@
 package com.danielkkrafft.wilddungeons.util;
 
+import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonComponent;
 import com.mojang.datafixers.util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class WeightedPool<T> {
+public class WeightedPool<T> implements DungeonComponent {
 
     private final List<Pair<T, Integer>> pool;
     public WeightedPool() { pool = new ArrayList<>(); }
     public WeightedPool<T> add(T item, int weight) { pool.add(Pair.of(item, weight)); return this; }
     public int size() {return this.pool.size();}
+    public String name = "none";
 
     public T getRandom() {
         List<Integer> cumulativeWeights = new ArrayList<>();
@@ -42,5 +44,11 @@ public class WeightedPool<T> {
             }
         }
         return result;
+    }
+
+    public WeightedPool<T> setName(String name) {this.name = name; return this;}
+    @Override
+    public String name() {
+        return this.name;
     }
 }
