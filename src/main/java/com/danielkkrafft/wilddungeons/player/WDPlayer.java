@@ -15,6 +15,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Vector2i;
 
 import java.util.*;
 
@@ -57,7 +58,15 @@ public class WDPlayer {
     public void setCurrentFloor(DungeonFloor floor) {this.currentFloor = floor == null ? -1 : floor.getIndex();}
     public DungeonBranch getCurrentBranch() {return this.currentBranch == -1 ? null : this.getCurrentFloor().getBranches().get(this.currentBranch);}
     public void setCurrentBranch(DungeonBranch branch) {this.currentBranch = branch == null ? -1 : branch.getIndex();}
-    public DungeonRoom getCurrentRoom() {return this.currentRoom == -1 ? null : this.getCurrentBranch().getRooms().get(this.currentRoom);}
+    public DungeonRoom getCurrentRoom() {
+        if (this.currentRoom == -1) return null;
+        WildDungeons.getLogger().info("TRYING TO GET ROOM {} OF BRANCH {}", this.currentRoom, this.currentBranch);
+        WildDungeons.getLogger().info("FLOOR IS: {}", this.getCurrentFloor().getTemplate().name());
+        WildDungeons.getLogger().info("FLOOR CONTAINS: {}", this.getCurrentFloor().getBranches().stream().map(branch -> branch.getTemplate().name()).toList());
+        WildDungeons.getLogger().info("BRANCH IS: {}", this.getCurrentBranch().getTemplate().name());
+        WildDungeons.getLogger().info("BRANCH CONTAINS {} ROOMS", this.getCurrentBranch().getRooms().size());
+        return this.currentRoom == -1 ? null : this.getCurrentBranch().getRooms().get(this.currentRoom);
+    }
     public void setCurrentRoom(DungeonRoom room) {this.currentRoom = room == null ? -1 : room.getIndex();}
     public int getCurrentLives() {return this.currentLives;}
     public void setCurrentLives(int currentLives) {this.currentLives = currentLives;}
@@ -155,7 +164,17 @@ public class WDPlayer {
         DungeonRoom oldRoom = this.getCurrentRoom();
         DungeonBranch oldBranch = this.getCurrentBranch();
         Vec3i position = getServerPlayer().blockPosition();
-        List<DungeonRoom> rooms = this.getCurrentFloor().getChunkMap().getOrDefault(getServerPlayer().chunkPosition(), new ArrayList<>()).stream().map(v -> this.getCurrentFloor().getBranches().get(v.x).getRooms().get(v.y)).toList();
+        WildDungeons.getLogger().info("PLAYER CURRENT FLOOR: {}", this.getCurrentFloor());
+        WildDungeons.getLogger().info("PLAYER CURRENT INDEX: {}", new Vector2i(this.currentBranch, this.currentRoom));
+        List<DungeonRoom> rooms = this.getCurrentFloor()
+                .getChunkMap()
+                .getOrDefault(
+                        getServerPlayer()
+                                .chunkPosition(), new ArrayList<>()).stream().map(v ->
+                        this.getCurrentFloor()
+                                .getBranches().get(v.x)
+                                .getRooms().get(v.y)).toList();
+
         for (DungeonRoom room : rooms) {
             for (BoundingBox box : room.getBoundingBoxes()) {
                 if (box.isInside(position)) {

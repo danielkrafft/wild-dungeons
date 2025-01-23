@@ -188,8 +188,8 @@ public class DungeonBranch {
     }
 
     private boolean maybePlaceInitialRoom(List<ConnectionPoint> templateConnectionPoints) {
-        WildDungeons.getLogger().info("ATTEMPTING TO PLACE INITIAL ROOM");
         if (dungeonRooms.isEmpty() && floor.getBranches().size() == 1) {
+            WildDungeons.getLogger().info("ATTEMPTING TO PLACE INITIAL ROOM");
             DungeonRoom room = getTemplate().roomTemplates().getLast().getRandom().placeInWorld(this, floor.getLevel(), origin, new StructurePlaceSettings(), templateConnectionPoints);
             openConnections += room.getConnectionPoints().size();
             return true;

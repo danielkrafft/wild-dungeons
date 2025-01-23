@@ -44,7 +44,9 @@ public class DungeonFloor {
     public WeightedPool<DungeonMaterial> getMaterials() {return this.getTemplate().materials() == null ? this.getSession().getTemplate().materials() : this.getTemplate().materials();}
     public WeightedTable<EntityType<?>> getEnemyTable() {return this.getTemplate().enemyTable() == null ? this.getSession().getTemplate().enemyTable() : this.getTemplate().enemyTable();}
     public double getDifficulty() {return this.getSession().getTemplate().difficulty() * this.getTemplate().difficulty() * Math.max(Math.pow(1.1, this.getSession().getFloors().size()), 1);}
-    public ServerLevel getLevel() {return DungeonSessionManager.getInstance().server.getLevel(this.LEVEL_KEY);}
+    public ServerLevel getLevel() {
+        return DungeonSessionManager.getInstance().server.getLevel(this.LEVEL_KEY);
+    }
     public List<DungeonBranch> getBranches() {return this.dungeonBranches;}
     public String getTemplateKey() {return this.templateKey;}
     public BlockPos getOrigin() {return this.origin;}
@@ -144,6 +146,7 @@ public class DungeonFloor {
     }
 
     public void tick() {
+        if (this.getLevel() == null) return;
         if (!playerUUIDs.isEmpty()) dungeonBranches.forEach(DungeonBranch::tick);
     }
 

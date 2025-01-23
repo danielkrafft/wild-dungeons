@@ -3,6 +3,7 @@ package com.danielkkrafft.wilddungeons.util;
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
@@ -26,8 +27,9 @@ public class SaveSystem {
         INSTANCE.save();
     }
 
-    public static void Load(){
-        INSTANCE.load();
+    public static boolean Load(){
+        DungeonRegistry.setupDungeons();
+        return INSTANCE.load();
     }
 
     public static boolean isLoading() {
@@ -67,7 +69,9 @@ public class SaveSystem {
                 DungeonFloor floor = floors.pop();
                 DungeonFloorFile floorFile = new DungeonFloorFile(floor);
                 Stack<DungeonBranch> branches = new Stack<>();
+                floor.getBranches().iterator().forEachRemaining(branch -> WildDungeons.getLogger().info("NEXT BRANCH: {} AT INDEX: {}", branch.getTemplate().name(), branch.getIndex()));
                 floor.getBranches().forEach(branches::push);
+                branches.iterator().forEachRemaining(branch -> WildDungeons.getLogger().info("NEXT BRANCH: {} AT INDEX: {}", branch.getTemplate().name(), branch.getIndex()));
                 while (branches.iterator().hasNext()) {
                     DungeonBranch branch = branches.pop();
                     DungeonBranchFile branchFile = new DungeonBranchFile(branch);
@@ -101,8 +105,7 @@ public class SaveSystem {
         saving = false;
     }
 
-    private void load() {
-        if (loading) return;
+    private boolean load() {
         loaded = false;
         loading = true;
         SaveFile saveFile = Serializer.fromCompoundTag(FileUtil.readNbt(FileUtil.getWorldPath().resolve("data").resolve("dungeons.nbt").toFile()));
@@ -110,7 +113,7 @@ public class SaveSystem {
             WildDungeons.getLogger().error("Failed to load save file");
             loading = false;
             loaded = true;
-            return;
+            return true;
         }
         HashMap<String, WDPlayer> players = new HashMap<>(saveFile.players);
         HashMap<String, DungeonSession> sessions = new HashMap<>();
@@ -149,6 +152,7 @@ public class SaveSystem {
         DungeonSessionManager.getInstance().setSessions(sessions);
         loading = false;
         loaded = true;
+        return true;
     }
 
     public static class SaveFile {

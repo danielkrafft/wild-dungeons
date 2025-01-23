@@ -1,5 +1,6 @@
 package com.danielkkrafft.wilddungeons.registry;
 
+import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.block.WDBlocks;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
@@ -36,6 +37,10 @@ import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class WDEvents {
 
@@ -52,13 +57,25 @@ public class WDEvents {
     @SubscribeEvent
     public static void onServerAboutToStart(ServerAboutToStartEvent event) {
         FileUtil.setWorldPath(event.getServer().getWorldPath(LevelResource.ROOT));
-        SaveSystem.Load();
+        DungeonSessionManager.getInstance().server = event.getServer();
+        if (SaveSystem.isLoading()) return;
+        WildDungeons.getLogger().info("STARTING DUNGEON FILE LOADING...");
+        CompletableFuture<Boolean> fileLoadFuture = CompletableFuture.supplyAsync(SaveSystem::Load);
+
+        try {
+            boolean filesLoaded = fileLoadFuture.get(30, TimeUnit.SECONDS);
+
+            if (!filesLoaded) {
+                throw new IllegalStateException("DUNGEON FILE LOADING FAILED");
+            }
+            WildDungeons.getLogger().info("DUNGEON FILES LOADED SUCCESSFULLY");
+        } catch (TimeoutException | InterruptedException | ExecutionException e) {
+            throw new IllegalStateException("DUNGEON FILE LOADING FAILED");
+        }
     }
 
     @SubscribeEvent
     public static void onServerStart(ServerStartedEvent event) {
-        DungeonSessionManager.getInstance().server = event.getServer();
-        DungeonRegistry.setupDungeons();
     }
 
     @SubscribeEvent
