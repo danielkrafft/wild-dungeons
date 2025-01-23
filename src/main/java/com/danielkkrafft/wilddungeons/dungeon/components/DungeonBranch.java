@@ -281,4 +281,7 @@ public class DungeonBranch {
         if (this.dungeonRooms == null) this.dungeonRooms = new ArrayList<>();
         this.dungeonRooms.add(room);
     }
+    public void sortRooms() {
+        this.dungeonRooms.sort(Comparator.comparingInt(DungeonRoom::getIndex));
+    }
 }

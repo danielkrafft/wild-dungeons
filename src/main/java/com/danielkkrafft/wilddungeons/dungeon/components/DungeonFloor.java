@@ -154,4 +154,7 @@ public class DungeonFloor {
         if (this.dungeonBranches == null) this.dungeonBranches = new ArrayList<>();
         this.dungeonBranches.add(branch);
     }
+    public void sortBranches() {
+        this.dungeonBranches.sort(Comparator.comparingInt(DungeonBranch::getIndex));
+    }
 }

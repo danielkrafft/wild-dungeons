@@ -12,10 +12,7 @@ import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 
 public class SaveSystem {
     private static final SaveSystem INSTANCE = new SaveSystem();
@@ -69,9 +66,7 @@ public class SaveSystem {
                 DungeonFloor floor = floors.pop();
                 DungeonFloorFile floorFile = new DungeonFloorFile(floor);
                 Stack<DungeonBranch> branches = new Stack<>();
-                floor.getBranches().iterator().forEachRemaining(branch -> WildDungeons.getLogger().info("NEXT BRANCH: {} AT INDEX: {}", branch.getTemplate().name(), branch.getIndex()));
                 floor.getBranches().forEach(branches::push);
-                branches.iterator().forEachRemaining(branch -> WildDungeons.getLogger().info("NEXT BRANCH: {} AT INDEX: {}", branch.getTemplate().name(), branch.getIndex()));
                 while (branches.iterator().hasNext()) {
                     DungeonBranch branch = branches.pop();
                     DungeonBranchFile branchFile = new DungeonBranchFile(branch);
@@ -136,13 +131,15 @@ public class SaveSystem {
                         DungeonRoom room = roomFile.room;
                         branch.addRoom(room);
                     });
+                    branch.sortRooms();
                     floor.addBranch(branch);
                 });
+                floor.sortBranches();
                 session.addFloor(floor);
             });
+            session.sortFloors();
             sessions.put(session.getSessionKey(), session);
         });
-
         WDPlayerManager.getInstance().setPlayers(players);
         WildDungeons.getLogger().error("Loaded {} players", players.size());
         WildDungeons.getLogger().error("Loaded {} sessions", sessions.size());
@@ -157,7 +154,7 @@ public class SaveSystem {
 
     public static class SaveFile {
         public Map<String, WDPlayer> players = null;
-        public ArrayList<String> sessionFilePaths = new ArrayList<>();
+        public List<String> sessionFilePaths = new ArrayList<>();
 
         public void AddPlayers(Map<String, WDPlayer> players) {
             this.players = players;
@@ -170,7 +167,7 @@ public class SaveSystem {
 
     public static class DungeonSessionFile {
         public DungeonSession session = null;
-        public ArrayList<String> floorFilePaths = new ArrayList<>();
+        public List<String> floorFilePaths = new ArrayList<>();
 
 
         public DungeonSessionFile(DungeonSession session) {
@@ -184,7 +181,7 @@ public class SaveSystem {
 
     public static class DungeonFloorFile {
         public DungeonFloor floor = null;
-        public ArrayList<String> branchFilePaths = new ArrayList<>();
+        public List<String> branchFilePaths = new ArrayList<>();
 
 
         public DungeonFloorFile(DungeonFloor floor) {
@@ -199,7 +196,7 @@ public class SaveSystem {
 
     public static class DungeonBranchFile {
         public DungeonBranch branch = null;
-        public ArrayList<String> roomFilePaths = new ArrayList<>();
+        public List<String> roomFilePaths = new ArrayList<>();
 
 
         public DungeonBranchFile(DungeonBranch branch) {

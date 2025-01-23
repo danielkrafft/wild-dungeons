@@ -1,11 +1,11 @@
 package com.danielkkrafft.wilddungeons.dungeon.session;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.dungeon.components.DungeonPerk;
-import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
-import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonPerkTemplate;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonPerk;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRegistry;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonPerkTemplate;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
 import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
@@ -201,6 +201,9 @@ public class DungeonSession {
     public void addFloor(DungeonFloor floor) {
         if (this.floors == null) this.floors = new ArrayList<>();
         this.floors.add(floor);
+    }
+    public void sortFloors() {
+        this.floors.sort(Comparator.comparingInt(DungeonFloor::getIndex));
     }
 
     public static class DungeonStats {
