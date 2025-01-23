@@ -23,7 +23,6 @@ public class DungeonMaterial implements DungeonComponent {
 
     public DungeonMaterial (String name, List<WeightedPool<BlockState>> basicBlockStates, List<WeightedPool<BlockState>> stairBlockStates, List<WeightedPool<BlockState>> slabBlockStates, List<WeightedPool<BlockState>> wallBlockStates, List<WeightedPool<BlockState>> lightBlockStates, List<WeightedPool<BlockState>> hiddenBlockStates) {
         this.name = name;
-        WildDungeons.getLogger().info("SETTING NAME TO: {}", name());
         this.basicBlockStates = basicBlockStates;
         this.stairBlockStates = stairBlockStates;
         this.slabBlockStates = slabBlockStates;

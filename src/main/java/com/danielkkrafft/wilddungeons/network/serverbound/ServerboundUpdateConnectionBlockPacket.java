@@ -31,7 +31,6 @@ public record ServerboundUpdateConnectionBlockPacket(CompoundTag data) implement
                 connectionBlockEntity.unblockedBlockstate = data.getString("unblockedBlockstate");
                 connectionBlockEntity.pool = data.getString("pool");
                 connectionBlockEntity.type = data.getString("type");
-                WildDungeons.getLogger().info("SET TYPE TO {}", connectionBlockEntity.type);
                 level.getServer().saveEverything(false, false, false);
             }
         });
