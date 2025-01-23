@@ -33,6 +33,7 @@ public class DungeonSession {
     private final String entranceUUID;
     private final ResourceKey<Level> entranceLevelKey;
     private final Set<String> playerUUIDs = new HashSet<>();
+    private final HashMap<String, DungeonStats> playerStats = new HashMap<>();
     @IgnoreSerialization
     private List<DungeonFloor> floors = new ArrayList<>();
     private final String template;
@@ -51,6 +52,7 @@ public class DungeonSession {
     public HashMap<String, DungeonPerk> getPerks() {return this.perks;}
     public String getSessionKey() {return DungeonSessionManager.buildDungeonSessionKey(this.entranceUUID);}
     public boolean isSafeToSerialize() {return this.safeToSerialize;}
+    public DungeonStats getStats(WDPlayer player) {return this.playerStats.get(player.getUUID());}
 
     public enum DungeonExitBehavior {DESTROY_RIFT, NEW_DUNGEON, NOTHING}
 
@@ -100,6 +102,8 @@ public class DungeonSession {
         if (floors.isEmpty()) generateFloor(0);
         floors.getFirst().onEnter(wdPlayer);
         shutdownTimer = SHUTDOWN_TIME;
+        if (this.playerStats.containsKey(wdPlayer.getUUID())) return;
+        this.playerStats.put(wdPlayer.getUUID(), new DungeonStats());
         this.offsetLives(LIVES_PER_PLAYER);
     }
 
@@ -160,9 +164,11 @@ public class DungeonSession {
     public void handleExitBehavior() {
         switch (this.getTemplate().exitBehavior()) {
             case DESTROY_RIFT -> {
+                this.shutdown();
                 this.getEntranceLevel().getEntity(UUID.fromString(this.getEntranceUUID())).remove(Entity.RemovalReason.DISCARDED);
             }
             case NEW_DUNGEON -> {
+                this.shutdown();
                 Offering rift = (Offering) this.getEntranceLevel().getEntity(UUID.fromString(this.getEntranceUUID()));
                 if (rift != null) rift.setOfferingId("wd-"+this.getTemplate().nextDungeon().getRandom().name());
             }
@@ -173,6 +179,11 @@ public class DungeonSession {
         if (playerUUIDs.isEmpty() && !floors.isEmpty()) {shutdownTimer -= 1;}
         if (shutdownTimer == 0) {shutdown();return;}
         if (!playerUUIDs.isEmpty()) floors.forEach(DungeonFloor::tick);
+        playerUUIDs.forEach(uuid -> {
+            if (this.playerStats.containsKey(uuid)) {
+                this.playerStats.get(uuid).time++;
+            }
+        });
     }
 
     public void shutdown() {
@@ -184,5 +195,10 @@ public class DungeonSession {
     public void addFloor(DungeonFloor floor) {
         if (this.floors == null) this.floors = new ArrayList<>();
         this.floors.add(floor);
+    }
+
+    public static class DungeonStats {
+        public int time = 0;
+        public DungeonStats() {}
     }
 }

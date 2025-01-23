@@ -62,7 +62,6 @@ public class DungeonFloor {
         this.index = this.getSession().getFloors().size();
         this.getSession().getFloors().add(this);
         this.templateKey = templateKey;
-        WildDungeons.getLogger().info("FLOOR MATERIALS: {}", this.getMaterials().size());
 
         this.LEVEL_KEY = buildFloorLevelKey(this);
         InfiniverseAPI.get().getOrCreateLevel(DungeonSessionManager.getInstance().server, LEVEL_KEY, () -> WDDimensions.createLevel(DungeonSessionManager.getInstance().server));

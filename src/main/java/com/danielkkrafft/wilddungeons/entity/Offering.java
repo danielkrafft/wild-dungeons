@@ -39,6 +39,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
 
     private String type;
     private String costType;
+    private String purchaseBehavior;
     private String offerID;
     private int amount;
     private int costAmount;
@@ -161,61 +162,61 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     @Override
     public void readSpawnData(RegistryFriendlyByteBuf buffer) {
         WildDungeons.getLogger().info("READING SPAWN DATA");
-        this.type = buffer.readUtf(); WildDungeons.getLogger().info("TYPE: {}", this.type);
-        this.costType = buffer.readUtf(); WildDungeons.getLogger().info("COST TYPE: {}", this.costType);
-        this.offerID = buffer.readUtf(); WildDungeons.getLogger().info("ID: {}", this.offerID);
-        this.amount = buffer.readInt(); WildDungeons.getLogger().info("AMOUNT: {}", this.amount);
-        this.costAmount = buffer.readInt(); WildDungeons.getLogger().info("COST AMOUNT: {}", this.costAmount);
-        this.purchased = buffer.readBoolean(); WildDungeons.getLogger().info("PURCHASED: {}", this.purchased);
+        this.type = buffer.readUtf();
+        this.costType = buffer.readUtf();
+        this.offerID = buffer.readUtf();
+        this.amount = buffer.readInt();
+        this.costAmount = buffer.readInt();
+        this.purchased = buffer.readBoolean();
     }
 
     @Override
     public void playerTouch(Player player) {
         super.playerTouch(player);
         if (player instanceof ServerPlayer serverPlayer) {
-            WildDungeons.getLogger().info("TOUCHING OFFERING");
             WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(serverPlayer);
             attemptPurchase(wdPlayer);
         }
     }
 
     public void attemptPurchase(WDPlayer player) {
-        if (purchased) return;
+        if (!purchased) {
+            int levels = switch(this.getOfferingCostType()) {
+                case XP_LEVEL -> player.getServerPlayer().experienceLevel;
+                case NETHER_XP_LEVEL -> Mth.floor(player.getEssenceLevel("essence:nether"));
+                case END_XP_LEVEL -> Mth.floor(player.getEssenceLevel("essence:end"));
+            };
 
-        int levels = switch(this.getOfferingCostType()) {
-            case XP_LEVEL -> player.getServerPlayer().experienceLevel;
-            case NETHER_XP_LEVEL -> Mth.floor(player.getEssenceLevel("essence:nether"));
-            case END_XP_LEVEL -> Mth.floor(player.getEssenceLevel("essence:end"));
-        };
+            if (this.costAmount == 0 || this.costAmount <= levels) {
+                this.purchased = true;
+                this.costAmount = 0;
 
-        if (this.costAmount == 0 || this.costAmount <= levels) {
-            this.purchased = true;
+                switch (this.getOfferingCostType()) {
+                    case XP_LEVEL -> player.getServerPlayer().giveExperienceLevels(-this.costAmount);
+                    case NETHER_XP_LEVEL -> player.giveEssenceLevels(-this.costAmount, "essence:nether");
+                    case END_XP_LEVEL -> player.giveEssenceLevels(-this.costAmount, "essence:end");
+                }
 
-            switch (this.getOfferingCostType()) {
-                case XP_LEVEL -> player.getServerPlayer().giveExperienceLevels(-this.costAmount);
-                case NETHER_XP_LEVEL -> player.giveEssenceLevels(-this.costAmount, "essence:nether");
-                case END_XP_LEVEL -> player.giveEssenceLevels(-this.costAmount, "essence:end");
-            }
+                if (player.getCurrentRoom() instanceof LootRoom lootRoom) {
+                    lootRoom.aliveUUIDs.remove(this.getStringUUID());
+                }
 
-            WildDungeons.getLogger().info("PURCHASED OFFERING");
-            if (player.getCurrentRoom() instanceof LootRoom lootRoom) {
-                WildDungeons.getLogger().info("REMOVING FROM ROOM");
-                lootRoom.aliveUUIDs.remove(this.getStringUUID());
-            }
-            this.remove(RemovalReason.DISCARDED); // TODO needs special purchase behavior for rifts (stay? switch? delete?) (could this also apply to some offerings?)
+                if (this.getOfferingType() == Type.ITEM) {
+                    this.remove(RemovalReason.DISCARDED);
+                    player.getServerPlayer().addItem(this.getItemStack());
+                }
 
-            if (this.getOfferingType() == Type.ITEM) {
-                player.getServerPlayer().addItem(this.getItemStack());
-            }
-
-            if (this.getOfferingType() == Type.PERK) {
-                player.getCurrentDungeon().givePerk(this.getPerk());
-            }
-
-            if (this.getOfferingType() == Type.RIFT) {
-                handleRift(player);
+                if (this.getOfferingType() == Type.PERK) {
+                    this.remove(RemovalReason.DISCARDED);
+                    player.getCurrentDungeon().givePerk(this.getPerk());
+                }
             }
         }
+
+        if (this.getOfferingType() == Type.RIFT) {
+            handleRift(player);
+        }
+
     }
 
     public void handleRift(WDPlayer wdPlayer) {
