@@ -163,7 +163,8 @@ public class DungeonSession {
         switch (this.getTemplate().exitBehavior()) {
             case DESTROY_RIFT -> {
                 this.shutdown();
-                this.getEntranceLevel().getEntity(UUID.fromString(this.getEntranceUUID())).remove(Entity.RemovalReason.DISCARDED);
+                Entity rift = this.getEntranceLevel().getEntity(UUID.fromString(this.getEntranceUUID()));
+                if (rift != null) rift.remove(Entity.RemovalReason.DISCARDED);
             }
             case NEW_DUNGEON -> {
                 this.shutdown();
