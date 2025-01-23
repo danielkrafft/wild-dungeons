@@ -108,8 +108,6 @@ public class WildDungeons {
         event.registerEntityRenderer(WDEntities.MUTANT_BOGGED.get(), MutantBoggedRenderer::new);
         event.registerEntityRenderer(WDEntities.PIERCING_ARROW.get(), PiercingArrowRenderer::new);
         event.registerEntityRenderer(WDEntities.WIND_CHARGE_PROJECTILE.get(), WindChargeProjectileRenderer::new);
-
-        event.registerBlockEntityRenderer(WDBlockEntities.RIFT_BLOCK_ENTITY.get(), RiftRenderer::new);
     }
 
     @SubscribeEvent

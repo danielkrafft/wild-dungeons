@@ -1,8 +1,10 @@
 package com.danielkkrafft.wilddungeons.dungeon.components;
 
+import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonMaterial;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.DungeonRoom;
 import com.danielkkrafft.wilddungeons.block.WDBlocks;
+import com.danielkkrafft.wilddungeons.entity.WDEntities;
 import com.danielkkrafft.wilddungeons.util.debug.WDProfiler;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
@@ -10,9 +12,15 @@ import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.DoubleTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Clearable;
 import net.minecraft.world.RandomizableContainer;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -23,12 +31,14 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.BitSetDiscreteVoxelShape;
 import net.minecraft.world.phys.shapes.DiscreteVoxelShape;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 public class TemplateHelper {
     public static final BlockPos EMPTY_BLOCK_POS = new BlockPos(0, 0, 0);
@@ -137,23 +147,35 @@ public class TemplateHelper {
         return SPAWN_BLOCKS.isEmpty() ? null : SPAWN_BLOCKS.getFirst().pos();
     }
 
-    public static List<BlockPos> locateRifts(List<Pair<StructureTemplate, BlockPos>> templates) {
-        List<StructureTemplate.StructureBlockInfo> RIFT_BLOCKS = new ArrayList<>();
+    public static List<Vec3> locateRifts(List<Pair<StructureTemplate, BlockPos>> templates) {
+        List<Vec3> result = new ArrayList<>();
         templates.forEach(template -> {
-            RIFT_BLOCKS.addAll(template.getFirst().filterBlocks(template.getSecond(), new StructurePlaceSettings(), WDBlocks.RIFT_BLOCK.get()));
+            template.getFirst().entityInfoList.forEach(structureEntityInfo -> {
+                Optional<EntityType<?>> type = EntityType.by(structureEntityInfo.nbt);
+                if (type.isPresent() && type.get().equals(WDEntities.OFFERING.get())) {
+                    if (structureEntityInfo.nbt.getString("type").equals("RIFT")) {
+                        WildDungeons.getLogger().info("FOUND RIFT WITH KEYS: {}", structureEntityInfo.nbt.getAllKeys()); //TODO
+                        result.add(structureEntityInfo.pos.add(template.getSecond().getX(), template.getSecond().getY(), template.getSecond().getZ()));
+                    }
+                }
+            });
         });
-        List<BlockPos> result = new ArrayList<>();
-        RIFT_BLOCKS.forEach(info -> {result.add(info.pos());});
         return result;
     }
 
-    public static List<BlockPos> locateOfferings(List<Pair<StructureTemplate, BlockPos>> templates) {
-        List<StructureTemplate.StructureBlockInfo> OFFERING_BLOCKS = new ArrayList<>();
+    public static List<Vec3> locateOfferings(List<Pair<StructureTemplate, BlockPos>> templates) {
+        List<Vec3> result = new ArrayList<>();
         templates.forEach(template -> {
-            OFFERING_BLOCKS.addAll(template.getFirst().filterBlocks(template.getSecond(), new StructurePlaceSettings(), Blocks.MOSSY_COBBLESTONE));
+            template.getFirst().entityInfoList.forEach(structureEntityInfo -> {
+                Optional<EntityType<?>> type = EntityType.by(structureEntityInfo.nbt);
+                if (type.isPresent() && type.get().equals(WDEntities.OFFERING.get())) {
+                    if (structureEntityInfo.nbt.getString("type").equals("ITEM") || structureEntityInfo.nbt.getString("type").equals("PERK")) {
+                        WildDungeons.getLogger().info("FOUND OFFERING WITH KEYS: {}", structureEntityInfo.nbt.getAllKeys()); //TODO
+                        result.add(structureEntityInfo.pos.add(template.getSecond().getX(), template.getSecond().getY(), template.getSecond().getZ()));
+                    }
+                }
+            });
         });
-        List<BlockPos> result = new ArrayList<>();
-        OFFERING_BLOCKS.forEach(info -> {result.add(info.pos());});
         return result;
     }
 
@@ -371,7 +393,7 @@ public class TemplateHelper {
                 }
 
                 if (!settings.isIgnoreEntities()) {
-                    template.addEntitiesToWorld(serverLevel, offset, settings);
+                    addEntitiesToWorld(template, serverLevel, offset, settings);
                 }
 
                 WDProfiler.INSTANCE.logTimestamp("TemplateHelper::placeInWorld");
@@ -381,6 +403,34 @@ public class TemplateHelper {
                 return false;
             }
         }
+    }
+
+    public static void addEntitiesToWorld(StructureTemplate template, ServerLevelAccessor p_74524_, BlockPos p_74525_, StructurePlaceSettings placementIn) {
+        for(StructureTemplate.StructureEntityInfo structuretemplate$structureentityinfo : StructureTemplate.processEntityInfos(template, p_74524_, p_74525_, placementIn, template.entityInfoList)) {
+            if (structuretemplate$structureentityinfo.nbt.getString("id").equals(WDEntities.OFFERING.getId().toString())) continue;
+            BlockPos blockpos = structuretemplate$structureentityinfo.blockPos;
+            if (placementIn.getBoundingBox() == null || placementIn.getBoundingBox().isInside(blockpos)) {
+                CompoundTag compoundtag = structuretemplate$structureentityinfo.nbt.copy();
+                Vec3 vec31 = structuretemplate$structureentityinfo.pos;
+                ListTag listtag = new ListTag();
+                listtag.add(DoubleTag.valueOf(vec31.x));
+                listtag.add(DoubleTag.valueOf(vec31.y));
+                listtag.add(DoubleTag.valueOf(vec31.z));
+                compoundtag.put("Pos", listtag);
+                compoundtag.remove("UUID");
+                StructureTemplate.createEntityIgnoreException(p_74524_, compoundtag).ifPresent((p_275190_) -> {
+                    float f = p_275190_.rotate(placementIn.getRotation());
+                    f += p_275190_.mirror(placementIn.getMirror()) - p_275190_.getYRot();
+                    p_275190_.moveTo(vec31.x, vec31.y, vec31.z, f, p_275190_.getXRot());
+                    if (placementIn.shouldFinalizeEntities() && p_275190_ instanceof Mob) {
+                        ((Mob)p_275190_).finalizeSpawn(p_74524_, p_74524_.getCurrentDifficultyAt(BlockPos.containing(vec31)), MobSpawnType.STRUCTURE, (SpawnGroupData)null);
+                    }
+
+                    p_74524_.addFreshEntityWithPassengers(p_275190_);
+                });
+            }
+        }
+
     }
 
 

@@ -6,6 +6,7 @@ import com.danielkkrafft.wilddungeons.dungeon.DungeonRoomTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.*;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
+import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.danielkkrafft.wilddungeons.util.IgnoreSerialization;
@@ -23,6 +24,7 @@ import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import net.minecraft.world.phys.Vec3;
 import org.joml.Vector2i;
 
 import java.util.*;
@@ -34,7 +36,8 @@ public class DungeonRoom {
     private final String mirror;
     private final String rotation;
     private final List<ConnectionPoint> connectionPoints = new ArrayList<>();
-    private final List<BlockPos> rifts = new ArrayList<>();
+    private final List<String> riftUUIDs = new ArrayList<>();
+    private final List<String> offeringUUIDs = new ArrayList<>();
     private final List<BoundingBox> boundingBoxes;
     private final int branchIndex;
     private final int floorIndex;
@@ -59,7 +62,8 @@ public class DungeonRoom {
     public boolean isRotated() {return rotation == Rotation.CLOCKWISE_90.getSerializedName() || rotation == Rotation.COUNTERCLOCKWISE_90.getSerializedName();}
     public StructurePlaceSettings getSettings() {return new StructurePlaceSettings().setMirror(Mirror.valueOf(this.mirror)).setRotation(Rotation.valueOf(this.rotation));}
     public List<ConnectionPoint> getConnectionPoints() {return this.connectionPoints;}
-    public List<BlockPos> getRifts() {return this.rifts;}
+    public List<String> getRiftUUIDs() {return this.riftUUIDs;}
+    public List<String> getOfferingUUIDs() {return this.offeringUUIDs;}
     public List<BoundingBox> getBoundingBoxes() {return this.boundingBoxes;}
     public int getIndex() {return this.index;}
     public void setIndex(int index) {this.index = index;}
@@ -97,15 +101,28 @@ public class DungeonRoom {
             BlockPos newOffset = StructureTemplate.transform(template.getSecond(), settings.getMirror(), settings.getRotation(), TemplateHelper.EMPTY_BLOCK_POS);
             BlockPos newPosition = position.offset(newOffset);
             TemplateHelper.placeInWorld(template.getFirst(), this, this.getMaterial(), level, newPosition, template.getSecond(), settings, DungeonSessionManager.getInstance().server.overworld().getRandom(), 2);
-            //template.getFirst().placeInWorld(level, newPosition, template.getSecond(), settings, DungeonSessionManager.getInstance().server.overworld().getRandom(), 2);
         });
-
 
         getTemplate().rifts().forEach(pos -> {
-            this.rifts.add(StructureTemplate.transform(pos, settings.getMirror(), settings.getRotation(), TemplateHelper.EMPTY_BLOCK_POS).offset(position));
+            Offering rift = new Offering(this.getBranch().getFloor().getLevel(), Offering.Type.RIFT, 1, "next", Offering.CostType.XP_LEVEL, 0);
+            Vec3 pos1 = StructureTemplate.transform(pos, this.getSettings().getMirror(), this.getSettings().getRotation(), TemplateHelper.EMPTY_BLOCK_POS).add(this.position.getX(), this.position.getY(), this.position.getZ());            WildDungeons.getLogger().info("ADDING RIFT AT {}", pos1);
+            rift.setPos(pos1);
+            WildDungeons.getLogger().info("ADDING RIFT AT {}", pos1);
+            level.addFreshEntity(rift);
+            this.riftUUIDs.add(rift.getStringUUID());
         });
-        //this.processMaterialBlocks(this.material);
-        this.processOfferings();
+
+        List<Offering.OfferingTemplate> entries = ShopTables.BASIC_TABLE.randomResults(this.getTemplate().offerings().size(), (int) this.getDifficulty() * this.getTemplate().offerings().size(), 1.2f);
+        getTemplate().offerings().forEach(pos -> {
+            if (entries.isEmpty()) return;
+            Offering next = entries.removeFirst().asOffering(this.getBranch().getFloor().getLevel());
+            Vec3 pos1 = StructureTemplate.transform(pos, this.getSettings().getMirror(), this.getSettings().getRotation(), TemplateHelper.EMPTY_BLOCK_POS).add(this.position.getX(), this.position.getY(), this.position.getZ());
+            WildDungeons.getLogger().info("ADDING OFFERING AT {}", pos1);
+            next.setPos(pos1);
+            level.addFreshEntity(next);
+            this.offeringUUIDs.add(next.getStringUUID());
+        });
+
         this.processLootBlocks();
 
         if (getTemplate().spawnPoint() != null) {
@@ -190,16 +207,6 @@ public class DungeonRoom {
         }
 
         WDProfiler.INSTANCE.logTimestamp("DungeonRoom::processLootBlocks");
-    }
-
-    public void processOfferings() {
-
-        List<BlockPos> offeringPositions = this.getTemplate().offerings();
-        offeringPositions.forEach(pos -> {
-            branch.getFloor().getLevel().setBlock(TemplateHelper.transform(pos, this), Blocks.AIR.defaultBlockState(), 2);
-        });
-
-        WDProfiler.INSTANCE.logTimestamp("DungeonRoom::processOfferings");
     }
 
     public List<ConnectionPoint> getValidExitPoints(StructurePlaceSettings settings, BlockPos position, DungeonRoomTemplate nextRoom, ConnectionPoint entrancePoint, boolean bypassFailures) {

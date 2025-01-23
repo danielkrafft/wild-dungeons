@@ -27,7 +27,6 @@ public class WDBlocks {
 
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(WildDungeons.MODID);
 
-    public static final DeferredBlock<Block> RIFT_BLOCK = registerWithItem("rift_block", () -> new RiftBlock(BlockBehaviour.Properties.of().destroyTime(-1).lightLevel(state -> 15).noCollission().noOcclusion()));
     public static final DeferredBlock<Block> CONNECTION_BLOCK = registerWithItem("connection_block", () -> new ConnectionBlock(BlockBehaviour.Properties.of().destroyTime(-1).noCollission()));
     public static final DeferredBlock<Block> SPAWN_BLOCK = registerWithItem("spawn_block", () -> new Block(BlockBehaviour.Properties.of().destroyTime(-1).noCollission()));
     public static final DeferredBlock<Block> LIFE_LIQUID = BLOCKS.register("life_liquid", () -> new LifeLiquidBlock(WDFluids.LIFE_LIQUID.get(), BlockBehaviour.Properties.ofFullCopy(Blocks.WATER)));
@@ -55,9 +54,8 @@ public class WDBlocks {
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(BuiltInRegistries.CREATIVE_MODE_TAB, WildDungeons.MODID);
     public static final Supplier<CreativeModeTab> WD_TAB = CREATIVE_MODE_TABS.register("wilddungeons_tab", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup." + WildDungeons.MODID))
-            .icon(() -> new ItemStack(WDBlocks.RIFT_BLOCK.get()))
+            .icon(() -> new ItemStack(WDBlocks.CONNECTION_BLOCK.get()))
             .displayItems((params, output) -> {
-                output.accept(WDBlocks.RIFT_BLOCK.get());
                 output.accept(WDBlocks.CONNECTION_BLOCK.get());
                 output.accept(WDBlocks.SPAWN_BLOCK.get());
                 output.accept(WDBlocks.ROTTEN_MOSS.get());
@@ -68,9 +66,8 @@ public class WDBlocks {
                 output.accept(WDBlocks.WD_WALL.get());
                 output.accept(WDBlocks.WD_LIGHT.get());
                 output.accept(WDBlocks.WD_SECRET.get());
-
-//                output.accept(MyItemsClass.MY_ITEM.get());
-//                output.accept(MyBlocksClass.MY_BLOCK.get());
+                output.accept(WDItems.OFFERING_ITEM.get());
+                output.accept(WDItems.RIFT_ITEM.get());
             })
             .build()
     );

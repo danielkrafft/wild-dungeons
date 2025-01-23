@@ -7,7 +7,7 @@ import com.danielkkrafft.wilddungeons.dungeon.DungeonMaterial;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.DungeonRoom;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
-import com.danielkkrafft.wilddungeons.entity.blockentity.RiftBlockEntity;
+import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.registry.WDDimensions;
 import com.danielkkrafft.wilddungeons.util.FileUtil;
@@ -63,24 +63,22 @@ public class DungeonFloor {
         this.templateKey = templateKey;
         WildDungeons.getLogger().info("FLOOR MATERIALS: {}", this.getMaterials().size());
 
-        this.LEVEL_KEY = buildFloorLevelKey(this.getSession().getEntrancePos(), this);
+        this.LEVEL_KEY = buildFloorLevelKey(this);
         InfiniverseAPI.get().getOrCreateLevel(DungeonSessionManager.getInstance().server, LEVEL_KEY, () -> WDDimensions.createLevel(DungeonSessionManager.getInstance().server));
         this.origin = origin;
         generateDungeonFloor();
         this.spawnPoint = this.dungeonBranches.getFirst().getSpawnPoint();
 
-        if (!this.dungeonBranches.getFirst().getRooms().getFirst().getRifts().isEmpty()) {
-            BlockPos exitRiftPos = this.dungeonBranches.getFirst().getRooms().getFirst().getRifts().getFirst();
-            RiftBlockEntity riftBlockEntity = (RiftBlockEntity) this.getLevel().getBlockEntity(exitRiftPos);
-            if (riftBlockEntity != null) {riftBlockEntity.destination = ""+(index-1);}
+        if (!this.dungeonBranches.getFirst().getRooms().getFirst().getRiftUUIDs().isEmpty()) {
+            Offering exitRift = (Offering) this.getLevel().getEntity(UUID.fromString(this.dungeonBranches.getFirst().getRooms().getFirst().getRiftUUIDs().getFirst()));
+            if (exitRift != null) {exitRift.setOfferingId(""+(index-1));}
         }
 
-        if (!this.dungeonBranches.getLast().getRooms().isEmpty() && !this.dungeonBranches.getLast().getRooms().getLast().getRifts().isEmpty()) {
-            BlockPos enterRiftPos = this.dungeonBranches.getLast().getRooms().getLast().getRifts().getLast();
-            RiftBlockEntity enterRiftBlockEntity = (RiftBlockEntity) this.getLevel().getBlockEntity(enterRiftPos);
-            if (enterRiftBlockEntity != null) {
-                enterRiftBlockEntity.destination = destinations.getRandom();
-                WildDungeons.getLogger().info("PICKED RIFT DESTINATION FOR THIS FLOOR: {}", enterRiftBlockEntity.destination);
+        if (!this.dungeonBranches.getLast().getRooms().isEmpty() && !this.dungeonBranches.getLast().getRooms().getLast().getRiftUUIDs().isEmpty()) {
+            Offering enterRift = (Offering) this.getLevel().getEntity(UUID.fromString(this.dungeonBranches.getLast().getRooms().getLast().getRiftUUIDs().getLast()));
+            if (enterRift != null) {
+                enterRift.setOfferingId(destinations.getRandom());
+                WildDungeons.getLogger().info("PICKED RIFT DESTINATION FOR THIS FLOOR: {}", enterRift.getOfferingId());
             }
         }
 
@@ -92,8 +90,8 @@ public class DungeonFloor {
         FileUtil.deleteDirectoryContents(FileUtil.getWorldPath().resolve("dimensions").resolve(WildDungeons.MODID).resolve(this.LEVEL_KEY.location().getPath()), true);
     }
 
-    public static ResourceKey<Level> buildFloorLevelKey(BlockPos entrance, DungeonFloor floor) {
-        return ResourceKey.create(Registries.DIMENSION, WildDungeons.rl(DungeonSessionManager.buildDungeonSessionKey(floor.getSession().getEntrancePos()) + "_" + floor.getTemplate().name() + "_" + floor.index + entrance.getX() + entrance.getY() + entrance.getZ()));
+    public static ResourceKey<Level> buildFloorLevelKey(DungeonFloor floor) {
+        return ResourceKey.create(Registries.DIMENSION, WildDungeons.rl(DungeonSessionManager.buildDungeonSessionKey(floor.getSession().getEntranceUUID()) + "_" + floor.getTemplate().name() + "_" + floor.index));
     }
 
     private void generateDungeonFloor() {

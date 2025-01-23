@@ -1,9 +1,13 @@
 package com.danielkkrafft.wilddungeons.entity;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.dungeon.DungeonTemplate;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonPerkTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.LootRoom;
+import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
+import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
@@ -29,42 +33,47 @@ import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 
 public class Offering extends Entity implements IEntityWithComplexSpawn {
 
-    public Type type = Type.ITEM;
-    public int amount;
-    public String id;
-    public boolean purchased = false;
-
-    public CostType costType;
-    public int costAmount;
-
     public static final int BUBBLE_ANIMATION_TIME = 10;
-    public float bubbleTimer = BUBBLE_ANIMATION_TIME;
+    public enum Type {ITEM, PERK, RIFT}
+    public enum CostType {XP_LEVEL, NETHER_XP_LEVEL, END_XP_LEVEL}
 
-    public enum Type {
-        ITEM, PERK
-    }
-
-    public enum CostType {
-        XP_LEVEL, NETHER_XP_LEVEL, END_XP_LEVEL
-    }
-
+    private String type;
+    private String costType;
+    private String offerID;
+    private int amount;
+    private int costAmount;
+    private boolean purchased = false;
+    private float bubbleTimer = BUBBLE_ANIMATION_TIME;
     public Offering(EntityType<Offering> entityType, Level level) {
         super(entityType, level);
     }
 
-    public Offering(Level level, Type type, int amount, String id, CostType costType, int costAmount) {
+    public Type getOfferingType() {return Type.valueOf(this.type);}
+    public CostType getOfferingCostType() {return CostType.valueOf(this.costType);}
+    public String getOfferingId() {return this.offerID;}
+    public void setOfferingId(String offerID) {this.offerID = offerID;}
+    public int getAmount() {return this.amount;}
+    public int getCostAmount() {return this.costAmount;}
+    public boolean isPurchased() {return this.purchased;}
+    public float getBubbleTimer() {return this.bubbleTimer;}
+    public void setBubbleTimer(float time) {this.bubbleTimer = time;}
+    public Offering(Level level) {super(WDEntities.OFFERING.get(), level);}
+
+
+    public Offering(Level level, Type type, int amount, String offerID, CostType costType, int costAmount) {
         super(WDEntities.OFFERING.get(), level);
-        this.type = type;
+        this.type = type.toString();
         this.amount = amount;
-        this.id = id;
-        this.costType = costType;
+        this.offerID = offerID;
+        this.costType = costType.toString();
         this.costAmount = costAmount;
     }
 
     private ItemStack itemStack = null;
     public ItemStack getItemStack() {
         if (this.itemStack == null) {
-            itemStack = new ItemStack(BuiltInRegistries.ITEM.get(ResourceKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.withDefaultNamespace(this.id))), this.amount);;
+            WildDungeons.getLogger().info("Getting itemstack of ID: {}", this.offerID);
+            itemStack = new ItemStack(BuiltInRegistries.ITEM.get(ResourceKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.withDefaultNamespace(this.offerID))), this.amount);
         }
         return itemStack;
     }
@@ -72,7 +81,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     private DungeonPerkTemplate perk = null;
     public DungeonPerkTemplate getPerk() {
         if (this.perk == null) {
-            perk = DungeonRegistry.DUNGEON_PERK_REGISTRY.get(this.id);
+            perk = DungeonRegistry.DUNGEON_PERK_REGISTRY.get(this.offerID);
         }
         return perk;
     }
@@ -106,38 +115,58 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
 
     @Override
     protected void addAdditionalSaveData(CompoundTag compound) {
-        compound.putString("Type", String.valueOf(this.type));
-        compound.putInt("Amount", this.amount);
-        compound.putString("ID", this.id);
-        compound.putString("CostType", String.valueOf(this.costType));
-        compound.putInt("CostAmount", this.costAmount);
+        WildDungeons.getLogger().info("ADDING ADDITIONAL SAVE DATA");
+        compound.putString("type", this.type);
+        compound.putString("costType", this.costType);
+        compound.putString("offerID", this.offerID);
+        compound.putInt("amount", this.amount);
+        compound.putInt("costAmount", this.costAmount);
+        compound.putBoolean("purchased", this.purchased);
     }
 
     @Override
     protected void readAdditionalSaveData(CompoundTag compound) {
-        this.type = Type.valueOf(compound.getString("Type"));
-        this.amount = compound.getInt("Amount");
-        this.id = compound.getString("ID");
-        this.costType = CostType.valueOf(compound.getString("CostType"));
-        this.costAmount = compound.getInt("CostAmount");
+        WildDungeons.getLogger().info("READING ADDITIONAL SAVE DATA");
+        if (compound.getString("type").isEmpty())
+        {
+            this.type = Type.ITEM.toString();
+            this.costType = CostType.XP_LEVEL.toString();
+            this.offerID = "dirt";
+            this.amount = 1;
+            this.costAmount = 0;
+            this.purchased = false;
+        }
+        else
+        {
+            this.type = compound.getString("type");
+            this.costType = compound.getString("costType");
+            this.offerID = compound.getString("offerID");
+            this.amount = compound.getInt("amount");
+            this.costAmount = compound.getInt("costAmount");
+            this.purchased = compound.getBoolean("purchased");
+        }
     }
 
     @Override
     public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
-        buffer.writeUtf(String.valueOf(this.type));
+        WildDungeons.getLogger().info("WRITING SPAWN DATA");
+        buffer.writeUtf(this.type);
+        buffer.writeUtf(this.costType);
+        buffer.writeUtf(this.offerID);
         buffer.writeInt(this.amount);
-        buffer.writeUtf(this.id);
-        buffer.writeUtf(String.valueOf(this.costType));
         buffer.writeInt(this.costAmount);
+        buffer.writeBoolean(this.purchased);
     }
 
     @Override
     public void readSpawnData(RegistryFriendlyByteBuf buffer) {
-        this.type = Type.valueOf(buffer.readUtf());
-        this.amount = buffer.readInt();
-        this.id = buffer.readUtf();
-        this.costType = CostType.valueOf(buffer.readUtf());
-        this.costAmount = buffer.readInt();
+        WildDungeons.getLogger().info("READING SPAWN DATA");
+        this.type = buffer.readUtf(); WildDungeons.getLogger().info("TYPE: {}", this.type);
+        this.costType = buffer.readUtf(); WildDungeons.getLogger().info("COST TYPE: {}", this.costType);
+        this.offerID = buffer.readUtf(); WildDungeons.getLogger().info("ID: {}", this.offerID);
+        this.amount = buffer.readInt(); WildDungeons.getLogger().info("AMOUNT: {}", this.amount);
+        this.costAmount = buffer.readInt(); WildDungeons.getLogger().info("COST AMOUNT: {}", this.costAmount);
+        this.purchased = buffer.readBoolean(); WildDungeons.getLogger().info("PURCHASED: {}", this.purchased);
     }
 
     @Override
@@ -153,7 +182,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     public void attemptPurchase(WDPlayer player) {
         if (purchased) return;
 
-        int levels = switch(this.costType) {
+        int levels = switch(this.getOfferingCostType()) {
             case XP_LEVEL -> player.getServerPlayer().experienceLevel;
             case NETHER_XP_LEVEL -> Mth.floor(player.getEssenceLevel("essence:nether"));
             case END_XP_LEVEL -> Mth.floor(player.getEssenceLevel("essence:end"));
@@ -162,16 +191,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
         if (this.costAmount == 0 || this.costAmount <= levels) {
             this.purchased = true;
 
-            if (this.type == Type.ITEM) {
-                player.getServerPlayer().addItem(this.getItemStack());
-            }
-
-            if (this.type == Type.PERK) {
-
-                player.getCurrentDungeon().givePerk(this.getPerk());
-            }
-
-            switch (this.costType) {
+            switch (this.getOfferingCostType()) {
                 case XP_LEVEL -> player.getServerPlayer().giveExperienceLevels(-this.costAmount);
                 case NETHER_XP_LEVEL -> player.giveEssenceLevels(-this.costAmount, "essence:nether");
                 case END_XP_LEVEL -> player.giveEssenceLevels(-this.costAmount, "essence:end");
@@ -180,10 +200,81 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
             WildDungeons.getLogger().info("PURCHASED OFFERING");
             if (player.getCurrentRoom() instanceof LootRoom lootRoom) {
                 WildDungeons.getLogger().info("REMOVING FROM ROOM");
-                lootRoom.alive.remove(this);
+                lootRoom.aliveUUIDs.remove(this.getStringUUID());
             }
-            this.remove(RemovalReason.DISCARDED);
+            this.remove(RemovalReason.DISCARDED); // TODO needs special purchase behavior for rifts (stay? switch? delete?) (could this also apply to some offerings?)
+
+            if (this.getOfferingType() == Type.ITEM) {
+                player.getServerPlayer().addItem(this.getItemStack());
+            }
+
+            if (this.getOfferingType() == Type.PERK) {
+                player.getCurrentDungeon().givePerk(this.getPerk());
+            }
+
+            if (this.getOfferingType() == Type.RIFT) {
+                handleRift(player);
+            }
         }
+    }
+
+    public void handleRift(WDPlayer wdPlayer) {
+        if (wdPlayer.getRiftCooldown() > 0 || this.offerID == null) {return;}
+
+        switch (this.offerID) {
+
+            case "-1" ->
+            {
+                WildDungeons.getLogger().info("TRYING TO LEAVE {} WITH PLAYER {}", wdPlayer.getCurrentDungeon(), wdPlayer);
+
+                DungeonSession dungeon = wdPlayer.getCurrentDungeon();
+                dungeon.onExit(wdPlayer);
+                wdPlayer.setRiftCooldown(100);
+            }
+
+            case "win" ->
+            {
+                WildDungeons.getLogger().info("TRYING TO WIN {}", wdPlayer.getCurrentDungeon());
+
+                DungeonSession dungeon = wdPlayer.getCurrentDungeon();
+                dungeon.win();
+            }
+
+            case "random" ->
+            {
+                DungeonTemplate dungeonTemplate = DungeonRegistry.DUNGEON_POOL.getRandom();
+                WildDungeons.getLogger().info("TRYING TO ENTER {}", dungeonTemplate.name());
+
+                DungeonSession dungeon = DungeonSessionManager.getInstance().getOrCreateDungeonSession(this.getStringUUID(), this.level().dimension(), dungeonTemplate.name());
+                dungeon.onEnter(wdPlayer);
+                wdPlayer.setRiftCooldown(100);
+            }
+
+            default ->
+            {
+                if (offerID.split("-")[0].equals("wd")) {
+
+                    DungeonTemplate dungeonTemplate = DungeonRegistry.DUNGEON_REGISTRY.get(offerID.split("-")[1]);
+                    WildDungeons.getLogger().info("TRYING TO ENTER {}", dungeonTemplate.name());
+
+                    if (dungeonTemplate != null) {
+                        DungeonSession dungeon = DungeonSessionManager.getInstance().getOrCreateDungeonSession(this.getStringUUID(), this.level().dimension(), dungeonTemplate.name());
+                        dungeon.onEnter(wdPlayer);
+                        wdPlayer.setRiftCooldown(100);
+                    }
+
+                } else {
+
+                    DungeonSession dungeon = wdPlayer.getCurrentDungeon();
+                    while (dungeon.getFloors().size() <= Integer.parseInt(this.offerID)) dungeon.generateFloor(dungeon.getFloors().size());
+                    WildDungeons.getLogger().info("TRYING TO ENTER FLOOR: {}", Integer.parseInt(this.offerID));
+                    DungeonFloor newFloor = dungeon.getFloors().get(Integer.parseInt(this.offerID));
+                    newFloor.onEnter(wdPlayer);
+
+                }
+            }
+        }
+
     }
 
     public record OfferingTemplate(Type type, int amount, String id, CostType costType, int costAmount, float deviance) {

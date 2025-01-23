@@ -41,6 +41,7 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
     private static final ResourceLocation PERKS_TEXTURE = WildDungeons.rl("textures/gui/sprites/hud/perks.png");
     private static final Vector2i MESSAGE_BUBBLE_TEXTURE_RESOLUTION = new Vector2i(48, 32);
     private static final Vector2i PERKS_TEXTURE_RESOLUTION = new Vector2i(64, 64);
+    private static final ResourceLocation RIFT_TEXTURE = WildDungeons.rl("textures/entity/rift.png");
 
     private static final ResourceLocation EXPERIENCE_ORB_LOCATION = ResourceLocation.withDefaultNamespace("textures/entity/experience_orb.png");
 
@@ -57,6 +58,7 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
     private static final RenderType RENDER_TYPE_3 = RenderType.entityTranslucent(EXPERIENCE_ORB_LOCATION);
     private static final RenderType RENDER_TYPE_4 = RenderType.entityCutout(PERK_RING_TEXTURE);
     private static final RenderType RENDER_TYPE_5 = RenderType.entityCutout(PERKS_TEXTURE);
+    private static final RenderType RENDER_TYPE_6 = RenderType.itemEntityTranslucentCull(RIFT_TEXTURE);
 
 
 
@@ -72,15 +74,19 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
 
     public void render(Offering entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
 
-        if (entity.type == Offering.Type.ITEM) {
+        if (entity.getOfferingType() == Offering.Type.ITEM) {
             renderItemModel(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
         }
 
-        if (entity.type == Offering.Type.PERK) {
+        if (entity.getOfferingType() == Offering.Type.PERK) {
             renderPerk(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
         }
 
-        if (entity.costAmount > 0) {
+        if (entity.getOfferingType() == Offering.Type.RIFT) {
+            renderRift(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
+        }
+
+        if (entity.getCostAmount() > 0) {
             renderBubble(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
         }
 
@@ -170,19 +176,37 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
 
     }
 
+    public void renderRift(Offering entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
+        {
+            poseStack.pushPose();
+            poseStack.translate(0.0F, 0.0F, 0.0F);
+            poseStack.translate(0.0f, 0.0f, 0.0f);
+            poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
+            poseStack.scale(2.0F, 2.0F, 2.0F);
+            VertexConsumer vertexconsumer = buffer.getBuffer(RENDER_TYPE_6);
+            PoseStack.Pose posestack$pose = poseStack.last();
+            vertex(vertexconsumer, posestack$pose, -0.5F, -0.25F, 0.0f, 1.0f, packedLight, 1.0f);
+            vertex(vertexconsumer, posestack$pose, 0.5F, -0.25F, 1.0f, 1.0f, packedLight, 1.0f);
+            vertex(vertexconsumer, posestack$pose, 0.5F, 0.75F, 1.0f, 0.0f, packedLight, 1.0f);
+            vertex(vertexconsumer, posestack$pose, -0.5F, 0.75F, 0.0f, 0.0f, packedLight, 1.0f);
+            poseStack.popPose();
+        }
+    }
+
     public void renderBubble(Offering entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
-        if (entity.isLookingAtMe(Minecraft.getInstance().player) && entity.costAmount > 0) {
+        if (entity.isLookingAtMe(Minecraft.getInstance().player) && entity.getCostAmount() > 0) {
             WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(Minecraft.getInstance().player);
 
-            String text = "x " + entity.costAmount;
+            String text = "x " + entity.getCostAmount();
             int textWidth = Minecraft.getInstance().font.width(text);
             int textHeight = Minecraft.getInstance().font.lineHeight;
             int totalWidth = (int) (textWidth + (textHeight * 1.5));
 
-            float bubbleScale = (1.0f - entity.bubbleTimer / Offering.BUBBLE_ANIMATION_TIME);
+            float bubbleScale = (1.0f - entity.getBubbleTimer() / Offering.BUBBLE_ANIMATION_TIME);
             poseStack.pushPose();
             poseStack.scale(bubbleScale, bubbleScale, bubbleScale);
             poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
+            if (entity.getOfferingType().equals(Offering.Type.RIFT)) poseStack.translate(0.0f,0.5f,0.01f);
 
             poseStack.pushPose();
             float xPos = ((float) MESSAGE_BUBBLE_TEXTURE_RESOLUTION.x / MESSAGE_BUBBLE_TEXTURE_RESOLUTION.y) * 0.5f;
@@ -193,7 +217,7 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
             vertex(vertexconsumer, posestack$pose, xPos, 0.25F, 1.0f, 1.0f, packedLight, 0.5f);
             vertex(vertexconsumer, posestack$pose, xPos, 1.25F, 1.0f, 0.0f, packedLight, 0.5f);
             vertex(vertexconsumer, posestack$pose, -xPos, 1.25F, 0.0f, 0.0f, packedLight, 0.5f);
-            entity.bubbleTimer = Math.max(entity.bubbleTimer - partialTicks, 0);
+            entity.setBubbleTimer(Math.max(entity.getBubbleTimer() - partialTicks, 0));
             Minecraft.getInstance().renderBuffers().bufferSource().endBatch(RENDER_TYPE);
             poseStack.popPose();
 
@@ -201,7 +225,7 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
             this.renderCost(entity, entityYaw, partialTicks, poseStack, buffer, packedLight, text, textWidth, textHeight, totalWidth, wdPlayer);
             poseStack.popPose();
         } else {
-            entity.bubbleTimer = Offering.BUBBLE_ANIMATION_TIME;
+            entity.setBubbleTimer(Offering.BUBBLE_ANIMATION_TIME);
         }
     }
 
@@ -212,13 +236,13 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
 
             int textColor = HexFormat.fromHexDigits("ff0000");
 
-            int levels = switch(entity.costType) {
+            int levels = switch(entity.getOfferingCostType()) {
                 case XP_LEVEL -> Minecraft.getInstance().player.experienceLevel;
                 case NETHER_XP_LEVEL -> Mth.floor(wdPlayer.getEssenceLevel("essence:nether"));
                 case END_XP_LEVEL -> Mth.floor(wdPlayer.getEssenceLevel("essence:end"));
             };
 
-            if (levels >= entity.costAmount) {
+            if (levels >= entity.getCostAmount()) {
                 textColor = HexFormat.fromHexDigits("ffffff");
             }
 
@@ -233,7 +257,7 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
 
         // Cost Icon
         {
-            int hueOffset = switch (entity.costType) {
+            int hueOffset = switch (entity.getOfferingCostType()) {
                 case XP_LEVEL -> 0;
                 case END_XP_LEVEL -> Alignments.ALIGNMENTS.get("end").ORB_HUE_OFFSET();
                 case NETHER_XP_LEVEL -> Alignments.ALIGNMENTS.get("nether").ORB_HUE_OFFSET();

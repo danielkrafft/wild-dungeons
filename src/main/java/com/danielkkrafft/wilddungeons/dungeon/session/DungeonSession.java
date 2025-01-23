@@ -7,7 +7,7 @@ import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonPerkTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.components.TemplateHelper;
-import com.danielkkrafft.wilddungeons.entity.blockentity.RiftBlockEntity;
+import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
@@ -15,6 +15,7 @@ import com.danielkkrafft.wilddungeons.util.debug.WDProfiler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -28,7 +29,7 @@ public class DungeonSession {
     public static final int SHUTDOWN_TIME = 300;
     public static final int LIVES_PER_PLAYER = 3;
 
-    private final BlockPos entrance;
+    private final String entranceUUID;
     private final ResourceKey<Level> entranceLevelKey;
     private final Set<String> playerUUIDs = new HashSet<>();
     private final List<DungeonFloor> floors = new ArrayList<>();
@@ -40,19 +41,19 @@ public class DungeonSession {
     private boolean safeToSerialize = false;
 
     public ServerLevel getEntranceLevel() {return DungeonSessionManager.getInstance().server.getLevel(this.entranceLevelKey);}
-    public BlockPos getEntrancePos() {return this.entrance;}
+    public String getEntranceUUID() {return this.entranceUUID;}
     public List<DungeonFloor> getFloors() {return this.floors;}
     public DungeonTemplate getTemplate() {return DungeonRegistry.DUNGEON_REGISTRY.get(this.template);}
     public int getLives() {return this.lives;}
     public boolean isMarkedForShutdown() {return this.markedForShutdown;}
     public HashMap<String, DungeonPerk> getPerks() {return this.perks;}
-    public String getSessionKey() {return DungeonSessionManager.buildDungeonSessionKey(this.entrance);}
+    public String getSessionKey() {return DungeonSessionManager.buildDungeonSessionKey(this.entranceUUID);}
     public boolean isSafeToSerialize() {return this.safeToSerialize;}
 
     public enum DungeonExitBehavior {DESTROY_RIFT, NEW_DUNGEON, NOTHING}
 
-    protected DungeonSession(BlockPos entrance, ResourceKey<Level> entranceLevelKey, String template) {
-        this.entrance = entrance;
+    protected DungeonSession(String entranceUUID, ResourceKey<Level> entranceLevelKey, String template) {
+        this.entranceUUID = entranceUUID;
         this.entranceLevelKey = entranceLevelKey;
         this.template = template;
         WildDungeons.getLogger().info("DUNGEON MATERIALS: {}", this.getTemplate().materials().size());
@@ -124,7 +125,7 @@ public class DungeonSession {
 
     public void givePerk(DungeonPerkTemplate perkTemplate) {
         WildDungeons.getLogger().info("ADDING PERK: {}", perkTemplate.name());
-        DungeonPerk perk = this.getPerks().containsKey(perkTemplate.name()) ? this.getPerks().get(perkTemplate.name()) : new DungeonPerk(perkTemplate.name(), DungeonSessionManager.buildDungeonSessionKey(this.getEntrancePos()));
+        DungeonPerk perk = this.getPerks().containsKey(perkTemplate.name()) ? this.getPerks().get(perkTemplate.name()) : new DungeonPerk(perkTemplate.name(), DungeonSessionManager.buildDungeonSessionKey(this.getEntranceUUID()));
 
         perk.count++;
         this.getPerks().put(perkTemplate.name(), perk);
@@ -157,13 +158,11 @@ public class DungeonSession {
     public void handleExitBehavior() {
         switch (this.getTemplate().exitBehavior()) {
             case DESTROY_RIFT -> {
-                this.getEntranceLevel().setBlock(this.entrance, Blocks.AIR.defaultBlockState(), 2);
+                this.getEntranceLevel().getEntity(UUID.fromString(this.getEntranceUUID())).remove(Entity.RemovalReason.DISCARDED);
             }
             case NEW_DUNGEON -> {
-                BlockEntity blockEntity = this.getEntranceLevel().getBlockEntity(this.entrance);
-                if (blockEntity instanceof RiftBlockEntity riftBlockEntity) {
-                    riftBlockEntity.destination = "wd-"+this.getTemplate().nextDungeon().getRandom().name();
-                }
+                Offering rift = (Offering) this.getEntranceLevel().getEntity(UUID.fromString(this.getEntranceUUID()));
+                if (rift != null) rift.setOfferingId("wd-"+this.getTemplate().nextDungeon().getRandom().name());
             }
         }
     }

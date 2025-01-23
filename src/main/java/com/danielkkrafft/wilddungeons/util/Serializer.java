@@ -9,14 +9,12 @@ import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.player.SavedTransform;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
-import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector2i;
 import sun.reflect.ReflectionFactory;
@@ -48,7 +46,6 @@ public class Serializer
         addCustom(Vector2i.class);
         addCustom(ChunkPos.class);
         addCustom(LootRoom.class);
-        addCustom(ShopRoom.class);
         addCustom(CombatRoom.class);
         addCustom(SecretRoom.class);
     }

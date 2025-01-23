@@ -24,12 +24,12 @@ public class DungeonSessionManager {
         return sessions.getOrDefault(key, null);
     }
 
-    public DungeonSession getOrCreateDungeonSession(BlockPos entrance, ResourceKey<Level> entranceLevelKey, String template) {
-        return sessions.computeIfAbsent(buildDungeonSessionKey(entrance), k -> new DungeonSession(entrance, entranceLevelKey, template));
+    public DungeonSession getOrCreateDungeonSession(String entranceUUID, ResourceKey<Level> entranceLevelKey, String template) {
+        return sessions.computeIfAbsent(buildDungeonSessionKey(entranceUUID), k -> new DungeonSession(entranceUUID, entranceLevelKey, template));
     }
 
-    public static String buildDungeonSessionKey(BlockPos entrance) {
-        return "wd" + entrance.getX() + entrance.getY() + entrance.getZ();
+    public static String buildDungeonSessionKey(String entranceUUID) {
+        return "wd" + entranceUUID;
     }
 
     public Map<String, DungeonSession> getSessions() {return this.sessions;}

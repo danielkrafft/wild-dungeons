@@ -1,10 +1,7 @@
 package com.danielkkrafft.wilddungeons.dungeon.components.room;
 
-import com.danielkkrafft.wilddungeons.dungeon.DungeonRoomTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.ConnectionPoint;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
-import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
-import com.danielkkrafft.wilddungeons.dungeon.components.TemplateHelper;
 import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import net.minecraft.core.BlockPos;
@@ -12,10 +9,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class LootRoom extends DungeonRoom {
     public static final int SET_PURGE_INTERVAL = 20;
@@ -24,8 +18,7 @@ public class LootRoom extends DungeonRoom {
 
     public boolean started = false;
     public boolean generated = false;
-    public Set<Offering> alive = new HashSet<>();;
-    public List<Offering.OfferingTemplate> toSpawn = new ArrayList<>();
+    public Set<String> aliveUUIDs = new HashSet<>();;
 
     public LootRoom(DungeonBranch branch, String templateKey, ServerLevel level, BlockPos position, StructurePlaceSettings settings, List<ConnectionPoint> allConnectionPoints) {
         super(branch, templateKey, level, position, settings, allConnectionPoints);
@@ -36,7 +29,7 @@ public class LootRoom extends DungeonRoom {
         super.tick();
         if (!started || this.getPlayers().isEmpty() || this.isClear()) return;
 
-        if (alive.isEmpty()) {this.onClear(); return;}
+        if (aliveUUIDs.isEmpty()) {this.onClear(); return;}
         if (checkTimer == 0) {purgeEntitySet(); checkTimer = SET_PURGE_INTERVAL;}
         checkTimer -= 1;
     }
@@ -58,11 +51,11 @@ public class LootRoom extends DungeonRoom {
         super.onBranchEnter(player);
         if (this.generated) return;
 
-        this.toSpawn = OfferingTables.PERK_OFFERING_TABLE.randomResults(this.getTemplate().offerings().size(), this.getTemplate().offerings().size(), 1);
-        for (BlockPos pos : this.getTemplate().offerings()) {
+        List<Offering.OfferingTemplate> toSpawn = OfferingTables.PERK_OFFERING_TABLE.randomResults(this.getTemplate().offerings().size(), this.getTemplate().offerings().size(), 1);
+        for (Vec3 pos : this.getTemplate().offerings()) {
             Offering next = toSpawn.removeFirst().asOffering(this.getBranch().getFloor().getLevel());
-            next.setPos(Vec3.atBottomCenterOf(TemplateHelper.transform(pos, this)).add(0.0, 0.5, 0.0));
-            this.alive.add(next);
+            next.setPos(pos);
+            this.aliveUUIDs.add(next.getStringUUID());
             this.getBranch().getFloor().getLevel().addFreshEntity(next);
         }
         this.generated = true;
@@ -77,15 +70,16 @@ public class LootRoom extends DungeonRoom {
     }
 
     public void purgeEntitySet() {
-        List<Offering> toRemove = new ArrayList<>();
-        this.alive.forEach(livingEntity -> {
-            if (livingEntity.purchased) {
-                toRemove.add(livingEntity);
+        List<String> toRemove = new ArrayList<>();
+        this.aliveUUIDs.forEach(uuid -> {
+            Offering offering = (Offering) this.getBranch().getFloor().getLevel().getEntity(UUID.fromString(uuid));
+            if (offering.isPurchased()) {
+                toRemove.add(offering.getStringUUID());
             }
         });
 
         toRemove.forEach(livingEntity -> {
-            alive.remove(livingEntity);
+            aliveUUIDs.remove(livingEntity);
         });
     }
 }

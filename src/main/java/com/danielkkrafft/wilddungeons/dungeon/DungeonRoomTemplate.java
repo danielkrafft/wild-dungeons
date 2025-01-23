@@ -13,11 +13,12 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public record DungeonRoomTemplate(Type type, String name, List<Pair<StructureTemplate, BlockPos>> templates, List<ConnectionPoint> connectionPoints, BlockPos spawnPoint, List<BlockPos> rifts, List<BlockPos> offerings, List<StructureTemplate.StructureBlockInfo> materialBlocks, List<StructureTemplate.StructureBlockInfo> lootBlocks, WeightedPool<DungeonMaterial> materials, WeightedTable<EntityType<?>> enemyTable, double difficulty) implements DungeonComponent {
+public record DungeonRoomTemplate(Type type, String name, List<Pair<StructureTemplate, BlockPos>> templates, List<ConnectionPoint> connectionPoints, BlockPos spawnPoint, List<Vec3> rifts, List<Vec3> offerings, List<StructureTemplate.StructureBlockInfo> materialBlocks, List<StructureTemplate.StructureBlockInfo> lootBlocks, WeightedPool<DungeonMaterial> materials, WeightedTable<EntityType<?>> enemyTable, double difficulty) implements DungeonComponent {
 
     public enum Type {
         NONE, SECRET, COMBAT, SHOP, LOOT
@@ -34,9 +35,9 @@ public record DungeonRoomTemplate(Type type, String name, List<Pair<StructureTem
 
         List<ConnectionPoint> connectionPoints = TemplateHelper.locateConnectionPoints(templates);
         WildDungeons.getLogger().info("LOCATED {} CONNECTION POINTS FOR ROOM: {}", connectionPoints.size(), name);
-        List<BlockPos> rifts = TemplateHelper.locateRifts(templates);
+        List<Vec3> rifts = TemplateHelper.locateRifts(templates);
         BlockPos spawnPoint = TemplateHelper.locateSpawnPoint(templates);
-        List<BlockPos> offerings = TemplateHelper.locateOfferings(templates);
+        List<Vec3> offerings = TemplateHelper.locateOfferings(templates);
         List<StructureTemplate.StructureBlockInfo> materialBlocks = TemplateHelper.locateMaterialBlocks(templates);
         List<StructureTemplate.StructureBlockInfo> lootBlocks = TemplateHelper.locateLootTargets(templates);
         return new DungeonRoomTemplate(type, name, templates, connectionPoints, spawnPoint, rifts, offerings, materialBlocks, lootBlocks, materials, enemyTable, difficulty);
@@ -61,9 +62,6 @@ public record DungeonRoomTemplate(Type type, String name, List<Pair<StructureTem
             }
             case COMBAT -> {
                 return new CombatRoom(branch, this.name, level, position, settings, connectionPoints);
-            }
-            case SHOP -> {
-                return new ShopRoom(branch, this.name, level, position, settings, connectionPoints);
             }
             case LOOT -> {
                 return new LootRoom(branch, this.name, level, position, settings, connectionPoints);

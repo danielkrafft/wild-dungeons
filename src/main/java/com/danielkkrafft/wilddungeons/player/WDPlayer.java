@@ -50,7 +50,7 @@ public class WDPlayer {
 
     public DungeonSession getCurrentDungeon() {return Objects.equals(this.currentDungeon, "none") ? null : DungeonSessionManager.getInstance().getDungeonSession(this.currentDungeon);}
     public void setCurrentDungeon(DungeonSession session) {
-        this.currentDungeon = session == null ? "none" : DungeonSessionManager.buildDungeonSessionKey(session.getEntrancePos());
+        this.currentDungeon = session == null ? "none" : DungeonSessionManager.buildDungeonSessionKey(session.getEntranceUUID());
         WildDungeons.getLogger().info("SETTING CURRENT DUNGEON TO {}", this.currentDungeon);
     }
     public DungeonFloor getCurrentFloor() {return this.currentFloor == -1 ? null : this.getCurrentDungeon().getFloors().get(this.currentFloor);}
@@ -76,6 +76,8 @@ public class WDPlayer {
             this.blockPos = getServerPlayer().blockPosition().asLong();
         }
     }
+    //TODO test multiple world loads, potentially flushing the same save data
+    //TODO dying respawns in the current branch, not last branch
 
     public void rootRespawn(MinecraftServer server) {
         if (respawns.isEmpty() || positions.isEmpty()) return;

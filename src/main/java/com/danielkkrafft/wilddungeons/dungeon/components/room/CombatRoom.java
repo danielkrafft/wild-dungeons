@@ -1,10 +1,8 @@
 package com.danielkkrafft.wilddungeons.dungeon.components.room;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.dungeon.DungeonRoomTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.ConnectionPoint;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
-import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.mojang.datafixers.util.Pair;
@@ -27,8 +25,8 @@ public class CombatRoom extends DungeonRoom {
     public static final int BASE_QUANTITY = 10;
     public static final int BASE_DIFFICULTY = 10;
 
-    public Set<LivingEntity> alive = new HashSet<>();
-    public List<LivingEntity> toSpawn = new ArrayList<>();
+    public Set<String> aliveUUIDs = new HashSet<>();
+    public List<String> toSpawn = new ArrayList<>();
     public int checkTimer = SET_PURGE_INTERVAL;
     public int spawnTimer = 0;
     public int groupSize = 2;
@@ -54,10 +52,7 @@ public class CombatRoom extends DungeonRoom {
         List<EntityType<?>> entities = this.getEnemyTable().randomResults(BASE_QUANTITY, (int) (BASE_DIFFICULTY * this.getDifficulty()), 2);
 
         entities.forEach(entityType -> {
-            LivingEntity entity = (LivingEntity) entityType.create(this.getBranch().getFloor().getLevel());
-            if (entity != null) {
-                toSpawn.add(entity);
-            }
+            toSpawn.add(EntityType.getKey(entityType).toString());
         });
         this.started = true;
     }
@@ -65,7 +60,7 @@ public class CombatRoom extends DungeonRoom {
     public void spawnNext() {
         for (int i = 0; i < Math.floor(groupSize * this.getDifficulty()); i++) {
             if (toSpawn.isEmpty()) return;
-            LivingEntity entity = toSpawn.removeFirst();
+            LivingEntity entity = (LivingEntity) EntityType.byString(toSpawn.removeFirst()).get().create(this.getBranch().getFloor().getLevel());
             List<BlockPos> validPoints = this.sampleSpawnablePositions(getBranch().getFloor().getLevel(), 3);
 
             BlockPos finalPos = validPoints.stream().map(pos -> {
@@ -80,7 +75,7 @@ public class CombatRoom extends DungeonRoom {
             }).max(Comparator.comparingInt(Pair::getSecond)).get().getFirst();
 
             entity.setPos(Vec3.atCenterOf(finalPos));
-            alive.add(entity);
+            aliveUUIDs.add(entity.getStringUUID());
             this.getBranch().getFloor().getLevel().addWithUUID(entity);
         }
     }
@@ -89,9 +84,9 @@ public class CombatRoom extends DungeonRoom {
     public void tick() {
         super.tick();
         if (!started || this.getPlayers().isEmpty() || this.isClear()) return;
-        if (alive.isEmpty() && toSpawn.isEmpty()) {this.onClear(); return;}
+        if (aliveUUIDs.isEmpty() && toSpawn.isEmpty()) {this.onClear(); return;}
         if (checkTimer == 0) {purgeEntitySet(); checkTimer = SET_PURGE_INTERVAL;}
-        if (spawnTimer == 0 || alive.isEmpty()) {spawnNext(); spawnTimer = SPAWN_INTERVAL;}
+        if (spawnTimer == 0 || aliveUUIDs.isEmpty()) {spawnNext(); spawnTimer = SPAWN_INTERVAL;}
         checkTimer -= 1;
         spawnTimer -= 1;
     }
@@ -110,20 +105,21 @@ public class CombatRoom extends DungeonRoom {
             WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(serverPlayer);
 
             if (wdPlayer.getCurrentDungeon() == null) return;
-            if (wdPlayer.getCurrentRoom() instanceof CombatRoom room) room.alive.remove(event.getEntity());
+            if (wdPlayer.getCurrentRoom() instanceof CombatRoom room) room.aliveUUIDs.remove(event.getEntity().getStringUUID());
         }
     }
 
     public void purgeEntitySet() {
-        List<LivingEntity> toRemove = new ArrayList<>();
-        this.alive.forEach(livingEntity -> {
+        List<String> toRemove = new ArrayList<>();
+        this.aliveUUIDs.forEach(uuid -> {
+            LivingEntity livingEntity = (LivingEntity) this.getBranch().getFloor().getLevel().getEntity(UUID.fromString(uuid));
             if (!livingEntity.isAlive()) {
-                toRemove.add(livingEntity);
+                toRemove.add(livingEntity.getStringUUID());
             }
         });
 
         toRemove.forEach(livingEntity -> {
-            alive.remove(livingEntity);
+            aliveUUIDs.remove(livingEntity);
         });
     }
 }
