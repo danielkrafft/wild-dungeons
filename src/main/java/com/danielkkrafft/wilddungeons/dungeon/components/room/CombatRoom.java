@@ -84,6 +84,7 @@ public class CombatRoom extends DungeonRoom {
 
     @Override
     public void tick() {
+        WildDungeons.getLogger().info("COMBAT ROOM TICKING");
         super.tick();
         if (!started || this.getPlayers().isEmpty() || this.isClear()) return;
         if (aliveUUIDs.isEmpty() && toSpawn.isEmpty()) {this.onClear(); return;}

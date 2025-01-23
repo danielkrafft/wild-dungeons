@@ -291,6 +291,7 @@ public class DungeonRoom {
     }
     public void reset() {}
     public void tick() {
+        WildDungeons.getLogger().info("DUNGEON ROOM TICKING OF CLASS {}", this.getClass().getSimpleName());
         if (this.playerUUIDs.isEmpty()) return;
         innerPlayerUUIDs.forEach((uuid, inside) -> {
             if (!inside) {

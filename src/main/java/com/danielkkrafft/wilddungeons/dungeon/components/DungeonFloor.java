@@ -19,6 +19,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -45,6 +46,15 @@ public class DungeonFloor {
     public WeightedTable<EntityType<?>> getEnemyTable() {return this.getTemplate().enemyTable() == null ? this.getSession().getTemplate().enemyTable() : this.getTemplate().enemyTable();}
     public double getDifficulty() {return this.getSession().getTemplate().difficulty() * this.getTemplate().difficulty() * Math.max(Math.pow(1.1, this.getSession().getFloors().size()), 1);}
     public ServerLevel getLevel() {
+        WildDungeons.getLogger().info("TRYING TO GET LEVEL KEY {}", this.LEVEL_KEY);
+        WildDungeons.getLogger().info("AVAILABLE LEVEL KEYS {}", DungeonSessionManager.getInstance().server.levelKeys());
+        WildDungeons.getLogger().info("CURRENT PLAYERS: {}", this.getPlayerUUIDs());
+        List<String> availablePlayers = DungeonSessionManager.getInstance().server.getPlayerList().getPlayers().stream().map(Entity::getStringUUID).toList();
+        WildDungeons.getLogger().info("AVAILABLE PLAYERS: {}", availablePlayers);
+
+        if (!availablePlayers.isEmpty() && !this.getPlayerUUIDs().isEmpty()) {
+            WildDungeons.getLogger().info("CURRENT LEVEL KEY {}", DungeonSessionManager.getInstance().server.getPlayerList().getPlayer(UUID.fromString(this.getPlayerUUIDs().stream().toList().getFirst())).level().dimension());
+        }
         return DungeonSessionManager.getInstance().server.getLevel(this.LEVEL_KEY);
     }
     public List<DungeonBranch> getBranches() {return this.dungeonBranches;}
@@ -146,7 +156,9 @@ public class DungeonFloor {
     }
 
     public void tick() {
+        WildDungeons.getLogger().info("DUNGEON FLOOR TICKING OF CLASS {}", this.getClass().getSimpleName());
         if (this.getLevel() == null) return;
+        WildDungeons.getLogger().info("DUNGEON FLOOR aCTUALLLY TICKING OF CLASS {}", this.getClass().getSimpleName());
         if (!playerUUIDs.isEmpty()) dungeonBranches.forEach(DungeonBranch::tick);
     }
 
