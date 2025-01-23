@@ -1,6 +1,7 @@
 package com.danielkkrafft.wilddungeons.dungeon.session;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.util.SaveSystem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
@@ -51,6 +52,7 @@ public class DungeonSessionManager {
     }
 
     public static void tick() {
+        if (SaveSystem.isLoading() || !SaveSystem.isLoaded()) return;//prevent crash if world boots up with players in the dungeon
         List<String> sessionsToRemove = new ArrayList<>();
         INSTANCE.sessions.forEach((key, session) -> {
             session.tick();

@@ -10,6 +10,7 @@ import com.danielkkrafft.wilddungeons.dungeon.components.TemplateHelper;
 import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
+import com.danielkkrafft.wilddungeons.util.IgnoreSerialization;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.util.debug.WDProfiler;
 import net.minecraft.core.BlockPos;
@@ -32,7 +33,8 @@ public class DungeonSession {
     private final String entranceUUID;
     private final ResourceKey<Level> entranceLevelKey;
     private final Set<String> playerUUIDs = new HashSet<>();
-    private final List<DungeonFloor> floors = new ArrayList<>();
+    @IgnoreSerialization
+    private List<DungeonFloor> floors = new ArrayList<>();
     private final String template;
     private int shutdownTimer = SHUTDOWN_TIME;
     private int lives = 0;
@@ -177,5 +179,10 @@ public class DungeonSession {
         getPlayers().forEach(this::onExit);
         floors.forEach(DungeonFloor::shutdown);
         markedForShutdown = true;
+    }
+
+    public void addFloor(DungeonFloor floor) {
+        if (this.floors == null) this.floors = new ArrayList<>();
+        this.floors.add(floor);
     }
 }

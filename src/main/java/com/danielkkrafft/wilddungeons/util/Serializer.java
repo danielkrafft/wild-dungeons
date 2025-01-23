@@ -18,6 +18,7 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector2i;
 import sun.reflect.ReflectionFactory;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
@@ -30,7 +31,6 @@ public class Serializer
 
     public static void setup() {
         addCustom(WDPlayer.class);
-        addCustom(SaveFile.class);
         addCustom(SavedTransform.class);
         addCustom(ResourceKey.class);
         addCustom(ResourceLocation.class);
@@ -48,6 +48,11 @@ public class Serializer
         addCustom(LootRoom.class);
         addCustom(CombatRoom.class);
         addCustom(SecretRoom.class);
+        addCustom(SaveSystem.SaveFile.class);
+        addCustom(SaveSystem.DungeonSessionFile.class);
+        addCustom(SaveSystem.DungeonFloorFile.class);
+        addCustom(SaveSystem.DungeonBranchFile.class);
+        addCustom(SaveSystem.DungeonRoomFile.class);
     }
 
     private static void addCustom(Class<?> clazz) {

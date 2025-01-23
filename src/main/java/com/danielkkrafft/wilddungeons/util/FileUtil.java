@@ -1,13 +1,10 @@
 package com.danielkkrafft.wilddungeons.util;
 
-import com.danielkkrafft.wilddungeons.player.WDPlayer;
-import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
-import org.checkerframework.checker.units.qual.C;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -15,8 +12,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
 
 public class FileUtil {
 
@@ -127,6 +122,8 @@ public class FileUtil {
 
     public static void writeNbt(CompoundTag nbt, File file) {
         try {
+            if (!file.getParentFile().exists()) file.getParentFile().mkdirs();
+            if (!file.exists()) file.createNewFile();
             FileOutputStream outputStream = new FileOutputStream(file);
             NbtIo.writeCompressed(nbt, outputStream);
         } catch (IOException e) {

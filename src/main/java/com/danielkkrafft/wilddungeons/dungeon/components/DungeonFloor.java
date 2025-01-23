@@ -11,6 +11,7 @@ import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.registry.WDDimensions;
 import com.danielkkrafft.wilddungeons.util.FileUtil;
+import com.danielkkrafft.wilddungeons.util.IgnoreSerialization;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.util.WeightedTable;
 import com.danielkkrafft.wilddungeons.util.debug.WDProfiler;
@@ -29,8 +30,8 @@ import org.joml.Vector2i;
 import java.util.*;
 
 public class DungeonFloor {
-
-    private final List<DungeonBranch> dungeonBranches = new ArrayList<>();
+    @IgnoreSerialization
+    private List<DungeonBranch> dungeonBranches = new ArrayList<>();
     private final String templateKey;
     private final BlockPos origin;
     private final ResourceKey<Level> LEVEL_KEY;
@@ -147,5 +148,10 @@ public class DungeonFloor {
 
     public void tick() {
         if (!playerUUIDs.isEmpty()) dungeonBranches.forEach(DungeonBranch::tick);
+    }
+
+    public void addBranch(DungeonBranch branch) {
+        if (this.dungeonBranches == null) this.dungeonBranches = new ArrayList<>();
+        this.dungeonBranches.add(branch);
     }
 }
