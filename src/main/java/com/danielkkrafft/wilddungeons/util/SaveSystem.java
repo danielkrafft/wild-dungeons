@@ -38,6 +38,16 @@ public class SaveSystem {
         return INSTANCE.loaded;
     }
 
+    public static void DeleteLevel(DungeonSession dungeonSession) {
+        INSTANCE.deleteLevel(dungeonSession);
+    }
+
+    private void deleteLevel(DungeonSession dungeonSession) {
+        Path path = FileUtil.getWorldPath().resolve("data").resolve("dungeons");
+        FileUtil.deletePath(path.resolve(dungeonSession.getSessionKey()+".nbt"));
+        FileUtil.deleteDirectoryContents(path.resolve(dungeonSession.getSessionKey()),true);
+    }
+
 
     private void save() {
         if (saving) return;

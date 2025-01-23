@@ -11,17 +11,15 @@ import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.danielkkrafft.wilddungeons.util.IgnoreSerialization;
+import com.danielkkrafft.wilddungeons.util.SaveSystem;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.util.debug.WDProfiler;
-import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.util.*;
 
@@ -189,6 +187,7 @@ public class DungeonSession {
     public void shutdown() {
         getPlayers().forEach(this::onExit);
         floors.forEach(DungeonFloor::shutdown);
+        SaveSystem.DeleteLevel(this);
         markedForShutdown = true;
     }
 
