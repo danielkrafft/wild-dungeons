@@ -289,8 +289,8 @@ public class Serializer
             CompoundTag nestedTag = entry.getCompound("value");
 
             ArrayList<Object> arrayListValue = new ArrayList<>();
-            for (String arrayListEntryIndex : nestedTag.getAllKeys()) {
-                arrayListValue.add(deserialize(arrayListEntryIndex, nestedTag));
+            for (int i = 0; i < nestedTag.getAllKeys().size(); i++) {
+                arrayListValue.add(deserialize(String.valueOf(i), nestedTag));
             }
 
             return arrayListValue;
@@ -301,8 +301,8 @@ public class Serializer
             CompoundTag nestedTag = entry.getCompound("value");
 
             List<Object> listValue = new ArrayList<>();
-            for (String listEntryIndex : nestedTag.getAllKeys()) {
-                listValue.add(deserialize(listEntryIndex, nestedTag));
+            for (int i = 0; i < nestedTag.getAllKeys().size(); i++) {
+                listValue.add(deserialize(String.valueOf(i), nestedTag));
             }
 
             return listValue;
