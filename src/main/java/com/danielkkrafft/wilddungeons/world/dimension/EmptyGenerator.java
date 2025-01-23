@@ -74,7 +74,7 @@ public class EmptyGenerator extends ChunkGenerator {
 
     }
 
-    //TODO there should be some other type of fill probably
+    //Idea there should be some other type of fill probably maybe an unbreakable shell
     @Override
     public CompletableFuture<ChunkAccess> fillFromNoise(Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess chunk) {
 

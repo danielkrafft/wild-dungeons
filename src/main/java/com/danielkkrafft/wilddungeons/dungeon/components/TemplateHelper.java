@@ -154,7 +154,7 @@ public class TemplateHelper {
                 Optional<EntityType<?>> type = EntityType.by(structureEntityInfo.nbt);
                 if (type.isPresent() && type.get().equals(WDEntities.OFFERING.get())) {
                     if (structureEntityInfo.nbt.getString("type").equals("RIFT")) {
-                        WildDungeons.getLogger().info("FOUND RIFT WITH KEYS: {}", structureEntityInfo.nbt.getAllKeys()); //TODO
+                        WildDungeons.getLogger().info("FOUND RIFT WITH KEYS: {}", structureEntityInfo.nbt.getAllKeys());
                         result.add(structureEntityInfo.pos.add(template.getSecond().getX(), template.getSecond().getY(), template.getSecond().getZ()));
                     }
                 }
@@ -170,7 +170,7 @@ public class TemplateHelper {
                 Optional<EntityType<?>> type = EntityType.by(structureEntityInfo.nbt);
                 if (type.isPresent() && type.get().equals(WDEntities.OFFERING.get())) {
                     if (structureEntityInfo.nbt.getString("type").equals("ITEM") || structureEntityInfo.nbt.getString("type").equals("PERK")) {
-                        WildDungeons.getLogger().info("FOUND OFFERING WITH KEYS: {}", structureEntityInfo.nbt.getAllKeys()); //TODO
+                        WildDungeons.getLogger().info("FOUND OFFERING WITH KEYS: {}", structureEntityInfo.nbt.getAllKeys());
                         result.add(structureEntityInfo.pos.add(template.getSecond().getX(), template.getSecond().getY(), template.getSecond().getZ()));
                     }
                 }

@@ -263,6 +263,7 @@ public class DungeonBranch {
     }
 
     public void onEnter(WDPlayer player) {
+        WildDungeons.getLogger().info("PLAYER ENTERED BRANCH: {}", this.getTemplate().name());
         this.playerUUIDs.add(player.getUUID());
         for (DungeonRoom room : this.dungeonRooms) {
             room.onBranchEnter(player);

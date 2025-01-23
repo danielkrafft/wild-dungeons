@@ -59,6 +59,7 @@ public class CombatRoom extends DungeonRoom {
 
     public void spawnNext() {
         for (int i = 0; i < Math.floor(groupSize * this.getDifficulty()); i++) {
+            WildDungeons.getLogger().info("SPAWNING A GROUP OF {}", Math.floor(groupSize * this.getDifficulty()));
             if (toSpawn.isEmpty()) return;
             LivingEntity entity = (LivingEntity) EntityType.byString(toSpawn.removeFirst()).get().create(this.getBranch().getFloor().getLevel());
             List<BlockPos> validPoints = this.sampleSpawnablePositions(getBranch().getFloor().getLevel(), 3);

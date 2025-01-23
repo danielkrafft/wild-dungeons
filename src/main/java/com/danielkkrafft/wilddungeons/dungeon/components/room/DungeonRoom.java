@@ -276,12 +276,13 @@ public class DungeonRoom {
 
     public void onGenerate() {}
     public void onEnter(WDPlayer player) {
-        WildDungeons.getLogger().info("ENTERING ROOM {}", this.getTemplate().name());
+        WildDungeons.getLogger().info("ENTERING ROOM {} OF CLASS {}", this.getTemplate().name(), this.getClass().getSimpleName());
         this.playerUUIDs.add(player.getUUID());
         this.innerPlayerUUIDs.put(player.getUUID(), false);
     }
     public void onBranchEnter(WDPlayer player) {}
-    public void onEnterInner(WDPlayer player) {}
+    public void onEnterInner(WDPlayer player) {
+    }
     public void onExit(WDPlayer player) {
         this.playerUUIDs.remove(player.getUUID());
         this.innerPlayerUUIDs.remove(player.getUUID());

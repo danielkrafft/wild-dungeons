@@ -98,6 +98,8 @@ public class SaveSystem {
         SaveFile saveFile = Serializer.fromCompoundTag(FileUtil.readNbt(FileUtil.getWorldPath().resolve("data").resolve("dungeons.nbt").toFile()));
         if (saveFile == null) {
             WildDungeons.getLogger().error("Failed to load save file");
+            loading = false;
+            loaded = true;
             return;
         }
         HashMap<String, WDPlayer> players = new HashMap<>(saveFile.players);

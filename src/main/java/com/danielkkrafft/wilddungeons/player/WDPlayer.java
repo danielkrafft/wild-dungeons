@@ -76,8 +76,6 @@ public class WDPlayer {
             this.blockPos = getServerPlayer().blockPosition().asLong();
         }
     }
-    //TODO test multiple world loads, potentially flushing the same save data
-    //TODO dying respawns in the current branch, not last branch
 
     public void rootRespawn(MinecraftServer server) {
         if (respawns.isEmpty() || positions.isEmpty()) return;
@@ -150,7 +148,6 @@ public class WDPlayer {
 
     public void onPlayerMovedBlocks() {
         this.handleCurrentRoom();
-        WildDungeons.getLogger().info("CURRENT ROOM IS {}:", this.getCurrentRoom() == null ? "none" : this.getCurrentRoom().getTemplate().name());
     }
 
     public void handleCurrentRoom() {
