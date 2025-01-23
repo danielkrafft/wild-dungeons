@@ -1,6 +1,5 @@
-package com.danielkkrafft.wilddungeons.dungeon.components;
+package com.danielkkrafft.wilddungeons.dungeon.components.template;
 
-import com.danielkkrafft.wilddungeons.dungeon.DungeonMaterial;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import org.joml.Vector2i;

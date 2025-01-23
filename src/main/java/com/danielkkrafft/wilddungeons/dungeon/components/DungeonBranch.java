@@ -1,10 +1,9 @@
 package com.danielkkrafft.wilddungeons.dungeon.components;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.dungeon.DungeonBranchTemplate;
-import com.danielkkrafft.wilddungeons.dungeon.DungeonMaterial;
-import com.danielkkrafft.wilddungeons.dungeon.DungeonRoomTemplate;
-import com.danielkkrafft.wilddungeons.dungeon.components.room.DungeonRoom;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonBranchTemplate;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
@@ -63,7 +62,7 @@ public class DungeonBranch {
         this.origin = origin;
         generateDungeonBranch();
         setupBoundingBox();
-        this.spawnPoint = floor.getBranches().isEmpty() ? this.dungeonRooms.getFirst().getSpawnPoint(floor.getLevel()) : floor.getBranches().getLast().dungeonRooms.getLast().getSpawnPoint(floor.getLevel());
+        this.spawnPoint = floor.getBranches().size() == 1 ? this.dungeonRooms.getFirst().getSpawnPoint(floor.getLevel()) : floor.getBranches().getLast().dungeonRooms.getLast().getSpawnPoint(floor.getLevel());
 
         WDProfiler.INSTANCE.logTimestamp("DungeonBranch::new");
     }
@@ -189,8 +188,8 @@ public class DungeonBranch {
     }
 
     private boolean maybePlaceInitialRoom(List<ConnectionPoint> templateConnectionPoints) {
-        WildDungeons.getLogger().info("ATTEMPTING TO PLACE INITIAL ROOM");
         if (dungeonRooms.isEmpty() && floor.getBranches().size() == 1) {
+            WildDungeons.getLogger().info("ATTEMPTING TO PLACE INITIAL ROOM");
             DungeonRoom room = getTemplate().roomTemplates().getLast().getRandom().placeInWorld(this, floor.getLevel(), origin, new StructurePlaceSettings(), templateConnectionPoints);
             openConnections += room.getConnectionPoints().size();
             return true;

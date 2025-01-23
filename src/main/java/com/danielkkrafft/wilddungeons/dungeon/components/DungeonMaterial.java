@@ -1,11 +1,9 @@
-package com.danielkkrafft.wilddungeons.dungeon;
+package com.danielkkrafft.wilddungeons.dungeon.components;
 
 
 import com.danielkkrafft.wilddungeons.block.WDBlocks;
-import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.dungeon.components.DungeonComponent;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonComponent;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 

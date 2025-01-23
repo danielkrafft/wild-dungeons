@@ -1,9 +1,10 @@
-package com.danielkkrafft.wilddungeons.dungeon.components;
+package com.danielkkrafft.wilddungeons.dungeon.components.template;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.dungeon.DungeonMaterial;
-import com.danielkkrafft.wilddungeons.dungeon.components.room.DungeonRoom;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonMaterial;
 import com.danielkkrafft.wilddungeons.block.WDBlocks;
+import com.danielkkrafft.wilddungeons.dungeon.components.ConnectionPoint;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
 import com.danielkkrafft.wilddungeons.entity.WDEntities;
 import com.danielkkrafft.wilddungeons.util.debug.WDProfiler;
 import com.google.common.collect.Lists;
@@ -226,7 +227,7 @@ public class TemplateHelper {
                         if (stairsShape != null) {
                             switch(stairsShape) {
                                 case INNER_LEFT -> stairsShape = StairsShape.INNER_RIGHT;
-                                case INNER_RIGHT -> stairsShape = StairsShape.INNER_RIGHT;
+                                case INNER_RIGHT -> stairsShape = StairsShape.INNER_LEFT;
                                 case OUTER_LEFT -> stairsShape = StairsShape.OUTER_RIGHT;
                                 case OUTER_RIGHT -> stairsShape = StairsShape.OUTER_LEFT;
                             }
@@ -242,7 +243,7 @@ public class TemplateHelper {
                         if (stairsShape != null) {
                             switch(stairsShape) {
                                 case INNER_LEFT -> stairsShape = StairsShape.INNER_RIGHT;
-                                case INNER_RIGHT -> stairsShape = StairsShape.INNER_RIGHT;
+                                case INNER_RIGHT -> stairsShape = StairsShape.INNER_LEFT;
                                 case OUTER_LEFT -> stairsShape = StairsShape.OUTER_RIGHT;
                                 case OUTER_RIGHT -> stairsShape = StairsShape.OUTER_LEFT;
                             }

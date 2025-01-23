@@ -1,7 +1,7 @@
 package com.danielkkrafft.wilddungeons.dungeon.components;
 
-import com.danielkkrafft.wilddungeons.dungeon.DungeonRoomTemplate;
-import com.danielkkrafft.wilddungeons.dungeon.components.room.DungeonRoom;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.entity.blockentity.ConnectionBlockEntity;
 import com.danielkkrafft.wilddungeons.util.IgnoreSerialization;

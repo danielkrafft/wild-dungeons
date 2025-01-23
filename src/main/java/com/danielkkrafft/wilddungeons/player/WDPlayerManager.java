@@ -1,7 +1,7 @@
 package com.danielkkrafft.wilddungeons.player;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.dungeon.components.room.DungeonRoom;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundUpdateWDPlayerPacket;
@@ -124,7 +124,15 @@ public class WDPlayerManager {
                 player.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 100, 1));
                 player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 800, 0));
                 player.level().broadcastEntityEvent(player, (byte)35);
-                BlockPos respawnPoint = wdPlayer.getCurrentBranch().getSpawnPoint();
+                BlockPos respawnPoint;
+                DungeonRoom room = wdPlayer.getCurrentRoom();
+
+                if (room.getBranch().getIndex() == 0) {
+                    respawnPoint = room.getBranch().getRooms().getFirst().getSpawnPoint(room.getBranch().getFloor().getLevel());
+                } else {
+                    respawnPoint = room.getBranch().getFloor().getBranches().get(room.getBranch().getIndex()-1).getRooms().getLast().getSpawnPoint(room.getBranch().getFloor().getLevel());
+                }
+
                 player.teleportTo(respawnPoint.getX(), respawnPoint.getY(), respawnPoint.getZ());
                 wdPlayer.getCurrentDungeon().offsetLives(-1);
             } else {

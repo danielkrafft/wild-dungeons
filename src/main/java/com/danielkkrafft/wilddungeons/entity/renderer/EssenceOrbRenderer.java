@@ -1,7 +1,6 @@
 package com.danielkkrafft.wilddungeons.entity.renderer;
 
-import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.dungeon.Alignments;
+import com.danielkkrafft.wilddungeons.dungeon.components.Alignments;
 import com.danielkkrafft.wilddungeons.entity.EssenceOrb;
 import com.danielkkrafft.wilddungeons.util.ColorUtil;
 import com.mojang.blaze3d.vertex.PoseStack;

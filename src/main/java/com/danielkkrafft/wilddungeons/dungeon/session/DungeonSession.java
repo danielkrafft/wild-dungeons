@@ -1,12 +1,12 @@
 package com.danielkkrafft.wilddungeons.dungeon.session;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.dungeon.DungeonPerk;
-import com.danielkkrafft.wilddungeons.dungeon.DungeonTemplate;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonPerk;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
-import com.danielkkrafft.wilddungeons.dungeon.components.DungeonPerkTemplate;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonPerkTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRegistry;
-import com.danielkkrafft.wilddungeons.dungeon.components.TemplateHelper;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
 import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
@@ -52,7 +52,7 @@ public class DungeonSession {
     public boolean isSafeToSerialize() {return this.safeToSerialize;}
     public DungeonStats getStats(WDPlayer player) {return this.playerStats.get(player.getUUID());}
 
-    public enum DungeonExitBehavior {DESTROY_RIFT, NEW_DUNGEON, NOTHING}
+    public enum DungeonExitBehavior {DESTROY, RANDOMIZE, RESET, NOTHING}
 
     protected DungeonSession(String entranceUUID, ResourceKey<Level> entranceLevelKey, String template) {
         this.entranceUUID = entranceUUID;
@@ -164,15 +164,18 @@ public class DungeonSession {
 
     public void handleExitBehavior() {
         switch (this.getTemplate().exitBehavior()) {
-            case DESTROY_RIFT -> {
+            case DESTROY -> {
                 this.shutdown();
                 Entity rift = this.getEntranceLevel().getEntity(UUID.fromString(this.getEntranceUUID()));
                 if (rift != null) rift.remove(Entity.RemovalReason.DISCARDED);
             }
-            case NEW_DUNGEON -> {
+            case RANDOMIZE -> {
                 this.shutdown();
                 Offering rift = (Offering) this.getEntranceLevel().getEntity(UUID.fromString(this.getEntranceUUID()));
                 if (rift != null) rift.setOfferingId("wd-"+this.getTemplate().nextDungeon().getRandom().name());
+            }
+            case RESET -> {
+                this.shutdown();
             }
         }
     }
