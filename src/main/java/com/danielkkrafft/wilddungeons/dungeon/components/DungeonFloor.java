@@ -1,14 +1,17 @@
 package com.danielkkrafft.wilddungeons.dungeon.components;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.dungeon.DungeonBranchTemplate;
+import com.danielkkrafft.wilddungeons.dungeon.DungeonFloorTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonMaterial;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.DungeonRoom;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
-import com.danielkkrafft.wilddungeons.entity.blockentity.RiftBlockEntity;
+import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.registry.WDDimensions;
 import com.danielkkrafft.wilddungeons.util.FileUtil;
+import com.danielkkrafft.wilddungeons.util.IgnoreSerialization;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.util.WeightedTable;
 import com.danielkkrafft.wilddungeons.util.debug.WDProfiler;
@@ -22,51 +25,60 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import org.joml.Vector2i;
 
 import java.util.*;
 
 public class DungeonFloor {
-    public List<DungeonBranch> dungeonBranches = new ArrayList<>();
-    public DungeonComponents.DungeonFloorTemplate template;
-    public ServerLevel level;
-    public BlockPos origin;
-    public ResourceKey<Level> LEVEL_KEY;
-    public BlockPos spawnPoint;
-    public DungeonSession session;
-    public WeightedPool<DungeonMaterial> materials;
-    public int index;
-    public HashMap<ChunkPos, List<DungeonRoom>> chunkMap = new HashMap<>();
-    public Set<WDPlayer> players = new HashSet<>();
+    @IgnoreSerialization
+    private List<DungeonBranch> dungeonBranches = new ArrayList<>();
+    private final String templateKey;
+    private final BlockPos origin;
+    private final ResourceKey<Level> LEVEL_KEY;
+    private final BlockPos spawnPoint;
+    private final String sessionKey;
+    private final int index;
+    private final HashMap<ChunkPos, List<Vector2i>> chunkMap = new HashMap<>();
+    private final Set<String> playerUUIDs = new HashSet<>();
 
-    public WeightedTable<EntityType<?>> enemyTable;
-    public double difficulty;
+    public DungeonFloorTemplate getTemplate() {return DungeonRegistry.DUNGEON_FLOOR_REGISTRY.get(this.templateKey);}
+    public DungeonSession getSession() {return DungeonSessionManager.getInstance().getDungeonSession(this.sessionKey);}
+    public WeightedPool<DungeonMaterial> getMaterials() {return this.getTemplate().materials() == null ? this.getSession().getTemplate().materials() : this.getTemplate().materials();}
+    public WeightedTable<EntityType<?>> getEnemyTable() {return this.getTemplate().enemyTable() == null ? this.getSession().getTemplate().enemyTable() : this.getTemplate().enemyTable();}
+    public double getDifficulty() {return this.getSession().getTemplate().difficulty() * this.getTemplate().difficulty() * Math.max(Math.pow(1.1, this.getSession().getFloors().size()), 1);}
+    public ServerLevel getLevel() {return DungeonSessionManager.getInstance().server.getLevel(this.LEVEL_KEY);}
+    public List<DungeonBranch> getBranches() {return this.dungeonBranches;}
+    public String getTemplateKey() {return this.templateKey;}
+    public BlockPos getOrigin() {return this.origin;}
+    public ResourceKey<Level> getLevelKey() {return this.LEVEL_KEY;}
+    public BlockPos getSpawnPoint() {return this.spawnPoint;}
+    public String getSessionKey() {return this.sessionKey;}
+    public int getIndex() {return this.index;}
+    public HashMap<ChunkPos, List<Vector2i>> getChunkMap() {return this.chunkMap;}
+    public Set<String> getPlayerUUIDs() {return this.playerUUIDs;}
 
-    public DungeonFloor(DungeonComponents.DungeonFloorTemplate template, DungeonSession session, BlockPos origin, int index, WeightedPool<String> destinations) {
+    public DungeonFloor(String templateKey, String sessionKey, BlockPos origin, WeightedPool<String> destinations) {
+        this.sessionKey = sessionKey;
+        this.index = this.getSession().getFloors().size();
+        this.getSession().getFloors().add(this);
+        this.templateKey = templateKey;
 
-        this.session = session;
-        this.template = template;
-        this.materials = template.materials() == null ? session.materials : template.materials();
-        this.index = index;
-        this.LEVEL_KEY = buildFloorLevelKey(session.entrance, this);
-        this.enemyTable = template.enemyTable() == null ? session.enemyTable : template.enemyTable();
-        this.difficulty = session.difficulty * template.difficulty() * Math.max(Math.pow(1.1, session.floors.size()), 1);
-        this.level = InfiniverseAPI.get().getOrCreateLevel(DungeonSessionManager.getInstance().server, LEVEL_KEY, () -> WDDimensions.createLevel(DungeonSessionManager.getInstance().server));
+        this.LEVEL_KEY = buildFloorLevelKey(this);
+        InfiniverseAPI.get().getOrCreateLevel(DungeonSessionManager.getInstance().server, LEVEL_KEY, () -> WDDimensions.createLevel(DungeonSessionManager.getInstance().server));
         this.origin = origin;
         generateDungeonFloor();
-        this.spawnPoint = this.dungeonBranches.getFirst().spawnPoint;
+        this.spawnPoint = this.dungeonBranches.getFirst().getSpawnPoint();
 
-        if (!this.dungeonBranches.getFirst().dungeonRooms.getFirst().rifts.isEmpty()) {
-            BlockPos exitRiftPos = this.dungeonBranches.getFirst().dungeonRooms.getFirst().rifts.getFirst();
-            RiftBlockEntity riftBlockEntity = (RiftBlockEntity) this.level.getBlockEntity(exitRiftPos);
-            if (riftBlockEntity != null) {riftBlockEntity.destination = ""+(index-1);}
+        if (!this.dungeonBranches.getFirst().getRooms().getFirst().getRiftUUIDs().isEmpty()) {
+            Offering exitRift = (Offering) this.getLevel().getEntity(UUID.fromString(this.dungeonBranches.getFirst().getRooms().getFirst().getRiftUUIDs().getFirst()));
+            if (exitRift != null) {exitRift.setOfferingId(""+(index-1));}
         }
 
-        if (!this.dungeonBranches.getLast().dungeonRooms.isEmpty() && !this.dungeonBranches.getLast().dungeonRooms.getLast().rifts.isEmpty()) {
-            BlockPos enterRiftPos = this.dungeonBranches.getLast().dungeonRooms.getLast().rifts.getLast();
-            RiftBlockEntity enterRiftBlockEntity = (RiftBlockEntity) this.level.getBlockEntity(enterRiftPos);
-            if (enterRiftBlockEntity != null) {
-                enterRiftBlockEntity.destination = destinations.getRandom();
-                WildDungeons.getLogger().info("PICKED RIFT DESTINATION FOR THIS FLOOR: {}", enterRiftBlockEntity.destination);
+        if (!this.dungeonBranches.getLast().getRooms().isEmpty() && !this.dungeonBranches.getLast().getRooms().getLast().getRiftUUIDs().isEmpty()) {
+            Offering enterRift = (Offering) this.getLevel().getEntity(UUID.fromString(this.dungeonBranches.getLast().getRooms().getLast().getRiftUUIDs().getLast()));
+            if (enterRift != null) {
+                enterRift.setOfferingId(destinations.getRandom());
+                WildDungeons.getLogger().info("PICKED RIFT DESTINATION FOR THIS FLOOR: {}", enterRift.getOfferingId());
             }
         }
 
@@ -78,67 +90,67 @@ public class DungeonFloor {
         FileUtil.deleteDirectoryContents(FileUtil.getWorldPath().resolve("dimensions").resolve(WildDungeons.MODID).resolve(this.LEVEL_KEY.location().getPath()), true);
     }
 
-    public static ResourceKey<Level> buildFloorLevelKey(BlockPos entrance, DungeonFloor floor) {
-        return ResourceKey.create(Registries.DIMENSION, WildDungeons.rl(DungeonSessionManager.buildDungeonSessionKey(floor.session.entrance) + "_" + floor.template.name() + "_" + floor.index + entrance.getX() + entrance.getY() + entrance.getZ()));
+    public static ResourceKey<Level> buildFloorLevelKey(DungeonFloor floor) {
+        return ResourceKey.create(Registries.DIMENSION, WildDungeons.rl(DungeonSessionManager.buildDungeonSessionKey(floor.getSession().getEntranceUUID()) + "_" + floor.getTemplate().name() + "_" + floor.index));
     }
 
     private void generateDungeonFloor() {
         int tries = 0;
-        while (dungeonBranches.size() < template.branchTemplates().size() && tries < template.branchTemplates().size() * 2) {
+        while (dungeonBranches.size() < getTemplate().branchTemplates().size() && tries < getTemplate().branchTemplates().size() * 2) {
             populateNextBranch();
-            if (dungeonBranches.getLast().dungeonRooms.isEmpty()) {break;}
+            if (dungeonBranches.getLast().getRooms().isEmpty()) {break;}
             tries++;
         }
         WildDungeons.getLogger().info("PLACED {} BRANCHES IN {} TRIES", dungeonBranches.size(), tries);
     }
 
     private void populateNextBranch() {
-        DungeonComponents.DungeonBranchTemplate nextBranch = template.branchTemplates().get(dungeonBranches.size()).getRandom();
-        DungeonBranch branch = nextBranch.placeInWorld(this, level, origin);
-        branch.index = dungeonBranches.size();
-        dungeonBranches.add(branch);
+        DungeonBranchTemplate nextBranch = getTemplate().branchTemplates().get(dungeonBranches.size()).getRandom();
+        nextBranch.placeInWorld(this, origin);
     }
 
-    protected boolean isBoundingBoxValid(List<BoundingBox> proposedBoxes, List<DungeonRoom> dungeonRooms) {
+    protected boolean isBoundingBoxValid(List<BoundingBox> proposedBoxes) {
         for (BoundingBox proposedBox : proposedBoxes) {
+            if (proposedBox.minY() < EmptyGenerator.MIN_Y || proposedBox.maxY() > EmptyGenerator.MIN_Y + EmptyGenerator.GEN_DEPTH) {
+                WildDungeons.getLogger().info("OUT OF BOUNDS!");
+                return false;
+            }
 
-            for (DungeonBranch branch : dungeonBranches) {
-                for (DungeonRoom room : branch.dungeonRooms) {
-                    for (BoundingBox box : room.boundingBoxes) {
-                        if (proposedBox.intersects(box)) {
-                            return false;
-                        } else if (proposedBox.minY() < EmptyGenerator.MIN_Y || proposedBox.maxY() > EmptyGenerator.MIN_Y + EmptyGenerator.GEN_DEPTH) {
-                            return false;
+            ChunkPos min = new ChunkPos(new BlockPos(proposedBox.minX(), proposedBox.minY(), proposedBox.minZ()));
+            ChunkPos max = new ChunkPos(new BlockPos(proposedBox.maxX(), proposedBox.maxY(), proposedBox.maxZ()));
+
+            for (int x = min.x; x <= max.x; x++) {
+                for (int z = min.z; z <= max.z; z++) {
+                    ChunkPos newPos = new ChunkPos(x, z);
+                    List<DungeonRoom> roomsInChunk = getChunkMap().containsKey(newPos) ? getChunkMap().get(newPos).stream().map(v2 -> getBranches().get(v2.x).getRooms().get(v2.y)).toList() : new ArrayList<>();
+                    for (DungeonRoom room : roomsInChunk) {
+                        for (BoundingBox box : room.getBoundingBoxes()) {
+                            if (proposedBox.intersects(box)) {
+                                return false;
+                            }
                         }
                     }
                 }
             }
-
-            for (DungeonRoom room : dungeonRooms) {
-                for (BoundingBox box : room.boundingBoxes) {
-                    if (proposedBox.intersects(box)) {
-                        return false;
-                    } else if (proposedBox.minY() < EmptyGenerator.MIN_Y || proposedBox.maxY() > EmptyGenerator.MIN_Y + EmptyGenerator.GEN_DEPTH) {
-                        WildDungeons.getLogger().info("OUT OF BOUNDS!");
-                        return false;
-                    }
-                }
-            }
-
         }
         return true;
     }
 
     public void onEnter(WDPlayer wdPlayer) {
-        this.players.add(wdPlayer);
+        this.playerUUIDs.add(wdPlayer.getUUID());
         wdPlayer.travelToFloor(wdPlayer, wdPlayer.getCurrentFloor(), this);
     }
 
     public void onExit(WDPlayer wdPlayer) {
-        this.players.remove(wdPlayer);
+        this.playerUUIDs.remove(wdPlayer.getUUID());
     }
 
     public void tick() {
-        if (!players.isEmpty()) dungeonBranches.forEach(DungeonBranch::tick);
+        if (!playerUUIDs.isEmpty()) dungeonBranches.forEach(DungeonBranch::tick);
+    }
+
+    public void addBranch(DungeonBranch branch) {
+        if (this.dungeonBranches == null) this.dungeonBranches = new ArrayList<>();
+        this.dungeonBranches.add(branch);
     }
 }

@@ -6,6 +6,7 @@ import com.danielkkrafft.wilddungeons.world.dimension.EmptyGenerator;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biomes;
@@ -24,8 +25,14 @@ public class WDDimensions {
         return FileUtil.getWorldPath().resolve("dimensions").resolve(WildDungeons.MODID).resolve(dimensionName);
     }
 
+    public static final ResourceKey<DimensionType> WILDDUNGEON = register("wilddungeons");
+    private static ResourceKey<DimensionType> register(String name) {
+        return ResourceKey.create(Registries.DIMENSION_TYPE, ResourceLocation.fromNamespaceAndPath(WildDungeons.MODID, name));
+    }
+
+
     public static LevelStem createLevel(MinecraftServer server) {
-        Holder<DimensionType> typeHolder = server.overworld().dimensionTypeRegistration();
+        Holder<DimensionType> typeHolder = server.registryAccess().registryOrThrow(Registries.DIMENSION_TYPE).getHolderOrThrow(WILDDUNGEON);
         return new LevelStem(typeHolder, new EmptyGenerator(new FixedBiomeSource(server.overworld().registryAccess().registryOrThrow(Registries.BIOME).getHolderOrThrow(Biomes.THE_VOID))));
     }
 }

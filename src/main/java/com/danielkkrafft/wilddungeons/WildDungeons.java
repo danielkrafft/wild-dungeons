@@ -1,29 +1,27 @@
 package com.danielkkrafft.wilddungeons;
 
+import com.danielkkrafft.wilddungeons.block.WDBlocks;
 import com.danielkkrafft.wilddungeons.block.WDFluids;
-import com.danielkkrafft.wilddungeons.dungeon.DungeonPerks;
+import com.danielkkrafft.wilddungeons.dungeon.Alignments;
+import com.danielkkrafft.wilddungeons.dungeon.DungeonPerk;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.CombatRoom;
+import com.danielkkrafft.wilddungeons.entity.WDEntities;
 import com.danielkkrafft.wilddungeons.entity.boss.BreezeGolem;
 import com.danielkkrafft.wilddungeons.entity.boss.MutantBogged;
 import com.danielkkrafft.wilddungeons.entity.renderer.*;
 import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundOpenConnectionBlockUIPacket;
+import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundUpdateWDPlayerPacket;
 import com.danielkkrafft.wilddungeons.network.serverbound.ServerboundUpdateConnectionBlockPacket;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
-import com.danielkkrafft.wilddungeons.block.WDBlocks;
-import com.danielkkrafft.wilddungeons.dungeon.Alignments;
-import com.danielkkrafft.wilddungeons.entity.WDEntities;
 import com.danielkkrafft.wilddungeons.registry.WDBlockEntities;
 import com.danielkkrafft.wilddungeons.registry.WDEvents;
 import com.danielkkrafft.wilddungeons.registry.WDItems;
-import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundUpdateWDPlayerPacket;
 import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
-import com.danielkkrafft.wilddungeons.ui.CustomHUDHandler;
-import com.danielkkrafft.wilddungeons.ui.DungeonLifeCounter;
-import com.danielkkrafft.wilddungeons.ui.EssenceBar;
 import com.danielkkrafft.wilddungeons.util.FileUtil;
 import com.danielkkrafft.wilddungeons.util.Serializer;
 import com.danielkkrafft.wilddungeons.world.dimension.EmptyGenerator;
 import com.danielkkrafft.wilddungeons.world.dimension.tools.UpdateDimensionsPacket;
+import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
@@ -31,28 +29,21 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.EntityType;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
-import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
-import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
-import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.slf4j.Logger;
-
-import com.mojang.logging.LogUtils;
-
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.common.Mod;
 
 @Mod(WildDungeons.MODID)
 public class WildDungeons {
@@ -68,16 +59,15 @@ public class WildDungeons {
         WDFluids.FLUID_TYPES.register(modEventBus);
         WDFluids.FLUIDS.register(modEventBus);
         WDBlocks.BLOCKS.register(modEventBus);
+        WDBlocks.CREATIVE_MODE_TABS.register(modEventBus);
         WDSoundEvents.SOUND_EVENTS.register(modEventBus);
 
         modEventBus.register(WildDungeons.class);
 
-        NeoForge.EVENT_BUS.register(CustomHUDHandler.class);
         NeoForge.EVENT_BUS.register(WDEvents.class);
         NeoForge.EVENT_BUS.register(WDPlayerManager.class);
         NeoForge.EVENT_BUS.register(CombatRoom.class);
-        NeoForge.EVENT_BUS.register(DungeonPerks.class);
-
+        NeoForge.EVENT_BUS.register(DungeonPerk.class);
     }
 
     @SubscribeEvent
@@ -99,12 +89,6 @@ public class WildDungeons {
     }
 
     @SubscribeEvent
-    public static void registerOverlays(RegisterGuiLayersEvent event) {
-        event.registerAbove(VanillaGuiLayers.EXPERIENCE_BAR, rl("essence_bar"), EssenceBar.INSTANCE);
-        event.registerAbove(VanillaGuiLayers.HOTBAR, rl("life_counter"), DungeonLifeCounter.INSTANCE);
-    }
-
-    @SubscribeEvent
     public static void registerExtra(RegisterEvent event) {
         if (event.getRegistryKey().equals(Registries.CHUNK_GENERATOR)) {
             Registry.register(BuiltInRegistries.CHUNK_GENERATOR, "wilddungeons:empty_generator", EmptyGenerator.CODEC);
@@ -119,8 +103,6 @@ public class WildDungeons {
         event.registerEntityRenderer(WDEntities.MUTANT_BOGGED.get(), MutantBoggedRenderer::new);
         event.registerEntityRenderer(WDEntities.PIERCING_ARROW.get(), PiercingArrowRenderer::new);
         event.registerEntityRenderer(WDEntities.WIND_CHARGE_PROJECTILE.get(), WindChargeProjectileRenderer::new);
-
-        event.registerBlockEntityRenderer(WDBlockEntities.RIFT_BLOCK_ENTITY.get(), RiftRenderer::new);
     }
 
     @SubscribeEvent

@@ -2,7 +2,6 @@ package com.danielkkrafft.wilddungeons.ui;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.network.serverbound.ServerboundUpdateConnectionBlockPacket;
-import com.mojang.datafixers.types.templates.Check;
 import net.minecraft.client.GameNarrator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -11,10 +10,13 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.Objects;
 
+@OnlyIn(Dist.CLIENT)
 public class ConnectionBlockEditScreen extends Screen {
     private String unblockedBlockstate;
     private String pool;

@@ -195,7 +195,7 @@ public final class DynamicDimensionManager implements InfiniverseAPI
         // add world border listener, for parity with json dimensions
         // the vanilla behaviour is that world borders exist in every dimension simultaneously with the same size and position
         // these border listeners are automatically added to the overworld as worlds are loaded, so we should do that here too
-        // TODO if world-specific world borders are ever added, change it here too
+        // if world-specific world borders are ever added, change it here too
         overworld.getWorldBorder().addListener(new BorderChangeListener.DelegateBorderChangeListener(newLevel.getWorldBorder()));
 
         // register level

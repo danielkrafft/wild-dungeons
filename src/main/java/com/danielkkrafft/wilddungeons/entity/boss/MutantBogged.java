@@ -156,8 +156,8 @@ public class MutantBogged extends Monster implements RangedAttackMob, GeoEntity
         goalSelector.addGoal(5, new LookAtPlayerGoal(this, Player.class, 8));
         goalSelector.addGoal(5, new RandomLookAroundGoal(this));
         targetSelector.addGoal(1, new HurtByTargetGoal(this,MutantBogged.class,BreezeGolem.class));
-        //targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 0, false, false,li->!(li instanceof MutantBogged||li instanceof BreezeGolem)));
-        targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, LivingEntity.class, false, false));//li->!(li instanceof MutantBogged||li instanceof BreezeGolem)));
+        targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 0, false, false,li->!(li instanceof MutantBogged)));
+        //targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, LivingEntity.class, false, false));//li->!(li instanceof MutantBogged||li instanceof BreezeGolem)));
     }
     @Override
     protected @NotNull PathNavigation createNavigation(@NotNull Level level)
@@ -406,13 +406,7 @@ public class MutantBogged extends Monster implements RangedAttackMob, GeoEntity
     @Override
     public boolean hurt(@NotNull DamageSource source, float damage)
     {
-        //immune to all except wither, void
-        if (source.getEntity() instanceof Player) {
-            super.hurt(source, damage*0.5f);
-            return true;
-        }
-        if (!(source.isCreativePlayer()||source.is(DamageTypes.GENERIC_KILL)||source.is(DamageTypes.WITHER)||source.is(DamageTypes.FELL_OUT_OF_WORLD))||source.is(DamageTypes.OUTSIDE_BORDER)) return false;
-        return super.hurt(source, damage);
+        return super.hurt(source, damage*0.5f);
     }
     @Override
     protected @org.jetbrains.annotations.Nullable SoundEvent getAmbientSound()

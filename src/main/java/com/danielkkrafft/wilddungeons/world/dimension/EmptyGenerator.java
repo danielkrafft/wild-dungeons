@@ -74,12 +74,12 @@ public class EmptyGenerator extends ChunkGenerator {
 
     }
 
-    //TODO good idea to only fill chunks in and around dungeon rooms
+    //Idea there should be some other type of fill probably maybe an unbreakable shell
     @Override
     public CompletableFuture<ChunkAccess> fillFromNoise(Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess chunk) {
 
         BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
-        BlockState blockstate = Blocks.BEDROCK.defaultBlockState();
+        BlockState blockstate = Blocks.AIR.defaultBlockState();
 
         for (int i = 0; i < chunk.getHeight(); i++) {
             int j = chunk.getMinBuildHeight() + i;

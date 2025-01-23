@@ -1,0 +1,8 @@
+﻿{
+  "parent": "minecraft:block/outer_stairs",
+  "textures": {
+    "bottom": "wilddungeons:block/wd_basic",
+    "side": "wilddungeons:block/wd_basic",
+    "top": "wilddungeons:block/wd_basic"
+  }
+}

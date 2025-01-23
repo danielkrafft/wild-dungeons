@@ -10,7 +10,7 @@ import com.danielkkrafft.wilddungeons.entity.boss.MutantBogged;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.danielkkrafft.wilddungeons.util.FileUtil;
-import com.danielkkrafft.wilddungeons.util.SaveFile;
+import com.danielkkrafft.wilddungeons.util.SaveSystem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
@@ -23,7 +23,6 @@ import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -35,6 +34,8 @@ import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
+
+import java.util.Objects;
 
 public class WDEvents {
 
@@ -51,7 +52,7 @@ public class WDEvents {
     @SubscribeEvent
     public static void onServerAboutToStart(ServerAboutToStartEvent event) {
         FileUtil.setWorldPath(event.getServer().getWorldPath(LevelResource.ROOT));
-        SaveFile.INSTANCE.load();
+        SaveSystem.Load();
     }
 
     @SubscribeEvent
@@ -68,10 +69,11 @@ public class WDEvents {
 
     @SubscribeEvent
     public static void onWorldSave(LevelEvent.Save event) {
-        if (event.getLevel().isClientSide() || !event.getLevel().registryAccess().registryOrThrow(Registries.DIMENSION_TYPE).get(BuiltinDimensionTypes.OVERWORLD).equals(event.getLevel().dimensionType()))
+        if (event.getLevel().isClientSide()
+                || !Objects.equals(event.getLevel().registryAccess().registryOrThrow(Registries.DIMENSION_TYPE).get(WDDimensions.WILDDUNGEON), event.getLevel().dimensionType()))
             return;
 
-        SaveFile.INSTANCE.save();
+        SaveSystem.Save();
     }
 
     @SubscribeEvent
