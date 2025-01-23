@@ -114,8 +114,8 @@ public class CombatRoom extends DungeonRoom {
         List<String> toRemove = new ArrayList<>();
         this.aliveUUIDs.forEach(uuid -> {
             LivingEntity livingEntity = (LivingEntity) this.getBranch().getFloor().getLevel().getEntity(UUID.fromString(uuid));
-            if (!livingEntity.isAlive()) {
-                toRemove.add(livingEntity.getStringUUID());
+            if (livingEntity == null || !livingEntity.isAlive()) {
+                toRemove.add(uuid);
             }
         });
 
