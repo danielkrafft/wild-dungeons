@@ -187,7 +187,7 @@ public class DungeonSession {
     public void shutdown() {
         getPlayers().forEach(this::onExit);
         floors.forEach(DungeonFloor::shutdown);
-        SaveSystem.DeleteLevel(this);
+        SaveSystem.DeleteSession(this);
         markedForShutdown = true;
     }
 
