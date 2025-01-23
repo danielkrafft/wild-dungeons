@@ -17,7 +17,10 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector2i;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
 
 public class WDPlayer {
 
@@ -49,7 +52,8 @@ public class WDPlayer {
 
     public String getUUID() {return this.UUID;}
 
-    public DungeonSession getCurrentDungeon() {return Objects.equals(this.currentDungeon, "none") ? null : DungeonSessionManager.getInstance().getDungeonSession(this.currentDungeon);}
+    public DungeonSession getCurrentDungeon() {
+        return Objects.equals(this.currentDungeon, "none") ? null : DungeonSessionManager.getInstance().getDungeonSession(this.currentDungeon);}
     public void setCurrentDungeon(DungeonSession session) {
         this.currentDungeon = session == null ? "none" : DungeonSessionManager.buildDungeonSessionKey(session.getEntranceUUID());
         WildDungeons.getLogger().info("SETTING CURRENT DUNGEON TO {}", this.currentDungeon);
@@ -234,5 +238,9 @@ public class WDPlayer {
 
         CommandUtil.executeTeleportCommand(serverPlayer, newPosition);
         wdPlayer.setRiftCooldown(100);
+    }
+
+    public boolean clientIsInDungeon() {
+        return !Objects.equals(this.currentDungeon,"none");
     }
 }
