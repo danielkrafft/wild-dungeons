@@ -50,7 +50,6 @@ public class WDPlayerManager {
             WDPlayer player = getInstance().getOrCreateWDPlayer(playerUUIDs.get(i));
             WildDungeons.getLogger().info("SYNCING PLAYER {} OF {}", i, playerUUIDs.size());
             PacketDistributor.sendToPlayer(player.getServerPlayer(), new ClientboundUpdateWDPlayerPacket(Serializer.toCompoundTag(player)));
-            //PacketDistributor.sendToPlayer(player.getServerPlayer(), new ClientboundUpdateWDPlayerPacket(player.toCompoundTag()));
         }
     }
 

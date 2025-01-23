@@ -26,7 +26,7 @@ public class DungeonLifeCounter implements LayeredDraw.Layer {
     @Override
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
         WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(Minecraft.getInstance().player);
-        if (Minecraft.getInstance().player.jumpableVehicle() == null && wdPlayer.getCurrentDungeon() != null) {
+        if (Minecraft.getInstance().player.jumpableVehicle() == null && wdPlayer.clientIsInDungeon()) {
             this.renderLifeIcon(guiGraphics, deltaTracker, 10, 10);
             this.renderLifeCount(guiGraphics, deltaTracker, 42, 26 - Minecraft.getInstance().font.lineHeight / 2, wdPlayer);
         }
