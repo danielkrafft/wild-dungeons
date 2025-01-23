@@ -62,7 +62,7 @@ public class DungeonBranch {
         this.origin = origin;
         generateDungeonBranch();
         setupBoundingBox();
-        this.spawnPoint = floor.getBranches().isEmpty() ? this.dungeonRooms.getFirst().getSpawnPoint(floor.getLevel()) : floor.getBranches().getLast().dungeonRooms.getLast().getSpawnPoint(floor.getLevel());
+        this.spawnPoint = floor.getBranches().size() == 1 ? this.dungeonRooms.getFirst().getSpawnPoint(floor.getLevel()) : floor.getBranches().getLast().dungeonRooms.getLast().getSpawnPoint(floor.getLevel());
 
         WDProfiler.INSTANCE.logTimestamp("DungeonBranch::new");
     }

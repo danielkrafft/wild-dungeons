@@ -28,7 +28,6 @@ public record ClientboundUpdateWDPlayerPacket(CompoundTag data) implements Custo
     public void handle(IPayloadContext context) {
         context.enqueueWork(() -> {
             WDPlayerManager.getInstance().replaceWDPlayer(Minecraft.getInstance().player.getStringUUID(), Serializer.fromCompoundTag(data));
-            //WDPlayerManager.getInstance().replaceWDPlayer(Minecraft.getInstance().player.getStringUUID(), new WDPlayer(data));
         });
     }
 }

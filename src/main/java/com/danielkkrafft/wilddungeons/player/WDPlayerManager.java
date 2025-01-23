@@ -50,7 +50,6 @@ public class WDPlayerManager {
             WDPlayer player = getInstance().getOrCreateWDPlayer(playerUUIDs.get(i));
             WildDungeons.getLogger().info("SYNCING PLAYER {} OF {}", i, playerUUIDs.size());
             PacketDistributor.sendToPlayer(player.getServerPlayer(), new ClientboundUpdateWDPlayerPacket(Serializer.toCompoundTag(player)));
-            //PacketDistributor.sendToPlayer(player.getServerPlayer(), new ClientboundUpdateWDPlayerPacket(player.toCompoundTag()));
         }
     }
 
@@ -125,7 +124,15 @@ public class WDPlayerManager {
                 player.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 100, 1));
                 player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 800, 0));
                 player.level().broadcastEntityEvent(player, (byte)35);
-                BlockPos respawnPoint = wdPlayer.getCurrentBranch().getSpawnPoint();
+                BlockPos respawnPoint;
+                DungeonRoom room = wdPlayer.getCurrentRoom();
+
+                if (room.getBranch().getIndex() == 0) {
+                    respawnPoint = room.getBranch().getRooms().getFirst().getSpawnPoint(room.getBranch().getFloor().getLevel());
+                } else {
+                    respawnPoint = room.getBranch().getFloor().getBranches().get(room.getBranch().getIndex()-1).getRooms().getLast().getSpawnPoint(room.getBranch().getFloor().getLevel());
+                }
+
                 player.teleportTo(respawnPoint.getX(), respawnPoint.getY(), respawnPoint.getZ());
                 wdPlayer.getCurrentDungeon().offsetLives(-1);
             } else {
