@@ -15,18 +15,30 @@ import com.danielkkrafft.wilddungeons.util.WeightedTable;
 import com.danielkkrafft.wilddungeons.util.debug.WDProfiler;
 import com.danielkkrafft.wilddungeons.world.dimension.EmptyGenerator;
 import com.danielkkrafft.wilddungeons.world.dimension.tools.InfiniverseAPI;
+import com.danielkkrafft.wilddungeons.world.dimension.tools.QuietPacketDistributors;
+import com.danielkkrafft.wilddungeons.world.dimension.tools.ReflectionBuddy;
+import com.danielkkrafft.wilddungeons.world.dimension.tools.UpdateDimensionsPacket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.progress.ChunkProgressListener;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.border.BorderChangeListener;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.level.storage.DerivedLevelData;
+import net.minecraft.world.level.storage.LevelStorageSource;
+import net.minecraft.world.level.storage.WorldData;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.level.LevelEvent;
 import org.joml.Vector2i;
 
 import java.util.*;
+import java.util.concurrent.Executor;
 
 public class DungeonFloor {
     @IgnoreSerialization
@@ -49,13 +61,21 @@ public class DungeonFloor {
         WildDungeons.getLogger().info("TRYING TO GET LEVEL KEY {}", this.LEVEL_KEY);
         WildDungeons.getLogger().info("AVAILABLE LEVEL KEYS {}", DungeonSessionManager.getInstance().server.levelKeys());
         WildDungeons.getLogger().info("CURRENT PLAYERS: {}", this.getPlayerUUIDs());
+        WildDungeons.getLogger().info("CURRENT LEVELS: {}", DungeonSessionManager.getInstance().server.forgeGetWorldMap());
+        WildDungeons.getLogger().info("THIS LEVEL: {}", DungeonSessionManager.getInstance().server.forgeGetWorldMap().get(this.LEVEL_KEY));
         List<String> availablePlayers = DungeonSessionManager.getInstance().server.getPlayerList().getPlayers().stream().map(Entity::getStringUUID).toList();
         WildDungeons.getLogger().info("AVAILABLE PLAYERS: {}", availablePlayers);
 
-        if (!availablePlayers.isEmpty() && !this.getPlayerUUIDs().isEmpty()) {
-            WildDungeons.getLogger().info("CURRENT LEVEL KEY {}", DungeonSessionManager.getInstance().server.getPlayerList().getPlayer(UUID.fromString(this.getPlayerUUIDs().stream().toList().getFirst())).level().dimension());
+        if (!availablePlayers.isEmpty() && !this.getPlayerUUIDs().isEmpty() && DungeonSessionManager.getInstance().server.forgeGetWorldMap().get(this.LEVEL_KEY) == null) {
+            ServerLevel currentLevel = (ServerLevel) DungeonSessionManager.getInstance().server.getPlayerList().getPlayer(UUID.fromString(this.getPlayerUUIDs().stream().toList().getFirst())).level();
+            WildDungeons.getLogger().info("CURRENT LEVEL KEY {}", currentLevel.dimension());
+
+            //DungeonSessionManager.getInstance().server.overworld().getWorldBorder().addListener(new BorderChangeListener.DelegateBorderChangeListener(currentLevel.getWorldBorder()));
+            DungeonSessionManager.getInstance().server.forgeGetWorldMap().put(this.LEVEL_KEY, currentLevel);
+            //DungeonSessionManager.getInstance().server.markWorldsDirty();
+            //QuietPacketDistributors.sendToAll(DungeonSessionManager.getInstance().server, new UpdateDimensionsPacket(Set.of(this.LEVEL_KEY), true));
         }
-        return DungeonSessionManager.getInstance().server.getLevel(this.LEVEL_KEY);
+        return DungeonSessionManager.getInstance().server.levels.get(this.LEVEL_KEY);
     }
     public List<DungeonBranch> getBranches() {return this.dungeonBranches;}
     public String getTemplateKey() {return this.templateKey;}

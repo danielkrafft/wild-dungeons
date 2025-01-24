@@ -274,7 +274,6 @@ public class DungeonBranch {
     }
 
     public void tick() {
-        WildDungeons.getLogger().info("DUNGEON BRANCH TICKING OF CLASS {}", this.getClass().getSimpleName());
         if (!this.playerUUIDs.isEmpty()) dungeonRooms.forEach(DungeonRoom::tick);
     }
 
