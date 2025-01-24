@@ -11,6 +11,7 @@ import com.danielkkrafft.wilddungeons.player.SavedTransform;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -196,6 +197,15 @@ public class Serializer
             entry.putString("class", enumValue.getClass().getName());
         }
 
+        else if (value instanceof ResourceKey<?> resourceKeyValue)
+        {
+            entry.putString("type", "resourceKey");
+            CompoundTag nestedTag = new CompoundTag();
+            nestedTag.putString("registry", resourceKeyValue.registry().toString());
+            nestedTag.putString("location", resourceKeyValue.location().toString());
+            entry.put("value", nestedTag);
+        }
+
         else if (value instanceof Object objectValue)
         {
             entry.putString("type", "custom");
@@ -317,6 +327,16 @@ public class Serializer
             }
 
             return Enum.valueOf((Class<Enum>) enumClass, entry.getString("value"));
+        }
+
+        else if (type.equals("resourceKey"))
+        {
+            CompoundTag nestedTag = entry.getCompound("value");
+            ResourceLocation registry = ResourceLocation.parse(nestedTag.getString("registry"));
+            ResourceLocation location = ResourceLocation.parse(nestedTag.getString("location"));
+
+            ResourceKey<?> resourceKey = ResourceKey.create(registry, location);
+            return resourceKey;
         }
 
         else if (type.equals("custom"))

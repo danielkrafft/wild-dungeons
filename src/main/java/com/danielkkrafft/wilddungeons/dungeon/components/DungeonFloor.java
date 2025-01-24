@@ -59,6 +59,8 @@ public class DungeonFloor {
     public double getDifficulty() {return this.getSession().getTemplate().difficulty() * this.getTemplate().difficulty() * Math.max(Math.pow(1.1, this.getSession().getFloors().size()), 1);}
     public ServerLevel getLevel() {
         WildDungeons.getLogger().info("TRYING TO GET LEVEL KEY {}", this.LEVEL_KEY);
+        Set<ResourceKey<Level>> keySet = DungeonSessionManager.getInstance().server.levels.keySet();
+        WildDungeons.getLogger().info("LEVEL KEYS IN STORAGE {}", keySet);
         WildDungeons.getLogger().info("AVAILABLE LEVEL KEYS {}", DungeonSessionManager.getInstance().server.levelKeys());
         WildDungeons.getLogger().info("CURRENT PLAYERS: {}", this.getPlayerUUIDs());
         WildDungeons.getLogger().info("CURRENT LEVELS: {}", DungeonSessionManager.getInstance().server.forgeGetWorldMap());
@@ -66,15 +68,15 @@ public class DungeonFloor {
         List<String> availablePlayers = DungeonSessionManager.getInstance().server.getPlayerList().getPlayers().stream().map(Entity::getStringUUID).toList();
         WildDungeons.getLogger().info("AVAILABLE PLAYERS: {}", availablePlayers);
 
-        if (!availablePlayers.isEmpty() && !this.getPlayerUUIDs().isEmpty() && DungeonSessionManager.getInstance().server.forgeGetWorldMap().get(this.LEVEL_KEY) == null) {
-            ServerLevel currentLevel = (ServerLevel) DungeonSessionManager.getInstance().server.getPlayerList().getPlayer(UUID.fromString(this.getPlayerUUIDs().stream().toList().getFirst())).level();
-            WildDungeons.getLogger().info("CURRENT LEVEL KEY {}", currentLevel.dimension());
-
-            //DungeonSessionManager.getInstance().server.overworld().getWorldBorder().addListener(new BorderChangeListener.DelegateBorderChangeListener(currentLevel.getWorldBorder()));
-            DungeonSessionManager.getInstance().server.forgeGetWorldMap().put(this.LEVEL_KEY, currentLevel);
-            //DungeonSessionManager.getInstance().server.markWorldsDirty();
-            //QuietPacketDistributors.sendToAll(DungeonSessionManager.getInstance().server, new UpdateDimensionsPacket(Set.of(this.LEVEL_KEY), true));
-        }
+//        if (!availablePlayers.isEmpty() && !this.getPlayerUUIDs().isEmpty() && DungeonSessionManager.getInstance().server.forgeGetWorldMap().get(this.LEVEL_KEY) == null) {
+//            ServerLevel currentLevel = (ServerLevel) DungeonSessionManager.getInstance().server.getPlayerList().getPlayer(UUID.fromString(this.getPlayerUUIDs().stream().toList().getFirst())).level();
+//            WildDungeons.getLogger().info("CURRENT LEVEL KEY {}", currentLevel.dimension());
+//
+//            //DungeonSessionManager.getInstance().server.overworld().getWorldBorder().addListener(new BorderChangeListener.DelegateBorderChangeListener(currentLevel.getWorldBorder()));
+//            DungeonSessionManager.getInstance().server.forgeGetWorldMap().put(this.LEVEL_KEY, currentLevel);
+//            //DungeonSessionManager.getInstance().server.markWorldsDirty();
+//            //QuietPacketDistributors.sendToAll(DungeonSessionManager.getInstance().server, new UpdateDimensionsPacket(Set.of(this.LEVEL_KEY), true));
+//        }
         return DungeonSessionManager.getInstance().server.levels.get(this.LEVEL_KEY);
     }
     public List<DungeonBranch> getBranches() {return this.dungeonBranches;}
