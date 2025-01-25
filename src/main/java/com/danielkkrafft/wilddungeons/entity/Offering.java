@@ -1,16 +1,15 @@
 package com.danielkkrafft.wilddungeons.entity;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
-import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonPerkTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.LootRoom;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonPerkTemplate;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
-import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -27,9 +26,12 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
+
+import java.util.concurrent.CompletableFuture;
 
 public class Offering extends Entity implements IEntityWithComplexSpawn {
 
@@ -265,12 +267,24 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
                     }
 
                 } else {
-
+                    purchased = true;//prevent spamming the rift
                     DungeonSession dungeon = wdPlayer.getCurrentDungeon();
-                    while (dungeon.getFloors().size() <= Integer.parseInt(this.offerID)) dungeon.generateFloor(dungeon.getFloors().size());
-                    WildDungeons.getLogger().info("TRYING TO ENTER FLOOR: {}", Integer.parseInt(this.offerID));
-                    DungeonFloor newFloor = dungeon.getFloors().get(Integer.parseInt(this.offerID));
-                    newFloor.onEnter(wdPlayer);
+                    GameType oldGameMode = wdPlayer.getServerPlayer().gameMode.getGameModeForPlayer();
+                    wdPlayer.getServerPlayer().setGameMode(GameType.SPECTATOR);
+                    CompletableFuture<Boolean> future = CompletableFuture.supplyAsync(() -> {
+                        while (dungeon.getFloors().size() <= Integer.parseInt(this.offerID)) dungeon.generateFloor(dungeon.getFloors().size());
+                        return true;
+                    });
+
+                    future.thenAccept(success -> {
+                        wdPlayer.getServerPlayer().setGameMode(oldGameMode);
+                        if (success) {
+                            WildDungeons.getLogger().info("TRYING TO ENTER FLOOR: {}", Integer.parseInt(this.offerID));
+                            DungeonFloor newFloor = dungeon.getFloors().get(Integer.parseInt(this.offerID));
+                            newFloor.onEnter(wdPlayer);
+                            purchased = false;
+                        }
+                    });
 
                 }
             }

@@ -22,6 +22,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 public class DungeonSession {
 
@@ -62,10 +63,6 @@ public class DungeonSession {
 
     }
 
-//    public DungeonFloor getFloor(ResourceKey<Level> levelKey) {
-//        List<DungeonFloor> matches = floors.stream().filter(dungeonFloor -> dungeonFloor.LEVEL_KEY == levelKey).toList();
-//        return matches.isEmpty() ? null : matches.getFirst();
-//    }
 
     public void generateFloor(int index) {
         WDProfiler.INSTANCE.start();
@@ -92,13 +89,28 @@ public class DungeonSession {
         WDProfiler.INSTANCE.end();
     }
 
+    boolean generating = false;
     public void onEnter(WDPlayer wdPlayer) {
+        if (generating) return;
         if (this.playerUUIDs.contains(wdPlayer.getUUID())) return;
         playerUUIDs.add(wdPlayer.getUUID());
         wdPlayer.setCurrentLives(this.lives);
         wdPlayer.setCurrentDungeon(this);
-        if (floors.isEmpty()) generateFloor(0);
-        floors.getFirst().onEnter(wdPlayer);
+        if (floors.isEmpty()){
+            generating = true;
+            CompletableFuture<Void> future = CompletableFuture.supplyAsync(() -> {
+                WildDungeons.getLogger().info("GENERATING FLOOR ASYNC");
+                generateFloor(0);
+                return null;
+            });
+            future.thenAccept((v) -> {
+                WildDungeons.getLogger().info("FINISHED GENERATING FLOOR");
+                generating = false;
+                floors.getFirst().onEnter(wdPlayer);
+            });
+        } else {
+            floors.getFirst().onEnter(wdPlayer);
+        }
         shutdownTimer = SHUTDOWN_TIME;
         if (this.playerStats.containsKey(wdPlayer.getUUID())){
             WDPlayerManager.syncAll(this.playerUUIDs.stream().toList());//only sync if player reenters because we sync all new players anyway
