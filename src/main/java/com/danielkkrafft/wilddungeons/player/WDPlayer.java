@@ -56,19 +56,12 @@ public class WDPlayer {
         return Objects.equals(this.currentDungeon, "none") ? null : DungeonSessionManager.getInstance().getDungeonSession(this.currentDungeon);}
     public void setCurrentDungeon(DungeonSession session) {
         this.currentDungeon = session == null ? "none" : DungeonSessionManager.buildDungeonSessionKey(session.getEntranceUUID());
-        WildDungeons.getLogger().info("SETTING CURRENT DUNGEON TO {}", this.currentDungeon);
     }
     public DungeonFloor getCurrentFloor() {return this.currentFloor == -1 ? null : this.getCurrentDungeon().getFloors().get(this.currentFloor);}
     public void setCurrentFloor(DungeonFloor floor) {this.currentFloor = floor == null ? -1 : floor.getIndex();}
     public DungeonBranch getCurrentBranch() {return this.currentBranch == -1 ? null : this.getCurrentFloor().getBranches().get(this.currentBranch);}
     public void setCurrentBranch(DungeonBranch branch) {this.currentBranch = branch == null ? -1 : branch.getIndex();}
     public DungeonRoom getCurrentRoom() {
-        if (this.currentRoom == -1) return null;
-        WildDungeons.getLogger().info("TRYING TO GET ROOM {} OF BRANCH {}", this.currentRoom, this.currentBranch);
-        WildDungeons.getLogger().info("FLOOR IS: {}", this.getCurrentFloor().getTemplate().name());
-        WildDungeons.getLogger().info("FLOOR CONTAINS: {}", this.getCurrentFloor().getBranches().stream().map(branch -> branch.getTemplate().name()).toList());
-        WildDungeons.getLogger().info("BRANCH IS: {}", this.getCurrentBranch().getTemplate().name());
-        WildDungeons.getLogger().info("BRANCH CONTAINS {} ROOMS", this.getCurrentBranch().getRooms().size());
         return this.currentRoom == -1 ? null : this.getCurrentBranch().getRooms().get(this.currentRoom);
     }
     public void setCurrentRoom(DungeonRoom room) {this.currentRoom = room == null ? -1 : room.getIndex();}
