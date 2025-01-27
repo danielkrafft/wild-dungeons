@@ -33,7 +33,7 @@ public class DungeonFloor {
     private final String templateKey;
     private final BlockPos origin;
     private final ResourceKey<Level> LEVEL_KEY;
-    private final BlockPos spawnPoint;
+    private BlockPos spawnPoint;
     private final String sessionKey;
     private final int index;
     private final HashMap<ChunkPos, List<Vector2i>> chunkMap = new HashMap<>();
@@ -55,7 +55,7 @@ public class DungeonFloor {
     public HashMap<ChunkPos, List<Vector2i>> getChunkMap() {return this.chunkMap;}
     public Set<String> getPlayerUUIDs() {return this.playerUUIDs;}
 
-    public DungeonFloor(String templateKey, String sessionKey, BlockPos origin, WeightedPool<String> destinations) {
+    public DungeonFloor(String templateKey, String sessionKey, BlockPos origin) {
         this.sessionKey = sessionKey;
         this.index = this.getSession().getFloors().size();
         this.getSession().getFloors().add(this);
@@ -64,9 +64,16 @@ public class DungeonFloor {
         this.LEVEL_KEY = buildFloorLevelKey(this);
         InfiniverseAPI.get().getOrCreateLevel(DungeonSessionManager.getInstance().server, LEVEL_KEY, () -> WDDimensions.createLevel(DungeonSessionManager.getInstance().server));
         this.origin = origin;
+        WDProfiler.INSTANCE.logTimestamp("DungeonFloor::new");
+    }
+
+    public void asyncGenerate() {
         generateDungeonFloor();
         this.spawnPoint = this.dungeonBranches.getFirst().getSpawnPoint();
 
+    }
+
+    public void spawnRifts(WeightedPool<String> destinations) {
         if (!this.dungeonBranches.getFirst().getRooms().getFirst().getRiftUUIDs().isEmpty()) {
             Offering exitRift = (Offering) this.getLevel().getEntity(UUID.fromString(this.dungeonBranches.getFirst().getRooms().getFirst().getRiftUUIDs().getFirst()));
             if (exitRift != null) {exitRift.setOfferingId(""+(index-1));}
@@ -79,8 +86,6 @@ public class DungeonFloor {
                 WildDungeons.getLogger().info("PICKED RIFT DESTINATION FOR THIS FLOOR: {}", enterRift.getOfferingId());
             }
         }
-
-        WDProfiler.INSTANCE.logTimestamp("DungeonFloor::new");
     }
 
     public void shutdown() {
@@ -135,11 +140,16 @@ public class DungeonFloor {
     }
 
     public void onEnter(WDPlayer wdPlayer) {
+        wdPlayer.setCurrentDungeon(getSession());
+        WildDungeons.getLogger().info("ENTERING FLOOR: {}", this.index);
         this.playerUUIDs.add(wdPlayer.getUUID());
         wdPlayer.travelToFloor(wdPlayer, wdPlayer.getCurrentFloor(), this);
+        getSession().getPlayerStats().put(wdPlayer.getUUID(), new DungeonSession.DungeonStats());
+        getSession().addInitialLives(wdPlayer);
     }
 
     public void onExit(WDPlayer wdPlayer) {
+        WildDungeons.getLogger().info("EXITING FLOOR: {}", this.index);
         this.playerUUIDs.remove(wdPlayer.getUUID());
     }
 
@@ -155,4 +165,5 @@ public class DungeonFloor {
     public void sortBranches() {
         this.dungeonBranches.sort(Comparator.comparingInt(DungeonBranch::getIndex));
     }
+
 }

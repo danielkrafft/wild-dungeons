@@ -18,6 +18,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
@@ -194,8 +195,7 @@ public class ConnectionPoint {
 
     public void setupBlockstates(StructurePlaceSettings settings, BlockPos position, ServerLevel level) {
         for (BlockPos pos : this.getPositions(settings, position)) {
-            BlockEntity blockEntity = level.getBlockEntity(pos);
-
+            BlockEntity blockEntity = level.getChunkAt(pos).getBlockEntity(pos, LevelChunk.EntityCreationType.IMMEDIATE);
             if (blockEntity instanceof ConnectionBlockEntity connectionBlockEntity) {
                 BlockState blockState = blockStateFromString(connectionBlockEntity.unblockedBlockstate);
                 blockState = this.getRoom().getMaterial().replace(blockState);
@@ -203,7 +203,6 @@ public class ConnectionPoint {
                 this.unBlockedBlockStates.put(pos, connectionBlockEntity.unblockedBlockstate);
             }
         }
-
         WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::setupBlockstates");
     }
 

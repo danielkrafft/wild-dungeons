@@ -7,6 +7,7 @@ import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.util.CommandUtil;
+import com.danielkkrafft.wilddungeons.util.IgnoreSerialization;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.server.MinecraftServer;
@@ -29,10 +30,11 @@ public class WDPlayer {
     private HashMap<Integer, SavedTransform> positions = new HashMap<>();
     private String recentEssence = "essence:overworld";
     private String UUID;
-    private int riftCooldown = 0;
+    @IgnoreSerialization //always start delayed when booting and creating new wd players to prevent loading out of order
+    private int riftCooldown = 100;
 
     private String currentDungeon = "none";
-    private int currentFloor = -1;
+    private int currentFloor = -17;
     private int currentBranch = -1;
     private int currentRoom = -1;
     private int currentLives = 0;
@@ -58,8 +60,10 @@ public class WDPlayer {
         this.currentDungeon = session == null ? "none" : DungeonSessionManager.buildDungeonSessionKey(session.getEntranceUUID());
         WildDungeons.getLogger().info("SETTING CURRENT DUNGEON TO {}", this.currentDungeon);
     }
-    public DungeonFloor getCurrentFloor() {return this.currentFloor == -1 ? null : this.getCurrentDungeon().getFloors().get(this.currentFloor);}
-    public void setCurrentFloor(DungeonFloor floor) {this.currentFloor = floor == null ? -1 : floor.getIndex();}
+    public DungeonFloor getCurrentFloor() {return this.currentFloor < 0 ? null : this.getCurrentDungeon().getFloors().get(this.currentFloor);}
+    public void setCurrentFloor(DungeonFloor floor) {
+        WildDungeons.getLogger().info("SETTING CURRENT FLOOR TO {}", floor.getIndex());
+        this.currentFloor = floor == null ? -1 : floor.getIndex();}
     public DungeonBranch getCurrentBranch() {return this.currentBranch == -1 ? null : this.getCurrentFloor().getBranches().get(this.currentBranch);}
     public void setCurrentBranch(DungeonBranch branch) {this.currentBranch = branch == null ? -1 : branch.getIndex();}
     public DungeonRoom getCurrentRoom() {
@@ -228,11 +232,13 @@ public class WDPlayer {
 
         SavedTransform newPosition = positions.getOrDefault(newFloor.getIndex(), new SavedTransform(new Vec3(newFloor.getSpawnPoint().getX(), newFloor.getSpawnPoint().getY(), newFloor.getSpawnPoint().getZ()), 0.0, 0.0, newFloor.getLevelKey()));
         WDPlayer.setRespawnPosition(newPosition, serverPlayer);
-
+        WildDungeons.getLogger().info("Get Current Floor: {}", wdPlayer.getCurrentFloor());
         if (wdPlayer.getCurrentFloor() != null) wdPlayer.getCurrentFloor().onExit(wdPlayer);
         if (wdPlayer.getCurrentBranch() != null) wdPlayer.getCurrentBranch().onExit(wdPlayer);
         if (wdPlayer.getCurrentRoom() != null) wdPlayer.getCurrentRoom().onExit(wdPlayer);
         wdPlayer.setCurrentFloor(newFloor);
+        WildDungeons.getLogger().info("Get Current Floor: {}", wdPlayer.getCurrentFloor());
+        WildDungeons.getLogger().info("SETTING CURRENT FLOOR TO {}", newFloor.getTemplate().name());
         wdPlayer.setCurrentBranch(null);
         wdPlayer.setCurrentRoom(null);
 

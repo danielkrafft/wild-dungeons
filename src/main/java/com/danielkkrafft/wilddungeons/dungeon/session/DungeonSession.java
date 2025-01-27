@@ -22,7 +22,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 public class DungeonSession {
 
@@ -33,6 +33,7 @@ public class DungeonSession {
     private final ResourceKey<Level> entranceLevelKey;
     private final Set<String> playerUUIDs = new HashSet<>();
     private final HashMap<String, DungeonStats> playerStats = new HashMap<>();
+
     @IgnoreSerialization
     private List<DungeonFloor> floors = new ArrayList<>();
     private final String template;
@@ -52,6 +53,7 @@ public class DungeonSession {
     public String getSessionKey() {return DungeonSessionManager.buildDungeonSessionKey(this.entranceUUID);}
     public boolean isSafeToSerialize() {return this.safeToSerialize;}
     public DungeonStats getStats(WDPlayer player) {return this.playerStats.get(player.getUUID());}
+    public HashMap<String, DungeonStats> getPlayerStats() {return this.playerStats;}
 
     public enum DungeonExitBehavior {DESTROY, RANDOMIZE, RESET, NOTHING}
 
@@ -63,8 +65,7 @@ public class DungeonSession {
 
     }
 
-
-    public void generateFloor(int index) {
+    public void generateFloor(int index, Consumer<Void> onCompleteFunction) {
         WDProfiler.INSTANCE.start();
         safeToSerialize = false;
 
@@ -72,19 +73,19 @@ public class DungeonSession {
                 new WeightedPool<String>().add("win", 1) :
                 new WeightedPool<String>().add(""+(index+1), 1);
 
-        getTemplate().floorTemplates().get(floors.size()).getRandom().placeInWorld(this, TemplateHelper.EMPTY_BLOCK_POS, destinations);
-
-        this.floors.forEach(dungeonFloor -> {
-            dungeonFloor.getBranches().forEach(branch -> {
-              branch.setTempFloor(null);
-              branch.getRooms().forEach(room -> {
-                  room.setTempBranch(null);
-              });
+        getTemplate().floorTemplates().get(floors.size()).getRandom().placeInWorld(this, TemplateHelper.EMPTY_BLOCK_POS,(v) -> {
+            this.floors.forEach(dungeonFloor -> {
+                dungeonFloor.spawnRifts(destinations);
+                dungeonFloor.getBranches().forEach(branch -> {
+                    branch.setTempFloor(null);
+                    branch.getRooms().forEach(room -> {
+                        room.setTempBranch(null);
+                    });
+                });
             });
+            safeToSerialize = true;
+            onCompleteFunction.accept(null);
         });
-
-        safeToSerialize = true;
-
         WDProfiler.INSTANCE.logTimestamp("generateFloor");
         WDProfiler.INSTANCE.end();
     }
@@ -93,31 +94,19 @@ public class DungeonSession {
     public void onEnter(WDPlayer wdPlayer) {
         if (generating) return;
         if (this.playerUUIDs.contains(wdPlayer.getUUID())) return;
-        playerUUIDs.add(wdPlayer.getUUID());
-        wdPlayer.setCurrentLives(this.lives);
-        wdPlayer.setCurrentDungeon(this);
         if (floors.isEmpty()){
             generating = true;
-            CompletableFuture<Void> future = CompletableFuture.supplyAsync(() -> {
-                WildDungeons.getLogger().info("GENERATING FLOOR ASYNC");
-                generateFloor(0);
-                return null;
-            });
-            future.thenAccept((v) -> {
-                WildDungeons.getLogger().info("FINISHED GENERATING FLOOR");
-                generating = false;
+            generateFloor(0, (v)->{
                 floors.getFirst().onEnter(wdPlayer);
+                generating = false;
+                playerUUIDs.add(wdPlayer.getUUID());
             });
         } else {
             floors.getFirst().onEnter(wdPlayer);
+            playerUUIDs.add(wdPlayer.getUUID());
         }
         shutdownTimer = SHUTDOWN_TIME;
-        if (this.playerStats.containsKey(wdPlayer.getUUID())){
-            WDPlayerManager.syncAll(this.playerUUIDs.stream().toList());//only sync if player reenters because we sync all new players anyway
-            return;
-        }
-        this.playerStats.put(wdPlayer.getUUID(), new DungeonStats());
-        this.offsetLives(LIVES_PER_PLAYER);
+
     }
 
     public void onExit(WDPlayer wdPlayer) {
@@ -126,6 +115,12 @@ public class DungeonSession {
         wdPlayer.rootRespawn(wdPlayer.getServerPlayer().getServer());
         WildDungeons.getLogger().info("EXITED PLAYER WITH {} RIFT COOLDOWN", wdPlayer.getRiftCooldown());
         WDPlayerManager.syncAll(List.of(wdPlayer.getUUID()));
+    }
+
+    public void addInitialLives(WDPlayer wdPlayer) {
+        if (this.playerStats.containsKey(wdPlayer.getUUID())){
+            offsetLives(LIVES_PER_PLAYER);
+        }
     }
 
     public int offsetLives(int offset) {
@@ -193,7 +188,7 @@ public class DungeonSession {
     }
 
     public void tick() {
-        if (playerUUIDs.isEmpty() && !floors.isEmpty()) {shutdownTimer -= 1;}
+        if (playerUUIDs.isEmpty() && !floors.isEmpty() && isSafeToSerialize()) {shutdownTimer -= 1;}
         if (shutdownTimer == 0) {shutdown();return;}
         if (!playerUUIDs.isEmpty()) floors.forEach(DungeonFloor::tick);
         playerUUIDs.forEach(uuid -> {
@@ -204,6 +199,7 @@ public class DungeonSession {
     }
 
     public void shutdown() {
+        WildDungeons.getLogger().warn("SHUTTING DOWN DUNGEON SESSION");
         getPlayers().forEach(this::onExit);
         floors.forEach(DungeonFloor::shutdown);
         SaveSystem.DeleteSession(this);
