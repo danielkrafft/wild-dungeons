@@ -77,7 +77,6 @@ public class DungeonRoom {
         this.branch.getRooms().add(this);
 
         this.templateKey = templateKey;
-        WildDungeons.getLogger().info("BRANCH ROOM MATERIALS: {}", branch.getMaterials().size());
         if (this.getTemplate().materials() != null) WildDungeons.getLogger().info("THIS ROOM MATERIALS: {}", this.getTemplate().materials().size());
         this.materialKey = this.getTemplate().materials() == null ? branch.getMaterials().getRandom().name() : this.getTemplate().materials().getRandom().name();
         this.sessionKey = branch.getSession().getSessionKey();

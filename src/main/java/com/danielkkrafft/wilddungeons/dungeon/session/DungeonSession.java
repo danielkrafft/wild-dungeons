@@ -62,7 +62,6 @@ public class DungeonSession {
         this.entranceLevelKey = entranceLevelKey;
         this.template = template;
         WildDungeons.getLogger().info("DUNGEON MATERIALS: {}", this.getTemplate().materials().size());
-
     }
 
     public void generateFloor(int index, Consumer<Void> spawnPlayerCallback) {
@@ -93,12 +92,10 @@ public class DungeonSession {
     private Consumer<Void> onCompleteCallback(int floorIndex){
         return (v) -> {
             WildDungeons.getLogger().info("FLOOR {} COMPLETE", floorIndex);
-            WeightedPool<String> destinations = floors.size() == getTemplate().floorTemplates().size() - 1 ?
+            WeightedPool<String> destinations = floors.size() == getTemplate().floorTemplates().size() ?
                     new WeightedPool<String>().add("win", 1) :
-                    new WeightedPool<String>().add("" + (floorIndex + 1), 1);
-            this.floors.forEach(dungeonFloor -> {
-                dungeonFloor.spawnExitRift(destinations);
-            });
+                    new WeightedPool<String>().add("" + (floorIndex+1), 1);
+            getFloors().get(floorIndex).spawnExitRift(destinations);
             safeToSerialize = true;//todo this will result in save file failure if the player quits while in the dungeon before its done generating
         };
     }
@@ -127,12 +124,13 @@ public class DungeonSession {
         if (!this.playerUUIDs.contains(wdPlayer.getUUID())) return;
         playerUUIDs.remove(wdPlayer.getUUID());
         wdPlayer.rootRespawn(wdPlayer.getServerPlayer().getServer());
+        wdPlayer.setRiftCooldown(100);
         WildDungeons.getLogger().info("EXITED PLAYER WITH {} RIFT COOLDOWN", wdPlayer.getRiftCooldown());
         WDPlayerManager.syncAll(List.of(wdPlayer.getUUID()));
     }
 
     public void addInitialLives(WDPlayer wdPlayer) {
-        if (this.playerStats.containsKey(wdPlayer.getUUID())){
+        if (!this.playerStats.containsKey(wdPlayer.getUUID())){
             offsetLives(LIVES_PER_PLAYER);
         }
     }
@@ -147,7 +145,6 @@ public class DungeonSession {
         if (this.lives <= 0 && !this.playerUUIDs.isEmpty()) {
             this.fail();
         }
-        WDPlayerManager.syncAll(this.playerUUIDs.stream().toList());
         return this.lives;
     }
 

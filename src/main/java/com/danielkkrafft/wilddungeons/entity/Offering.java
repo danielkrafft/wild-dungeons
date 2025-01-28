@@ -229,7 +229,6 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
 
                 DungeonSession dungeon = wdPlayer.getCurrentDungeon();
                 dungeon.onExit(wdPlayer);
-                wdPlayer.setRiftCooldown(100);
             }
 
             case "win" ->

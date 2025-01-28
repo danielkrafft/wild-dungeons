@@ -7,6 +7,7 @@ import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
+import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.danielkkrafft.wilddungeons.registry.WDDimensions;
 import com.danielkkrafft.wilddungeons.util.FileUtil;
 import com.danielkkrafft.wilddungeons.util.IgnoreSerialization;
@@ -96,17 +97,20 @@ public class DungeonFloor {
 
     public void spawnFirstRift(){
         if (!this.dungeonBranches.getFirst().getRooms().getFirst().getRiftUUIDs().isEmpty()) {
-            Offering exitRift = (Offering) this.getLevel().getEntity(UUID.fromString(this.dungeonBranches.getFirst().getRooms().getFirst().getRiftUUIDs().getFirst()));
-            if (exitRift != null) {exitRift.setOfferingId(""+(index-1));}
+            Offering spawnRift = (Offering) this.getLevel().getEntity(UUID.fromString(this.dungeonBranches.getFirst().getRooms().getFirst().getRiftUUIDs().getFirst()));
+            if (spawnRift != null) {
+                WildDungeons.getLogger().info("SPAWNING FIRST RIFT WITH OFFERING ID: {}", index-1);
+                spawnRift.setOfferingId(""+(index-1));
+            }
         }
     }
 
     public void spawnExitRift(WeightedPool<String> destinations) {
         if (!this.dungeonBranches.getLast().getRooms().isEmpty() && !this.dungeonBranches.getLast().getRooms().getLast().getRiftUUIDs().isEmpty()) {
-            Offering enterRift = (Offering) this.getLevel().getEntity(UUID.fromString(this.dungeonBranches.getLast().getRooms().getLast().getRiftUUIDs().getLast()));
-            if (enterRift != null) {
-                enterRift.setOfferingId(destinations.getRandom());
-                WildDungeons.getLogger().info("PICKED RIFT DESTINATION FOR THIS FLOOR: {}", enterRift.getOfferingId());
+            Offering exitRift = (Offering) this.getLevel().getEntity(UUID.fromString(this.dungeonBranches.getLast().getRooms().getLast().getRiftUUIDs().getLast()));
+            if (exitRift != null) {
+                exitRift.setOfferingId(destinations.getRandom());
+                WildDungeons.getLogger().info("PICKED NEXT RIFT DESTINATION FOR THIS FLOOR: {}", exitRift.getOfferingId());
             }
         }
     }
@@ -158,6 +162,7 @@ public class DungeonFloor {
         wdPlayer.travelToFloor(wdPlayer, wdPlayer.getCurrentFloor(), this);
         getSession().getPlayerStats().put(wdPlayer.getUUID(), new DungeonSession.DungeonStats());
         getSession().addInitialLives(wdPlayer);
+        WDPlayerManager.syncAll(this.playerUUIDs.stream().toList());//sync after lives are added (or not added)
     }
 
     public void onExit(WDPlayer wdPlayer) {

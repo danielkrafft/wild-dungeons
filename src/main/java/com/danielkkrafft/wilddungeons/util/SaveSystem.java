@@ -61,7 +61,8 @@ public class SaveSystem {
             Map<String, WDPlayer> players = WDPlayerManager.getInstance().getPlayers();
             Map<String, WDPlayer> safePlayers = new HashMap<>();
             players.forEach((key, value) -> {
-                if (value.getCurrentDungeon().isSafeToSerialize()) safePlayers.put(key, value);
+                DungeonSession session = value.getCurrentDungeon();
+                if (session!=null && session.isSafeToSerialize()) safePlayers.put(key, value);
             });
             saveFile.AddPlayers(safePlayers);
         }

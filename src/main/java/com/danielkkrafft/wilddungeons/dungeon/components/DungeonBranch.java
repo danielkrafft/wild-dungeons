@@ -76,7 +76,7 @@ public class DungeonBranch {
         }
         //if failed to generate all rooms, force the last room
         if (branchRooms.size() < getTemplate().roomTemplates().size()) {
-            WildDungeons.getLogger().info("FAILED TO GENERATE ALL ROOMS. FORCING LAST ROOM");
+            WildDungeons.getLogger().info("FAILED TO GENERATE ALL ROOMS. FORCING LAST ROOM FOR BRANCH #{}", this.index);
             forceLastRoom();
         }
 
