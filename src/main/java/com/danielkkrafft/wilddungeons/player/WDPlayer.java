@@ -161,8 +161,6 @@ public class WDPlayer {
         DungeonRoom oldRoom = this.getCurrentRoom();
         DungeonBranch oldBranch = this.getCurrentBranch();
         Vec3i position = getServerPlayer().blockPosition();
-        WildDungeons.getLogger().info("PLAYER CURRENT FLOOR: {}", this.getCurrentFloor());
-        WildDungeons.getLogger().info("PLAYER CURRENT INDEX: {}", new Vector2i(this.currentBranch, this.currentRoom));
         List<DungeonRoom> rooms = this.getCurrentFloor()
                 .getChunkMap()
                 .getOrDefault(

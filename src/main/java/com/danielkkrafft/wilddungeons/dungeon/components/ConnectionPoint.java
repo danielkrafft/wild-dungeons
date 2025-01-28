@@ -59,7 +59,14 @@ public class ConnectionPoint {
     }
     public void setRoom(DungeonRoom room) {this.room = room; this.roomIndex = room.getIndex(); this.branchIndex = room.getBranch().getIndex(); this.floorIndex = room.getBranch().getFloor().getIndex(); this.sessionKey = room.getSession().getSessionKey();}
     public boolean isConnected() {return this.connectedPointIndex != -1;}
-    public ConnectionPoint getConnectedPoint() {return this.isConnected() ? this.getRoom().getBranch().getRooms().get(this.connectedRoomIndex).getConnectionPoints().get(this.connectedPointIndex) : null;}
+    public ConnectionPoint getConnectedPoint() {
+        if (!this.isConnected()) return null;
+        if (this.getRoom().getIndex() == 0 && this.connectedPointIndex > 1) {
+            return this.getRoom().getBranch().getFloor().getBranches().get(this.branchIndex-1).getRooms().get(this.connectedRoomIndex).getConnectionPoints().get(this.connectedPointIndex);
+        } else {
+            return this.getRoom().getBranch().getRooms().get(this.connectedRoomIndex).getConnectionPoints().get(this.connectedPointIndex);
+        }
+    }
     public void setConnectedPoint(ConnectionPoint connectedPoint) {this.connectedPointIndex = connectedPoint.index; this.connectedRoomIndex = connectedPoint.getRoom().getIndex();}
     public void incrementFailures() {this.failures += 1;}
     public BlockPos getOrigin(StructurePlaceSettings settings, BlockPos position) {BoundingBox transBox = getBoundingBox(settings, position); return new BlockPos(transBox.minX(), transBox.minY(), transBox.minZ());}

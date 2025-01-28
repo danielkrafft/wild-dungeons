@@ -160,7 +160,7 @@ public class CombatRoom extends DungeonRoom {
         super.onBranchEnter(wdPlayer);
         if (this.generated) return;
         this.getConnectionPoints().forEach(point -> {
-            if (point.isConnected() && point.getConnectedPoint().getRoom().getIndex() > this.getIndex() && point.getConnectedPoint().getRoom().getBranch().getIndex() == this.getBranch().getIndex()) {
+            if (point.isConnected() && point.getConnectedPoint().getRoom().getIndex() > this.getIndex() && point.getConnectedPoint().getBranchIndex() == this.getBranch().getIndex()) {
                 point.block(this.getBranch().getFloor().getLevel());
             }
         });
