@@ -50,7 +50,7 @@ public class DungeonFloor {
     private final String sessionKey;
     private final int index;
     private final HashMap<ChunkPos, List<Vector2i>> chunkMap = new HashMap<>();
-    private final Set<String> playerUUIDs = new HashSet<>();
+    private final HashMap<String, DungeonSession.PlayerStatus> playerStatuses = new HashMap<>();
 
     public DungeonFloorTemplate getTemplate() {return DungeonRegistry.DUNGEON_FLOOR_REGISTRY.get(this.templateKey);}
     public DungeonSession getSession() {return DungeonSessionManager.getInstance().getDungeonSession(this.sessionKey);}
@@ -68,7 +68,7 @@ public class DungeonFloor {
     public String getSessionKey() {return this.sessionKey;}
     public int getIndex() {return this.index;}
     public HashMap<ChunkPos, List<Vector2i>> getChunkMap() {return this.chunkMap;}
-    public Set<String> getPlayerUUIDs() {return this.playerUUIDs;}
+    public Set<String> getPlayerUUIDs() {return this.playerStatuses.keySet();}
 
     public DungeonFloor(String templateKey, String sessionKey, BlockPos origin, WeightedPool<String> destinations) {
         this.sessionKey = sessionKey;
@@ -150,17 +150,16 @@ public class DungeonFloor {
     }
 
     public void onEnter(WDPlayer wdPlayer) {
-        this.playerUUIDs.add(wdPlayer.getUUID());
+        playerStatuses.computeIfAbsent(wdPlayer.getUUID(), key -> {getSession().getStats(key).floorsFound += 1; return new DungeonSession.PlayerStatus();});
+        this.playerStatuses.get(wdPlayer.getUUID()).inside = true;
         wdPlayer.travelToFloor(wdPlayer, wdPlayer.getCurrentFloor(), this);
     }
 
-    public void onExit(WDPlayer wdPlayer) {
-        this.playerUUIDs.remove(wdPlayer.getUUID());
-    }
+    public void onExit(WDPlayer wdPlayer) {this.playerStatuses.get(wdPlayer.getUUID()).inside = false;}
 
     public void tick() {
         if (this.getLevel() == null) return;
-        if (!playerUUIDs.isEmpty()) dungeonBranches.forEach(DungeonBranch::tick);
+        if (playerStatuses.values().stream().anyMatch(v -> v.inside)) dungeonBranches.forEach(DungeonBranch::tick);
     }
 
     public void addBranch(DungeonBranch branch) {

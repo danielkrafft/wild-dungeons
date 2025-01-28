@@ -44,8 +44,7 @@ public class DungeonRoom {
     private final String materialKey;
     private int index;
     private boolean clear = false;
-    private final Set<String> playerUUIDs = new HashSet<>();
-    private final HashMap<String, Boolean> innerPlayerUUIDs = new HashMap<>();
+    private final HashMap<String, DungeonSession.PlayerStatus> playerStatuses = new HashMap<>();
     private final Set<BlockPos> alwaysBreakable = new HashSet<>();
 
     @IgnoreSerialization
@@ -66,7 +65,7 @@ public class DungeonRoom {
     public List<BoundingBox> getBoundingBoxes() {return this.boundingBoxes;}
     public int getIndex() {return this.index;}
     public void setIndex(int index) {this.index = index;}
-    public List<WDPlayer> getPlayers() {return this.playerUUIDs.stream().map(uuid -> WDPlayerManager.getInstance().getOrCreateWDPlayer(uuid)).toList();}
+    public List<WDPlayer> getPlayers() {return this.playerStatuses.keySet().stream().map(uuid -> WDPlayerManager.getInstance().getOrCreateWDPlayer(uuid)).toList();}
     public boolean isClear() {return this.clear;}
     public Set<BlockPos> getAlwaysBreakable() {return this.alwaysBreakable;}
     public BlockPos getPosition() {return this.position;}
@@ -276,31 +275,30 @@ public class DungeonRoom {
     public void onGenerate() {}
     public void onEnter(WDPlayer player) {
         WildDungeons.getLogger().info("ENTERING ROOM {} OF CLASS {}", this.getTemplate().name(), this.getClass().getSimpleName());
-        this.playerUUIDs.add(player.getUUID());
-        this.innerPlayerUUIDs.put(player.getUUID(), false);
+        playerStatuses.computeIfAbsent(player.getUUID(), key -> {getSession().getStats(key).roomsFound += 1; return new DungeonSession.PlayerStatus();});
+        this.playerStatuses.get(player.getUUID()).inside = true;
     }
     public void onBranchEnter(WDPlayer player) {}
     public void onEnterInner(WDPlayer player) {
     }
     public void onExit(WDPlayer player) {
-        this.playerUUIDs.remove(player.getUUID());
-        this.innerPlayerUUIDs.remove(player.getUUID());
+        this.playerStatuses.get(player.getUUID()).inside = false;
+        this.playerStatuses.get(player.getUUID()).insideShell = false;
     }
     public void onClear() {
         this.clear = true;
     }
     public void reset() {}
     public void tick() {
-        if (this.playerUUIDs.isEmpty()) return;
-        innerPlayerUUIDs.forEach((uuid, inside) -> {
-            if (!inside) {
-                WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(uuid);
+        if (this.playerStatuses.values().stream().noneMatch(v -> v.inside)) return;
+        playerStatuses.entrySet().forEach((entry) -> {
+            if (!entry.getValue().insideShell) {
+                WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(entry.getKey());
                 if (this.isPosInsideShell(wdPlayer.getServerPlayer().blockPosition())) {
-                    innerPlayerUUIDs.put(uuid, true);
+                    entry.getValue().insideShell = true;
                     this.onEnterInner(wdPlayer);
                 }
             }
         });
     }
-
 }

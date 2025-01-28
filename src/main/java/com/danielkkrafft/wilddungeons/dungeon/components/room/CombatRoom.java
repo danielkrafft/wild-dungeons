@@ -101,16 +101,6 @@ public class CombatRoom extends DungeonRoom {
         });
     }
 
-    @SubscribeEvent
-    public static void onMobDeath(LivingDeathEvent event) {
-        if (event.getSource().getEntity() instanceof ServerPlayer serverPlayer) {
-            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(serverPlayer);
-
-            if (wdPlayer.getCurrentDungeon() == null) return;
-            if (wdPlayer.getCurrentRoom() instanceof CombatRoom room) room.aliveUUIDs.remove(event.getEntity().getStringUUID());
-        }
-    }
-
     public void purgeEntitySet() {
         List<String> toRemove = new ArrayList<>();
         this.aliveUUIDs.forEach(uuid -> {
