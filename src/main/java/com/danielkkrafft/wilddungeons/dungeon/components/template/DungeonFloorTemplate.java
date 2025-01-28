@@ -5,7 +5,6 @@ import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonMaterial;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
-import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.util.WeightedTable;
 import net.minecraft.core.BlockPos;
@@ -25,15 +24,7 @@ public record DungeonFloorTemplate(String name, DungeonRegistry.DungeonLayout<Du
     public void placeInWorld(DungeonSession session, BlockPos position, Consumer<Void> onCompleteFunction) {
         WildDungeons.getLogger().info("PLACING FLOOR: {}", this.name());
         DungeonFloor newFloor = new DungeonFloor(this.name, session.getSessionKey(), position);
-        CompletableFuture<Void> generationFuture = CompletableFuture.supplyAsync(() -> {
-            newFloor.asyncGenerate();
-            return null;
-        });
-        generationFuture.thenAccept(result ->{
-            Runnable onComplete = () -> {
-                onCompleteFunction.accept(null);
-            };
-            DungeonSessionManager.getInstance().server.executeBlocking(onComplete);
-        });
+        CompletableFuture<Void> generationFuture = newFloor.asyncGenerate();
+        generationFuture.thenAccept(result -> onCompleteFunction.accept(null));
     }
 }
