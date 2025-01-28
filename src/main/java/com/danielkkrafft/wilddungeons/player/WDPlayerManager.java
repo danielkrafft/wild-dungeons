@@ -2,6 +2,7 @@ package com.danielkkrafft.wilddungeons.player;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
+import com.danielkkrafft.wilddungeons.dungeon.components.room.CombatRoom;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundUpdateWDPlayerPacket;
@@ -11,6 +12,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageSources;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
@@ -20,6 +23,7 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.EffectCures;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -70,6 +74,11 @@ public class WDPlayerManager {
         if (event.getLevel() instanceof ServerLevel serverLevel) {
             WildDungeons.getLogger().info("FOUND BLOCK BREAK");
             event.setCanceled(isProtectedBlock(event.getPos(), serverLevel));
+            if (!event.isCanceled() && event.getPlayer() instanceof ServerPlayer serverPlayer) {
+                WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(serverPlayer);
+                if (wdPlayer.getCurrentDungeon() == null) return;
+                wdPlayer.getCurrentDungeon().getStats(wdPlayer).blocksBroken += 1;
+            }
         }
     }
 
@@ -77,7 +86,11 @@ public class WDPlayerManager {
     public static void onBlockPlace(BlockEvent.EntityPlaceEvent event) {
         if (event.getLevel() instanceof ServerLevel serverLevel) {
             event.setCanceled(isProtectedBlock(event.getPos(), serverLevel));
-            event.getLevel().getServer();
+            if (!event.isCanceled() && event.getEntity() instanceof ServerPlayer serverPlayer) {
+                WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(serverPlayer);
+                if (wdPlayer.getCurrentDungeon() == null) return;
+                wdPlayer.getCurrentDungeon().getStats(wdPlayer).blocksPlaced += 1;
+            }
         }
     }
 
@@ -113,6 +126,8 @@ public class WDPlayerManager {
             WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(player);
             if (wdPlayer.getCurrentDungeon() == null) return;
 
+            WildDungeons.getLogger().info("TESTING DEATH WITH DUNGEON LIVES: {}", wdPlayer.getCurrentDungeon().getLives());
+
             if (wdPlayer.getCurrentDungeon().getLives() > 0) {
 
                 CriteriaTriggers.USED_TOTEM.trigger(player, new ItemStack(Items.TOTEM_OF_UNDYING));
@@ -133,7 +148,9 @@ public class WDPlayerManager {
                     respawnPoint = room.getBranch().getFloor().getBranches().get(room.getBranch().getIndex()-1).getRooms().getLast().getSpawnPoint(room.getBranch().getFloor().getLevel());
                 }
 
+                wdPlayer.setRiftCooldown(140);
                 player.teleportTo(respawnPoint.getX(), respawnPoint.getY(), respawnPoint.getZ());
+                wdPlayer.getCurrentDungeon().getStats(wdPlayer).deaths += 1;
                 wdPlayer.getCurrentDungeon().offsetLives(-1);
             } else {
                 wdPlayer.getCurrentDungeon().offsetLives(-1);
@@ -142,6 +159,35 @@ public class WDPlayerManager {
 
             event.setCanceled(true);
 
+        }
+    }
+
+    @SubscribeEvent
+    public static void onMobDeath(LivingDeathEvent event) {
+        if (event.getSource().getEntity() instanceof ServerPlayer serverPlayer) {
+            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(serverPlayer);
+
+            if (wdPlayer.getCurrentDungeon() == null) return;
+            wdPlayer.getCurrentDungeon().getStats(wdPlayer).mobsKilled += 1;
+            if (wdPlayer.getCurrentRoom() instanceof CombatRoom room) room.aliveUUIDs.remove(event.getEntity().getStringUUID());
+        }
+    }
+
+    @SubscribeEvent
+    public static void onHit(LivingDamageEvent.Post event) {
+        if (event.getSource().getEntity() instanceof ServerPlayer serverPlayer) {
+            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(serverPlayer);
+            if (wdPlayer.getCurrentDungeon() == null || event.getSource().typeHolder().equals(DamageTypes.GENERIC_KILL)) return;
+            wdPlayer.getCurrentDungeon().getStats(wdPlayer).damageDealt += event.getNewDamage();
+        }
+    }
+
+    @SubscribeEvent
+    public static void onDamage(LivingDamageEvent.Post event) {
+        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
+            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(serverPlayer);
+            if (wdPlayer.getCurrentDungeon() == null) return;
+            wdPlayer.getCurrentDungeon().getStats(wdPlayer).damageTaken += event.getNewDamage();
         }
     }
 }

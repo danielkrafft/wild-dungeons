@@ -1,8 +1,8 @@
 package com.danielkkrafft.wilddungeons.dungeon.components.template;
 
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonMaterial;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
-import com.danielkkrafft.wilddungeons.dungeon.components.DungeonMaterial;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRegistry;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.util.WeightedTable;
@@ -17,8 +17,7 @@ public record DungeonBranchTemplate(String name, DungeonRegistry.DungeonLayout<D
 
     public DungeonBranchTemplate pool(WeightedPool<DungeonBranchTemplate> pool, Integer weight) {pool.add(this, weight); return this;}
 
-    public void placeInWorld(DungeonFloor floor, BlockPos origin) {
-        DungeonBranch newBranch = new DungeonBranch(this.name, floor, origin);
-        newBranch.generateDungeonBranch();
+    public DungeonBranch placeInWorld(DungeonFloor floor, BlockPos origin) {
+        return new DungeonBranch(this.name, floor, origin);
     }
 }

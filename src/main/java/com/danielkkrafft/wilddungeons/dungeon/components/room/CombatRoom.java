@@ -9,7 +9,6 @@ import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -26,26 +25,26 @@ public class CombatRoom extends DungeonRoom {
     public static final int BASE_QUANTITY = 10;
     public static final float QUANTITY_VARIANCE = 2f;
     public static final int BASE_DIFFICULTY = 10;
+    public static final int START_COOLDOWN = 100;
 
     public Set<String> aliveUUIDs = new HashSet<>();
     public List<String> toSpawn = new ArrayList<>();
     public int checkTimer = SET_PURGE_INTERVAL;
     public int spawnTimer = 0;
     public int groupSize = 2;
+    public int startCooldown = START_COOLDOWN;
 
     public boolean started = false;
+    public boolean generated = false;
 
     public CombatRoom(DungeonBranch branch, String templateKey, ServerLevel level, BlockPos position, StructurePlaceSettings settings, List<ConnectionPoint> allConnectionPoints) {
         super(branch, templateKey, level, position, settings, allConnectionPoints);
     }
 
-    @Override
-    public void onEnterInner(WDPlayer player) {
-        super.onEnterInner(player);
-        if (this.started) return;
-
+    public void startBattle() {
+        this.started = true;
         WildDungeons.getLogger().info("BLOCKING THE EXITS");
-        //Block all the exits once a player has entered
+
         this.getConnectionPoints().forEach(point -> {
             if (point.isConnected()) point.block(this.getBranch().getFloor().getLevel());
         });
@@ -56,7 +55,6 @@ public class CombatRoom extends DungeonRoom {
         entities.forEach(entityType -> {
             toSpawn.add(EntityType.getKey(entityType).toString());
         });
-        this.started = true;
     }
 
     public void spawnNext() {
@@ -69,7 +67,7 @@ public class CombatRoom extends DungeonRoom {
             BlockPos finalPos = validPoints.stream().map(pos -> {
                 int score = 0;
 
-                for (WDPlayer wdPlayer : this.getPlayers()) {
+                for (WDPlayer wdPlayer : this.getActivePlayers()) {
                     score += pos.distManhattan(wdPlayer.getServerPlayer().blockPosition());
                 }
 
@@ -84,9 +82,28 @@ public class CombatRoom extends DungeonRoom {
     }
 
     @Override
+    public void onExit(WDPlayer wdPlayer) {
+        super.onExit(wdPlayer);
+        if (this.getActivePlayers().isEmpty() && !this.isClear()) {
+            this.reset();
+        }
+    }
+
+    @Override
     public void tick() {
         super.tick();
-        if (!started || this.getPlayers().isEmpty() || this.isClear()) return;
+        if (this.getActivePlayers().isEmpty() || this.isClear()) return;
+
+        if (!this.started && this.startCooldown > 0) {
+            this.startCooldown-=1;
+        }
+
+        if (!this.started && this.startCooldown <= 0) {
+            this.startBattle();
+        }
+
+        if (!this.started) return;
+
         if (aliveUUIDs.isEmpty() && toSpawn.isEmpty()) {this.onClear(); return;}
         if (checkTimer == 0) {purgeEntitySet(); checkTimer = SET_PURGE_INTERVAL;}
         if (spawnTimer == 0 || aliveUUIDs.isEmpty()) {spawnNext(); spawnTimer = SPAWN_INTERVAL;}
@@ -103,16 +120,6 @@ public class CombatRoom extends DungeonRoom {
                 point.getConnectedPoint().unBlock(this.getBranch().getFloor().getLevel());
             }
         });
-    }
-
-    @SubscribeEvent
-    public static void onMobDeath(LivingDeathEvent event) {
-        if (event.getSource().getEntity() instanceof ServerPlayer serverPlayer) {
-            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(serverPlayer);
-
-            if (wdPlayer.getCurrentDungeon() == null) return;
-            if (wdPlayer.getCurrentRoom() instanceof CombatRoom room) room.aliveUUIDs.remove(event.getEntity().getStringUUID());
-        }
     }
 
     public void purgeEntitySet() {
