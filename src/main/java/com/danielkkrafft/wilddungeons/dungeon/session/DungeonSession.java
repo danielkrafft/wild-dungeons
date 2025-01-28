@@ -68,16 +68,18 @@ public class DungeonSession {
     public void generateFloor(int index, Consumer<Void> spawnPlayerCallback) {
         WDProfiler.INSTANCE.start();
         safeToSerialize = false;
+        getTemplate().floorTemplates().get(floors.size()).getRandom().placeInWorld(this, TemplateHelper.EMPTY_BLOCK_POS, onFirstBranchComplete(spawnPlayerCallback), onCompleteCallback(index));
+        WDProfiler.INSTANCE.logTimestamp("generateFloor");
+        WDProfiler.INSTANCE.end();
+    }
 
-        WeightedPool<String> destinations = floors.size() == getTemplate().floorTemplates().size()-1 ?
-                new WeightedPool<String>().add("win", 1) :
-                new WeightedPool<String>().add(""+(index+1), 1);
-
-        getTemplate().floorTemplates().get(floors.size()).getRandom().placeInWorld(this, TemplateHelper.EMPTY_BLOCK_POS,(v) -> {
+    private Consumer<Void> onFirstBranchComplete(Consumer<Void> spawnPlayerCallback) {
+        return (v) -> {
+            WildDungeons.getLogger().info("FIRST BRANCH COMPLETE");
             spawnPlayerCallback.accept(null);
             this.floors.forEach(dungeonFloor -> {
                 //todo does this even belong here? We spawn each rift in every floor when *any* floor is generated?
-                dungeonFloor.spawnRifts(destinations);
+                DungeonSessionManager.getInstance().server.execute(dungeonFloor::spawnFirstRift);
                 dungeonFloor.getBranches().forEach(branch -> {
                     branch.setTempFloor(null);
                     branch.getRooms().forEach(room -> {
@@ -85,10 +87,20 @@ public class DungeonSession {
                     });
                 });
             });
+        };
+    }
+
+    private Consumer<Void> onCompleteCallback(int floorIndex){
+        return (v) -> {
+            WildDungeons.getLogger().info("FLOOR {} COMPLETE", floorIndex);
+            WeightedPool<String> destinations = floors.size() == getTemplate().floorTemplates().size() - 1 ?
+                    new WeightedPool<String>().add("win", 1) :
+                    new WeightedPool<String>().add("" + (floorIndex + 1), 1);
+            this.floors.forEach(dungeonFloor -> {
+                dungeonFloor.spawnExitRift(destinations);
+            });
             safeToSerialize = true;//todo this will result in save file failure if the player quits while in the dungeon before its done generating
-        });
-        WDProfiler.INSTANCE.logTimestamp("generateFloor");
-        WDProfiler.INSTANCE.end();
+        };
     }
 
     boolean generating = false;
@@ -98,6 +110,7 @@ public class DungeonSession {
         if (floors.isEmpty()){
             generating = true;
             generateFloor(0, (v)->{
+                WildDungeons.getLogger().info("SPAWNING PLAYER IN DUNGEON");
                 floors.getFirst().onEnter(wdPlayer);
                 generating = false;
                 playerUUIDs.add(wdPlayer.getUUID());

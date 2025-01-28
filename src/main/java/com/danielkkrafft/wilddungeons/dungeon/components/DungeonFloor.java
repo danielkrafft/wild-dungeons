@@ -72,7 +72,7 @@ public class DungeonFloor {
 
     //first future should generate just the first branch, then the second future should generate the second branch, and so on
     //each future should complete before the next one starts
-    public CompletableFuture<Void> asyncGenerateBranches(Consumer<Void> onFirstBranchComplete) {
+    public CompletableFuture<Void> asyncGenerateBranches(Consumer<Void> onFirstBranchComplete, Consumer<Void> onComplete) {
         CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
             DungeonBranchTemplate nextBranch = getTemplate().branchTemplates().get(0).getRandom();
             nextBranch.placeInWorld(this, origin);
@@ -87,16 +87,21 @@ public class DungeonFloor {
                 DungeonBranchTemplate nextBranch = getTemplate().branchTemplates().get(index).getRandom();
                 nextBranch.placeInWorld(this, origin);
             }));
+            if (i == getTemplate().branchTemplates().size() - 1) {
+                future = future.thenAccept(result -> onComplete.accept(null));
+            }
         }
         return future;
     }
 
-    public void spawnRifts(WeightedPool<String> destinations) {
+    public void spawnFirstRift(){
         if (!this.dungeonBranches.getFirst().getRooms().getFirst().getRiftUUIDs().isEmpty()) {
             Offering exitRift = (Offering) this.getLevel().getEntity(UUID.fromString(this.dungeonBranches.getFirst().getRooms().getFirst().getRiftUUIDs().getFirst()));
             if (exitRift != null) {exitRift.setOfferingId(""+(index-1));}
         }
+    }
 
+    public void spawnExitRift(WeightedPool<String> destinations) {
         if (!this.dungeonBranches.getLast().getRooms().isEmpty() && !this.dungeonBranches.getLast().getRooms().getLast().getRiftUUIDs().isEmpty()) {
             Offering enterRift = (Offering) this.getLevel().getEntity(UUID.fromString(this.dungeonBranches.getLast().getRooms().getLast().getRiftUUIDs().getLast()));
             if (enterRift != null) {
@@ -105,6 +110,8 @@ public class DungeonFloor {
             }
         }
     }
+
+
 
     public void shutdown() {
         InfiniverseAPI.get().markDimensionForUnregistration(DungeonSessionManager.getInstance().server, this.LEVEL_KEY);
