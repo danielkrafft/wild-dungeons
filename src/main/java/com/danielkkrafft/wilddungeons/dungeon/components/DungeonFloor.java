@@ -26,6 +26,7 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import org.joml.Vector2i;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 public class DungeonFloor {
     @IgnoreSerialization
@@ -67,10 +68,13 @@ public class DungeonFloor {
         WDProfiler.INSTANCE.logTimestamp("DungeonFloor::new");
     }
 
-    public void asyncGenerate() {
-        generateDungeonFloor();
-        this.spawnPoint = this.dungeonBranches.getFirst().getSpawnPoint();
-
+    public CompletableFuture<Void> asyncGenerate() {
+        return CompletableFuture.runAsync(() -> {
+            for (int i = 0; i < getTemplate().branchTemplates().size(); i++) {
+                DungeonBranchTemplate nextBranch = getTemplate().branchTemplates().get(i).getRandom();
+                nextBranch.placeInWorld(this, origin);
+            }
+        }).thenAccept(result -> {this.spawnPoint = this.dungeonBranches.getFirst().getSpawnPoint();});
     }
 
     public void spawnRifts(WeightedPool<String> destinations) {
@@ -97,20 +101,7 @@ public class DungeonFloor {
         return ResourceKey.create(Registries.DIMENSION, WildDungeons.rl(DungeonSessionManager.buildDungeonSessionKey(floor.getSession().getEntranceUUID()) + "_" + floor.getTemplate().name() + "_" + floor.index));
     }
 
-    private void generateDungeonFloor() {
-        int tries = 0;
-        while (dungeonBranches.size() < getTemplate().branchTemplates().size() && tries < getTemplate().branchTemplates().size() * 2) {
-            populateNextBranch();
-            if (dungeonBranches.getLast().getRooms().isEmpty()) {break;}
-            tries++;
-        }
-        WildDungeons.getLogger().info("PLACED {} BRANCHES IN {} TRIES", dungeonBranches.size(), tries);
-    }
 
-    private void populateNextBranch() {
-        DungeonBranchTemplate nextBranch = getTemplate().branchTemplates().get(dungeonBranches.size()).getRandom();
-        nextBranch.placeInWorld(this, origin);
-    }
 
     protected boolean isBoundingBoxValid(List<BoundingBox> proposedBoxes) {
         for (BoundingBox proposedBox : proposedBoxes) {
