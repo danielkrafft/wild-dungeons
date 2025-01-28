@@ -15,7 +15,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Vector2i;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,8 +28,7 @@ public class WDPlayer {
     private HashMap<Integer, SavedTransform> positions = new HashMap<>();
     private String recentEssence = "essence:overworld";
     private String UUID;
-    private int riftCooldown = 0;
-
+    private int riftCooldown = 100;
     private String currentDungeon = "none";
     private int currentFloor = -1;
     private int currentBranch = -1;

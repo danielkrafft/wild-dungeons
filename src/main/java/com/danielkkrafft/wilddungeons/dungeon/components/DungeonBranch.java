@@ -25,7 +25,7 @@ public class DungeonBranch {
     private static final int OPEN_CONNECTIONS_TARGET = 6;
     private static final int Y_TARGET = 128;
     @IgnoreSerialization
-    private List<DungeonRoom> dungeonRooms = new ArrayList<>();
+    private List<DungeonRoom> branchRooms = new ArrayList<>();
     private String templateKey;
     private int floorIndex;
     private String sessionKey;
@@ -53,7 +53,7 @@ public class DungeonBranch {
         totalBranches += this.getIndex();
         return this.getFloor().getDifficulty() * this.getTemplate().difficulty() * Math.max(Math.pow(this.getSession().getTemplate().difficultyScaling(), totalBranches), 1);
     }
-    public List<DungeonRoom> getRooms() {return this.dungeonRooms;}
+    public List<DungeonRoom> getRooms() {return this.branchRooms;}
     public BlockPos getSpawnPoint() {return this.spawnPoint;}
     public int getIndex() {return this.index;}
     public void setIndex(int index) {this.index = index;}
@@ -67,31 +67,35 @@ public class DungeonBranch {
         this.floorIndex = floor.getIndex();
         this.sessionKey = floor.getSessionKey();
         this.origin = origin;
-        generateDungeonBranch();
-        setupBoundingBox();
-        this.spawnPoint = floor.getBranches().size() == 1 ? this.dungeonRooms.getFirst().getSpawnPoint(floor.getLevel()) : floor.getBranches().getLast().dungeonRooms.getLast().getSpawnPoint(floor.getLevel());
 
         WDProfiler.INSTANCE.logTimestamp("DungeonBranch::new");
     }
 
-    private void generateDungeonBranch() {
-        WildDungeons.getLogger().info("STARTING A NEW BRANCH. THIS WILL BE BRANCH #{}", floor.getBranches().size());
+    public void generateDungeonBranch() {
+        WildDungeons.getLogger().info("STARTING A NEW BRANCH. THIS WILL BE BRANCH #{}", this.index);
         int tries = 0;
-        while (dungeonRooms.size() < getTemplate().roomTemplates().size() && tries < getTemplate().roomTemplates().size() * 4) {
-            populateNextRoom();
-            tries++;
+        while (branchRooms.size() < getTemplate().roomTemplates().size() && tries < 50) {
+            if (populateNextRoom()) {
+                tries = 0;
+            } else {
+                tries++;
+            }
         }
-        if (dungeonRooms.size() < getTemplate().roomTemplates().size()) {
+        //if failed to generate all rooms, force the last room
+        if (branchRooms.size() < getTemplate().roomTemplates().size()) {
+            WildDungeons.getLogger().info("FAILED TO GENERATE ALL ROOMS. FORCING LAST ROOM FOR BRANCH #{}", this.index);
             forceLastRoom();
         }
 
-        this.dungeonRooms.forEach(room -> room.processConnectionPoints(floor));
-        WildDungeons.getLogger().info("PLACED {} ROOMS IN {} TRIES", dungeonRooms.size(), tries);
+        this.branchRooms.forEach(room -> room.processConnectionPoints(floor));
+
+        setupBoundingBox();
+        this.spawnPoint = floor.getBranches().size() == 1 ? this.branchRooms.getFirst().getSpawnPoint(floor.getLevel()) : floor.getBranches().getLast().branchRooms.getLast().getSpawnPoint(floor.getLevel());
 
         WDProfiler.INSTANCE.logTimestamp("DungeonBranch::generateDungeonBranch");
     }
 
-    private void populateNextRoom() {
+    private boolean populateNextRoom() {
 
         DungeonRoomTemplate nextRoom = selectNextRoom();
 
@@ -100,7 +104,7 @@ public class DungeonBranch {
             point.setIndex(templateConnectionPoints.size());
             templateConnectionPoints.add(ConnectionPoint.copy(point));
         }
-        if (maybePlaceInitialRoom(templateConnectionPoints)) {return;}
+        if (maybePlaceInitialRoom(templateConnectionPoints)) {return true;}
 
         List<ConnectionPoint> entrancePoints = templateConnectionPoints.stream().filter(point -> !Objects.equals(point.getType(), "exit")).toList();
         List<ConnectionPoint> pointsToTry = new ArrayList<>(entrancePoints);
@@ -109,8 +113,8 @@ public class DungeonBranch {
         while (!pointsToTry.isEmpty()) {
 
             ConnectionPoint entrancePoint = pointsToTry.remove(new Random().nextInt(pointsToTry.size()));
-            List<ConnectionPoint> exitPoints = this.dungeonRooms.isEmpty() ?
-                    floor.getBranches().get(floor.getBranches().size()-2).dungeonRooms.getLast().getValidExitPoints(TemplateHelper.EMPTY_DUNGEON_SETTINGS, TemplateHelper.EMPTY_BLOCK_POS, nextRoom, entrancePoint, false)
+            List<ConnectionPoint> exitPoints = this.branchRooms.isEmpty() ?
+                    floor.getBranches().get(floor.getBranches().size()-2).branchRooms.getLast().getValidExitPoints(TemplateHelper.EMPTY_DUNGEON_SETTINGS, TemplateHelper.EMPTY_BLOCK_POS, nextRoom, entrancePoint, false)
                     : getValidExitPoints(TemplateHelper.EMPTY_DUNGEON_SETTINGS, nextRoom, entrancePoint, false);
 
 
@@ -144,11 +148,11 @@ public class DungeonBranch {
 
             Pair<ConnectionPoint, StructurePlaceSettings> exitPoint = ConnectionPoint.selectBestPoint(validPoints, this, Y_TARGET, 70.0, 130.0, 200.0, 30.0);
             placeRoom(exitPoint.getFirst(), exitPoint.getSecond(), templateConnectionPoints, entrancePoint, nextRoom, 1);
-            break;
-
+            return true;
         }
 
         WDProfiler.INSTANCE.logTimestamp("DungeonBranch::populateNextRoom");
+        return false;
     }
 
     private void forceLastRoom() {
@@ -195,7 +199,7 @@ public class DungeonBranch {
     }
 
     private boolean maybePlaceInitialRoom(List<ConnectionPoint> templateConnectionPoints) {
-        if (dungeonRooms.isEmpty() && floor.getBranches().size() == 1) {
+        if (branchRooms.isEmpty() && floor.getBranches().size() == 1) {
             WildDungeons.getLogger().info("ATTEMPTING TO PLACE INITIAL ROOM");
             DungeonRoom room = getTemplate().roomTemplates().getLast().getRandom().placeInWorld(this, floor.getLevel(), origin, new StructurePlaceSettings(), templateConnectionPoints);
             openConnections += room.getConnectionPoints().size();
@@ -205,12 +209,12 @@ public class DungeonBranch {
     }
 
     private DungeonRoomTemplate selectNextRoom() {
-        DungeonRoomTemplate nextRoom = getTemplate().roomTemplates().get(dungeonRooms.size()).getRandom();
+        DungeonRoomTemplate nextRoom = getTemplate().roomTemplates().get(branchRooms.size()).getRandom();
 
         if (openConnections < OPEN_CONNECTIONS_TARGET) {
             int tries = 0;
             while (nextRoom.connectionPoints().size() < 3 && tries < 15) {
-                nextRoom = getTemplate().roomTemplates().get(dungeonRooms.size()).getRandom();
+                nextRoom = getTemplate().roomTemplates().get(branchRooms.size()).getRandom();
                 tries++;
             }
         }
@@ -234,7 +238,7 @@ public class DungeonBranch {
 
     private List<ConnectionPoint> getValidExitPoints(StructurePlaceSettings settings, DungeonRoomTemplate nextRoom, ConnectionPoint entrancePoint, boolean bypassFailures) {
         List<ConnectionPoint> exitPoints = new ArrayList<>();
-        for (DungeonRoom room : dungeonRooms) {
+        for (DungeonRoom room : branchRooms) {
             exitPoints.addAll(room.getValidExitPoints(settings, TemplateHelper.EMPTY_BLOCK_POS, nextRoom, entrancePoint, bypassFailures));
         }
 
@@ -260,7 +264,7 @@ public class DungeonBranch {
 
     public void setupBoundingBox() {
         this.boundingBox = new BoundingBox(this.origin);
-        for (DungeonRoom room : this.dungeonRooms) {
+        for (DungeonRoom room : this.branchRooms) {
             for (BoundingBox box : room.getBoundingBoxes()) {
                 this.boundingBox.encapsulate(box);
             }
@@ -272,7 +276,7 @@ public class DungeonBranch {
         WildDungeons.getLogger().info("PLAYER ENTERED BRANCH: {}", this.getTemplate().name());
         playerStatuses.computeIfAbsent(player.getUUID(), key -> {getSession().getStats(key).branchesFound += 1; return new DungeonSession.PlayerStatus();});
         this.playerStatuses.get(player.getUUID()).inside = true;
-        for (DungeonRoom room : this.dungeonRooms) {
+        for (DungeonRoom room : this.branchRooms) {
             room.onBranchEnter(player);
         }
     }
@@ -282,14 +286,14 @@ public class DungeonBranch {
     }
 
     public void tick() {
-        if (this.playerStatuses.values().stream().anyMatch(v -> v.inside)) dungeonRooms.forEach(DungeonRoom::tick);
+        if (this.playerStatuses.values().stream().anyMatch(v -> v.inside)) branchRooms.forEach(DungeonRoom::tick);
     }
 
     public void addRoom(DungeonRoom room) {
-        if (this.dungeonRooms == null) this.dungeonRooms = new ArrayList<>();
-        this.dungeonRooms.add(room);
+        if (this.branchRooms == null) this.branchRooms = new ArrayList<>();
+        this.branchRooms.add(room);
     }
     public void sortRooms() {
-        this.dungeonRooms.sort(Comparator.comparingInt(DungeonRoom::getIndex));
+        this.branchRooms.sort(Comparator.comparingInt(DungeonRoom::getIndex));
     }
 }
