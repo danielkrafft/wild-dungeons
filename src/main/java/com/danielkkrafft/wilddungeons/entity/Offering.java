@@ -1,16 +1,15 @@
 package com.danielkkrafft.wilddungeons.entity;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
-import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonPerkTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.LootRoom;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonPerkTemplate;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
-import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -230,7 +229,6 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
 
                 DungeonSession dungeon = wdPlayer.getCurrentDungeon();
                 dungeon.onExit(wdPlayer);
-                wdPlayer.setRiftCooldown(100);
             }
 
             case "win" ->
@@ -265,12 +263,14 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
                     }
 
                 } else {
-
+                    purchased = true;//prevent spamming the rift
                     DungeonSession dungeon = wdPlayer.getCurrentDungeon();
-                    while (dungeon.getFloors().size() <= Integer.parseInt(this.offerID)) dungeon.generateFloor(dungeon.getFloors().size());
-                    WildDungeons.getLogger().info("TRYING TO ENTER FLOOR: {}", Integer.parseInt(this.offerID));
-                    DungeonFloor newFloor = dungeon.getFloors().get(Integer.parseInt(this.offerID));
-                    newFloor.onEnter(wdPlayer);
+                    while (dungeon.getFloors().size() <= Integer.parseInt(this.offerID)) dungeon.generateFloor(dungeon.getFloors().size(), (v) -> {
+                        WildDungeons.getLogger().info("TRYING TO ENTER FLOOR: {}", Integer.parseInt(this.offerID));
+                        DungeonFloor newFloor = dungeon.getFloors().get(Integer.parseInt(this.offerID));
+                        newFloor.onEnter(wdPlayer);
+                    });
+
 
                 }
             }

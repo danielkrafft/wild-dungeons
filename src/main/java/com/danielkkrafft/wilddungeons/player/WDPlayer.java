@@ -15,7 +15,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Vector2i;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,7 +28,7 @@ public class WDPlayer {
     private HashMap<Integer, SavedTransform> positions = new HashMap<>();
     private String recentEssence = "essence:overworld";
     private String UUID;
-    private int riftCooldown = 0;
+    private int riftCooldown = 100;
 
     private String currentDungeon = "none";
     private int currentFloor = -1;
@@ -56,13 +55,22 @@ public class WDPlayer {
         return Objects.equals(this.currentDungeon, "none") ? null : DungeonSessionManager.getInstance().getDungeonSession(this.currentDungeon);}
     public void setCurrentDungeon(DungeonSession session) {
         this.currentDungeon = session == null ? "none" : DungeonSessionManager.buildDungeonSessionKey(session.getEntranceUUID());
+//        WildDungeons.getLogger().info("SETTING CURRENT DUNGEON TO {}", this.currentDungeon);
     }
-    public DungeonFloor getCurrentFloor() {return this.currentFloor == -1 ? null : this.getCurrentDungeon().getFloors().get(this.currentFloor);}
-    public void setCurrentFloor(DungeonFloor floor) {this.currentFloor = floor == null ? -1 : floor.getIndex();}
+    public DungeonFloor getCurrentFloor() {return this.currentFloor < 0 ? null : this.getCurrentDungeon().getFloors().get(this.currentFloor);}
+    public void setCurrentFloor(DungeonFloor floor) {
+//        WildDungeons.getLogger().info("SETTING CURRENT FLOOR TO {}", floor.getIndex());
+        this.currentFloor = floor == null ? -1 : floor.getIndex();}
     public DungeonBranch getCurrentBranch() {return this.currentBranch == -1 ? null : this.getCurrentFloor().getBranches().get(this.currentBranch);}
     public void setCurrentBranch(DungeonBranch branch) {this.currentBranch = branch == null ? -1 : branch.getIndex();}
     public DungeonRoom getCurrentRoom() {
-        return this.currentRoom == -1 ? null : this.getCurrentBranch().getRooms().get(this.currentRoom);
+        if (this.currentRoom == -1) return null;
+//        WildDungeons.getLogger().info("TRYING TO GET ROOM {} OF BRANCH {}", this.currentRoom, this.currentBranch);
+//        WildDungeons.getLogger().info("FLOOR IS: {}", this.getCurrentFloor().getTemplate().name());
+//        WildDungeons.getLogger().info("FLOOR CONTAINS: {}", this.getCurrentFloor().getBranches().stream().map(branch -> branch.getTemplate().name()).toList());
+//        WildDungeons.getLogger().info("BRANCH IS: {}", this.getCurrentBranch().getTemplate().name());
+//        WildDungeons.getLogger().info("BRANCH CONTAINS {} ROOMS", this.getCurrentBranch().getRooms().size());
+        return this.getCurrentBranch().getRooms().get(this.currentRoom);
     }
     public void setCurrentRoom(DungeonRoom room) {this.currentRoom = room == null ? -1 : room.getIndex();}
     public int getCurrentLives() {return this.currentLives;}
@@ -161,6 +169,7 @@ public class WDPlayer {
         DungeonRoom oldRoom = this.getCurrentRoom();
         DungeonBranch oldBranch = this.getCurrentBranch();
         Vec3i position = getServerPlayer().blockPosition();
+
         List<DungeonRoom> rooms = this.getCurrentFloor()
                 .getChunkMap()
                 .getOrDefault(
@@ -219,11 +228,13 @@ public class WDPlayer {
 
         SavedTransform newPosition = positions.getOrDefault(newFloor.getIndex(), new SavedTransform(new Vec3(newFloor.getSpawnPoint().getX(), newFloor.getSpawnPoint().getY(), newFloor.getSpawnPoint().getZ()), 0.0, 0.0, newFloor.getLevelKey()));
         WDPlayer.setRespawnPosition(newPosition, serverPlayer);
-
+        WildDungeons.getLogger().info("Get Current Floor: {}", wdPlayer.getCurrentFloor());
         if (wdPlayer.getCurrentFloor() != null) wdPlayer.getCurrentFloor().onExit(wdPlayer);
         if (wdPlayer.getCurrentBranch() != null) wdPlayer.getCurrentBranch().onExit(wdPlayer);
         if (wdPlayer.getCurrentRoom() != null) wdPlayer.getCurrentRoom().onExit(wdPlayer);
         wdPlayer.setCurrentFloor(newFloor);
+        WildDungeons.getLogger().info("Get Current Floor: {}", wdPlayer.getCurrentFloor());
+        WildDungeons.getLogger().info("SETTING CURRENT FLOOR TO {}", newFloor.getTemplate().name());
         wdPlayer.setCurrentBranch(null);
         wdPlayer.setCurrentRoom(null);
 

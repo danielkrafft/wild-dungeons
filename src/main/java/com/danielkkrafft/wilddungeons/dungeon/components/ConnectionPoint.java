@@ -18,6 +18,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
@@ -60,11 +61,13 @@ public class ConnectionPoint {
     }
     public void setRoom(DungeonRoom room) {this.room = room; this.roomIndex = room.getIndex(); this.branchIndex = room.getBranch().getIndex(); this.floorIndex = room.getBranch().getFloor().getIndex(); this.sessionKey = room.getSession().getSessionKey();}
     public boolean isConnected() {return this.connectedPointIndex != -1;}
+
     public ConnectionPoint getConnectedPoint() {
         if (!this.isConnected()) return null;
         return this.getRoom().getBranch().getFloor().getBranches().get(this.connectedBranchIndex).getRooms().get(this.connectedRoomIndex).getConnectionPoints().get(this.connectedPointIndex);
     }
     public void setConnectedPoint(ConnectionPoint connectedPoint) {this.connectedPointIndex = connectedPoint.index; this.connectedRoomIndex = connectedPoint.getRoom().getIndex(); this.connectedBranchIndex = connectedPoint.getRoom().getBranch().getIndex();}
+
     public void incrementFailures() {this.failures += 1;}
     public BlockPos getOrigin(StructurePlaceSettings settings, BlockPos position) {BoundingBox transBox = getBoundingBox(settings, position); return new BlockPos(transBox.minX(), transBox.minY(), transBox.minZ());}
     public void addPosition(BlockPos pos) {this.boundingBox.encapsulate(pos);}
@@ -198,8 +201,7 @@ public class ConnectionPoint {
 
     public void setupBlockstates(StructurePlaceSettings settings, BlockPos position, ServerLevel level) {
         for (BlockPos pos : this.getPositions(settings, position)) {
-            BlockEntity blockEntity = level.getBlockEntity(pos);
-
+            BlockEntity blockEntity = level.getChunkAt(pos).getBlockEntity(pos, LevelChunk.EntityCreationType.IMMEDIATE);
             if (blockEntity instanceof ConnectionBlockEntity connectionBlockEntity) {
                 BlockState blockState = blockStateFromString(connectionBlockEntity.unblockedBlockstate);
                 blockState = this.getRoom().getMaterial().replace(blockState);
@@ -207,7 +209,6 @@ public class ConnectionPoint {
                 this.unBlockedBlockStates.put(pos, connectionBlockEntity.unblockedBlockstate);
             }
         }
-
         WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::setupBlockstates");
     }
 
