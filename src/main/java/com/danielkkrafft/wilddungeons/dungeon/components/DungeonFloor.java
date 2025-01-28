@@ -15,17 +15,30 @@ import com.danielkkrafft.wilddungeons.util.WeightedTable;
 import com.danielkkrafft.wilddungeons.util.debug.WDProfiler;
 import com.danielkkrafft.wilddungeons.world.dimension.EmptyGenerator;
 import com.danielkkrafft.wilddungeons.world.dimension.tools.InfiniverseAPI;
+import com.danielkkrafft.wilddungeons.world.dimension.tools.QuietPacketDistributors;
+import com.danielkkrafft.wilddungeons.world.dimension.tools.ReflectionBuddy;
+import com.danielkkrafft.wilddungeons.world.dimension.tools.UpdateDimensionsPacket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.progress.ChunkProgressListener;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.border.BorderChangeListener;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.level.storage.DerivedLevelData;
+import net.minecraft.world.level.storage.LevelStorageSource;
+import net.minecraft.world.level.storage.WorldData;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.level.LevelEvent;
 import org.joml.Vector2i;
 
 import java.util.*;
+import java.util.concurrent.Executor;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
@@ -39,14 +52,16 @@ public class DungeonFloor {
     private final String sessionKey;
     private final int index;
     private final HashMap<ChunkPos, List<Vector2i>> chunkMap = new HashMap<>();
-    private final Set<String> playerUUIDs = new HashSet<>();
+    private final HashMap<String, DungeonSession.PlayerStatus> playerStatuses = new HashMap<>();
 
     public DungeonFloorTemplate getTemplate() {return DungeonRegistry.DUNGEON_FLOOR_REGISTRY.get(this.templateKey);}
     public DungeonSession getSession() {return DungeonSessionManager.getInstance().getDungeonSession(this.sessionKey);}
     public WeightedPool<DungeonMaterial> getMaterials() {return this.getTemplate().materials() == null ? this.getSession().getTemplate().materials() : this.getTemplate().materials();}
     public WeightedTable<EntityType<?>> getEnemyTable() {return this.getTemplate().enemyTable() == null ? this.getSession().getTemplate().enemyTable() : this.getTemplate().enemyTable();}
     public double getDifficulty() {return this.getSession().getTemplate().difficulty() * this.getTemplate().difficulty() * Math.max(Math.pow(1.1, this.getSession().getFloors().size()), 1);}
-    public ServerLevel getLevel() {return DungeonSessionManager.getInstance().server.levels.get(this.LEVEL_KEY);}
+    public ServerLevel getLevel() {
+        return DungeonSessionManager.getInstance().server.levels.get(this.LEVEL_KEY);
+    }
     public List<DungeonBranch> getBranches() {return this.dungeonBranches;}
     public String getTemplateKey() {return this.templateKey;}
     public BlockPos getOrigin() {return this.origin;}
@@ -55,7 +70,6 @@ public class DungeonFloor {
     public String getSessionKey() {return this.sessionKey;}
     public int getIndex() {return this.index;}
     public HashMap<ChunkPos, List<Vector2i>> getChunkMap() {return this.chunkMap;}
-    public Set<String> getPlayerUUIDs() {return this.playerUUIDs;}
 
     public DungeonFloor(String templateKey, String sessionKey, BlockPos origin) {
         this.sessionKey = sessionKey;
@@ -152,22 +166,19 @@ public class DungeonFloor {
     }
 
     public void onEnter(WDPlayer wdPlayer) {
-        wdPlayer.setCurrentDungeon(getSession());
-        WildDungeons.getLogger().info("ENTERING FLOOR: {}", this.index);
-        this.playerUUIDs.add(wdPlayer.getUUID());
+
+        playerStatuses.computeIfAbsent(wdPlayer.getUUID(), key -> {getSession().getStats(key).floorsFound += 1; return new DungeonSession.PlayerStatus();});
+        this.playerStatuses.get(wdPlayer.getUUID()).inside = true;
         wdPlayer.travelToFloor(wdPlayer, wdPlayer.getCurrentFloor(), this);
         getSession().getPlayerStats().put(wdPlayer.getUUID(), new DungeonSession.DungeonStats());
         getSession().addInitialLives(wdPlayer);
     }
 
-    public void onExit(WDPlayer wdPlayer) {
-        WildDungeons.getLogger().info("EXITING FLOOR: {}", this.index);
-        this.playerUUIDs.remove(wdPlayer.getUUID());
-    }
+    public void onExit(WDPlayer wdPlayer) {this.playerStatuses.get(wdPlayer.getUUID()).inside = false;}
 
     public void tick() {
         if (this.getLevel() == null) return;
-        if (!playerUUIDs.isEmpty()) dungeonBranches.forEach(DungeonBranch::tick);
+        if (playerStatuses.values().stream().anyMatch(v -> v.inside)) dungeonBranches.forEach(DungeonBranch::tick);
     }
 
     public void addBranch(DungeonBranch branch) {

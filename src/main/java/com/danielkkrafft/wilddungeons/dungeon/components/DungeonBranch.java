@@ -34,7 +34,7 @@ public class DungeonBranch {
     private int openConnections = 0;
     private int index;
     private BoundingBox boundingBox;
-    private Set<String> playerUUIDs = new HashSet<>();
+    private HashMap<String, DungeonSession.PlayerStatus> playerStatuses = new HashMap<>();
 
     @IgnoreSerialization
     private DungeonFloor floor = null;
@@ -267,18 +267,19 @@ public class DungeonBranch {
 
     public void onEnter(WDPlayer player) {
         WildDungeons.getLogger().info("PLAYER ENTERED BRANCH: {}", this.getTemplate().name());
-        this.playerUUIDs.add(player.getUUID());
-        for (DungeonRoom room : this.branchRooms) {
+        playerStatuses.computeIfAbsent(player.getUUID(), key -> {getSession().getStats(key).branchesFound += 1; return new DungeonSession.PlayerStatus();});
+        this.playerStatuses.get(player.getUUID()).inside = true;
+        for (DungeonRoom room : this.dungeonRooms) {
             room.onBranchEnter(player);
         }
     }
 
     public void onExit(WDPlayer player) {
-        this.playerUUIDs.remove(player.getUUID());
+        this.playerStatuses.get(player.getUUID()).inside = false;
     }
 
     public void tick() {
-        if (!this.playerUUIDs.isEmpty()) branchRooms.forEach(DungeonRoom::tick);
+        if (this.playerStatuses.values().stream().anyMatch(v -> v.inside)) dungeonRooms.forEach(DungeonRoom::tick);
     }
 
     public void addRoom(DungeonRoom room) {

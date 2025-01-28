@@ -31,7 +31,7 @@ public class DungeonSession {
 
     private final String entranceUUID;
     private final ResourceKey<Level> entranceLevelKey;
-    private final Set<String> playerUUIDs = new HashSet<>();
+    private final HashMap<String, PlayerStatus> playerStatuses = new HashMap<>();
     private final HashMap<String, DungeonStats> playerStats = new HashMap<>();
 
     @IgnoreSerialization
@@ -53,7 +53,8 @@ public class DungeonSession {
     public String getSessionKey() {return DungeonSessionManager.buildDungeonSessionKey(this.entranceUUID);}
     public boolean isSafeToSerialize() {return this.safeToSerialize;}
     public DungeonStats getStats(WDPlayer player) {return this.playerStats.get(player.getUUID());}
-    public HashMap<String, DungeonStats> getPlayerStats() {return this.playerStats;}
+    public DungeonStats getStats(String uuid) {return this.playerStats.get(uuid);}
+
 
     public enum DungeonExitBehavior {DESTROY, RANDOMIZE, RESET, NOTHING}
 
@@ -106,7 +107,9 @@ public class DungeonSession {
     boolean generating = false;
     public void onEnter(WDPlayer wdPlayer) {
         if (generating) return;
-        if (this.playerUUIDs.contains(wdPlayer.getUUID())) return;
+        playerStatuses.computeIfAbsent(wdPlayer.getUUID(), key -> new PlayerStatus());
+        if (this.playerStatuses.get(wdPlayer.getUUID()).inside) return;
+        this.playerStats.putIfAbsent(wdPlayer.getUUID(), new DungeonStats());
         if (floors.isEmpty()){
             generating = true;
             generateFloor(0, (v)->{
@@ -120,12 +123,11 @@ public class DungeonSession {
             playerUUIDs.add(wdPlayer.getUUID());
         }
         shutdownTimer = SHUTDOWN_TIME;
-
     }
 
     public void onExit(WDPlayer wdPlayer) {
-        if (!this.playerUUIDs.contains(wdPlayer.getUUID())) return;
-        playerUUIDs.remove(wdPlayer.getUUID());
+        if (!this.playerStatuses.containsKey(wdPlayer.getUUID()) || !this.playerStatuses.get(wdPlayer.getUUID()).inside) return;
+        playerStatuses.get(wdPlayer.getUUID()).inside = false;
         wdPlayer.rootRespawn(wdPlayer.getServerPlayer().getServer());
         WildDungeons.getLogger().info("EXITED PLAYER WITH {} RIFT COOLDOWN", wdPlayer.getRiftCooldown());
         WDPlayerManager.syncAll(List.of(wdPlayer.getUUID()));
@@ -140,14 +142,15 @@ public class DungeonSession {
     public int offsetLives(int offset) {
         WildDungeons.getLogger().info("OFFSETTING LIVES");
         this.lives += offset;
-        for (String playerUUID : this.playerUUIDs) {
+        for (String playerUUID : this.playerStatuses.keySet()) {
             WDPlayer player = WDPlayerManager.getInstance().getOrCreateWDPlayer(playerUUID);
             player.setCurrentLives(this.lives);
         }
-        if (this.lives <= 0 && !this.playerUUIDs.isEmpty()) {
+        if (this.lives <= 0 && this.playerStatuses.values().stream().anyMatch(value -> value.inside)) {
+            WildDungeons.getLogger().info("SHUTTING DOWN DUE TO LIVES");
             this.fail();
         }
-        WDPlayerManager.syncAll(this.playerUUIDs.stream().toList());
+        WDPlayerManager.syncAll(this.playerStatuses.keySet().stream().toList());
         return this.lives;
     }
 
@@ -162,7 +165,7 @@ public class DungeonSession {
 
     public Set<WDPlayer> getPlayers() {
         Set<WDPlayer> result = new HashSet<>();
-        for (String uuid : this.playerUUIDs) {
+        for (String uuid : this.playerStatuses.keySet()) {
             result.add(WDPlayerManager.getInstance().getOrCreateWDPlayer(uuid));
         }
         return result;
@@ -180,10 +183,12 @@ public class DungeonSession {
         for (WDPlayer wdPlayer : getPlayers()) {
             this.onExit(wdPlayer);
         }
+        WildDungeons.getLogger().info("SHUTTING DOWN DUE TO FAIL");
         this.handleExitBehavior();
     }
 
     public void handleExitBehavior() {
+        WildDungeons.getLogger().info("SHUTTING DOWN DUE TO EXIT BEHAVIOR");
         switch (this.getTemplate().exitBehavior()) {
             case DESTROY -> {
                 this.shutdown();
@@ -202,10 +207,11 @@ public class DungeonSession {
     }
 
     public void tick() {
-        if (playerUUIDs.isEmpty() && !floors.isEmpty() && isSafeToSerialize()) {shutdownTimer -= 1;}
+        if (playerStatuses.values().stream().noneMatch(v -> v.inside) && !floors.isEmpty() && isSafeToSerialize()) {shutdownTimer -= 1;}
         if (shutdownTimer == 0) {shutdown();return;}
-        if (!playerUUIDs.isEmpty()) floors.forEach(DungeonFloor::tick);
-        playerUUIDs.forEach(uuid -> {
+        if (playerStatuses.values().stream().anyMatch(v -> v.inside)) floors.forEach(DungeonFloor::tick);
+        playerStatuses.keySet().forEach(uuid -> {
+
             if (this.playerStats.containsKey(uuid)) {
                 this.playerStats.get(uuid).time++;
             }
@@ -230,6 +236,23 @@ public class DungeonSession {
 
     public static class DungeonStats {
         public int time = 0;
-        public DungeonStats() {}
+        public int floorsFound = 0;
+        public int branchesFound = 0;
+        public int roomsFound = 0;
+        public int mobsKilled = 0;
+        public float damageDealt = 0.0f;
+        public float damageTaken = 0.0f;
+        public int deaths = 0;
+        public int blocksPlaced = 0;
+        public int blocksBroken = 0;
+
+        public int getScore() {
+            return (int) Math.max(0, (damageDealt * 1) + (mobsKilled * 100) + (deaths * -1000));
+        }
+    }
+
+    public static class PlayerStatus {
+        public boolean inside = false;
+        public boolean insideShell = false;
     }
 }
