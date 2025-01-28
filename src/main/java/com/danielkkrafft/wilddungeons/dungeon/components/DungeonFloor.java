@@ -39,6 +39,8 @@ import org.joml.Vector2i;
 
 import java.util.*;
 import java.util.concurrent.Executor;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 public class DungeonFloor {
     @IgnoreSerialization
@@ -46,7 +48,7 @@ public class DungeonFloor {
     private final String templateKey;
     private final BlockPos origin;
     private final ResourceKey<Level> LEVEL_KEY;
-    private final BlockPos spawnPoint;
+    private BlockPos spawnPoint;
     private final String sessionKey;
     private final int index;
     private final HashMap<ChunkPos, List<Vector2i>> chunkMap = new HashMap<>();
@@ -69,7 +71,7 @@ public class DungeonFloor {
     public int getIndex() {return this.index;}
     public HashMap<ChunkPos, List<Vector2i>> getChunkMap() {return this.chunkMap;}
 
-    public DungeonFloor(String templateKey, String sessionKey, BlockPos origin, WeightedPool<String> destinations) {
+    public DungeonFloor(String templateKey, String sessionKey, BlockPos origin) {
         this.sessionKey = sessionKey;
         this.index = this.getSession().getFloors().size();
         this.getSession().getFloors().add(this);
@@ -78,14 +80,42 @@ public class DungeonFloor {
         this.LEVEL_KEY = buildFloorLevelKey(this);
         InfiniverseAPI.get().getOrCreateLevel(DungeonSessionManager.getInstance().server, LEVEL_KEY, () -> WDDimensions.createLevel(DungeonSessionManager.getInstance().server));
         this.origin = origin;
-        generateDungeonFloor();
-        this.spawnPoint = this.dungeonBranches.getFirst().getSpawnPoint();
+        WDProfiler.INSTANCE.logTimestamp("DungeonFloor::new");
+    }
 
+
+    //first future should generate just the first branch, then the second future should generate the second branch, and so on
+    //each future should complete before the next one starts
+    public CompletableFuture<Void> asyncGenerateBranches(Consumer<Void> onFirstBranchComplete, Consumer<Void> onComplete) {
+        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+            DungeonBranchTemplate nextBranch = getTemplate().branchTemplates().get(0).getRandom();
+            nextBranch.placeInWorld(this, origin);
+        }).thenAccept(result -> {
+            this.spawnPoint = this.dungeonBranches.getFirst().getSpawnPoint();
+            onFirstBranchComplete.accept(null);
+        });
+
+        for (int i = 1; i < getTemplate().branchTemplates().size(); i++) {
+            final int index = i;
+            future = future.thenCompose(result -> CompletableFuture.runAsync(() -> {
+                DungeonBranchTemplate nextBranch = getTemplate().branchTemplates().get(index).getRandom();
+                nextBranch.placeInWorld(this, origin);
+            }));
+            if (i == getTemplate().branchTemplates().size() - 1) {
+                future = future.thenAccept(result -> onComplete.accept(null));
+            }
+        }
+        return future;
+    }
+
+    public void spawnFirstRift(){
         if (!this.dungeonBranches.getFirst().getRooms().getFirst().getRiftUUIDs().isEmpty()) {
             Offering exitRift = (Offering) this.getLevel().getEntity(UUID.fromString(this.dungeonBranches.getFirst().getRooms().getFirst().getRiftUUIDs().getFirst()));
             if (exitRift != null) {exitRift.setOfferingId(""+(index-1));}
         }
+    }
 
+    public void spawnExitRift(WeightedPool<String> destinations) {
         if (!this.dungeonBranches.getLast().getRooms().isEmpty() && !this.dungeonBranches.getLast().getRooms().getLast().getRiftUUIDs().isEmpty()) {
             Offering enterRift = (Offering) this.getLevel().getEntity(UUID.fromString(this.dungeonBranches.getLast().getRooms().getLast().getRiftUUIDs().getLast()));
             if (enterRift != null) {
@@ -93,9 +123,9 @@ public class DungeonFloor {
                 WildDungeons.getLogger().info("PICKED RIFT DESTINATION FOR THIS FLOOR: {}", enterRift.getOfferingId());
             }
         }
-
-        WDProfiler.INSTANCE.logTimestamp("DungeonFloor::new");
     }
+
+
 
     public void shutdown() {
         InfiniverseAPI.get().markDimensionForUnregistration(DungeonSessionManager.getInstance().server, this.LEVEL_KEY);
@@ -106,20 +136,7 @@ public class DungeonFloor {
         return ResourceKey.create(Registries.DIMENSION, WildDungeons.rl(DungeonSessionManager.buildDungeonSessionKey(floor.getSession().getEntranceUUID()) + "_" + floor.getTemplate().name() + "_" + floor.index));
     }
 
-    private void generateDungeonFloor() {
-        int tries = 0;
-        while (dungeonBranches.size() < getTemplate().branchTemplates().size() && tries < getTemplate().branchTemplates().size() * 2) {
-            populateNextBranch();
-            if (dungeonBranches.getLast().getRooms().isEmpty()) {break;}
-            tries++;
-        }
-        WildDungeons.getLogger().info("PLACED {} BRANCHES IN {} TRIES", dungeonBranches.size(), tries);
-    }
 
-    private void populateNextBranch() {
-        DungeonBranchTemplate nextBranch = getTemplate().branchTemplates().get(dungeonBranches.size()).getRandom();
-        nextBranch.placeInWorld(this, origin);
-    }
 
     protected boolean isBoundingBoxValid(List<BoundingBox> proposedBoxes) {
         for (BoundingBox proposedBox : proposedBoxes) {
@@ -149,9 +166,12 @@ public class DungeonFloor {
     }
 
     public void onEnter(WDPlayer wdPlayer) {
+
         playerStatuses.computeIfAbsent(wdPlayer.getUUID(), key -> {getSession().getStats(key).floorsFound += 1; return new DungeonSession.PlayerStatus();});
         this.playerStatuses.get(wdPlayer.getUUID()).inside = true;
         wdPlayer.travelToFloor(wdPlayer, wdPlayer.getCurrentFloor(), this);
+        getSession().getPlayerStats().put(wdPlayer.getUUID(), new DungeonSession.DungeonStats());
+        getSession().addInitialLives(wdPlayer);
     }
 
     public void onExit(WDPlayer wdPlayer) {this.playerStatuses.get(wdPlayer.getUUID()).inside = false;}
@@ -168,4 +188,5 @@ public class DungeonFloor {
     public void sortBranches() {
         this.dungeonBranches.sort(Comparator.comparingInt(DungeonBranch::getIndex));
     }
+
 }

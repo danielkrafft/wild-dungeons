@@ -13,7 +13,6 @@ import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-
 public class SaveSystem {
     private static final SaveSystem INSTANCE = new SaveSystem();
     private boolean saving = false;
@@ -57,6 +56,16 @@ public class SaveSystem {
         DungeonSessionManager.getInstance().getSessions().forEach((key, value) -> {
             if (value.isSafeToSerialize()) sessions.push(value);
         });
+        //only add the players in the sessions that are safe to serialize
+        if (!sessions.empty()){
+            Map<String, WDPlayer> players = WDPlayerManager.getInstance().getPlayers();
+            Map<String, WDPlayer> safePlayers = new HashMap<>();
+            players.forEach((key, value) -> {
+                if (value.getCurrentDungeon().isSafeToSerialize()) safePlayers.put(key, value);
+            });
+            saveFile.AddPlayers(safePlayers);
+        }
+
         while (sessions.iterator().hasNext()) {
             DungeonSession session = sessions.pop();
             DungeonSessionFile sessionFile = new DungeonSessionFile(session);
@@ -94,7 +103,6 @@ public class SaveSystem {
             saveFile.AddSessionFile(path);
         }
 
-        saveFile.AddPlayers(WDPlayerManager.getInstance().getPlayers());
         Path path = FileUtil.getWorldPath().resolve("data").resolve("dungeons.nbt");
         FileUtil.writeNbt(Serializer.toCompoundTag(saveFile), path.toFile());
         saving = false;
