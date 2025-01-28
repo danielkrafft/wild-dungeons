@@ -45,8 +45,17 @@ public class DungeonBranch {
     public DungeonFloor getFloor() {return floor != null ? floor : getSession().getFloors().get(this.floorIndex);}
     public WeightedPool<DungeonMaterial> getMaterials() {return this.getTemplate().materials() == null ? this.getFloor().getMaterials() : this.getTemplate().materials();}
     public WeightedTable<EntityType<?>> getEnemyTable() {return this.getTemplate().enemyTable() == null ? this.getFloor().getEnemyTable() : this.getTemplate().enemyTable();}
-    public double getDifficulty() {return this.getFloor().getDifficulty() * this.getTemplate().difficulty() * Math.max(Math.pow(1.1, this.getFloor().getBranches().size()), 1);}
-    public List<DungeonRoom> getRooms() {return this.branchRooms;}
+
+    public double getDifficulty() {
+        int totalBranches = 0;
+        for (int i = 0; i < this.getFloor().getIndex(); i++) {
+            totalBranches += this.getFloor().getSession().getFloors().get(i).getBranches().size();
+        }
+        totalBranches += this.getIndex();
+        return this.getFloor().getDifficulty() * this.getTemplate().difficulty() * Math.max(Math.pow(this.getSession().getTemplate().difficultyScaling(), totalBranches), 1);
+    }
+    public List<DungeonRoom> getRooms() {return this.dungeonRooms;}
+
     public BlockPos getSpawnPoint() {return this.spawnPoint;}
     public int getIndex() {return this.index;}
     public void setIndex(int index) {this.index = index;}

@@ -46,8 +46,12 @@ public class DungeonFloor {
     public DungeonSession getSession() {return DungeonSessionManager.getInstance().getDungeonSession(this.sessionKey);}
     public WeightedPool<DungeonMaterial> getMaterials() {return this.getTemplate().materials() == null ? this.getSession().getTemplate().materials() : this.getTemplate().materials();}
     public WeightedTable<EntityType<?>> getEnemyTable() {return this.getTemplate().enemyTable() == null ? this.getSession().getTemplate().enemyTable() : this.getTemplate().enemyTable();}
-    public double getDifficulty() {return this.getSession().getTemplate().difficulty() * this.getTemplate().difficulty() * Math.max(Math.pow(1.1, this.getSession().getFloors().size()), 1);}
-    public ServerLevel getLevel() {return DungeonSessionManager.getInstance().server.levels.get(this.LEVEL_KEY);}
+
+    public double getDifficulty() {return this.getSession().getTemplate().difficulty() * this.getSession().getPlayers().size() * this.getTemplate().difficulty();}
+    public ServerLevel getLevel() {
+        return DungeonSessionManager.getInstance().server.levels.get(this.LEVEL_KEY);
+    }
+
     public List<DungeonBranch> getBranches() {return this.dungeonBranches;}
     public String getTemplateKey() {return this.templateKey;}
     public BlockPos getOrigin() {return this.origin;}

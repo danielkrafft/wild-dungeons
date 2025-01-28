@@ -8,8 +8,8 @@ public class RandomUtil {
         return (int) Math.floor(Math.random() * (max - min + 1) + min);
     }
 
-    public static float randFloatBetween(float min, int max) {
-        return (float) Math.random();
+    public static float randFloatBetween(float min, float max) {
+        return (float) (Math.random() * (max - min) + min);
     }
 
     public static boolean sample(RandomSource random, float threshold) {

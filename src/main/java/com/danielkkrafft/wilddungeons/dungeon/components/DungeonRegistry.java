@@ -376,10 +376,10 @@ public class DungeonRegistry {
          */
 
         DUNGEON_REGISTRY.add(DungeonTemplate.build("dungeon_1", DungeonOpenBehavior.NONE, new DungeonLayout<DungeonFloorTemplate>()
-                .add(FLOOR_POOL, 1),
+                .add(FLOOR_POOL, 3),
                 ALL_MATERIAL_POOL,
                 DungeonRegistry.ENEMY_TABLE_REGISTRY.get("BASIC_TABLE"),
-                1.0,
+                1.0, 1.1,
                 DungeonSession.DungeonExitBehavior.DESTROY,
                 DUNGEON_POOL).pool(DUNGEON_POOL, 1));
 
@@ -387,7 +387,7 @@ public class DungeonRegistry {
                 .addSimple(DUNGEON_FLOOR_REGISTRY.get("shop_floor")),
                 ALL_MATERIAL_POOL,
                 DungeonRegistry.ENEMY_TABLE_REGISTRY.get("BASIC_TABLE"),
-                1.0,
+                1.0, 1.1,
                 DungeonSession.DungeonExitBehavior.RANDOMIZE,
                 DUNGEON_POOL));//.pool(DUNGEON_POOL, 1));
 
