@@ -2,7 +2,6 @@ package com.danielkkrafft.wilddungeons.registry;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.block.WDBlocks;
-import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.entity.EssenceOrb;
 import com.danielkkrafft.wilddungeons.entity.WDEntities;
@@ -16,7 +15,6 @@ import com.danielkkrafft.wilddungeons.util.SaveSystem;
 import com.danielkkrafft.wilddungeons.util.Serializer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -41,7 +39,6 @@ import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
-import java.util.HashMap;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -72,11 +69,11 @@ public class WDEvents {
             boolean filesLoaded = fileLoadFuture.get(30, TimeUnit.SECONDS);
 
             if (!filesLoaded) {
-                throw new IllegalStateException("DUNGEON FILE LOADING FAILED");
+                WildDungeons.getLogger().warn("DUNGEON FILES FAILED TO LOAD");
             }
             WildDungeons.getLogger().info("DUNGEON FILES LOADED SUCCESSFULLY");
-        } catch (TimeoutException | InterruptedException | ExecutionException e) {
-            throw new IllegalStateException("DUNGEON FILE LOADING FAILED");
+        } catch (TimeoutException | InterruptedException | ExecutionException ignored) {
+            WildDungeons.getLogger().warn("DUNGEON FILES FAILED TO LOAD");
         }
     }
 

@@ -22,6 +22,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 public class DungeonSession {
 
@@ -30,8 +31,9 @@ public class DungeonSession {
 
     private final String entranceUUID;
     private final ResourceKey<Level> entranceLevelKey;
-    private final HashMap<String, PlayerStatus> playerStatuses = new HashMap<>();
+    private final Set<String> playerUUIDs = new HashSet<>();
     private final HashMap<String, DungeonStats> playerStats = new HashMap<>();
+
     @IgnoreSerialization
     private List<DungeonFloor> floors = new ArrayList<>();
     private final String template;
@@ -51,7 +53,7 @@ public class DungeonSession {
     public String getSessionKey() {return DungeonSessionManager.buildDungeonSessionKey(this.entranceUUID);}
     public boolean isSafeToSerialize() {return this.safeToSerialize;}
     public DungeonStats getStats(WDPlayer player) {return this.playerStats.get(player.getUUID());}
-    public DungeonStats getStats(String uuid) {return this.playerStats.get(uuid);}
+    public HashMap<String, DungeonStats> getPlayerStats() {return this.playerStats;}
 
     public enum DungeonExitBehavior {DESTROY, RANDOMIZE, RESET, NOTHING}
 
@@ -60,71 +62,89 @@ public class DungeonSession {
         this.entranceLevelKey = entranceLevelKey;
         this.template = template;
         WildDungeons.getLogger().info("DUNGEON MATERIALS: {}", this.getTemplate().materials().size());
-
     }
 
-    public void generateFloor(int index) {
+    public void generateFloor(int index, Consumer<Void> spawnPlayerCallback) {
         WDProfiler.INSTANCE.start();
         safeToSerialize = false;
-
-        WeightedPool<String> destinations = floors.size() == getTemplate().floorTemplates().size()-1 ?
-                new WeightedPool<String>().add("win", 1) :
-                new WeightedPool<String>().add(""+(index+1), 1);
-
-        getTemplate().floorTemplates().get(floors.size()).getRandom().placeInWorld(this, TemplateHelper.EMPTY_BLOCK_POS, destinations);
-
-        this.floors.forEach(dungeonFloor -> {
-            dungeonFloor.getBranches().forEach(branch -> {
-              branch.setTempFloor(null);
-              branch.getRooms().forEach(room -> {
-                  room.setTempBranch(null);
-              });
-            });
-        });
-
-        safeToSerialize = true;
-
+        getTemplate().floorTemplates().get(floors.size()).getRandom().placeInWorld(this, TemplateHelper.EMPTY_BLOCK_POS, onFirstBranchComplete(spawnPlayerCallback), onCompleteCallback(index));
         WDProfiler.INSTANCE.logTimestamp("generateFloor");
         WDProfiler.INSTANCE.end();
     }
 
+    private Consumer<Void> onFirstBranchComplete(Consumer<Void> spawnPlayerCallback) {
+        return (v) -> {
+            WildDungeons.getLogger().info("FIRST BRANCH COMPLETE");
+            spawnPlayerCallback.accept(null);
+            this.floors.forEach(dungeonFloor -> {
+                //todo does this even belong here? We spawn each rift in every floor when *any* floor is generated?
+                DungeonSessionManager.getInstance().server.execute(dungeonFloor::spawnFirstRift);
+                dungeonFloor.getBranches().forEach(branch -> {
+                    branch.setTempFloor(null);
+                    branch.getRooms().forEach(room -> {
+                        room.setTempBranch(null);
+                    });
+                });
+            });
+        };
+    }
+
+    private Consumer<Void> onCompleteCallback(int floorIndex){
+        return (v) -> {
+            WildDungeons.getLogger().info("FLOOR {} COMPLETE", floorIndex);
+            WeightedPool<String> destinations = floors.size() == getTemplate().floorTemplates().size() ?
+                    new WeightedPool<String>().add("win", 1) :
+                    new WeightedPool<String>().add("" + (floorIndex+1), 1);
+            getFloors().get(floorIndex).spawnExitRift(destinations);
+            safeToSerialize = true;//todo this will result in save file failure if the player quits while in the dungeon before its done generating
+        };
+    }
+
+    boolean generating = false;
     public void onEnter(WDPlayer wdPlayer) {
-        playerStatuses.computeIfAbsent(wdPlayer.getUUID(), key -> new PlayerStatus());
-        if (this.playerStatuses.get(wdPlayer.getUUID()).inside) return;
-        this.playerStats.putIfAbsent(wdPlayer.getUUID(), new DungeonStats());
-        this.offsetLives(LIVES_PER_PLAYER);
-        playerStatuses.get(wdPlayer.getUUID()).inside = true;
-        wdPlayer.setCurrentLives(this.lives);
-        wdPlayer.setCurrentDungeon(this);
-        if (floors.isEmpty()) generateFloor(0);
-        floors.getFirst().onEnter(wdPlayer);
-        shutdownTimer = SHUTDOWN_TIME;
-        if (this.playerStats.containsKey(wdPlayer.getUUID())){
-            WDPlayerManager.syncAll(this.playerStatuses.keySet().stream().toList());//only sync if player reenters because we sync all new players anyway
-            return;
+        if (generating) return;
+        if (this.playerUUIDs.contains(wdPlayer.getUUID())) return;
+        if (floors.isEmpty()){
+            generating = true;
+            generateFloor(0, (v)->{
+                WildDungeons.getLogger().info("SPAWNING PLAYER IN DUNGEON");
+                floors.getFirst().onEnter(wdPlayer);
+                generating = false;
+                playerUUIDs.add(wdPlayer.getUUID());
+            });
+        } else {
+            floors.getFirst().onEnter(wdPlayer);
+            playerUUIDs.add(wdPlayer.getUUID());
         }
+        shutdownTimer = SHUTDOWN_TIME;
+
     }
 
     public void onExit(WDPlayer wdPlayer) {
-        if (!this.playerStatuses.containsKey(wdPlayer.getUUID()) || !this.playerStatuses.get(wdPlayer.getUUID()).inside) return;
-        playerStatuses.get(wdPlayer.getUUID()).inside = false;
+        if (!this.playerUUIDs.contains(wdPlayer.getUUID())) return;
+        playerUUIDs.remove(wdPlayer.getUUID());
         wdPlayer.rootRespawn(wdPlayer.getServerPlayer().getServer());
+        wdPlayer.setRiftCooldown(100);
         WildDungeons.getLogger().info("EXITED PLAYER WITH {} RIFT COOLDOWN", wdPlayer.getRiftCooldown());
         WDPlayerManager.syncAll(List.of(wdPlayer.getUUID()));
+    }
+
+    public void addInitialLives(WDPlayer wdPlayer) {
+        if (!this.playerStats.containsKey(wdPlayer.getUUID())){
+            offsetLives(LIVES_PER_PLAYER);
+        }
     }
 
     public int offsetLives(int offset) {
         WildDungeons.getLogger().info("OFFSETTING LIVES");
         this.lives += offset;
-        for (String playerUUID : this.playerStatuses.keySet()) {
+        for (String playerUUID : this.playerUUIDs) {
             WDPlayer player = WDPlayerManager.getInstance().getOrCreateWDPlayer(playerUUID);
             player.setCurrentLives(this.lives);
         }
-        if (this.lives <= 0 && this.playerStatuses.values().stream().anyMatch(value -> value.inside)) {
-            WildDungeons.getLogger().info("SHUTTING DOWN DUE TO LIVES");
+        if (this.lives <= 0 && !this.playerUUIDs.isEmpty()) {
             this.fail();
         }
-        WDPlayerManager.syncAll(this.playerStatuses.keySet().stream().toList());
         return this.lives;
     }
 
@@ -139,7 +159,7 @@ public class DungeonSession {
 
     public Set<WDPlayer> getPlayers() {
         Set<WDPlayer> result = new HashSet<>();
-        for (String uuid : this.playerStatuses.keySet()) {
+        for (String uuid : this.playerUUIDs) {
             result.add(WDPlayerManager.getInstance().getOrCreateWDPlayer(uuid));
         }
         return result;
@@ -157,12 +177,10 @@ public class DungeonSession {
         for (WDPlayer wdPlayer : getPlayers()) {
             this.onExit(wdPlayer);
         }
-        WildDungeons.getLogger().info("SHUTTING DOWN DUE TO FAIL");
         this.handleExitBehavior();
     }
 
     public void handleExitBehavior() {
-        WildDungeons.getLogger().info("SHUTTING DOWN DUE TO EXIT BEHAVIOR");
         switch (this.getTemplate().exitBehavior()) {
             case DESTROY -> {
                 this.shutdown();
@@ -181,12 +199,10 @@ public class DungeonSession {
     }
 
     public void tick() {
-        if (playerStatuses.values().stream().noneMatch(v -> v.inside) && !floors.isEmpty()) {shutdownTimer -= 1;}
-        if (shutdownTimer == 0) {
-            WildDungeons.getLogger().info("SHUTTING DOWN DUE TO TIMER");
-            shutdown();return;}
-        if (playerStatuses.values().stream().anyMatch(v -> v.inside)) floors.forEach(DungeonFloor::tick);
-        playerStatuses.keySet().forEach(uuid -> {
+        if (playerUUIDs.isEmpty() && !floors.isEmpty() && isSafeToSerialize()) {shutdownTimer -= 1;}
+        if (shutdownTimer == 0) {shutdown();return;}
+        if (!playerUUIDs.isEmpty()) floors.forEach(DungeonFloor::tick);
+        playerUUIDs.forEach(uuid -> {
             if (this.playerStats.containsKey(uuid)) {
                 this.playerStats.get(uuid).time++;
             }
@@ -194,7 +210,7 @@ public class DungeonSession {
     }
 
     public void shutdown() {
-        WildDungeons.getLogger().info("SHUTTING DOWN DUNGEON");
+        WildDungeons.getLogger().warn("SHUTTING DOWN DUNGEON SESSION");
         getPlayers().forEach(this::onExit);
         floors.forEach(DungeonFloor::shutdown);
         SaveSystem.DeleteSession(this);
@@ -211,23 +227,6 @@ public class DungeonSession {
 
     public static class DungeonStats {
         public int time = 0;
-        public int floorsFound = 0;
-        public int branchesFound = 0;
-        public int roomsFound = 0;
-        public int mobsKilled = 0;
-        public float damageDealt = 0.0f;
-        public float damageTaken = 0.0f;
-        public int deaths = 0;
-        public int blocksPlaced = 0;
-        public int blocksBroken = 0;
-
-        public int getScore() {
-            return (int) Math.max(0, (damageDealt * 1) + (mobsKilled * 100) + (deaths * -1000));
-        }
-    }
-
-    public static class PlayerStatus {
-        public boolean inside = false;
-        public boolean insideShell = false;
+        public DungeonStats() {}
     }
 }
