@@ -65,7 +65,10 @@ public class DungeonRoom {
     public List<BoundingBox> getBoundingBoxes() {return this.boundingBoxes;}
     public int getIndex() {return this.index;}
     public void setIndex(int index) {this.index = index;}
-    public List<WDPlayer> getPlayers() {return this.playerStatuses.keySet().stream().map(uuid -> WDPlayerManager.getInstance().getOrCreateWDPlayer(uuid)).toList();}
+    public List<WDPlayer> getActivePlayers() {return this.playerStatuses.entrySet().stream().map(e -> {
+        if (e.getValue().inside) return WDPlayerManager.getInstance().getOrCreateWDPlayer(e.getKey());
+        return null;
+    }).filter(Objects::nonNull).toList();}
     public boolean isClear() {return this.clear;}
     public Set<BlockPos> getAlwaysBreakable() {return this.alwaysBreakable;}
     public BlockPos getPosition() {return this.position;}

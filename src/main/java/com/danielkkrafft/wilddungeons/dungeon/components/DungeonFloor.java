@@ -68,7 +68,6 @@ public class DungeonFloor {
     public String getSessionKey() {return this.sessionKey;}
     public int getIndex() {return this.index;}
     public HashMap<ChunkPos, List<Vector2i>> getChunkMap() {return this.chunkMap;}
-    public Set<String> getPlayerUUIDs() {return this.playerStatuses.keySet();}
 
     public DungeonFloor(String templateKey, String sessionKey, BlockPos origin, WeightedPool<String> destinations) {
         this.sessionKey = sessionKey;
