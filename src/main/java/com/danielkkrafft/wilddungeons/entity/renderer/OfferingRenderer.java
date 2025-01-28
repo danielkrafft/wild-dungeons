@@ -128,24 +128,13 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
     }
 
     public void renderPerk(Offering entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
-
         {
             poseStack.pushPose();
             poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
-            poseStack.translate(0.0, 0.0, 0.02);
-            poseStack.mulPose(Axis.ZN.rotationDegrees(entity.tickCount + partialTicks % 360.0f));
-
-            float halfSize = 0.4f;
-
-            VertexConsumer vertexconsumer = buffer.getBuffer(RENDER_TYPE_4);
-            PoseStack.Pose posestack$pose = poseStack.last();
-            vertex(vertexconsumer, posestack$pose, -halfSize, -halfSize, 0.0f, 1.0f, 0xF000F0, 1.0f);
-            vertex(vertexconsumer, posestack$pose, halfSize, -halfSize, 1.0f, 1.0f, 0xF000F0, 1.0f);
-            vertex(vertexconsumer, posestack$pose, halfSize, halfSize, 1.0f, 0.0f, 0xF000F0, 1.0f);
-            vertex(vertexconsumer, posestack$pose, -halfSize, halfSize, 0.0f, 0.0f, 0xF000F0, 1.0f);
-
+            renderPerkRing(poseStack, entity, partialTicks, buffer, 0.4f);
             poseStack.popPose();
         }
+
 
         {
             poseStack.pushPose();
@@ -179,17 +168,56 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
     public void renderRift(Offering entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
         {
             poseStack.pushPose();
-            poseStack.translate(0.0F, 0.0F, 0.0F);
-            poseStack.translate(0.0f, 0.0f, 0.0f);
+            poseStack.translate(0.0f, 0.5f, 0.0f);
             poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
-            poseStack.scale(2.0F, 2.0F, 2.0F);
-            VertexConsumer vertexconsumer = buffer.getBuffer(RENDER_TYPE_6);
+            if (Minecraft.getInstance().player == null) return;
+            float extraScaleFactor = (float) (2.5f - Math.min(entity.position().distanceTo(Minecraft.getInstance().player.position()) / 15.0f, 2.5f));
+            poseStack.scale(0.1F+extraScaleFactor, 0.1F+extraScaleFactor, 0.1F+extraScaleFactor);
+            VertexConsumer vertexconsumer = buffer.getBuffer(RenderType.endPortal());
             PoseStack.Pose posestack$pose = poseStack.last();
-            vertex(vertexconsumer, posestack$pose, -0.5F, -0.25F, 0.0f, 1.0f, packedLight, 1.0f);
-            vertex(vertexconsumer, posestack$pose, 0.5F, -0.25F, 1.0f, 1.0f, packedLight, 1.0f);
-            vertex(vertexconsumer, posestack$pose, 0.5F, 0.75F, 1.0f, 0.0f, packedLight, 1.0f);
-            vertex(vertexconsumer, posestack$pose, -0.5F, 0.75F, 0.0f, 0.0f, packedLight, 1.0f);
+            drawCircle(0.0f, 0.0f, 20, 0.5f, vertexconsumer, posestack$pose, packedLight);
+            //renderPerkRing(poseStack, entity, partialTicks, buffer, 0.6f);
             poseStack.popPose();
+        }
+
+
+    }
+
+    public void renderPerkRing(PoseStack poseStack, Offering entity, float partialTicks, MultiBufferSource buffer, float radius) {
+        {
+            poseStack.pushPose();
+            poseStack.translate(0.0, 0.0, 0.02);
+            poseStack.mulPose(Axis.ZN.rotationDegrees(entity.tickCount + partialTicks % 360.0f));
+
+            VertexConsumer vertexconsumer = buffer.getBuffer(RENDER_TYPE_4);
+            PoseStack.Pose posestack$pose = poseStack.last();
+            vertex(vertexconsumer, posestack$pose, -radius, -radius, 0.0f, 1.0f, 0xF000F0, 1.0f);
+            vertex(vertexconsumer, posestack$pose, radius, -radius, 1.0f, 1.0f, 0xF000F0, 1.0f);
+            vertex(vertexconsumer, posestack$pose, radius, radius, 1.0f, 0.0f, 0xF000F0, 1.0f);
+            vertex(vertexconsumer, posestack$pose, -radius, radius, 0.0f, 0.0f, 0xF000F0, 1.0f);
+
+            poseStack.popPose();
+        }
+    }
+
+    public void drawCircle(float centerX, float centerY, int vertices, float radius, VertexConsumer vertexConsumer, PoseStack.Pose poseStack$pose, int packedLight) {
+        if (vertices <= 2) return;
+
+        for (int v = 0; v < vertices; v++) {
+            float radians = Mth.PI*2 / vertices * v;
+            float radians2 = Mth.PI*2 / vertices * (v+1);
+            float xPos = (centerX + (radius * Mth.cos(radians)));
+            float xPos2 = (centerX + (radius * Mth.cos(radians2)));
+            float yPos = (centerY + (radius * Mth.sin(radians)));
+            float yPos2 = (centerY + (radius * Mth.sin(radians2)));
+            float uPos = 0.5f + (Mth.cos(radians) * 0.5f);
+            float uPos2 = 0.5f + (Mth.cos(radians2) * 0.5f);
+            float vPos = 0.5f + (Mth.sin(radians) * 0.5f);
+            float vPos2 = 0.5f + (Mth.sin(radians2) * 0.5f);
+            vertex(vertexConsumer, poseStack$pose, centerX, centerY, 0.5f, 0.5f, packedLight, 1.0f);
+            vertex(vertexConsumer, poseStack$pose, centerX, centerY, 0.5f, 0.5f, packedLight, 1.0f);
+            vertex(vertexConsumer, poseStack$pose, xPos, yPos, uPos, vPos, packedLight, 1.0f);
+            vertex(vertexConsumer, poseStack$pose, xPos2, yPos2, uPos2, vPos2, packedLight, 1.0f);
         }
     }
 
@@ -205,8 +233,8 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
             float bubbleScale = (1.0f - entity.getBubbleTimer() / Offering.BUBBLE_ANIMATION_TIME);
             poseStack.pushPose();
             poseStack.scale(bubbleScale, bubbleScale, bubbleScale);
-            poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
             if (entity.getOfferingType().equals(Offering.Type.RIFT)) poseStack.translate(0.0f,0.5f,0.01f);
+            poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
 
             poseStack.pushPose();
             float xPos = ((float) MESSAGE_BUBBLE_TEXTURE_RESOLUTION.x / MESSAGE_BUBBLE_TEXTURE_RESOLUTION.y) * 0.5f;
