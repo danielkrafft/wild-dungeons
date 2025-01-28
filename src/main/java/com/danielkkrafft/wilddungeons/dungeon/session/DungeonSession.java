@@ -65,7 +65,7 @@ public class DungeonSession {
 
     }
 
-    public void generateFloor(int index, Consumer<Void> onCompleteFunction) {
+    public void generateFloor(int index, Consumer<Void> spawnPlayerCallback) {
         WDProfiler.INSTANCE.start();
         safeToSerialize = false;
 
@@ -74,7 +74,9 @@ public class DungeonSession {
                 new WeightedPool<String>().add(""+(index+1), 1);
 
         getTemplate().floorTemplates().get(floors.size()).getRandom().placeInWorld(this, TemplateHelper.EMPTY_BLOCK_POS,(v) -> {
+            spawnPlayerCallback.accept(null);
             this.floors.forEach(dungeonFloor -> {
+                //todo does this even belong here? We spawn each rift in every floor when *any* floor is generated?
                 dungeonFloor.spawnRifts(destinations);
                 dungeonFloor.getBranches().forEach(branch -> {
                     branch.setTempFloor(null);
@@ -83,8 +85,7 @@ public class DungeonSession {
                     });
                 });
             });
-            safeToSerialize = true;
-            onCompleteFunction.accept(null);
+            safeToSerialize = true;//todo this will result in save file failure if the player quits while in the dungeon before its done generating
         });
         WDProfiler.INSTANCE.logTimestamp("generateFloor");
         WDProfiler.INSTANCE.end();

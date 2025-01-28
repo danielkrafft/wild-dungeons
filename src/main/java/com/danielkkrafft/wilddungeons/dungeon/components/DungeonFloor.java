@@ -27,6 +27,7 @@ import org.joml.Vector2i;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 public class DungeonFloor {
     @IgnoreSerialization
@@ -68,13 +69,26 @@ public class DungeonFloor {
         WDProfiler.INSTANCE.logTimestamp("DungeonFloor::new");
     }
 
-    public CompletableFuture<Void> asyncGenerate() {
-        return CompletableFuture.runAsync(() -> {
-            for (int i = 0; i < getTemplate().branchTemplates().size(); i++) {
-                DungeonBranchTemplate nextBranch = getTemplate().branchTemplates().get(i).getRandom();
+
+    //first future should generate just the first branch, then the second future should generate the second branch, and so on
+    //each future should complete before the next one starts
+    public CompletableFuture<Void> asyncGenerateBranches(Consumer<Void> onFirstBranchComplete) {
+        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+            DungeonBranchTemplate nextBranch = getTemplate().branchTemplates().get(0).getRandom();
+            nextBranch.placeInWorld(this, origin);
+        }).thenAccept(result -> {
+            this.spawnPoint = this.dungeonBranches.getFirst().getSpawnPoint();
+            onFirstBranchComplete.accept(null);
+        });
+
+        for (int i = 1; i < getTemplate().branchTemplates().size(); i++) {
+            final int index = i;
+            future = future.thenCompose(result -> CompletableFuture.runAsync(() -> {
+                DungeonBranchTemplate nextBranch = getTemplate().branchTemplates().get(index).getRandom();
                 nextBranch.placeInWorld(this, origin);
-            }
-        }).thenAccept(result -> {this.spawnPoint = this.dungeonBranches.getFirst().getSpawnPoint();});
+            }));
+        }
+        return future;
     }
 
     public void spawnRifts(WeightedPool<String> destinations) {

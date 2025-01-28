@@ -21,10 +21,9 @@ public record DungeonFloorTemplate(String name, DungeonRegistry.DungeonLayout<Du
 
     public DungeonFloorTemplate pool(WeightedPool<DungeonFloorTemplate> pool, Integer weight) {pool.add(this, weight); return this;}
 
-    public void placeInWorld(DungeonSession session, BlockPos position, Consumer<Void> onCompleteFunction) {
+    public void placeInWorld(DungeonSession session, BlockPos position, Consumer<Void> onFirstBranchComplete) {
         WildDungeons.getLogger().info("PLACING FLOOR: {}", this.name());
         DungeonFloor newFloor = new DungeonFloor(this.name, session.getSessionKey(), position);
-        CompletableFuture<Void> generationFuture = newFloor.asyncGenerate();
-        generationFuture.thenAccept(result -> onCompleteFunction.accept(null));
+        CompletableFuture<Void> generationFuture = newFloor.asyncGenerateBranches(onFirstBranchComplete);
     }
 }
