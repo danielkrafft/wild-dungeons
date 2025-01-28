@@ -30,7 +30,6 @@ public class WDPlayer {
     private HashMap<Integer, SavedTransform> positions = new HashMap<>();
     private String recentEssence = "essence:overworld";
     private String UUID;
-    @IgnoreSerialization //always start delayed when booting and creating new wd players to prevent loading out of order
     private int riftCooldown = 100;
 
     private String currentDungeon = "none";
