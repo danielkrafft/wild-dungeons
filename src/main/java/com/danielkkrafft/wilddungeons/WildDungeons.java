@@ -66,6 +66,7 @@ public class WildDungeons {
 
         NeoForge.EVENT_BUS.register(WDEvents.class);
         NeoForge.EVENT_BUS.register(WDPlayerManager.class);
+        NeoForge.EVENT_BUS.register(CombatRoom.class);
         NeoForge.EVENT_BUS.register(DungeonPerk.class);
     }
 
