@@ -105,17 +105,22 @@ public class DungeonSession {
         if (generating) return;
         PlayerStatus status = this.playerStatuses.get(wdPlayer.getUUID());
         if (status !=null && status.inside) return;
+        playerStats.putIfAbsent(wdPlayer.getUUID(), new DungeonStats());
+        playerStatuses.putIfAbsent(wdPlayer.getUUID(), new PlayerStatus());
         if (floors.isEmpty()){
             generating = true;
             generateFloor(0, (v)->{
                 WildDungeons.getLogger().info("SPAWNING PLAYER IN DUNGEON");
                 floors.getFirst().onEnter(wdPlayer);
+                this.playerStatuses.get(wdPlayer.getUUID()).inside = true;
                 generating = false;
             });
         } else {
             floors.getFirst().onEnter(wdPlayer);
+            this.playerStatuses.get(wdPlayer.getUUID()).inside = true;
         }
         shutdownTimer = SHUTDOWN_TIME;
+
     }
 
     public void onExit(WDPlayer wdPlayer) {

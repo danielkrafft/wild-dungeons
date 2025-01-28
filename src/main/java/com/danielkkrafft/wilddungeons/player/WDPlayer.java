@@ -215,7 +215,8 @@ public class WDPlayer {
             positions.put(oldFloor.getIndex(), oldPosition);
         }
 
-        SavedTransform newPosition = positions.getOrDefault(newFloor.getIndex(), new SavedTransform(new Vec3(newFloor.getSpawnPoint().getX(), newFloor.getSpawnPoint().getY(), newFloor.getSpawnPoint().getZ()), 0.0, 0.0, newFloor.getLevelKey()));
+        SavedTransform newPosition = positions.getOrDefault(newFloor.getIndex(),
+                new SavedTransform(new Vec3(newFloor.getSpawnPoint().getX(), newFloor.getSpawnPoint().getY(), newFloor.getSpawnPoint().getZ()), 0.0, 0.0, newFloor.getLevelKey()));
         WDPlayer.setRespawnPosition(newPosition, serverPlayer);
 
         if (wdPlayer.getCurrentFloor() != null) wdPlayer.getCurrentFloor().onExit(wdPlayer);
