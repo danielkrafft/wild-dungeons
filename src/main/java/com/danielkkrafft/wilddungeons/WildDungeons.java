@@ -9,6 +9,8 @@ import com.danielkkrafft.wilddungeons.entity.WDEntities;
 import com.danielkkrafft.wilddungeons.entity.boss.BreezeGolem;
 import com.danielkkrafft.wilddungeons.entity.boss.MutantBogged;
 import com.danielkkrafft.wilddungeons.entity.renderer.*;
+import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundLoadingScreenPacket;
+import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundNullScreenPacket;
 import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundOpenConnectionBlockUIPacket;
 import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundUpdateWDPlayerPacket;
 import com.danielkkrafft.wilddungeons.network.serverbound.ServerboundUpdateConnectionBlockPacket;
@@ -83,6 +85,8 @@ public class WildDungeons {
         registrar.playToClient(ClientboundUpdateWDPlayerPacket.TYPE, ClientboundUpdateWDPlayerPacket.STREAM_CODEC, ClientboundUpdateWDPlayerPacket::handle);
         registrar.playToClient(UpdateDimensionsPacket.TYPE, UpdateDimensionsPacket.STREAM_CODEC, UpdateDimensionsPacket::handle);
         registrar.playToClient(ClientboundOpenConnectionBlockUIPacket.TYPE, ClientboundOpenConnectionBlockUIPacket.STREAM_CODEC, ClientboundOpenConnectionBlockUIPacket::handle);
+        registrar.playToClient(ClientboundNullScreenPacket.TYPE, ClientboundNullScreenPacket.STREAM_CODEC, ClientboundNullScreenPacket::handle);
+        registrar.playToClient(ClientboundLoadingScreenPacket.TYPE, ClientboundLoadingScreenPacket.STREAM_CODEC, ClientboundLoadingScreenPacket::handle);
 
         registrar.playToServer(ServerboundUpdateConnectionBlockPacket.TYPE, ServerboundUpdateConnectionBlockPacket.STREAM_CODEC, ServerboundUpdateConnectionBlockPacket::handle);
     }

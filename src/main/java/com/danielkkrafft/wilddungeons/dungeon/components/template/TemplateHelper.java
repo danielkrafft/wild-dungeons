@@ -6,18 +6,16 @@ import com.danielkkrafft.wilddungeons.block.WDBlocks;
 import com.danielkkrafft.wilddungeons.dungeon.components.ConnectionPoint;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
 import com.danielkkrafft.wilddungeons.entity.WDEntities;
+import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import com.danielkkrafft.wilddungeons.util.debug.WDProfiler;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.DoubleTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.Clearable;
-import net.minecraft.world.RandomizableContainer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
@@ -36,10 +34,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.BitSetDiscreteVoxelShape;
 import net.minecraft.world.phys.shapes.DiscreteVoxelShape;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class TemplateHelper {
     public static final BlockPos EMPTY_BLOCK_POS = new BlockPos(0, 0, 0);
@@ -115,7 +110,7 @@ public class TemplateHelper {
         };
     }
 
-    public static StructurePlaceSettings handleRoomTransformation(ConnectionPoint entrancePoint, ConnectionPoint exitPoint, RandomSource random) {
+    public static StructurePlaceSettings handleRoomTransformation(ConnectionPoint entrancePoint, ConnectionPoint exitPoint) {
         StructurePlaceSettings settings = new StructurePlaceSettings();
 
         if (entrancePoint.getDirection(settings).getAxis() == Direction.Axis.Y) {
@@ -124,7 +119,7 @@ public class TemplateHelper {
             return settings;
         }
 
-        settings.setMirror(Util.getRandom(Mirror.values(), random));
+        settings.setMirror(RandomUtil.randomFromList(Arrays.stream(Mirror.values()).toList()));
         if (exitPoint.getDirection(exitPoint.getRoom().getSettings()) == entrancePoint.getDirection(settings)) {
             settings.setRotation(Rotation.CLOCKWISE_180);
         } else if (exitPoint.getDirection(exitPoint.getRoom().getSettings()) == entrancePoint.getDirection(settings).getClockWise()) {
@@ -263,7 +258,7 @@ public class TemplateHelper {
         return input;
     }
 
-    public static boolean placeInWorld(StructureTemplate template, DungeonRoom room, DungeonMaterial material, ServerLevelAccessor serverLevel, BlockPos offset, BlockPos pos, StructurePlaceSettings settings, RandomSource random, int flags) {
+    public static boolean placeInWorld(StructureTemplate template, DungeonRoom room, DungeonMaterial material, ServerLevelAccessor serverLevel, BlockPos offset, BlockPos pos, StructurePlaceSettings settings, int flags) {
         if (template.palettes.isEmpty()) {
             return false;
         } else {
@@ -304,9 +299,9 @@ public class TemplateHelper {
                             if (structuretemplate$structureblockinfo.nbt() != null) {
                                 BlockEntity blockentity1 = serverLevel.getBlockEntity(blockpos);
                                 if (blockentity1 != null) {
-                                    if (blockentity1 instanceof RandomizableContainer) {
-                                        structuretemplate$structureblockinfo.nbt().putLong("LootTableSeed", random.nextLong());
-                                    }
+//                                    if (blockentity1 instanceof RandomizableContainer) {
+//                                        structuretemplate$structureblockinfo.nbt().putLong("LootTableSeed", random.nextLong());
+//                                    }
 
                                     blockentity1.loadWithComponents(structuretemplate$structureblockinfo.nbt(), serverLevel.registryAccess());
                                 }

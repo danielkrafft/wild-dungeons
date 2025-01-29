@@ -127,7 +127,7 @@ public class DungeonBranch {
                 ConnectionPoint exitPoint = exitPoints.remove(new Random().nextInt(exitPoints.size()));
 
 
-                StructurePlaceSettings settings = TemplateHelper.handleRoomTransformation(entrancePoint, exitPoint, floor.getLevel().getRandom());
+                StructurePlaceSettings settings = TemplateHelper.handleRoomTransformation(entrancePoint, exitPoint);
 
 
                 ConnectionPoint proposedPoint = ConnectionPoint.copy(entrancePoint);
@@ -176,7 +176,7 @@ public class DungeonBranch {
         }
 
         ConnectionPoint exitPoint = exitPoints.getLast();
-        StructurePlaceSettings settings = TemplateHelper.handleRoomTransformation(entrancePoint, exitPoint, floor.getLevel().getRandom());
+        StructurePlaceSettings settings = TemplateHelper.handleRoomTransformation(entrancePoint, exitPoint);
         ConnectionPoint proposedPoint = ConnectionPoint.copy(entrancePoint);
         BlockPos.MutableBlockPos position = new BlockPos.MutableBlockPos();
         position.set(ConnectionPoint.getOffset(settings, TemplateHelper.EMPTY_BLOCK_POS, proposedPoint, exitPoint).offset(exitPoint.getDirection(exitPoint.getRoom().getSettings()).getNormal()));
