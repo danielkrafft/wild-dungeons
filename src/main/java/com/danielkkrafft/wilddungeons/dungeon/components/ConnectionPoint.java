@@ -1,5 +1,6 @@
 package com.danielkkrafft.wilddungeons.dungeon.components;
 
+import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
@@ -12,6 +13,7 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -22,6 +24,7 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import net.minecraft.world.phys.Vec3;
 import org.joml.Vector2i;
 
 import java.util.*;
@@ -213,6 +216,19 @@ public class ConnectionPoint {
     }
 
     public void block(ServerLevel level) {
+        this.getRoom().getActivePlayers().forEach(wdPlayer -> {
+            if (this.getBoundingBox(this.getRoom().getSettings(), this.getRoom().getPosition()).isInside(wdPlayer.getServerPlayer().blockPosition())) {
+                Vec3 position = wdPlayer.getServerPlayer().position();
+                Vec3i normal = this.getConnectedPoint().getDirection(this.getConnectedPoint().getRoom().getSettings()).getNormal();
+                WildDungeons.getLogger().info("CONNECTED POINT NORMAL: {}", normal);
+                Vec3 newPosition = new Vec3(
+                        position.get(Direction.Axis.X) + normal.getX() * 1.5f,
+                        position.get(Direction.Axis.Y) + normal.getY() * 1.5f,
+                        position.get(Direction.Axis.Z) + normal.getZ() * 1.5f);
+                WildDungeons.getLogger().info("MOVING FROM {} TO {}", position, newPosition);
+                wdPlayer.getServerPlayer().moveTo(newPosition);
+            }
+        });
         getPositions(this.getRoom().getSettings(), this.getRoom().getPosition()).forEach((pos) -> level.setBlock(pos, this.getRoom().getMaterial().getBasic(0), 2));
         WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::block");
     }

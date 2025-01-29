@@ -112,16 +112,7 @@ public class DungeonRoom {
             this.riftUUIDs.add(rift.getStringUUID());
         });
 
-        List<DungeonRegistry.OfferingTemplate> entries = DungeonRegistry.OFFERING_TEMPLATE_TABLE_REGISTRY.get("BASIC_SHOP_TABLE").randomResults(this.getTemplate().offerings().size(), (int) this.getDifficulty() * this.getTemplate().offerings().size(), 1.2f);
-        getTemplate().offerings().forEach(pos -> {
-            if (entries.isEmpty()) return;
-            Offering next = entries.removeFirst().asOffering(this.getBranch().getFloor().getLevel());
-            Vec3 pos1 = StructureTemplate.transform(pos, this.getSettings().getMirror(), this.getSettings().getRotation(), TemplateHelper.EMPTY_BLOCK_POS).add(this.position.getX(), this.position.getY(), this.position.getZ());
-            WildDungeons.getLogger().info("ADDING OFFERING AT {}", pos1);
-            next.setPos(pos1);
-            level.addFreshEntity(next);
-            this.offeringUUIDs.add(next.getStringUUID());
-        });
+        this.processOfferings();
 
         DungeonSessionManager.getInstance().server.execute(this::processLootBlocks);
 
@@ -132,6 +123,19 @@ public class DungeonRoom {
 
         this.handleChunkMap();
         WDProfiler.INSTANCE.logTimestamp("DungeonRoom::new");
+    }
+
+    public void processOfferings() {
+        List<DungeonRegistry.OfferingTemplate> entries = DungeonRegistry.OFFERING_TEMPLATE_TABLE_REGISTRY.get("BASIC_SHOP_TABLE").randomResults(this.getTemplate().offerings().size(), (int) this.getDifficulty() * this.getTemplate().offerings().size(), 1.2f);
+        getTemplate().offerings().forEach(pos -> {
+            if (entries.isEmpty()) return;
+            Offering next = entries.removeFirst().asOffering(this.getBranch().getFloor().getLevel());
+            Vec3 pos1 = StructureTemplate.transform(pos, this.getSettings().getMirror(), this.getSettings().getRotation(), TemplateHelper.EMPTY_BLOCK_POS).add(this.position.getX(), this.position.getY(), this.position.getZ());
+            WildDungeons.getLogger().info("ADDING OFFERING AT {}", pos1);
+            next.setPos(pos1);
+            this.getBranch().getFloor().getLevel().addFreshEntity(next);
+            this.offeringUUIDs.add(next.getStringUUID());
+        });
     }
 
     public void processConnectionPoints(DungeonFloor floor) {
@@ -191,14 +195,11 @@ public class DungeonRoom {
         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
         int remainingChests = maxChests;
         List<DungeonRegistry.LootEntry> entries = DungeonRegistry.LOOT_TABLE_REGISTRY.get("BASIC_LOOT_TABLE").randomResults(5, (int) (5 * this.getDifficulty()), 1.5f);
-        WildDungeons.getLogger().info("PICKED OUT {} LOOT ENTRIES", entries.size());
 
         for (StructureTemplate.StructureBlockInfo structureBlockInfo : chosenBlocks) {
             mutableBlockPos.set(TemplateHelper.transform(structureBlockInfo.pos(), this));
-            WildDungeons.getLogger().info("SEARCHING FOR BLOCK ENTITY AT {} IN LEVEL {}", mutableBlockPos, getBranch().getFloor().getLevel().dimension());
 
             if (getBranch().getFloor().getLevel().getBlockEntity(mutableBlockPos) instanceof BaseContainerBlockEntity container) {
-                WildDungeons.getLogger().info("FOUND ONE");
                 int slots = container.getContainerSize();
                 for (int i = 0; i < entries.size() / remainingChests; i++) {
                     container.setItem(RandomUtil.randIntBetween(0, slots-1), entries.removeFirst().asItemStack());
