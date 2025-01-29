@@ -112,16 +112,16 @@ public class DungeonSession {
                 playerStatuses.putIfAbsent(wdPlayer.getUUID(), new PlayerStatus());
                 this.playerStatuses.get(wdPlayer.getUUID()).inside = true;
                 playerStats.putIfAbsent(wdPlayer.getUUID(), new DungeonStats());
-                this.addInitialLives(wdPlayer);
                 floors.getFirst().onEnter(wdPlayer);
+                this.addInitialLives(wdPlayer);
                 generating = false;
             });
         } else {
             playerStatuses.putIfAbsent(wdPlayer.getUUID(), new PlayerStatus());
             this.playerStatuses.get(wdPlayer.getUUID()).inside = true;
             playerStats.putIfAbsent(wdPlayer.getUUID(), new DungeonStats());
-            this.addInitialLives(wdPlayer);
             floors.getFirst().onEnter(wdPlayer);
+            this.addInitialLives(wdPlayer);
         }
         shutdownTimer = SHUTDOWN_TIME;
     }
