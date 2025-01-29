@@ -1,5 +1,6 @@
 package com.danielkkrafft.wilddungeons.dungeon.components.template;
 
+import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonMaterial;
@@ -19,6 +20,12 @@ public record DungeonBranchTemplate(String name, DungeonRegistry.DungeonLayout<D
 
     public void placeInWorld(DungeonFloor floor, BlockPos origin) {
         DungeonBranch newBranch = new DungeonBranch(this.name, floor, origin);
-        newBranch.generateDungeonBranch();
+        int tries = 0;
+        while (tries < 50 && !newBranch.generateDungeonBranch()) {
+            tries++;
+        }
+        if (tries >= 50) {
+            WildDungeons.getLogger().warn("Failed to generate branch {} after 50 tries", this.name);
+        }
     }
 }
