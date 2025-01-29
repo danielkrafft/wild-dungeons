@@ -1,6 +1,6 @@
 package com.danielkkrafft.wilddungeons.util;
 
-import net.minecraft.util.RandomSource;
+import java.util.List;
 
 public class RandomUtil {
 
@@ -12,8 +12,12 @@ public class RandomUtil {
         return (float) (Math.random() * (max - min) + min);
     }
 
-    public static boolean sample(RandomSource random, float threshold) {
-        float f = random.nextFloat();
+    public static <T> T randomFromList(List<T> values) {
+        return values.get(randIntBetween(0, values.size()-1));
+    }
+
+    public static boolean sample(double threshold) {
+        double f = Math.random();
         return f > threshold;
     }
 
