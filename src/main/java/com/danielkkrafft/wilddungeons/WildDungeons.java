@@ -15,10 +15,7 @@ import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundOpenConnect
 import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundUpdateWDPlayerPacket;
 import com.danielkkrafft.wilddungeons.network.serverbound.ServerboundUpdateConnectionBlockPacket;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
-import com.danielkkrafft.wilddungeons.registry.WDBlockEntities;
-import com.danielkkrafft.wilddungeons.registry.WDEvents;
-import com.danielkkrafft.wilddungeons.registry.WDItems;
-import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
+import com.danielkkrafft.wilddungeons.registry.*;
 import com.danielkkrafft.wilddungeons.util.FileUtil;
 import com.danielkkrafft.wilddungeons.util.Serializer;
 import com.danielkkrafft.wilddungeons.world.dimension.EmptyGenerator;
@@ -62,6 +59,8 @@ public class WildDungeons {
         WDFluids.FLUIDS.register(modEventBus);
         WDBlocks.BLOCKS.register(modEventBus);
         WDBlocks.CREATIVE_MODE_TABS.register(modEventBus);
+        WDStructureTypes.STRUCTURE_TYPES.register(modEventBus);
+        WDStructurePieceTypes.STRUCTURE_PIECE_TYPES.register(modEventBus);
         WDSoundEvents.SOUND_EVENTS.register(modEventBus);
 
         modEventBus.register(WildDungeons.class);

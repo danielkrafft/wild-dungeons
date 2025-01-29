@@ -1,0 +1,14 @@
+{
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 45422145,
+    "separation": 4,
+    "spacing": 8
+  },
+  "structures": [
+    {
+      "structure": "wilddungeons:rift",
+      "weight": 1
+    }
+  ]
+}

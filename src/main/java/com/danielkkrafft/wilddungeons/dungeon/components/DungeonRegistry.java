@@ -59,6 +59,10 @@ public class DungeonRegistry {
     public static final WeightedPool<DungeonFloorTemplate> FLOOR_POOL = new WeightedPool<>();
     public static final WeightedPool<DungeonTemplate> DUNGEON_POOL = new WeightedPool<>();
 
+    public static WeightedPool<OfferingTemplate> OVERWORLD_RIFT_POOL = new WeightedPool<>();
+    public static WeightedPool<OfferingTemplate> NETHER_RIFT_POOL = new WeightedPool<>();
+    public static WeightedPool<OfferingTemplate> END_RIFT_POOL = new WeightedPool<>();
+
 
     public static void setupDungeons() {
 
@@ -435,6 +439,10 @@ public class DungeonRegistry {
         OFFERING_TEMPLATE_REGISTRY.add(new OfferingTemplate("BOW_DAMAGE_INCREASE_NETHER", Offering.Type.PERK, 1, "BOW_DAMAGE_INCREASE", Offering.CostType.NETHER_XP_LEVEL, 8, 1.5f));
         OFFERING_TEMPLATE_REGISTRY.add(new OfferingTemplate("BOW_DAMAGE_INCREASE_END", Offering.Type.PERK, 1, "BOW_DAMAGE_INCREASE", Offering.CostType.END_XP_LEVEL, 8, 1.5f));
 
+        OFFERING_TEMPLATE_REGISTRY.add(new OfferingTemplate("OVERWORLD_TEST_RIFT", Offering.Type.RIFT, 1, "dungeon_1", Offering.CostType.XP_LEVEL, 30, 1.5f).pool(OVERWORLD_RIFT_POOL, 1));
+        OFFERING_TEMPLATE_REGISTRY.add(new OfferingTemplate("NETHER_TEST_RIFT", Offering.Type.RIFT, 1, "dungeon_1", Offering.CostType.NETHER_XP_LEVEL, 30, 1.5f).pool(NETHER_RIFT_POOL, 1));
+        OFFERING_TEMPLATE_REGISTRY.add(new OfferingTemplate("END_TEST_RIFT", Offering.Type.RIFT, 1, "dungeon_1", Offering.CostType.END_XP_LEVEL, 30, 1.5f).pool(END_RIFT_POOL, 1));
+
         /*
         OFFERING TEMPLATE POOLS
          */
@@ -489,7 +497,7 @@ public class DungeonRegistry {
         private final HashMap<String, T> registry;
         public DungeonComponentRegistry() { registry = new HashMap<>(); }
 
-        public void add(T component) { registry.put(component.name(), component); }
+        public T add(T component) { registry.put(component.name(), component); return component;}
         public T get(String key) { return registry.get(key); }
     }
 
@@ -527,5 +535,7 @@ public class DungeonRegistry {
             int adjustedCost = RandomUtil.randIntBetween((int) (costAmount / deviance), (int) (costAmount * deviance));
             return new Offering(level, type, adjustedAmount, id, costType, adjustedCost);
         }
+
+        public OfferingTemplate pool(WeightedPool<OfferingTemplate> pool, int weight) {pool.add(this, weight); return this;}
     }
 }
