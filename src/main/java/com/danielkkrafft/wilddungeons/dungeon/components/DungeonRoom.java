@@ -77,10 +77,9 @@ public class DungeonRoom {
         this.branch = branch;
         this.setIndex(this.branch.getRooms().size());
         this.branch.getRooms().add(this);
-
         this.templateKey = templateKey;
-        WildDungeons.getLogger().info("BRANCH ROOM MATERIALS: {}", branch.getMaterials().size());
-        if (this.getTemplate().materials() != null) WildDungeons.getLogger().info("THIS ROOM MATERIALS: {}", this.getTemplate().materials().size());
+        WildDungeons.getLogger().info("ADDING ROOM: {} AT INDEX {}, {}", getTemplate().name(), this.getBranch().getIndex(), this.getIndex());
+
         this.materialKey = this.getTemplate().materials() == null ? branch.getMaterials().getRandom().name() : this.getTemplate().materials().getRandom().name();
         this.sessionKey = branch.getSession().getSessionKey();
         this.mirror = settings.getMirror().name();
@@ -124,7 +123,7 @@ public class DungeonRoom {
             this.offeringUUIDs.add(next.getStringUUID());
         });
 
-        this.processLootBlocks();
+        DungeonSessionManager.getInstance().server.execute(this::processLootBlocks);
 
         if (getTemplate().spawnPoint() != null) {
             this.spawnPoint = TemplateHelper.transform(getTemplate().spawnPoint(), this);
@@ -180,9 +179,8 @@ public class DungeonRoom {
     public void processLootBlocks() {
         if (this.getTemplate().lootBlocks().isEmpty()) return;
 
-        WildDungeons.getLogger().info("SETTING UP LOOT");
-
         List<StructureTemplate.StructureBlockInfo> lootBlocks = this.getTemplate().lootBlocks();
+        WildDungeons.getLogger().info("FOUND {} LOOT BLOCKS", lootBlocks.size());
         List<StructureTemplate.StructureBlockInfo> chosenBlocks = new ArrayList<>();
         int maxChests = 3;
 
@@ -193,12 +191,14 @@ public class DungeonRoom {
         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
         int remainingChests = maxChests;
         List<DungeonRegistry.LootEntry> entries = DungeonRegistry.LOOT_TABLE_REGISTRY.get("BASIC_LOOT_TABLE").randomResults(5, (int) (5 * this.getDifficulty()), 1.5f);
+        WildDungeons.getLogger().info("PICKED OUT {} LOOT ENTRIES", entries.size());
 
         for (StructureTemplate.StructureBlockInfo structureBlockInfo : chosenBlocks) {
             mutableBlockPos.set(TemplateHelper.transform(structureBlockInfo.pos(), this));
+            WildDungeons.getLogger().info("SEARCHING FOR BLOCK ENTITY AT {} IN LEVEL {}", mutableBlockPos, getBranch().getFloor().getLevel().dimension());
 
-            if (branch.getFloor().getLevel().getBlockEntity(mutableBlockPos) instanceof BaseContainerBlockEntity container) {
-
+            if (getBranch().getFloor().getLevel().getBlockEntity(mutableBlockPos) instanceof BaseContainerBlockEntity container) {
+                WildDungeons.getLogger().info("FOUND ONE");
                 int slots = container.getContainerSize();
                 for (int i = 0; i < entries.size() / remainingChests; i++) {
                     container.setItem(RandomUtil.randIntBetween(0, slots-1), entries.removeFirst().asItemStack());
@@ -238,7 +238,6 @@ public class DungeonRoom {
         }
 
         chunkPosSet.forEach(pos -> {
-            WildDungeons.getLogger().info("ADDING ROOM {} TO SET AT CHUNKPOS {} WITH BRANCH INDEX {} AND ROOM INDEX {}", this.getTemplate().name(), pos, branch.getIndex(), this.index);
             branch.getFloor().getChunkMap().computeIfAbsent(pos, k -> new ArrayList<>()).add(new Vector2i(branch.getIndex(), this.index));
         });
         WDProfiler.INSTANCE.logTimestamp("DungeonRoom::handleChunkMap");
