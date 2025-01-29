@@ -68,7 +68,10 @@ public class ConnectionPoint {
         if (!this.isConnected()) return null;
         return this.getRoom().getBranch().getFloor().getBranches().get(this.connectedBranchIndex).getRooms().get(this.connectedRoomIndex).getConnectionPoints().get(this.connectedPointIndex);
     }
-    public void setConnectedPoint(ConnectionPoint connectedPoint) {this.connectedPointIndex = connectedPoint.index; this.connectedRoomIndex = connectedPoint.getRoom().getIndex(); this.connectedBranchIndex = connectedPoint.getRoom().getBranch().getIndex();}
+    public void setConnectedPoint(ConnectionPoint connectedPoint) {
+        this.connectedPointIndex = connectedPoint.index;
+        this.connectedRoomIndex = connectedPoint.getRoom().getIndex();
+        this.connectedBranchIndex = connectedPoint.getRoom().getBranch().getIndex();}
     public void incrementFailures() {this.failures += 1;}
     public BlockPos getOrigin(StructurePlaceSettings settings, BlockPos position) {BoundingBox transBox = getBoundingBox(settings, position); return new BlockPos(transBox.minX(), transBox.minY(), transBox.minZ());}
     public void addPosition(BlockPos pos) {this.boundingBox.encapsulate(pos);}
@@ -244,5 +247,20 @@ public class ConnectionPoint {
     public void unBlock(ServerLevel level) {
         unBlockedBlockStates.forEach((pos, blockState) -> level.setBlock(pos, TemplateHelper.fixBlockStateProperties(blockStateFromString(blockState), this.getRoom().getSettings()), 2));
         WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::unBlock");
+    }
+
+    public void unSetConnectedPoint() {
+        this.connectedPointIndex = -1;
+        this.connectedBranchIndex = -1;
+        this.connectedRoomIndex = -1;
+        resetFailures();
+    }
+
+    public int getConnectedBranchIndex() {
+        return this.connectedBranchIndex;
+    }
+
+    public void resetFailures() {
+        this.failures = 0;
     }
 }

@@ -9,10 +9,8 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonTemplat
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundLoadingScreenPacket;
-import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundNullScreenPacket;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -120,7 +118,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
 
     @Override
     protected void addAdditionalSaveData(CompoundTag compound) {
-        WildDungeons.getLogger().info("ADDING ADDITIONAL SAVE DATA");
+//        WildDungeons.getLogger().info("ADDING ADDITIONAL SAVE DATA");
         compound.putString("type", this.type);
         compound.putString("costType", this.costType);
         compound.putString("offerID", this.offerID);
@@ -131,7 +129,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
 
     @Override
     protected void readAdditionalSaveData(CompoundTag compound) {
-        WildDungeons.getLogger().info("READING ADDITIONAL SAVE DATA");
+//        WildDungeons.getLogger().info("READING ADDITIONAL SAVE DATA");
         if (compound.getString("type").isEmpty())
         {
             this.type = Type.ITEM.toString();

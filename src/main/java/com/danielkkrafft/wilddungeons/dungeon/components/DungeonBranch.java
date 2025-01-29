@@ -15,7 +15,6 @@ import com.danielkkrafft.wilddungeons.util.debug.WDProfiler;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 
@@ -76,7 +75,7 @@ public class DungeonBranch {
         WDProfiler.INSTANCE.logTimestamp("DungeonBranch::new");
     }
 
-    public void generateDungeonBranch() {
+    public boolean generateDungeonBranch() {
         WildDungeons.getLogger().info("STARTING A NEW BRANCH. THIS WILL BE BRANCH #{}", this.index);
         int tries = 0;
         while (branchRooms.size() < getTemplate().roomTemplates().size() && tries < 50) {
@@ -86,10 +85,10 @@ public class DungeonBranch {
                 tries++;
             }
         }
-        //if failed to generate all rooms, force the last room
         if (branchRooms.size() < getTemplate().roomTemplates().size()) {
-            WildDungeons.getLogger().info("FAILED TO GENERATE ALL ROOMS. FORCING LAST ROOM FOR BRANCH #{}", this.index);
-            forceLastRoom();
+            WildDungeons.getLogger().info("FAILED TO GENERATE ALL ROOMS. RESETTING BRANCH #{}", this.index);
+            destroy();
+            return false;
         }
 
         this.branchRooms.forEach(room -> room.processConnectionPoints(floor));
@@ -98,6 +97,20 @@ public class DungeonBranch {
         this.spawnPoint = floor.getBranches().size() == 1 ? this.branchRooms.getFirst().getSpawnPoint(floor.getLevel()) : floor.getBranches().getLast().branchRooms.getLast().getSpawnPoint(floor.getLevel());
 
         WDProfiler.INSTANCE.logTimestamp("DungeonBranch::generateDungeonBranch");
+        return true;
+    }
+
+    public void destroy() {
+        getFloor().getBranches().get(this.index-1).getRooms().forEach(dungeonRoom -> {
+                    dungeonRoom.getConnectionPoints().forEach(connectionPoint -> {
+                        if (connectionPoint.isConnected() && connectionPoint.getConnectedBranchIndex() == this.index) {
+                            connectionPoint.unSetConnectedPoint();
+                        }
+                    });
+                });
+        branchRooms.forEach(DungeonRoom::destroy);
+        branchRooms.clear();
+        openConnections = 0;
     }
 
     private boolean populateNextRoom() {
@@ -121,7 +134,7 @@ public class DungeonBranch {
             List<ConnectionPoint> exitPoints = this.branchRooms.isEmpty() ?
                     floor.getBranches().get(floor.getBranches().size()-2).branchRooms.getLast().getValidExitPoints(TemplateHelper.EMPTY_DUNGEON_SETTINGS, TemplateHelper.EMPTY_BLOCK_POS, nextRoom, entrancePoint, false)
                     : getValidExitPoints(TemplateHelper.EMPTY_DUNGEON_SETTINGS, nextRoom, entrancePoint, false);
-
+            exitPoints.forEach(ConnectionPoint::resetFailures);//this probably isn't necessary and might cause the check later to always pass
 
             List<Pair<ConnectionPoint, StructurePlaceSettings>> validPoints = new ArrayList<>();
             BlockPos.MutableBlockPos position = new BlockPos.MutableBlockPos();
@@ -158,49 +171,6 @@ public class DungeonBranch {
 
         WDProfiler.INSTANCE.logTimestamp("DungeonBranch::populateNextRoom");
         return false;
-    }
-
-    private void forceLastRoom() {
-        WildDungeons.getLogger().info("FORCING LAST ROOM");
-        DungeonRoomTemplate nextRoom = getTemplate().roomTemplates().getLast().getRandom();
-        List<ConnectionPoint> templateConnectionPoints = new ArrayList<>();
-        for (ConnectionPoint point : nextRoom.connectionPoints()) {
-            templateConnectionPoints.add(ConnectionPoint.copy(point));
-        }
-        List<ConnectionPoint> entrancePoints = templateConnectionPoints.stream().filter(point -> !Objects.equals(point.getType(), "exit")).toList();
-        ConnectionPoint entrancePoint = entrancePoints.get(new Random().nextInt(entrancePoints.size()));
-
-        List<ConnectionPoint> exitPoints = getValidExitPoints(TemplateHelper.EMPTY_DUNGEON_SETTINGS, nextRoom, entrancePoint, true);
-
-        int i = floor.getBranches().size() - 1;
-        while (exitPoints.isEmpty() && i >= 0) {
-            exitPoints.addAll(floor.getBranches().get(i).getValidExitPoints(TemplateHelper.EMPTY_DUNGEON_SETTINGS, nextRoom, entrancePoint, true));
-            WildDungeons.getLogger().info("ADDING MORE EXIT POINTS. SIZE IS NOW {}", exitPoints.size());
-            i -= 1;
-            if (i == 0) return;
-        }
-
-        ConnectionPoint exitPoint = exitPoints.getLast();
-        StructurePlaceSettings settings = TemplateHelper.handleRoomTransformation(entrancePoint, exitPoint);
-        ConnectionPoint proposedPoint = ConnectionPoint.copy(entrancePoint);
-        BlockPos.MutableBlockPos position = new BlockPos.MutableBlockPos();
-        position.set(ConnectionPoint.getOffset(settings, TemplateHelper.EMPTY_BLOCK_POS, proposedPoint, exitPoint).offset(exitPoint.getDirection(exitPoint.getRoom().getSettings()).getNormal()));
-
-        int iterations = 0;
-        while (!validateNextPoint(exitPoint, settings, position, nextRoom)) {
-            WildDungeons.getLogger().info("TESTING POSITION {}", position);
-            iterations += 1;
-            WildDungeons.getLogger().info("PLACING AIR, ITERATION {}", iterations);
-            for (BlockPos pos : exitPoint.getPositions(exitPoint.getRoom().getSettings(), exitPoint.getRoom().getPosition())) {
-                BlockPos newPos = pos.offset(exitPoint.getDirection(exitPoint.getRoom().getSettings()).getNormal().getX() * iterations, exitPoint.getDirection(exitPoint.getRoom().getSettings()).getNormal().getY() * iterations, exitPoint.getDirection(exitPoint.getRoom().getSettings()).getNormal().getZ() * iterations);
-                floor.getLevel().setBlock(newPos, Blocks.AIR.defaultBlockState(), 2);
-            }
-            position.move(exitPoint.getDirection(exitPoint.getRoom().getSettings()), 1);
-            if (iterations > 200) return;
-        }
-        placeRoom(exitPoint, settings, templateConnectionPoints, entrancePoint, nextRoom, iterations+1);
-
-        WDProfiler.INSTANCE.logTimestamp("DungeonBranch::forceLastRoom");
     }
 
     private boolean maybePlaceInitialRoom(List<ConnectionPoint> templateConnectionPoints) {

@@ -126,19 +126,36 @@ public class SaveSystem {
 
         saveFile.sessionFilePaths.forEach(sessionPath -> {
             DungeonSessionFile sessionFile = Serializer.fromCompoundTag(FileUtil.readNbt(Paths.get(sessionPath).toFile()));
-            if (sessionFile == null) return;
+            if (sessionFile == null) {
+                WildDungeons.getLogger().error("Failed to load session file: {}", sessionPath);
+                //this will load players into the dimension with no active session, so we should kick them out of the dimension
+                return;
+            }
             DungeonSession session = sessionFile.session;
             sessionFile.floorFilePaths.forEach(floorPath -> {
                 DungeonFloorFile floorFile = Serializer.fromCompoundTag(FileUtil.readNbt(Paths.get(floorPath).toFile()));
-                if (floorFile == null) return;
+                if (floorFile == null) {
+                    WildDungeons.getLogger().error("Failed to load floor file: {}", floorPath);
+                    //this should trigger entire floor regen, kicking players back a floor if they are on this floor
+                    return;
+                }
                 DungeonFloor floor = floorFile.floor;
                 floorFile.branchFilePaths.forEach(branchPath -> {
                     DungeonBranchFile branchFile = Serializer.fromCompoundTag(FileUtil.readNbt(Paths.get(branchPath).toFile()));
-                    if (branchFile == null) return;
+                    if (branchFile == null) {
+                        WildDungeons.getLogger().error("Failed to load branch file: {}", branchPath);
+                        //this should trigger entire branch regen, kicking players back a branch if they are in this branch
+                        //it should also trigger all future branches to be regened
+                        return;
+                    }
                     DungeonBranch branch = branchFile.branch;
                     branchFile.roomFilePaths.forEach(roomPath -> {
                         DungeonRoomFile roomFile = Serializer.fromCompoundTag(FileUtil.readNbt(Paths.get(roomPath).toFile()));
-                        if (roomFile == null) return;
+                        if (roomFile == null) {
+                            WildDungeons.getLogger().error("Failed to load room file: {}", roomPath);
+                            //this should trigger a full branch regen like above
+                            return;
+                        }
                         DungeonRoom room = roomFile.room;
                         branch.addRoom(room);
                     });
