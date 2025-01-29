@@ -6,6 +6,7 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonFloorTe
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.entity.Offering;
+import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundNullScreenPacket;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.danielkkrafft.wilddungeons.registry.WDDimensions;
@@ -18,12 +19,15 @@ import com.danielkkrafft.wilddungeons.world.dimension.EmptyGenerator;
 import com.danielkkrafft.wilddungeons.world.dimension.tools.InfiniverseAPI;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.joml.Vector2i;
 
 import java.util.*;
@@ -164,6 +168,9 @@ public class DungeonFloor {
         this.playerStatuses.get(wdPlayer.getUUID()).inside = true;
         wdPlayer.setCurrentDungeon(getSession());
         wdPlayer.travelToFloor(wdPlayer, wdPlayer.getCurrentFloor(), this);
+        wdPlayer.getServerPlayer().setGameMode(wdPlayer.getLastGameMode());
+        PacketDistributor.sendToPlayer(wdPlayer.getServerPlayer(), new ClientboundNullScreenPacket(new CompoundTag()));
+
         WDPlayerManager.syncAll(this.playerStatuses.keySet().stream().toList());
     }
 

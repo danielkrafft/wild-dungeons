@@ -8,6 +8,8 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonPerkTem
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
+import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundLoadingScreenPacket;
+import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundNullScreenPacket;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -27,9 +29,11 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 public class Offering extends Entity implements IEntityWithComplexSpawn {
 
@@ -213,7 +217,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
             }
         }
 
-        if (this.getOfferingType() == Type.RIFT) {
+        if (this.getOfferingType() == Type.RIFT && purchased) {
             handleRift(player);
         }
 
@@ -246,6 +250,9 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
                 WildDungeons.getLogger().info("TRYING TO ENTER {}", dungeonTemplate.name());
 
                 DungeonSession dungeon = DungeonSessionManager.getInstance().getOrCreateDungeonSession(this.getStringUUID(), this.level().dimension(), dungeonTemplate.name());
+                wdPlayer.setLastGameMode(wdPlayer.getServerPlayer().gameMode.getGameModeForPlayer());
+                PacketDistributor.sendToPlayer(wdPlayer.getServerPlayer(), new ClientboundLoadingScreenPacket(new CompoundTag()));
+                wdPlayer.getServerPlayer().setGameMode(GameType.SPECTATOR);
                 dungeon.onEnter(wdPlayer);
                 wdPlayer.setRiftCooldown(100);
             }
@@ -259,6 +266,9 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
 
                     if (dungeonTemplate != null) {
                         DungeonSession dungeon = DungeonSessionManager.getInstance().getOrCreateDungeonSession(this.getStringUUID(), this.level().dimension(), dungeonTemplate.name());
+                        wdPlayer.setLastGameMode(wdPlayer.getServerPlayer().gameMode.getGameModeForPlayer());
+                        PacketDistributor.sendToPlayer(wdPlayer.getServerPlayer(), new ClientboundLoadingScreenPacket(new CompoundTag()));
+                        wdPlayer.getServerPlayer().setGameMode(GameType.SPECTATOR);
                         dungeon.onEnter(wdPlayer);
                         wdPlayer.setRiftCooldown(100);
                     }
@@ -269,6 +279,9 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
                     while (dungeon.getFloors().size() <= Integer.parseInt(this.offerID)) dungeon.generateFloor(dungeon.getFloors().size(), (v) -> {
                         WildDungeons.getLogger().info("TRYING TO ENTER FLOOR: {}", Integer.parseInt(this.offerID));
                         DungeonFloor newFloor = dungeon.getFloors().get(Integer.parseInt(this.offerID));
+                        wdPlayer.setLastGameMode(wdPlayer.getServerPlayer().gameMode.getGameModeForPlayer());
+                        PacketDistributor.sendToPlayer(wdPlayer.getServerPlayer(), new ClientboundLoadingScreenPacket(new CompoundTag()));
+                        wdPlayer.getServerPlayer().setGameMode(GameType.SPECTATOR);
                         newFloor.onEnter(wdPlayer);
                     });
 

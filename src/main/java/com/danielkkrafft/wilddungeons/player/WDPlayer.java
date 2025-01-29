@@ -7,12 +7,14 @@ import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.util.CommandUtil;
+import net.minecraft.client.telemetry.TelemetryProperty;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.Vec3;
 
@@ -27,6 +29,7 @@ public class WDPlayer {
     private HashMap<Integer, SavedTransform> respawns = new HashMap<>();
     private HashMap<Integer, SavedTransform> positions = new HashMap<>();
     private String recentEssence = "essence:overworld";
+    private String lastGameMode = GameType.SURVIVAL.toString();
     private String UUID;
     private int riftCooldown = 100;
     private String currentDungeon = "none";
@@ -42,6 +45,8 @@ public class WDPlayer {
     public String getRecentEssence() {return this.recentEssence;}
     public void setRecentEssence(String recentEssence) {this.recentEssence = recentEssence;}
 
+    public GameType getLastGameMode() {return GameType.valueOf(lastGameMode);}
+    public void setLastGameMode(GameType gameType) {this.lastGameMode = gameType.toString();}
 
     public int getRiftCooldown() {return this.riftCooldown;}
     public void setRiftCooldown(int cooldown) {this.riftCooldown = cooldown;}
