@@ -109,9 +109,9 @@ public class DungeonSession {
             generating = true;
             generateFloor(0, (v)->{
                 WildDungeons.getLogger().info("SPAWNING PLAYER IN DUNGEON");
-                floors.getFirst().onEnter(wdPlayer);
                 playerStats.putIfAbsent(wdPlayer.getUUID(), new DungeonStats());
                 playerStatuses.putIfAbsent(wdPlayer.getUUID(), new PlayerStatus());
+                floors.getFirst().onEnter(wdPlayer);
                 this.playerStatuses.get(wdPlayer.getUUID()).inside = true;
                 generating = false;
             });
