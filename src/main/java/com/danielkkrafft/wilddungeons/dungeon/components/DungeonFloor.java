@@ -90,7 +90,10 @@ public class DungeonFloor {
             future = future.thenCompose(result -> CompletableFuture.runAsync(() -> {
                 DungeonBranchTemplate nextBranch = getTemplate().branchTemplates().get(index).getRandom();
                 nextBranch.placeInWorld(this, origin);
-            }));
+            }))/*.thenAccept(result -> {
+                if (onSequentialBranchComplete != null)
+                    onSequentialBranchComplete.accept(null);
+            })*/;
             if (i == getTemplate().branchTemplates().size() - 1) {
                 future = future.thenAccept(result -> {
                     if (onComplete != null)

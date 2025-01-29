@@ -81,9 +81,8 @@ public class DungeonBranch {
             }
         }
         if (branchRooms.size() < getTemplate().roomTemplates().size()) {
-            WildDungeons.getLogger().info("FAILED TO GENERATE ALL ROOMS. RESETTING BRANCH");
-            branchRooms.clear();
-            openConnections = 0;
+            WildDungeons.getLogger().info("FAILED TO GENERATE ALL ROOMS. RESETTING BRANCH #{}", this.index);
+            destroy();
             return false;
         }
 
@@ -94,6 +93,19 @@ public class DungeonBranch {
 
         WDProfiler.INSTANCE.logTimestamp("DungeonBranch::generateDungeonBranch");
         return true;
+    }
+
+    public void destroy() {
+        getFloor().getBranches().get(this.index-1).getRooms().forEach(dungeonRoom -> {
+                    dungeonRoom.getConnectionPoints().forEach(connectionPoint -> {
+                        if (connectionPoint.isConnected() && connectionPoint.getConnectedBranchIndex() == this.index) {
+                            connectionPoint.unSetConnectedPoint();
+                        }
+                    });
+                });
+        branchRooms.forEach(DungeonRoom::destroy);
+        branchRooms.clear();
+        openConnections = 0;
     }
 
     private boolean populateNextRoom() {
@@ -117,7 +129,7 @@ public class DungeonBranch {
             List<ConnectionPoint> exitPoints = this.branchRooms.isEmpty() ?
                     floor.getBranches().get(floor.getBranches().size()-2).branchRooms.getLast().getValidExitPoints(TemplateHelper.EMPTY_DUNGEON_SETTINGS, TemplateHelper.EMPTY_BLOCK_POS, nextRoom, entrancePoint, false)
                     : getValidExitPoints(TemplateHelper.EMPTY_DUNGEON_SETTINGS, nextRoom, entrancePoint, false);
-
+            exitPoints.forEach(ConnectionPoint::resetFailures);//this probably isn't necessary and might cause the check later to always pass
 
             List<Pair<ConnectionPoint, StructurePlaceSettings>> validPoints = new ArrayList<>();
             BlockPos.MutableBlockPos position = new BlockPos.MutableBlockPos();

@@ -195,10 +195,10 @@ public class DungeonRoom {
 
         for (StructureTemplate.StructureBlockInfo structureBlockInfo : chosenBlocks) {
             mutableBlockPos.set(TemplateHelper.transform(structureBlockInfo.pos(), this));
-            WildDungeons.getLogger().info("SEARCHING FOR BLOCK ENTITY AT {} IN LEVEL {}", mutableBlockPos, getBranch().getFloor().getLevel().dimension());
+//            WildDungeons.getLogger().info("SEARCHING FOR BLOCK ENTITY AT {} IN LEVEL {}", mutableBlockPos, getBranch().getFloor().getLevel().dimension());
 
             if (getBranch().getFloor().getLevel().getBlockEntity(mutableBlockPos) instanceof BaseContainerBlockEntity container) {
-                WildDungeons.getLogger().info("FOUND ONE");
+//                WildDungeons.getLogger().info("FOUND ONE");
                 int slots = container.getContainerSize();
                 for (int i = 0; i < entries.size() / remainingChests; i++) {
                     container.setItem(RandomUtil.randIntBetween(0, slots-1), entries.removeFirst().asItemStack());
@@ -241,6 +241,21 @@ public class DungeonRoom {
             branch.getFloor().getChunkMap().computeIfAbsent(pos, k -> new ArrayList<>()).add(new Vector2i(branch.getIndex(), this.index));
         });
         WDProfiler.INSTANCE.logTimestamp("DungeonRoom::handleChunkMap");
+    }
+
+    public void destroy() {
+        this.boundingBoxes.forEach(box -> {
+            for (int x = box.minX(); x <= box.maxX(); x++) {
+                for (int y = box.minY(); y <= box.maxY(); y++) {
+                    for (int z = box.minZ(); z <= box.maxZ(); z++) {
+                        this.getBranch().getFloor().getLevel().destroyBlock(new BlockPos(x, y, z), false);
+                    }
+                }
+            }
+        });
+        branch.getFloor().getChunkMap().forEach((key, value) -> {
+            value.removeIf(v -> v.x == branch.getIndex() && v.y == this.index);
+        });
     }
 
     public boolean isPosInsideShell(BlockPos pos) {
