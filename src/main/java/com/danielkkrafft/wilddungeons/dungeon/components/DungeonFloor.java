@@ -157,14 +157,13 @@ public class DungeonFloor {
     }
 
     public void onEnter(WDPlayer wdPlayer) {
-        wdPlayer.setCurrentDungeon(getSession());
         playerStatuses.computeIfAbsent(wdPlayer.getUUID(), key -> {
             getSession().getStats(key).floorsFound += 1;
             return new DungeonSession.PlayerStatus();
         });
         this.playerStatuses.get(wdPlayer.getUUID()).inside = true;
+        wdPlayer.setCurrentDungeon(getSession());
         wdPlayer.travelToFloor(wdPlayer, wdPlayer.getCurrentFloor(), this);
-        getSession().addInitialLives(wdPlayer);
         WDPlayerManager.syncAll(this.playerStatuses.keySet().stream().toList());
     }
 

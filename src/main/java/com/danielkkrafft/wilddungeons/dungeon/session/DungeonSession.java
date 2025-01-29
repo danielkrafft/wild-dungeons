@@ -109,20 +109,21 @@ public class DungeonSession {
             generating = true;
             generateFloor(0, (v)->{
                 WildDungeons.getLogger().info("SPAWNING PLAYER IN DUNGEON");
-                playerStats.putIfAbsent(wdPlayer.getUUID(), new DungeonStats());
                 playerStatuses.putIfAbsent(wdPlayer.getUUID(), new PlayerStatus());
-                floors.getFirst().onEnter(wdPlayer);
                 this.playerStatuses.get(wdPlayer.getUUID()).inside = true;
+                playerStats.putIfAbsent(wdPlayer.getUUID(), new DungeonStats());
+                this.addInitialLives(wdPlayer);
+                floors.getFirst().onEnter(wdPlayer);
                 generating = false;
             });
         } else {
-            floors.getFirst().onEnter(wdPlayer);
-            playerStats.putIfAbsent(wdPlayer.getUUID(), new DungeonStats());
             playerStatuses.putIfAbsent(wdPlayer.getUUID(), new PlayerStatus());
             this.playerStatuses.get(wdPlayer.getUUID()).inside = true;
+            playerStats.putIfAbsent(wdPlayer.getUUID(), new DungeonStats());
+            this.addInitialLives(wdPlayer);
+            floors.getFirst().onEnter(wdPlayer);
         }
         shutdownTimer = SHUTDOWN_TIME;
-
     }
 
     public void onExit(WDPlayer wdPlayer) {
@@ -135,8 +136,12 @@ public class DungeonSession {
     }
 
     public void addInitialLives(WDPlayer wdPlayer) {
-        if (!this.playerStats.containsKey(wdPlayer.getUUID())){
+        PlayerStatus status = this.playerStatuses.get(wdPlayer.getUUID());
+        if (!status.hasVisitedThisRiftBefore) {
+            status.hasVisitedThisRiftBefore = true;
             offsetLives(LIVES_PER_PLAYER);
+        } else {
+            WDPlayerManager.syncAll(this.playerStatuses.keySet().stream().toList());
         }
     }
 
@@ -256,5 +261,6 @@ public class DungeonSession {
     public static class PlayerStatus {
         public boolean inside = false;
         public boolean insideShell = false;
+        public boolean hasVisitedThisRiftBefore = false;
     }
 }
