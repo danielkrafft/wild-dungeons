@@ -6,13 +6,11 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonFloorTe
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.entity.Offering;
+import com.danielkkrafft.wilddungeons.player.SavedTransform;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.danielkkrafft.wilddungeons.registry.WDDimensions;
-import com.danielkkrafft.wilddungeons.util.FileUtil;
-import com.danielkkrafft.wilddungeons.util.IgnoreSerialization;
-import com.danielkkrafft.wilddungeons.util.WeightedPool;
-import com.danielkkrafft.wilddungeons.util.WeightedTable;
+import com.danielkkrafft.wilddungeons.util.*;
 import com.danielkkrafft.wilddungeons.util.debug.WDProfiler;
 import com.danielkkrafft.wilddungeons.world.dimension.EmptyGenerator;
 import com.danielkkrafft.wilddungeons.world.dimension.tools.InfiniverseAPI;
@@ -24,6 +22,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.phys.Vec3;
 import org.joml.Vector2i;
 
 import java.util.*;
@@ -71,7 +70,6 @@ public class DungeonFloor {
         WDProfiler.INSTANCE.logTimestamp("DungeonFloor::new");
     }
 
-
     //first future should generate just the first branch, then the second future should generate the second branch, and so on
     //each future should complete before the next one starts
     public CompletableFuture<Void> asyncGenerateBranches(Consumer<Void> onFirstBranchComplete, Consumer<Void> onComplete) {
@@ -80,7 +78,8 @@ public class DungeonFloor {
             nextBranch.placeInWorld(this, origin);
         }).thenAccept(result -> {
             this.spawnPoint = this.dungeonBranches.getFirst().getSpawnPoint();
-            onFirstBranchComplete.accept(null);
+            if (onFirstBranchComplete != null)
+                onFirstBranchComplete.accept(null);
         });
 
         for (int i = 1; i < getTemplate().branchTemplates().size(); i++) {
@@ -90,7 +89,10 @@ public class DungeonFloor {
                 nextBranch.placeInWorld(this, origin);
             }));
             if (i == getTemplate().branchTemplates().size() - 1) {
-                future = future.thenAccept(result -> onComplete.accept(null));
+                future = future.thenAccept(result -> {
+                    if (onComplete != null)
+                        onComplete.accept(null);
+                });
             }
         }
         return future;
@@ -116,7 +118,34 @@ public class DungeonFloor {
         }
     }
 
+    public void validateAndRegen() {
+        DungeonFloorTemplate template = this.getTemplate();
+        int branchCount = this.dungeonBranches.size();
+        int branchTemplateCount = template.branchTemplates().size();
+        if (branchCount < branchTemplateCount) {
+            for (int i = branchCount; i < branchTemplateCount; i++) {
+                regenerateSpecificBranch(i);
+            }
+        }
+    }
 
+    private void regenerateSpecificBranch(int branchIndex) {
+        this.playerStatuses.forEach((k, v) -> {
+            WDPlayer player = WDPlayerManager.getInstance().getOrCreateWDPlayer(k);
+            if (player.getCurrentDungeon() == this.getSession() && player.getCurrentFloor() == this){
+                if (player.getCurrentBranch() == null) {
+                    //teleport the player to the previous branch
+                    BlockPos blockPos = this.dungeonBranches.get(branchIndex - 1).getSpawnPoint();
+                    Vec3 pos = new Vec3(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+                    SavedTransform savedTransform = new SavedTransform(pos,0,0,this.getLevelKey());
+                    CommandUtil.executeTeleportCommand(player.getServerPlayer(), savedTransform);
+                }
+            }
+        });
+
+        DungeonBranchTemplate nextBranch = getTemplate().branchTemplates().get(branchIndex).getRandom();
+        nextBranch.placeInWorld(this, origin);
+    }
 
     public void shutdown() {
         InfiniverseAPI.get().markDimensionForUnregistration(DungeonSessionManager.getInstance().server, this.LEVEL_KEY);
@@ -126,8 +155,6 @@ public class DungeonFloor {
     public static ResourceKey<Level> buildFloorLevelKey(DungeonFloor floor) {
         return ResourceKey.create(Registries.DIMENSION, WildDungeons.rl(DungeonSessionManager.buildDungeonSessionKey(floor.getSession().getEntranceUUID()) + "_" + floor.getTemplate().name() + "_" + floor.index));
     }
-
-
 
     protected boolean isBoundingBoxValid(List<BoundingBox> proposedBoxes) {
         for (BoundingBox proposedBox : proposedBoxes) {
