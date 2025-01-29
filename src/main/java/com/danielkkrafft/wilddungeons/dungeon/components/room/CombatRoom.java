@@ -8,6 +8,8 @@ import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -42,6 +44,7 @@ public class CombatRoom extends DungeonRoom {
     }
 
     public void startBattle() {
+        if (this.started) return;
         this.started = true;
         WildDungeons.getLogger().info("BLOCKING THE EXITS");
 
@@ -98,7 +101,7 @@ public class CombatRoom extends DungeonRoom {
             this.startCooldown-=1;
         }
 
-        if (!this.started && this.startCooldown <= 0) {
+        if (!this.started && (this.startCooldown <= 0) || this.getActivePlayers().size() >= this.getBranch().getActivePlayers().size() + this.getBranch().getFloor().getBranches().get(this.getBranch().getIndex() - 1).getActivePlayers().size()) {
             this.startBattle();
         }
 

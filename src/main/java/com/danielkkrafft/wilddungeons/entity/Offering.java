@@ -199,8 +199,8 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
                     case END_XP_LEVEL -> player.giveEssenceLevels(-this.costAmount, "essence:end");
                 }
 
-                if (player.getCurrentRoom() instanceof LootRoom lootRoom) {
-                    lootRoom.aliveUUIDs.remove(this.getStringUUID());
+                if (player.getCurrentRoom() != null) {
+                    player.getCurrentRoom().getOfferingUUIDs().remove(this.getStringUUID());
                 }
 
                 if (this.getOfferingType() == Type.ITEM) {

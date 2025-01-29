@@ -1,0 +1,6 @@
+{
+  "type": "wilddungeons:rift",
+  "biomes": "#wilddungeons:all_biomes",
+  "spawn_overrides": {},
+  "step": "surface_structures"
+}

@@ -47,6 +47,7 @@ public class WeightedPool<T> implements DungeonComponent {
     }
 
     public WeightedPool<T> setName(String name) {this.name = name; return this;}
+    public WeightedPool<T> pool(WeightedPool<WeightedPool<T>> pool, int weight) {pool.add(this, weight); return this;}
     @Override
     public String name() {
         return this.name;

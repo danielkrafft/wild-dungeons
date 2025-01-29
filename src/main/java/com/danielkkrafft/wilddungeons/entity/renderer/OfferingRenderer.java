@@ -232,9 +232,12 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
 
             float bubbleScale = (1.0f - entity.getBubbleTimer() / Offering.BUBBLE_ANIMATION_TIME);
             poseStack.pushPose();
-            poseStack.scale(bubbleScale, bubbleScale, bubbleScale);
-            if (entity.getOfferingType().equals(Offering.Type.RIFT)) poseStack.translate(0.0f,0.5f,0.01f);
+            if (entity.getOfferingType().equals(Offering.Type.RIFT)) poseStack.translate(0.0f,0.5f,0.00f);
             poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
+            if (entity.getOfferingType().equals(Offering.Type.RIFT)) poseStack.translate(0.0f,0.5f,0.03f);
+            poseStack.scale(bubbleScale, bubbleScale, bubbleScale);
+
+
 
             poseStack.pushPose();
             float xPos = ((float) MESSAGE_BUBBLE_TEXTURE_RESOLUTION.x / MESSAGE_BUBBLE_TEXTURE_RESOLUTION.y) * 0.5f;
@@ -275,7 +278,7 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
             }
 
             poseStack.pushPose();
-            poseStack.translate(0.0f, 0.75f, 0.01f);
+            poseStack.translate(0.0f, 0.75f, 0.03f);
             poseStack.scale(0.03f,0.03f, 0.03f);
             poseStack.mulPose(Axis.YP.rotationDegrees(180));
             poseStack.mulPose(Axis.ZN.rotationDegrees(180));
