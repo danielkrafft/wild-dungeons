@@ -3,7 +3,6 @@ package com.danielkkrafft.wilddungeons.entity;
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRegistry;
-import com.danielkkrafft.wilddungeons.dungeon.components.room.LootRoom;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonPerkTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
@@ -223,7 +222,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
 
     public void handleRift(WDPlayer wdPlayer) {
         if (wdPlayer.getRiftCooldown() > 0 || this.offerID == null) {return;}
-
+        WildDungeons.getLogger().info("Offering ID: {}", this.offerID);
         switch (this.offerID) {
 
             case "-1" ->
@@ -272,7 +271,6 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
                     }
 
                 } else {
-                    purchased = true;//prevent spamming the rift
                     DungeonSession dungeon = wdPlayer.getCurrentDungeon();
                     while (dungeon.getFloors().size() <= Integer.parseInt(this.offerID)) dungeon.generateFloor(dungeon.getFloors().size(), (v) -> {
                         WildDungeons.getLogger().info("TRYING TO ENTER FLOOR: {}", Integer.parseInt(this.offerID));

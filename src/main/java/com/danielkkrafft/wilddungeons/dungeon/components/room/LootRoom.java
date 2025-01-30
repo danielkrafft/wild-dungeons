@@ -14,7 +14,9 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlac
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class LootRoom extends DungeonRoom {
     public static final int SET_PURGE_INTERVAL = 20;
@@ -117,8 +119,8 @@ public class LootRoom extends DungeonRoom {
         List<String> toRemove = new ArrayList<>();
         this.getOfferingUUIDs().forEach(uuid -> {
             Offering offering = (Offering) this.getBranch().getFloor().getLevel().getEntity(UUID.fromString(uuid));
-            if (offering.isPurchased()) {
-                toRemove.add(offering.getStringUUID());
+            if (offering==null || offering.isPurchased()) {
+                toRemove.add(uuid);
             }
         });
 

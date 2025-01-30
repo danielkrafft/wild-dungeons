@@ -353,7 +353,7 @@ public class DungeonRegistry {
 
         DUNGEON_BRANCH_REGISTRY.add(DungeonBranchTemplate.build("ending_room_branch",
                 new DungeonLayout<DungeonRoomTemplate>()
-                        .add(MEDIUM_ROOM_POOL, 10)
+                        .add(WeightedPool.combine(Pair.of(SMALL_ROOM_POOL, 150), Pair.of(MEDIUM_ROOM_POOL, 150), Pair.of(SECRET_POOL, 20), Pair.of(COMBAT_ROOM_POOL, 50), Pair.of(PARKOUR_POOL, 50), Pair.of(LOOT_POOL, 50), Pair.of(REST_POOL, 50)), 10)
                         .addSimple(DUNGEON_ROOM_REGISTRY.get("stone/boss")),
                 new WeightedPool<DungeonMaterial>()
                         .add(DUNGEON_MATERIAL_REGISTRY.get("NETHER"), 1), null, 1.0));
@@ -439,9 +439,9 @@ public class DungeonRegistry {
         OFFERING_TEMPLATE_REGISTRY.add(new OfferingTemplate("BOW_DAMAGE_INCREASE_NETHER", Offering.Type.PERK, 1, "BOW_DAMAGE_INCREASE", Offering.CostType.NETHER_XP_LEVEL, 8, 1.5f));
         OFFERING_TEMPLATE_REGISTRY.add(new OfferingTemplate("BOW_DAMAGE_INCREASE_END", Offering.Type.PERK, 1, "BOW_DAMAGE_INCREASE", Offering.CostType.END_XP_LEVEL, 8, 1.5f));
 
-        OFFERING_TEMPLATE_REGISTRY.add(new OfferingTemplate("OVERWORLD_TEST_RIFT", Offering.Type.RIFT, 1, "dungeon_1", Offering.CostType.XP_LEVEL, 30, 1.5f).pool(OVERWORLD_RIFT_POOL, 1));
-        OFFERING_TEMPLATE_REGISTRY.add(new OfferingTemplate("NETHER_TEST_RIFT", Offering.Type.RIFT, 1, "dungeon_1", Offering.CostType.NETHER_XP_LEVEL, 30, 1.5f).pool(NETHER_RIFT_POOL, 1));
-        OFFERING_TEMPLATE_REGISTRY.add(new OfferingTemplate("END_TEST_RIFT", Offering.Type.RIFT, 1, "dungeon_1", Offering.CostType.END_XP_LEVEL, 30, 1.5f).pool(END_RIFT_POOL, 1));
+        OFFERING_TEMPLATE_REGISTRY.add(new OfferingTemplate("OVERWORLD_TEST_RIFT", Offering.Type.RIFT, 1, "wd-dungeon_1", Offering.CostType.XP_LEVEL, 30, 1.5f).pool(OVERWORLD_RIFT_POOL, 1));
+        OFFERING_TEMPLATE_REGISTRY.add(new OfferingTemplate("NETHER_TEST_RIFT", Offering.Type.RIFT, 1, "wd-dungeon_1", Offering.CostType.NETHER_XP_LEVEL, 30, 1.5f).pool(NETHER_RIFT_POOL, 1));
+        OFFERING_TEMPLATE_REGISTRY.add(new OfferingTemplate("END_TEST_RIFT", Offering.Type.RIFT, 1, "wd-dungeon_1", Offering.CostType.END_XP_LEVEL, 30, 1.5f).pool(END_RIFT_POOL, 1));
 
         /*
         OFFERING TEMPLATE POOLS
