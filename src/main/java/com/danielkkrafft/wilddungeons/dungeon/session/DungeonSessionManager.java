@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 // for server use only
 public class DungeonSessionManager {
@@ -20,6 +21,18 @@ public class DungeonSessionManager {
     public MinecraftServer server;
 
     private DungeonSessionManager(){}
+
+    public static void ValidateSessions() {
+//        WildDungeons.getLogger().info("Validating Sessions");
+        INSTANCE.sessions.forEach((key, session) -> {
+            try {
+                CompletableFuture.runAsync(session::validate);
+            } catch (Exception e) {
+                WildDungeons.getLogger().error("Error validating session: {}", key);
+                e.printStackTrace();
+            }
+        });
+    }
 
     public DungeonSession getDungeonSession(String key) {
         return sessions.getOrDefault(key, null);
@@ -65,4 +78,9 @@ public class DungeonSessionManager {
         });
     }
 
+    public static void onShutdown(){
+        INSTANCE.sessions.forEach((key, session) -> {
+            session.cancelGenerations();
+        });
+    }
 }
