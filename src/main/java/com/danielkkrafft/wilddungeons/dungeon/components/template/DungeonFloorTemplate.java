@@ -10,6 +10,7 @@ import com.danielkkrafft.wilddungeons.util.WeightedTable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.EntityType;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public record DungeonFloorTemplate(String name, DungeonRegistry.DungeonLayout<DungeonBranchTemplate> branchTemplates, WeightedPool<DungeonMaterial> materials, WeightedTable<EntityType<?>> enemyTable, double difficulty) implements DungeonComponent {
@@ -20,9 +21,9 @@ public record DungeonFloorTemplate(String name, DungeonRegistry.DungeonLayout<Du
 
     public DungeonFloorTemplate pool(WeightedPool<DungeonFloorTemplate> pool, Integer weight) {pool.add(this, weight); return this;}
 
-    public void placeInWorld(DungeonSession session, BlockPos position, Consumer<Void> onFirstBranchComplete, Consumer<Void> onComplete) {
+    public CompletableFuture<Void> placeInWorld(DungeonSession session, BlockPos position, Consumer<Void> onFirstBranchComplete, Consumer<Void> onComplete) {
         WildDungeons.getLogger().info("PLACING FLOOR: {}", this.name());
         DungeonFloor newFloor = new DungeonFloor(this.name, session.getSessionKey(), position);
-        newFloor.asyncGenerateBranches(onFirstBranchComplete, onComplete);
+        return newFloor.asyncGenerateBranches(onFirstBranchComplete, onComplete);
     }
 }

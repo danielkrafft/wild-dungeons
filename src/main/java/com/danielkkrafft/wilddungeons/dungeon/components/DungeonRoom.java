@@ -14,6 +14,8 @@ import com.danielkkrafft.wilddungeons.util.WeightedTable;
 import com.danielkkrafft.wilddungeons.util.debug.WDProfiler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Blocks;
@@ -251,7 +253,7 @@ public class DungeonRoom {
             for (int x = box.minX(); x <= box.maxX(); x++) {
                 for (int y = box.minY(); y <= box.maxY(); y++) {
                     for (int z = box.minZ(); z <= box.maxZ(); z++) {
-                        this.getBranch().getFloor().getLevel().destroyBlock(new BlockPos(x, y, z), false);
+                        this.getBranch().getFloor().getLevel().setBlock(new BlockPos(x, y, z), Blocks.AIR.defaultBlockState(),2);
                     }
                 }
             }
@@ -259,6 +261,20 @@ public class DungeonRoom {
         branch.getFloor().getChunkMap().forEach((key, value) -> {
             value.removeIf(v -> v.x == branch.getIndex() && v.y == this.index);
         });
+        destroyEntities();
+    }
+
+    private void destroyEntities() {
+        offeringUUIDs.forEach(uuid -> {
+            Offering offering = (Offering) this.getBranch().getFloor().getLevel().getEntity(UUID.fromString(uuid));
+            if (offering != null) offering.remove(Entity.RemovalReason.DISCARDED);
+        });
+        riftUUIDs.forEach(uuid -> {
+            Offering rift = (Offering) this.getBranch().getFloor().getLevel().getEntity(UUID.fromString(uuid));
+            if (rift != null) rift.remove(Entity.RemovalReason.DISCARDED);
+        });
+        offeringUUIDs.clear();
+        riftUUIDs.clear();
     }
 
     public boolean isPosInsideShell(BlockPos pos) {
@@ -314,7 +330,8 @@ public class DungeonRoom {
         playerStatuses.entrySet().forEach((entry) -> {
             if (!entry.getValue().insideShell) {
                 WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(entry.getKey());
-                if (this.isPosInsideShell(wdPlayer.getServerPlayer().blockPosition())) {
+                ServerPlayer player = wdPlayer.getServerPlayer();
+                if (player!=null && this.isPosInsideShell(player.blockPosition())) {
                     entry.getValue().insideShell = true;
                     this.onEnterInner(wdPlayer);
                 }
