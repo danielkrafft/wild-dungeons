@@ -3,7 +3,6 @@ package com.danielkkrafft.wilddungeons.entity;
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRegistry;
-import com.danielkkrafft.wilddungeons.dungeon.components.room.LootRoom;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonPerkTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
@@ -36,7 +35,9 @@ import net.neoforged.neoforge.network.PacketDistributor;
 public class Offering extends Entity implements IEntityWithComplexSpawn {
 
     public static final int BUBBLE_ANIMATION_TIME = 10;
+
     public enum Type {ITEM, PERK, RIFT}
+
     public enum CostType {XP_LEVEL, NETHER_XP_LEVEL, END_XP_LEVEL}
 
     private String type;
@@ -47,20 +48,50 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     private int costAmount;
     private boolean purchased = false;
     private float bubbleTimer = BUBBLE_ANIMATION_TIME;
+
     public Offering(EntityType<Offering> entityType, Level level) {
         super(entityType, level);
     }
 
-    public Type getOfferingType() {return Type.valueOf(this.type);}
-    public CostType getOfferingCostType() {return CostType.valueOf(this.costType);}
-    public String getOfferingId() {return this.offerID;}
-    public void setOfferingId(String offerID) {this.offerID = offerID;}
-    public int getAmount() {return this.amount;}
-    public int getCostAmount() {return this.costAmount;}
-    public boolean isPurchased() {return this.purchased;}
-    public float getBubbleTimer() {return this.bubbleTimer;}
-    public void setBubbleTimer(float time) {this.bubbleTimer = time;}
-    public Offering(Level level) {super(WDEntities.OFFERING.get(), level);}
+    public Type getOfferingType() {
+        return Type.valueOf(this.type);
+    }
+
+    public CostType getOfferingCostType() {
+        return CostType.valueOf(this.costType);
+    }
+
+    public String getOfferingId() {
+        return this.offerID;
+    }
+
+    public void setOfferingId(String offerID) {
+        this.offerID = offerID;
+    }
+
+    public int getAmount() {
+        return this.amount;
+    }
+
+    public int getCostAmount() {
+        return this.costAmount;
+    }
+
+    public boolean isPurchased() {
+        return this.purchased;
+    }
+
+    public float getBubbleTimer() {
+        return this.bubbleTimer;
+    }
+
+    public void setBubbleTimer(float time) {
+        this.bubbleTimer = time;
+    }
+
+    public Offering(Level level) {
+        super(WDEntities.OFFERING.get(), level);
+    }
 
 
     public Offering(Level level, Type type, int amount, String offerID, CostType costType, int costAmount) {
@@ -73,6 +104,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     }
 
     private ItemStack itemStack = null;
+
     public ItemStack getItemStack() {
         if (this.itemStack == null) {
             WildDungeons.getLogger().info("Getting itemstack of ID: {}", this.offerID);
@@ -82,6 +114,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     }
 
     private DungeonPerkTemplate perk = null;
+
     public DungeonPerkTemplate getPerk() {
         if (this.perk == null) {
             perk = DungeonRegistry.DUNGEON_PERK_REGISTRY.get(this.offerID);
@@ -114,7 +147,8 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {}
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+    }
 
     @Override
     protected void addAdditionalSaveData(CompoundTag compound) {
@@ -130,17 +164,14 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     @Override
     protected void readAdditionalSaveData(CompoundTag compound) {
 //        WildDungeons.getLogger().info("READING ADDITIONAL SAVE DATA");
-        if (compound.getString("type").isEmpty())
-        {
+        if (compound.getString("type").isEmpty()) {
             this.type = Type.ITEM.toString();
             this.costType = CostType.XP_LEVEL.toString();
             this.offerID = "dirt";
             this.amount = 1;
             this.costAmount = 0;
             this.purchased = false;
-        }
-        else
-        {
+        } else {
             this.type = compound.getString("type");
             this.costType = compound.getString("costType");
             this.offerID = compound.getString("offerID");
@@ -183,7 +214,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
 
     public void attemptPurchase(WDPlayer player) {
         if (!purchased) {
-            int levels = switch(this.getOfferingCostType()) {
+            int levels = switch (this.getOfferingCostType()) {
                 case XP_LEVEL -> player.getServerPlayer().experienceLevel;
                 case NETHER_XP_LEVEL -> Mth.floor(player.getEssenceLevel("essence:nether"));
                 case END_XP_LEVEL -> Mth.floor(player.getEssenceLevel("essence:end"));
@@ -222,28 +253,27 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     }
 
     public void handleRift(WDPlayer wdPlayer) {
-        if (wdPlayer.getRiftCooldown() > 0 || this.offerID == null) {return;}
+        if (wdPlayer.getRiftCooldown() > 0 || this.offerID == null) {
+            return;
+        }
 
         switch (this.offerID) {
 
-            case "-1" ->
-            {
+            case "-1" -> {
                 WildDungeons.getLogger().info("TRYING TO LEAVE {} WITH PLAYER {}", wdPlayer.getCurrentDungeon(), wdPlayer);
 
                 DungeonSession dungeon = wdPlayer.getCurrentDungeon();
                 dungeon.onExit(wdPlayer);
             }
 
-            case "win" ->
-            {
+            case "win" -> {
                 WildDungeons.getLogger().info("TRYING TO WIN {}", wdPlayer.getCurrentDungeon());
 
                 DungeonSession dungeon = wdPlayer.getCurrentDungeon();
                 dungeon.win();
             }
 
-            case "random" ->
-            {
+            case "random" -> {
                 DungeonTemplate dungeonTemplate = DungeonRegistry.DUNGEON_POOL.getRandom();
                 WildDungeons.getLogger().info("TRYING TO ENTER {}", dungeonTemplate.name());
 
@@ -255,8 +285,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
                 wdPlayer.setRiftCooldown(100);
             }
 
-            default ->
-            {
+            default -> {
                 if (offerID.split("-")[0].equals("wd")) {
 
                     DungeonTemplate dungeonTemplate = DungeonRegistry.DUNGEON_REGISTRY.get(offerID.split("-")[1]);
@@ -274,20 +303,18 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
                 } else {
                     purchased = true;//prevent spamming the rift
                     DungeonSession dungeon = wdPlayer.getCurrentDungeon();
-                    while (dungeon.getFloors().size() <= Integer.parseInt(this.offerID)) dungeon.generateFloor(dungeon.getFloors().size(), (v) -> {
-                        WildDungeons.getLogger().info("TRYING TO ENTER FLOOR: {}", Integer.parseInt(this.offerID));
-                        DungeonFloor newFloor = dungeon.getFloors().get(Integer.parseInt(this.offerID));
-                        wdPlayer.setLastGameMode(wdPlayer.getServerPlayer().gameMode.getGameModeForPlayer());
-                        PacketDistributor.sendToPlayer(wdPlayer.getServerPlayer(), new ClientboundLoadingScreenPacket(new CompoundTag()));
-                        wdPlayer.getServerPlayer().setGameMode(GameType.SPECTATOR);
-                        newFloor.onEnter(wdPlayer);
-                    });
-
-
+                    while (dungeon.getFloors().size() <= Integer.parseInt(this.offerID))
+                        dungeon.generateFloor(dungeon.getFloors().size(), (v) -> {
+                            WildDungeons.getLogger().info("TRYING TO ENTER FLOOR: {}", Integer.parseInt(this.offerID));
+                            DungeonFloor newFloor = dungeon.getFloors().get(Integer.parseInt(this.offerID));
+                            wdPlayer.setLastGameMode(wdPlayer.getServerPlayer().gameMode.getGameModeForPlayer());
+                            PacketDistributor.sendToPlayer(wdPlayer.getServerPlayer(), new ClientboundLoadingScreenPacket(new CompoundTag()));
+                            wdPlayer.getServerPlayer().setGameMode(GameType.SPECTATOR);
+                            newFloor.onEnter(wdPlayer);
+                        });
                 }
             }
         }
 
     }
-
 }
