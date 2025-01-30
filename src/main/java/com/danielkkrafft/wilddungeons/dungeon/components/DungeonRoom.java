@@ -51,7 +51,6 @@ public class DungeonRoom {
 
     @IgnoreSerialization
     protected DungeonBranch branch = null;
-    public void setTempBranch(DungeonBranch branch) {this.branch = branch;}
 
     public DungeonRoomTemplate getTemplate() {return DungeonRegistry.DUNGEON_ROOM_REGISTRY.get(this.templateKey);}
     public DungeonSession getSession() {return DungeonSessionManager.getInstance().getDungeonSession(this.sessionKey);}
@@ -327,12 +326,12 @@ public class DungeonRoom {
     public void reset() {}
     public void tick() {
         if (this.playerStatuses.values().stream().noneMatch(v -> v.inside)) return;
-        playerStatuses.entrySet().forEach((entry) -> {
-            if (!entry.getValue().insideShell) {
-                WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(entry.getKey());
+        playerStatuses.forEach((key, value) -> {
+            if (!value.insideShell) {
+                WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(key);
                 ServerPlayer player = wdPlayer.getServerPlayer();
-                if (player!=null && this.isPosInsideShell(player.blockPosition())) {
-                    entry.getValue().insideShell = true;
+                if (player != null && this.isPosInsideShell(player.blockPosition())) {
+                    value.insideShell = true;
                     this.onEnterInner(wdPlayer);
                 }
             }

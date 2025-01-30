@@ -77,16 +77,7 @@ public class DungeonSession {
         return (v) -> {
             WildDungeons.getLogger().info("FIRST BRANCH COMPLETE");
             spawnPlayerCallback.accept(null);
-            this.floors.forEach(dungeonFloor -> {
-                //todo does this even belong here? We spawn each rift in every floor when *any* floor is generated?
-                DungeonSessionManager.getInstance().server.execute(dungeonFloor::spawnFirstRift);
-                dungeonFloor.getBranches().forEach(branch -> {
-                    branch.setTempFloor(null);
-                    branch.getRooms().forEach(room -> {
-                        room.setTempBranch(null);
-                    });
-                });
-            });
+            this.floors.forEach(DungeonFloor::spawnFirstRift);
         };
     }
 

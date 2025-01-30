@@ -39,7 +39,6 @@ public class DungeonBranch {
 
     @IgnoreSerialization
     private DungeonFloor floor = null;
-    public void setTempFloor(DungeonFloor floor) {this.floor = floor;}
 
     public DungeonBranchTemplate getTemplate() {return DungeonRegistry.DUNGEON_BRANCH_REGISTRY.get(this.templateKey);}
     public DungeonSession getSession() {return DungeonSessionManager.getInstance().getDungeonSession(this.sessionKey);}
