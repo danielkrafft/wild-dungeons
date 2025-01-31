@@ -143,7 +143,11 @@ public class DungeonRoom {
         WildDungeons.getLogger().info("PROCESSING {} CONNECTION POINTS", connectionPoints.size());
         for (ConnectionPoint point : connectionPoints) {
             point.setupBlockstates(getSettings(), getPosition(), this.getBranch().getFloor().getLevel());
-            if (point.isConnected()) point.unBlock(floor.getLevel());
+            if (point.isConnected()) {
+                point.unBlock(floor.getLevel());
+                ConnectionPoint otherPoint = point.getConnectedPoint();
+                otherPoint.unBlock(floor.getLevel());
+            }
             if (!point.isConnected()) point.block(floor.getLevel());
             point.complete();
         }

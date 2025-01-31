@@ -234,11 +234,10 @@ public class DungeonBranch {
         newEntrancePoint.setRoom(room);
         exitPoint.setConnectedPoint(newEntrancePoint);
         newEntrancePoint.setConnectedPoint(exitPoint);
-
+        exitPoint.unBlock(floor.getLevel());
         if (this.branchRooms.size() == 1){
             exitPoint.loadingBlock(floor.getLevel());
         }
-//        exitPoint.unBlock(floor.getLevel());
         openConnections += nextRoom.connectionPoints().size() - 2;
         room.onGenerate();
         WDProfiler.INSTANCE.logTimestamp("DungeonBranch::placeRoom");
