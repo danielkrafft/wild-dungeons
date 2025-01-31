@@ -36,6 +36,8 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
+import static com.danielkkrafft.wilddungeons.registry.WDDimensions.WILDDUNGEON;
+
 public class DungeonFloor {
     @IgnoreSerialization
     private List<DungeonBranch> dungeonBranches = new ArrayList<>();
@@ -73,7 +75,7 @@ public class DungeonFloor {
         this.templateKey = templateKey;
 
         this.LEVEL_KEY = buildFloorLevelKey(this);
-        InfiniverseAPI.get().getOrCreateLevel(DungeonSessionManager.getInstance().server, LEVEL_KEY, () -> WDDimensions.createLevel(DungeonSessionManager.getInstance().server));
+        InfiniverseAPI.get().getOrCreateLevel(DungeonSessionManager.getInstance().server, LEVEL_KEY, () -> WDDimensions.createLevel(WILDDUNGEON));
         this.origin = origin;
         WDProfiler.INSTANCE.logTimestamp("DungeonFloor::new");
     }
