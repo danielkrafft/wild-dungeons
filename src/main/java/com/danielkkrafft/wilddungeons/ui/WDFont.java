@@ -1,6 +1,5 @@
 package com.danielkkrafft.wilddungeons.ui;
 
-import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
@@ -65,7 +64,6 @@ public class WDFont {
         }
 
         BufferUploader.drawWithShader(buffer.buildOrThrow());
-
     }
 
     private static void drawCharacter(Matrix4f pose, BufferBuilder buffer, char c, int minX, int minY, int maxX, int maxY, int color) {
@@ -80,8 +78,6 @@ public class WDFont {
         buffer.addVertex(pose, maxX, maxY, 0.0f).setUv(maxU, maxV).setColor(color);
         buffer.addVertex(pose, maxX, minY, 0.0f).setUv(maxU, minV).setColor(color);
         buffer.addVertex(pose, minX, minY, 0.0f).setUv(minU, minV).setColor(color);
-
-        WildDungeons.getLogger().info("DRAWING CHARACTER {} AT COORDS {} {} {} {} WITH UV COORDS {} {} {} {} AND WIDTH {}", c, minX, minY, maxX, maxY, minU, minV, maxU, maxV, charWidth);
     }
 
     public static char getRandomGlitch() {

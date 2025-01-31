@@ -1,14 +1,10 @@
 package com.danielkkrafft.wilddungeons.ui;
 
-import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.util.Serializer;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.GameNarrator;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 
@@ -64,7 +60,7 @@ public class WDPostDungeonScreen extends Screen {
     public void drawTitle(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean animate) {
         float drawTicks = animate ? this.ticks : DRAW_TITLE_TICKS;
 
-        String finalTitle = "WAIT OF THE WORLD";
+        String finalTitle = "SHUT THE F" + WDFont.getRandomGlitch() + WDFont.getRandomGlitch() + "K UP";
         String title = finalTitle.substring(0, Mth.lerpInt(Math.min(drawTicks/DRAW_TITLE_TICKS, 1), 0, finalTitle.length()));
         if (drawTicks < DRAW_TITLE_TICKS) title = title + WDFont.getRandomGlitch() + WDFont.getRandomGlitch();
 
@@ -80,8 +76,6 @@ public class WDPostDungeonScreen extends Screen {
 
         int minX = (int) ((this.width / 2.0f) - (width / 2.0f));
         int maxX = (int) ((this.width / 2.0f) + (width / 2.0f));
-
-        WildDungeons.getLogger().info("DRAWING STRING {} WITH RATIO {} TO WIDTH {} AND HEIGHT {} (COMPARED TO ORIGINAL WIDTH {} AND HEIGHT {})", title, ratio, width, height, this.font.width(title), this.font.lineHeight);
 
         WDFont.drawString(guiGraphics, title, minX, minY, maxX, maxY, 0xFFFFFFFF);
 
