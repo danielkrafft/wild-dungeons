@@ -62,6 +62,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     public boolean isPurchased() {return this.purchased;}
     public float getBubbleTimer() {return this.bubbleTimer;}
     public void setBubbleTimer(float time) {this.bubbleTimer = time;}
+    public void overrideCost(int cost) {this.costAmount = cost;}
     public Offering(Level level) {super(WDEntities.OFFERING.get(), level);}
 
 
