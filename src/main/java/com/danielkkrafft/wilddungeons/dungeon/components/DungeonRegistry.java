@@ -1,5 +1,6 @@
 package com.danielkkrafft.wilddungeons.dungeon.components;
 
+import com.danielkkrafft.wilddungeons.dungeon.components.registries.OverworldDungeonRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.*;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonOpenBehavior;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
@@ -65,7 +66,6 @@ public class DungeonRegistry {
 
 
     public static void setupDungeons() {
-
         /*
         LOOT ENTRIES
          */
@@ -439,7 +439,6 @@ public class DungeonRegistry {
         OFFERING_TEMPLATE_REGISTRY.add(new OfferingTemplate("BOW_DAMAGE_INCREASE_NETHER", Offering.Type.PERK, 1, "BOW_DAMAGE_INCREASE", Offering.CostType.NETHER_XP_LEVEL, 8, 1.5f));
         OFFERING_TEMPLATE_REGISTRY.add(new OfferingTemplate("BOW_DAMAGE_INCREASE_END", Offering.Type.PERK, 1, "BOW_DAMAGE_INCREASE", Offering.CostType.END_XP_LEVEL, 8, 1.5f));
 
-        OFFERING_TEMPLATE_REGISTRY.add(new OfferingTemplate("OVERWORLD_TEST_RIFT", Offering.Type.RIFT, 1, "wd-dungeon_1", Offering.CostType.XP_LEVEL, 30, 1.5f).pool(OVERWORLD_RIFT_POOL, 1));
         OFFERING_TEMPLATE_REGISTRY.add(new OfferingTemplate("NETHER_TEST_RIFT", Offering.Type.RIFT, 1, "wd-dungeon_1", Offering.CostType.NETHER_XP_LEVEL, 30, 1.5f).pool(NETHER_RIFT_POOL, 1));
         OFFERING_TEMPLATE_REGISTRY.add(new OfferingTemplate("END_TEST_RIFT", Offering.Type.RIFT, 1, "wd-dungeon_1", Offering.CostType.END_XP_LEVEL, 30, 1.5f).pool(END_RIFT_POOL, 1));
 
@@ -491,6 +490,7 @@ public class DungeonRegistry {
                 .add(OFFERING_TEMPLATE_POOL_REGISTRY.get("MEDIUM_BASIC_POOL"), 5)
                 .add(OFFERING_TEMPLATE_POOL_REGISTRY.get("EXPENSIVE_BASIC_POOL"), 10));
 
+        OverworldDungeonRegistry.register();
     }
 
     public static class DungeonComponentRegistry<T extends DungeonComponent> {
