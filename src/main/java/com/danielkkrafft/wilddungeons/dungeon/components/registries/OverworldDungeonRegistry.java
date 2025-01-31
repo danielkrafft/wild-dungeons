@@ -115,6 +115,30 @@ public class OverworldDungeonRegistry {
 
         DUNGEON_ROOM_REGISTRY.add(DungeonRoomTemplate.build(
                         DungeonRoomTemplate.Type.NONE,
+                        "overworld_chest_room",
+                        List.of(
+                                Pair.of("overworld/sprawl/chest_room", TemplateHelper.EMPTY_BLOCK_POS)
+                        ),
+                        null,
+                        null,
+                        1.0
+                )
+                .pool(OVERWORLD_SPRAWL_ROOM_POOL, 2));
+
+        DUNGEON_ROOM_REGISTRY.add(DungeonRoomTemplate.build(
+                        DungeonRoomTemplate.Type.NONE,
+                        "overworld_staircase",
+                        List.of(
+                                Pair.of("overworld/sprawl/stair_room", TemplateHelper.EMPTY_BLOCK_POS)
+                        ),
+                        null,
+                        null,
+                        1.0
+                )
+                .pool(OVERWORLD_SPRAWL_ROOM_POOL, 1));
+
+        DUNGEON_ROOM_REGISTRY.add(DungeonRoomTemplate.build(
+                        DungeonRoomTemplate.Type.NONE,
                         "overworld_hallway_1",
                         List.of(
                                 Pair.of("overworld/sprawl/hallway_1", TemplateHelper.EMPTY_BLOCK_POS)
