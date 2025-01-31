@@ -135,9 +135,18 @@ public class DungeonBranch {
         while (!pointsToTry.isEmpty()) {
 
             ConnectionPoint entrancePoint = pointsToTry.remove(new Random().nextInt(pointsToTry.size()));
-            List<ConnectionPoint> exitPoints = this.branchRooms.isEmpty() ?
-                    floor.getBranches().get(floor.getBranches().size()-2).branchRooms.getLast().getValidExitPoints(TemplateHelper.EMPTY_DUNGEON_SETTINGS, TemplateHelper.EMPTY_BLOCK_POS, nextRoom, entrancePoint, false)
-                    : getValidExitPoints(TemplateHelper.EMPTY_DUNGEON_SETTINGS, nextRoom, entrancePoint, false);
+            List<ConnectionPoint> exitPoints = new ArrayList<>();
+            if (this.branchRooms.isEmpty()){
+                DungeonBranch lastBranch = floor.getBranches().get(floor.getBranches().size() - 2);
+                for (int i = 0; i < 3 ; i++) {//
+                    int index = lastBranch.branchRooms.size() - (1 + i);
+                    if (index < 0) break;
+                    DungeonRoom room = lastBranch.branchRooms.get(index);
+                    if (room!=null) {
+                        exitPoints.addAll(room.getValidExitPoints(TemplateHelper.EMPTY_DUNGEON_SETTINGS, TemplateHelper.EMPTY_BLOCK_POS, nextRoom, entrancePoint, false));
+                    }
+                }
+            } else exitPoints = getValidExitPoints(TemplateHelper.EMPTY_DUNGEON_SETTINGS, nextRoom, entrancePoint, false);
 
             List<Pair<ConnectionPoint, StructurePlaceSettings>> validPoints = new ArrayList<>();
             BlockPos.MutableBlockPos position = new BlockPos.MutableBlockPos();
