@@ -24,9 +24,9 @@ public class SaveSystem {
         INSTANCE.save();
     }
 
-    public static boolean Load(){
+    public static void Load(){
         DungeonRegistry.setupDungeons();
-        return INSTANCE.load();
+        INSTANCE.load();
     }
 
     public static boolean isLoading() {
@@ -54,19 +54,8 @@ public class SaveSystem {
 
         SaveFile saveFile = new SaveFile();
         Stack<DungeonSession> sessions = new Stack<>();
-        DungeonSessionManager.getInstance().getSessions().forEach((key, value) -> {
-            if (value.isSafeToSerialize()) sessions.push(value);
-        });
-        //only add the players in the sessions that are safe to serialize
-        if (!sessions.empty()){
-            Map<String, WDPlayer> players = WDPlayerManager.getInstance().getPlayers();
-            Map<String, WDPlayer> safePlayers = new HashMap<>();
-            players.forEach((key, value) -> {
-                DungeonSession session = value.getCurrentDungeon();
-                if (session!=null && session.isSafeToSerialize()) safePlayers.put(key, value);
-            });
-            saveFile.AddPlayers(safePlayers);
-        }
+        DungeonSessionManager.getInstance().getSessions().forEach((key, value) -> sessions.push(value));
+        saveFile.AddPlayers(WDPlayerManager.getInstance().getPlayers());
 
         while (sessions.iterator().hasNext()) {
             DungeonSession session = sessions.pop();
@@ -80,6 +69,17 @@ public class SaveSystem {
                 floor.getBranches().forEach(branches::push);
                 while (branches.iterator().hasNext()) {
                     DungeonBranch branch = branches.pop();
+                    if (!branch.isFullyGenerated()) {
+                        WildDungeons.getLogger().info("Skipping branch {} because it is not fully generated", branch.getIndex());
+                        floorFile.floor.halfGeneratedRooms = new ArrayList<>();
+                        branch.getRooms().forEach(dungeonRoom -> {
+                            floorFile.floor.halfGeneratedRooms.addAll(dungeonRoom.getBoundingBoxes());
+                        });
+                        floorFile.floor.getChunkMap().forEach((key, value) -> {
+                            value.removeIf(v -> v.x == branch.getIndex());
+                        });
+                        continue;
+                    }
                     DungeonBranchFile branchFile = new DungeonBranchFile(branch);
                     Stack<DungeonRoom> rooms = new Stack<>();
                     branch.getRooms().forEach(rooms::push);
@@ -110,16 +110,17 @@ public class SaveSystem {
         saving = false;
     }
 
-    private boolean load() {
+    private void load() {
         loaded = false;
         loading = true;
         WDPlayerManager.getInstance().setPlayers(new HashMap<>());
+        DungeonSessionManager.getInstance().setSessions(new HashMap<>());
         SaveFile saveFile = Serializer.fromCompoundTag(FileUtil.readNbt(FileUtil.getWorldPath().resolve("data").resolve("dungeons.nbt").toFile()));
         if (saveFile == null) {
-            WildDungeons.getLogger().error("Failed to load save file");
+            WildDungeons.getLogger().error("NO DUNGEON FILES FOUND");
             loading = false;
             loaded = true;
-            return true;
+            return;
         }
         HashMap<String, WDPlayer> players = new HashMap<>(saveFile.players);
         HashMap<String, DungeonSession> sessions = new HashMap<>();
@@ -169,15 +170,14 @@ public class SaveSystem {
             sessions.put(session.getSessionKey(), session);
         });
         WDPlayerManager.getInstance().setPlayers(players);
-        WildDungeons.getLogger().error("Loaded {} players", players.size());
-        WildDungeons.getLogger().error("Loaded {} sessions", sessions.size());
-        WildDungeons.getLogger().error("Loaded {} floors", sessions.values().stream().mapToInt(session -> session.getFloors().size()).sum());
-        WildDungeons.getLogger().error("Loaded {} branches", sessions.values().stream().mapToInt(session -> session.getFloors().stream().mapToInt(floor -> floor.getBranches().size()).sum()).sum());
-        WildDungeons.getLogger().error("Loaded {} rooms", sessions.values().stream().mapToInt(session -> session.getFloors().stream().mapToInt(floor -> floor.getBranches().stream().mapToInt(branch -> branch.getRooms().size()).sum()).sum()).sum());
+        WildDungeons.getLogger().info("Loaded {} players", players.size());
+        WildDungeons.getLogger().info("Loaded {} sessions", sessions.size());
+        WildDungeons.getLogger().info("Loaded {} floors", sessions.values().stream().mapToInt(session -> session.getFloors().size()).sum());
+        WildDungeons.getLogger().info("Loaded {} branches", sessions.values().stream().mapToInt(session -> session.getFloors().stream().mapToInt(floor -> floor.getBranches().size()).sum()).sum());
+        WildDungeons.getLogger().info("Loaded {} rooms", sessions.values().stream().mapToInt(session -> session.getFloors().stream().mapToInt(floor -> floor.getBranches().stream().mapToInt(branch -> branch.getRooms().size()).sum()).sum()).sum());
         DungeonSessionManager.getInstance().setSessions(sessions);
         loading = false;
         loaded = true;
-        return true;
     }
 
     public static class SaveFile {

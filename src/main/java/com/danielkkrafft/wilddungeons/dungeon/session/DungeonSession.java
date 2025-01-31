@@ -25,6 +25,7 @@ import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public class DungeonSession {
@@ -43,7 +44,8 @@ public class DungeonSession {
     private int lives = 0;
     private boolean markedForShutdown = false;
     private final HashMap<String, DungeonPerk> perks = new HashMap<>();
-    private boolean safeToSerialize = false;
+    @IgnoreSerialization
+    private List<CompletableFuture<Void>> generationFutures = new ArrayList<>();
 
     public ServerLevel getEntranceLevel() {return DungeonSessionManager.getInstance().server.getLevel(this.entranceLevelKey);}
     public String getEntranceUUID() {return this.entranceUUID;}
@@ -53,7 +55,6 @@ public class DungeonSession {
     public boolean isMarkedForShutdown() {return this.markedForShutdown;}
     public HashMap<String, DungeonPerk> getPerks() {return this.perks;}
     public String getSessionKey() {return DungeonSessionManager.buildDungeonSessionKey(this.entranceUUID);}
-    public boolean isSafeToSerialize() {return this.safeToSerialize;}
     public DungeonStats getStats(WDPlayer player) {return this.playerStats.get(player.getUUID());}
     public DungeonStats getStats(String uuid) {return this.playerStats.get(uuid);}
 
@@ -69,8 +70,8 @@ public class DungeonSession {
 
     public void generateFloor(int index, Consumer<Void> spawnPlayerCallback) {
         WDProfiler.INSTANCE.start();
-        safeToSerialize = false;
-        getTemplate().floorTemplates().get(floors.size()).getRandom().placeInWorld(this, TemplateHelper.EMPTY_BLOCK_POS, onFirstBranchComplete(spawnPlayerCallback), onCompleteCallback(index));
+        if (generationFutures == null) generationFutures = new ArrayList<>();
+        generationFutures.add(getTemplate().floorTemplates().get(floors.size()).getRandom().placeInWorld(this, TemplateHelper.EMPTY_BLOCK_POS, onFirstBranchComplete(spawnPlayerCallback), onCompleteCallback(index)));
         WDProfiler.INSTANCE.logTimestamp("generateFloor");
         WDProfiler.INSTANCE.end();
     }
@@ -79,16 +80,7 @@ public class DungeonSession {
         return (v) -> {
             WildDungeons.getLogger().info("FIRST BRANCH COMPLETE");
             spawnPlayerCallback.accept(null);
-            this.floors.forEach(dungeonFloor -> {
-                //todo does this even belong here? We spawn each rift in every floor when *any* floor is generated?
-                DungeonSessionManager.getInstance().server.execute(dungeonFloor::spawnFirstRift);
-                dungeonFloor.getBranches().forEach(branch -> {
-                    branch.setTempFloor(null);
-                    branch.getRooms().forEach(room -> {
-                        room.setTempBranch(null);
-                    });
-                });
-            });
+            this.floors.forEach(DungeonFloor::spawnFirstRift);
         };
     }
 
@@ -99,7 +91,6 @@ public class DungeonSession {
                     new WeightedPool<String>().add("win", 1) :
                     new WeightedPool<String>().add("" + (floorIndex+1), 1);
             getFloors().get(floorIndex).spawnExitRift(destinations);
-            safeToSerialize = true;//todo this will result in save file failure if the player quits while in the dungeon before its done generating
         };
     }
 
@@ -217,7 +208,7 @@ public class DungeonSession {
     }
 
     public void tick() {
-        if (playerStatuses.values().stream().noneMatch(v -> v.inside) && !floors.isEmpty() && isSafeToSerialize()) {shutdownTimer -= 1;}
+        if (playerStatuses.values().stream().noneMatch(v -> v.inside) && !floors.isEmpty()) {shutdownTimer -= 1;}
         if (shutdownTimer == 0) {
             WildDungeons.getLogger().info("SHUTTING DOWN DUE TO TIMER");
             shutdown();return;}
@@ -234,6 +225,7 @@ public class DungeonSession {
         getPlayers().forEach(this::onExit);
         floors.forEach(DungeonFloor::shutdown);
         SaveSystem.DeleteSession(this);
+        cancelGenerations();
         markedForShutdown = true;
     }
 
@@ -243,6 +235,17 @@ public class DungeonSession {
     }
     public void sortFloors() {
         this.floors.sort(Comparator.comparingInt(DungeonFloor::getIndex));
+    }
+
+    public void validate() {
+        floors.forEach(dungeonFloor -> dungeonFloor.validate(this.onCompleteCallback(dungeonFloor.getIndex())));
+    }
+
+    public void cancelGenerations() {
+        if (generationFutures!=null)
+            generationFutures.forEach(future -> {
+            if (!future.isDone()) future.cancel(true);
+        });
     }
 
     public static class DungeonStats {

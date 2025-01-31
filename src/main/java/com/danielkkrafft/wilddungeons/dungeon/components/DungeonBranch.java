@@ -35,10 +35,10 @@ public class DungeonBranch {
     private int index;
     private BoundingBox boundingBox;
     private HashMap<String, DungeonSession.PlayerStatus> playerStatuses = new HashMap<>();
+    private boolean fullyGenerated = false;
 
     @IgnoreSerialization
     private DungeonFloor floor = null;
-    public void setTempFloor(DungeonFloor floor) {this.floor = floor;}
 
     public DungeonBranchTemplate getTemplate() {return DungeonRegistry.DUNGEON_BRANCH_REGISTRY.get(this.templateKey);}
     public DungeonSession getSession() {return DungeonSessionManager.getInstance().getDungeonSession(this.sessionKey);}
@@ -61,6 +61,7 @@ public class DungeonBranch {
     public BlockPos getSpawnPoint() {return this.spawnPoint;}
     public int getIndex() {return this.index;}
     public void setIndex(int index) {this.index = index;}
+    public boolean isFullyGenerated() {return this.fullyGenerated;}
 
     public DungeonBranch(String templateKey, DungeonFloor floor, BlockPos origin) {
         this.floor = floor;
@@ -77,6 +78,7 @@ public class DungeonBranch {
 
     public boolean generateDungeonBranch() {
         WildDungeons.getLogger().info("STARTING A NEW BRANCH. THIS WILL BE BRANCH #{}", this.index);
+        fullyGenerated = false;
         int tries = 0;
         while (branchRooms.size() < getTemplate().roomTemplates().size() && tries < 50) {
             if (populateNextRoom()) {
@@ -97,11 +99,13 @@ public class DungeonBranch {
         this.spawnPoint = floor.getBranches().size() == 1 ? this.branchRooms.getFirst().getSpawnPoint(floor.getLevel()) : floor.getBranches().getLast().branchRooms.getLast().getSpawnPoint(floor.getLevel());
 
         WDProfiler.INSTANCE.logTimestamp("DungeonBranch::generateDungeonBranch");
+        fullyGenerated = true;
         return true;
     }
 
     public void destroy() {
-        getFloor().getBranches().get(this.index-1).getRooms().forEach(dungeonRoom -> {
+        if (index-1>=0)
+            this.getFloor().getBranches().get(this.index-1).getRooms().forEach(dungeonRoom -> {
                     dungeonRoom.getConnectionPoints().forEach(connectionPoint -> {
                         if (connectionPoint.isConnected() && connectionPoint.getConnectedBranchIndex() == this.index) {
                             connectionPoint.unSetConnectedPoint();
@@ -134,7 +138,6 @@ public class DungeonBranch {
             List<ConnectionPoint> exitPoints = this.branchRooms.isEmpty() ?
                     floor.getBranches().get(floor.getBranches().size()-2).branchRooms.getLast().getValidExitPoints(TemplateHelper.EMPTY_DUNGEON_SETTINGS, TemplateHelper.EMPTY_BLOCK_POS, nextRoom, entrancePoint, false)
                     : getValidExitPoints(TemplateHelper.EMPTY_DUNGEON_SETTINGS, nextRoom, entrancePoint, false);
-            exitPoints.forEach(ConnectionPoint::resetFailures);//this probably isn't necessary and might cause the check later to always pass
 
             List<Pair<ConnectionPoint, StructurePlaceSettings>> validPoints = new ArrayList<>();
             BlockPos.MutableBlockPos position = new BlockPos.MutableBlockPos();
@@ -232,6 +235,9 @@ public class DungeonBranch {
         exitPoint.setConnectedPoint(newEntrancePoint);
         newEntrancePoint.setConnectedPoint(exitPoint);
         exitPoint.unBlock(floor.getLevel());
+        if (this.branchRooms.size() == 1){
+            exitPoint.loadingBlock(floor.getLevel());
+        }
         openConnections += nextRoom.connectionPoints().size() - 2;
         room.onGenerate();
         WDProfiler.INSTANCE.logTimestamp("DungeonBranch::placeRoom");

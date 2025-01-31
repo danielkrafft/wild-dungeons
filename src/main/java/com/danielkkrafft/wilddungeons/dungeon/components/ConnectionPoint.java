@@ -17,6 +17,7 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -150,7 +151,7 @@ public class ConnectionPoint {
         List<Boolean> conditions = List.of(
                 !ex.isConnected(),
                 !Objects.equals(ex.type, "entrance"),
-                ex.failures < 10 || bypassFailures,
+                ex.failures < 50 || bypassFailures,
                 Objects.equals(en.pool, ex.pool),
                 en.getDirection(settings).getAxis() != Direction.Axis.Y || ex.getDirection(ex.getRoom().getSettings()).getName() == en.getDirection(settings).getOpposite().getName(),
                 en.getSize(settings, position).equals(ex.getSize(ex.getRoom().getSettings(), ex.getRoom().getPosition()))
@@ -220,7 +221,8 @@ public class ConnectionPoint {
 
     public void block(ServerLevel level) {
         this.getRoom().getActivePlayers().forEach(wdPlayer -> {
-            if (this.getBoundingBox(this.getRoom().getSettings(), this.getRoom().getPosition()).isInside(wdPlayer.getServerPlayer().blockPosition())) {
+            ServerPlayer player = wdPlayer.getServerPlayer();
+            if (player!=null && this.getBoundingBox(this.getRoom().getSettings(), this.getRoom().getPosition()).isInside(player.blockPosition())) {
                 Vec3 position = wdPlayer.getServerPlayer().position();
                 Vec3i normal = this.getConnectedPoint().getDirection(this.getConnectedPoint().getRoom().getSettings()).getNormal();
                 WildDungeons.getLogger().info("CONNECTED POINT NORMAL: {}", normal);
@@ -249,7 +251,12 @@ public class ConnectionPoint {
         WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::unBlock");
     }
 
+    public void loadingBlock(ServerLevel level) {
+        unBlockedBlockStates.forEach((pos, blockState) -> level.setBlock(pos, Blocks.REDSTONE_BLOCK.defaultBlockState(), 2));
+    }
+
     public void unSetConnectedPoint() {
+        this.block(this.getRoom().getBranch().getFloor().getLevel());
         this.connectedPointIndex = -1;
         this.connectedBranchIndex = -1;
         this.connectedRoomIndex = -1;

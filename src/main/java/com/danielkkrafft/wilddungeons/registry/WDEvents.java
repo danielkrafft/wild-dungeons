@@ -36,14 +36,12 @@ import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 public class WDEvents {
 
@@ -57,24 +55,22 @@ public class WDEvents {
         }
     }
 
+    private static CompletableFuture<Void> asyncLoad;
+
     @SubscribeEvent
     public static void onServerAboutToStart(ServerAboutToStartEvent event) {
         FileUtil.setWorldPath(event.getServer().getWorldPath(LevelResource.ROOT));
         DungeonSessionManager.getInstance().server = event.getServer();
         if (SaveSystem.isLoading()) return;
         WildDungeons.getLogger().info("STARTING DUNGEON FILE LOADING...");
-        CompletableFuture<Boolean> fileLoadFuture = CompletableFuture.supplyAsync(SaveSystem::Load);
-
-        try {
-            boolean filesLoaded = fileLoadFuture.get(30, TimeUnit.SECONDS);
-
-            if (!filesLoaded) {
-                WildDungeons.getLogger().warn("DUNGEON FILES FAILED TO LOAD");
-            }
-            WildDungeons.getLogger().info("DUNGEON FILES LOADED SUCCESSFULLY");
-        } catch (TimeoutException | InterruptedException | ExecutionException ignored) {
-            WildDungeons.getLogger().warn("DUNGEON FILES FAILED TO LOAD");
-        }
+        asyncLoad = CompletableFuture.runAsync(SaveSystem::Load);
+        asyncLoad.thenAccept(v -> {
+            WildDungeons.getLogger().info("DUNGEON FILE LOADING COMPLETE!");
+        }).exceptionally(throwable -> {
+            WildDungeons.getLogger().error("DUNGEON FILE LOADING FAILED!");
+            throwable.printStackTrace();
+            return null;
+        });
     }
 
     @SubscribeEvent
@@ -88,6 +84,12 @@ public class WDEvents {
     @SubscribeEvent
     public static void onServerStart(ServerStartedEvent event) {
         DungeonSessionManager.getInstance().server = event.getServer();
+        asyncLoad.thenAccept((v) -> DungeonSessionManager.ValidateSessions());
+    }
+
+    @SubscribeEvent
+    public static void onServerShutdown(ServerStoppingEvent event){
+        DungeonSessionManager.onShutdown();
     }
 
     @SubscribeEvent
@@ -101,7 +103,6 @@ public class WDEvents {
         if (event.getLevel().isClientSide()
                 || !Objects.equals(event.getLevel().registryAccess().registryOrThrow(Registries.DIMENSION_TYPE).get(WDDimensions.WILDDUNGEON), event.getLevel().dimensionType()))
             return;
-
         SaveSystem.Save();
     }
 

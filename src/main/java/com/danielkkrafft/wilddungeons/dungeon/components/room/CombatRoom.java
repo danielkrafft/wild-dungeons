@@ -8,9 +8,8 @@ import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.Vec3i;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -71,7 +70,9 @@ public class CombatRoom extends DungeonRoom {
                 int score = 0;
 
                 for (WDPlayer wdPlayer : this.getActivePlayers()) {
-                    score += pos.distManhattan(wdPlayer.getServerPlayer().blockPosition());
+                    ServerPlayer player = wdPlayer.getServerPlayer();
+                    if (player!=null)
+                        score += pos.distManhattan( player.blockPosition());
                 }
 
                 return new Pair<>(pos, score);
