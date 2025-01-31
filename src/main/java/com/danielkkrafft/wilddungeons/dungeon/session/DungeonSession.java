@@ -221,6 +221,7 @@ public class DungeonSession {
         getPlayers().forEach(this::onExit);
         floors.forEach(DungeonFloor::shutdown);
         SaveSystem.DeleteSession(this);
+        cancelGenerations();
         markedForShutdown = true;
     }
 
