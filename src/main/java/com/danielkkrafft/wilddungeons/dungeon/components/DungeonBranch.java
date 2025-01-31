@@ -39,7 +39,6 @@ public class DungeonBranch {
 
     @IgnoreSerialization
     private DungeonFloor floor = null;
-    public void setTempFloor(DungeonFloor floor) {this.floor = floor;}
 
     public DungeonBranchTemplate getTemplate() {return DungeonRegistry.DUNGEON_BRANCH_REGISTRY.get(this.templateKey);}
     public DungeonSession getSession() {return DungeonSessionManager.getInstance().getDungeonSession(this.sessionKey);}
@@ -139,7 +138,6 @@ public class DungeonBranch {
             List<ConnectionPoint> exitPoints = this.branchRooms.isEmpty() ?
                     floor.getBranches().get(floor.getBranches().size()-2).branchRooms.getLast().getValidExitPoints(TemplateHelper.EMPTY_DUNGEON_SETTINGS, TemplateHelper.EMPTY_BLOCK_POS, nextRoom, entrancePoint, false)
                     : getValidExitPoints(TemplateHelper.EMPTY_DUNGEON_SETTINGS, nextRoom, entrancePoint, false);
-//            exitPoints.forEach(ConnectionPoint::resetFailures);//this probably isn't necessary and might cause the check later to always pass
 
             List<Pair<ConnectionPoint, StructurePlaceSettings>> validPoints = new ArrayList<>();
             BlockPos.MutableBlockPos position = new BlockPos.MutableBlockPos();
@@ -237,6 +235,9 @@ public class DungeonBranch {
         exitPoint.setConnectedPoint(newEntrancePoint);
         newEntrancePoint.setConnectedPoint(exitPoint);
         exitPoint.unBlock(floor.getLevel());
+        if (this.branchRooms.size() == 1){
+            exitPoint.loadingBlock(floor.getLevel());
+        }
         openConnections += nextRoom.connectionPoints().size() - 2;
         room.onGenerate();
         WDProfiler.INSTANCE.logTimestamp("DungeonBranch::placeRoom");

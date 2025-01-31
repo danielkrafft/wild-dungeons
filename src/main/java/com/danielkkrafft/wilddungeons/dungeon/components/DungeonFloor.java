@@ -114,7 +114,7 @@ public class DungeonFloor {
             DungeonSessionManager.getInstance().server.execute(()->{
                 Offering spawnRift = (Offering) this.getLevel().getEntity(UUID.fromString(this.dungeonBranches.getFirst().getRooms().getFirst().getRiftUUIDs().getFirst()));
                 if (spawnRift != null) {
-                    WildDungeons.getLogger().info("SPAWNING FIRST RIFT WITH OFFERING ID: {}", index-1);
+                    WildDungeons.getLogger().info("ASSIGNING FIRST RIFT WITH OFFERING ID: {}", index-1);
                     spawnRift.setOfferingId(""+(index-1));
                 }
             });

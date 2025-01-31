@@ -251,6 +251,10 @@ public class ConnectionPoint {
         WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::unBlock");
     }
 
+    public void loadingBlock(ServerLevel level) {
+        unBlockedBlockStates.forEach((pos, blockState) -> level.setBlock(pos, Blocks.REDSTONE_BLOCK.defaultBlockState(), 2));
+    }
+
     public void unSetConnectedPoint() {
         this.block(this.getRoom().getBranch().getFloor().getLevel());
         this.connectedPointIndex = -1;
