@@ -365,7 +365,7 @@ public class DungeonRegistry {
         DUNGEON_FLOOR_REGISTRY.add(DungeonFloorTemplate.build("test_floor",
                 new DungeonLayout<DungeonBranchTemplate>()
                         .addSimple(DUNGEON_BRANCH_REGISTRY.get("starter_room_branch"))
-                        .add(new WeightedPool<DungeonBranchTemplate>().add(DUNGEON_BRANCH_REGISTRY.get("all_branch"), 1), 10)
+                        .add(new WeightedPool<DungeonBranchTemplate>().add(DUNGEON_BRANCH_REGISTRY.get("all_branch"), 1), 1)
                         .addSimple(DUNGEON_BRANCH_REGISTRY.get("ending_room_branch")), null, null, 1.0)
                 .pool(FLOOR_POOL, 1));
 
@@ -380,7 +380,7 @@ public class DungeonRegistry {
          */
 
         DUNGEON_REGISTRY.add(DungeonTemplate.build("dungeon_1", DungeonOpenBehavior.NONE, new DungeonLayout<DungeonFloorTemplate>()
-                .add(FLOOR_POOL, 3),
+                .add(FLOOR_POOL, 1),
                 ALL_MATERIAL_POOL,
                 DungeonRegistry.ENEMY_TABLE_REGISTRY.get("BASIC_TABLE"),
                 1.0, 1.1,
