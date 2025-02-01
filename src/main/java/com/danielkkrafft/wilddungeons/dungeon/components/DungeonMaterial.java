@@ -5,6 +5,7 @@ import com.danielkkrafft.wilddungeons.block.WDBlocks;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonComponent;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.Property;
 
 import java.util.List;
@@ -43,6 +44,7 @@ public class DungeonMaterial implements DungeonComponent {
         else if (input.getBlock() == WDBlocks.WD_SLAB.get()) {result = getSlab(0);}
         else if (input.getBlock() == WDBlocks.WD_WALL.get()) {result = getWall(0);}
         else if (input.getBlock() == WDBlocks.WD_LIGHT.get()) {result = getLight(0);}
+        else if (input.getBlock() == WDBlocks.WD_HANGING_LIGHT.get()) {result = getLight(0).trySetValue(BlockStateProperties.HANGING,true);}
         else if (input.getBlock() == WDBlocks.WD_SECRET.get()) {result = getHidden(0);}
         else {return result;}
 
