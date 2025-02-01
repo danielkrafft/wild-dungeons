@@ -10,6 +10,8 @@ import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.phys.Vec3;
@@ -56,6 +58,7 @@ public class LootRoom extends DungeonRoom {
         if (this.started) return;
         this.started = true;
 
+        this.getBranch().getFloor().getLevel().playSound(null, this.getPosition(), SoundEvents.IRON_DOOR_CLOSE, SoundSource.BLOCKS, .5f, 1f);
         this.getConnectionPoints().forEach(point -> {
             if (point.isConnected()) point.block(this.getBranch().getFloor().getLevel());
         });
@@ -110,6 +113,7 @@ public class LootRoom extends DungeonRoom {
     @Override
     public void onClear() {
         super.onClear();
+        this.getBranch().getFloor().getLevel().playSound(null, this.getPosition(), SoundEvents.IRON_DOOR_OPEN, SoundSource.BLOCKS, .5f, 1f);
         this.getConnectionPoints().forEach(point -> {
             if (point.isConnected()) point.unBlock(this.getBranch().getFloor().getLevel());
         });

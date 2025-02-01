@@ -10,6 +10,8 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -47,6 +49,7 @@ public class CombatRoom extends DungeonRoom {
         this.started = true;
         WildDungeons.getLogger().info("BLOCKING THE EXITS");
 
+        this.getBranch().getFloor().getLevel().playSound(null, this.getPosition(), SoundEvents.IRON_DOOR_CLOSE, SoundSource.BLOCKS, .5f, 1f);
         this.getConnectionPoints().forEach(point -> {
             if (point.isConnected()) point.block(this.getBranch().getFloor().getLevel());
         });
@@ -118,6 +121,7 @@ public class CombatRoom extends DungeonRoom {
     @Override
     public void onClear() {
         super.onClear();
+        this.getBranch().getFloor().getLevel().playSound(null, this.getPosition(), SoundEvents.IRON_DOOR_OPEN, SoundSource.BLOCKS, .5f, 1f);
         this.getConnectionPoints().forEach(point -> {
             if (point.isConnected()) {
                 point.unBlock(this.getBranch().getFloor().getLevel());

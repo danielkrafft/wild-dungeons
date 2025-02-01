@@ -50,10 +50,8 @@ public class DungeonMaterial implements DungeonComponent {
         else if (input.getBlock() == WDBlocks.WD_LIGHT.get()) {result = getLight(0);}
         else if (input.getBlock() == WDBlocks.WD_HANGING_LIGHT.get()) {result = getLight(0).trySetValue(BlockStateProperties.HANGING,true);}
         else if (input.getBlock() == WDBlocks.WD_SECRET.get()) {result = getHidden(0);}
-        else if (input.getBlock() == Blocks.CHEST) {result = RandomUtil.randFloatBetween(0, 1) < chestChance
-                ? Blocks.CHEST.defaultBlockState() : Blocks.AIR.defaultBlockState();}
-        else if (input.getBlock() == Blocks.BARREL) {result = RandomUtil.randFloatBetween(0, 1) < chestChance
-                ? Blocks.BARREL.defaultBlockState() : Blocks.AIR.defaultBlockState();}
+        else if (input.getBlock() == Blocks.CHEST) {result = RandomUtil.randFloatBetween(0, 1) < chestChance ? Blocks.CHEST.defaultBlockState() : Blocks.AIR.defaultBlockState();}
+        else if (input.getBlock() == Blocks.BARREL) {result = RandomUtil.randFloatBetween(0, 1) < chestChance ? Blocks.BARREL.defaultBlockState() : Blocks.AIR.defaultBlockState();}
         else {return result;}
 
         for (Property<?> property : input.getProperties()) {
