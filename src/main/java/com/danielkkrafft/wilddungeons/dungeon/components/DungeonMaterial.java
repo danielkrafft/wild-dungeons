@@ -3,7 +3,9 @@ package com.danielkkrafft.wilddungeons.dungeon.components;
 
 import com.danielkkrafft.wilddungeons.block.WDBlocks;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonComponent;
+import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.Property;
@@ -19,8 +21,9 @@ public class DungeonMaterial implements DungeonComponent {
     public List<WeightedPool<BlockState>> wallBlockStates;
     public List<WeightedPool<BlockState>> lightBlockStates;
     public List<WeightedPool<BlockState>> hiddenBlockStates;
+    public float chestChance;
 
-    public DungeonMaterial (String name, List<WeightedPool<BlockState>> basicBlockStates, List<WeightedPool<BlockState>> stairBlockStates, List<WeightedPool<BlockState>> slabBlockStates, List<WeightedPool<BlockState>> wallBlockStates, List<WeightedPool<BlockState>> lightBlockStates, List<WeightedPool<BlockState>> hiddenBlockStates) {
+    public DungeonMaterial (String name, List<WeightedPool<BlockState>> basicBlockStates, List<WeightedPool<BlockState>> stairBlockStates, List<WeightedPool<BlockState>> slabBlockStates, List<WeightedPool<BlockState>> wallBlockStates, List<WeightedPool<BlockState>> lightBlockStates, List<WeightedPool<BlockState>> hiddenBlockStates, float chestChance) {
         this.name = name;
         this.basicBlockStates = basicBlockStates;
         this.stairBlockStates = stairBlockStates;
@@ -28,6 +31,7 @@ public class DungeonMaterial implements DungeonComponent {
         this.wallBlockStates = wallBlockStates;
         this.lightBlockStates = lightBlockStates;
         this.hiddenBlockStates = hiddenBlockStates;
+        this.chestChance = chestChance;
     }
 
     public BlockState getBasic(int index) {return basicBlockStates.get(index).getRandom();}
@@ -46,6 +50,10 @@ public class DungeonMaterial implements DungeonComponent {
         else if (input.getBlock() == WDBlocks.WD_LIGHT.get()) {result = getLight(0);}
         else if (input.getBlock() == WDBlocks.WD_HANGING_LIGHT.get()) {result = getLight(0).trySetValue(BlockStateProperties.HANGING,true);}
         else if (input.getBlock() == WDBlocks.WD_SECRET.get()) {result = getHidden(0);}
+        else if (input.getBlock() == Blocks.CHEST) {result = RandomUtil.randFloatBetween(0, 1) < chestChance
+                ? Blocks.CHEST.defaultBlockState() : Blocks.AIR.defaultBlockState();}
+        else if (input.getBlock() == Blocks.BARREL) {result = RandomUtil.randFloatBetween(0, 1) < chestChance
+                ? Blocks.BARREL.defaultBlockState() : Blocks.AIR.defaultBlockState();}
         else {return result;}
 
         for (Property<?> property : input.getProperties()) {

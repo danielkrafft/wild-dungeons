@@ -162,7 +162,8 @@ public class DungeonRegistry {
                 List.of(new WeightedPool<BlockState>()
                         .add(Blocks.SHROOMLIGHT.defaultBlockState(), 1)),
                 List.of(new WeightedPool<BlockState>()
-                        .add(Blocks.SAND.defaultBlockState(), 1))
+                        .add(Blocks.SAND.defaultBlockState(), 1)),
+                0.33f
         ).pool(ALL_MATERIAL_POOL, 1));
 
         DUNGEON_MATERIAL_REGISTRY.add(new DungeonMaterial( "STONE_BRICK",
@@ -183,7 +184,8 @@ public class DungeonRegistry {
                 List.of(new WeightedPool<BlockState>()
                         .add(Blocks.SEA_LANTERN.defaultBlockState(), 1)),
                 List.of(new WeightedPool<BlockState>()
-                        .add(Blocks.CRACKED_STONE_BRICKS.defaultBlockState(), 1))
+                        .add(Blocks.CRACKED_STONE_BRICKS.defaultBlockState(), 1)),
+                0.33f
         ).pool(ALL_MATERIAL_POOL, 1));
 
         DUNGEON_MATERIAL_REGISTRY.add(new DungeonMaterial( "PRISMARINE",
@@ -204,7 +206,8 @@ public class DungeonRegistry {
                 List.of(new WeightedPool<BlockState>()
                         .add(Blocks.SEA_LANTERN.defaultBlockState(), 1)),
                 List.of(new WeightedPool<BlockState>()
-                        .add(Blocks.PRISMARINE_BRICKS.defaultBlockState(), 1))
+                        .add(Blocks.PRISMARINE_BRICKS.defaultBlockState(), 1)),
+                0.33f
         ).pool(ALL_MATERIAL_POOL, 1));
 
         DUNGEON_MATERIAL_REGISTRY.add(new DungeonMaterial( "NETHER",
@@ -222,7 +225,8 @@ public class DungeonRegistry {
                 List.of(new WeightedPool<BlockState>()
                         .add(Blocks.GLOWSTONE.defaultBlockState(), 1)),
                 List.of(new WeightedPool<BlockState>()
-                        .add(Blocks.CRACKED_NETHER_BRICKS.defaultBlockState(), 1))
+                        .add(Blocks.CRACKED_NETHER_BRICKS.defaultBlockState(), 1)),
+                0.33f
         ).pool(ALL_MATERIAL_POOL, 1));
 
         DUNGEON_MATERIAL_REGISTRY.add(new DungeonMaterial( "END_STONE",
@@ -238,7 +242,8 @@ public class DungeonRegistry {
                 List.of(new WeightedPool<BlockState>()
                         .add(Blocks.PEARLESCENT_FROGLIGHT.defaultBlockState(), 1)),
                 List.of(new WeightedPool<BlockState>()
-                        .add(Blocks.END_STONE_BRICKS.defaultBlockState(), 1))
+                        .add(Blocks.END_STONE_BRICKS.defaultBlockState(), 1)),
+                0.33f
         ).pool(ALL_MATERIAL_POOL, 1));
 
         DUNGEON_MATERIAL_REGISTRY.add(new DungeonMaterial( "DEEP_DARK",
@@ -263,7 +268,8 @@ public class DungeonRegistry {
                 List.of(new WeightedPool<BlockState>()
                         .add(Blocks.SHROOMLIGHT.defaultBlockState(), 1)),
                 List.of(new WeightedPool<BlockState>()
-                        .add(Blocks.CRACKED_DEEPSLATE_BRICKS.defaultBlockState(), 1))
+                        .add(Blocks.CRACKED_DEEPSLATE_BRICKS.defaultBlockState(), 1)),
+                0.33f
         ).pool(ALL_MATERIAL_POOL, 1));
 
         DUNGEON_MATERIAL_REGISTRY.add(new DungeonMaterial( "OAK_WOOD",
@@ -284,7 +290,8 @@ public class DungeonRegistry {
                 List.of(new WeightedPool<BlockState>()
                         .add(Blocks.OCHRE_FROGLIGHT.defaultBlockState(), 1)),
                 List.of(new WeightedPool<BlockState>()
-                        .add(Blocks.BIRCH_PLANKS.defaultBlockState(), 1))
+                        .add(Blocks.BIRCH_PLANKS.defaultBlockState(), 1)),
+                0.33f
         ).pool(ALL_MATERIAL_POOL, 1));
 
         /*

@@ -52,7 +52,8 @@ public class OverworldDungeonRegistry {
                 List.of(new WeightedPool<BlockState>()
                         .add(Blocks.COBBLESTONE.defaultBlockState(), 2)
                         .add(Blocks.MOSSY_COBBLESTONE.defaultBlockState(), 1)
-                )
+                ),
+                0.33f
         )
                 .pool(OVERWORLD_MATERIAL_POOL, 1).pool(ALL_MATERIAL_POOL, 1));
 
