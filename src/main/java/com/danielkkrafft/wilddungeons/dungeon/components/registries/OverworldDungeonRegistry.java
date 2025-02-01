@@ -76,7 +76,7 @@ public class OverworldDungeonRegistry {
                         null,
                         1.0
                 )
-                .pool(OVERWORLD_SPRAWL_ROOM_POOL, 7));
+                .pool(OVERWORLD_SPRAWL_ROOM_POOL, 9));
 
         DUNGEON_ROOM_REGISTRY.add(DungeonRoomTemplate.build(
                         DungeonRoomTemplate.Type.NONE,
@@ -100,7 +100,7 @@ public class OverworldDungeonRegistry {
                         null,
                         1.0
                 )
-                .pool(OVERWORLD_SPRAWL_ROOM_POOL, 3));
+                .pool(OVERWORLD_SPRAWL_ROOM_POOL, 1));
 
         DUNGEON_ROOM_REGISTRY.add(DungeonRoomTemplate.build(
                         DungeonRoomTemplate.Type.COMBAT,
@@ -138,6 +138,21 @@ public class OverworldDungeonRegistry {
                 )
                 .pool(OVERWORLD_SPRAWL_ROOM_POOL, 1));
 
+
+        DUNGEON_ROOM_REGISTRY.add(DungeonRoomTemplate.build(
+                        DungeonRoomTemplate.Type.NONE,
+                        "overworld_stairway_1",
+                        List.of(
+                                Pair.of("overworld/sprawl/stairway_1", TemplateHelper.EMPTY_BLOCK_POS)
+                        ),
+                        null,
+                        null,
+                        1.0
+                )
+                .pool(OVERWORLD_SPACER_ROOM_POOL, 2)
+                .pool(OVERWORLD_SPRAWL_ROOM_POOL, 3)
+        );
+
         DUNGEON_ROOM_REGISTRY.add(DungeonRoomTemplate.build(
                         DungeonRoomTemplate.Type.NONE,
                         "overworld_hallway_1",
@@ -148,7 +163,21 @@ public class OverworldDungeonRegistry {
                         null,
                         1.0
                 )
-                .pool(OVERWORLD_SPACER_ROOM_POOL, 1)
+                .pool(OVERWORLD_SPACER_ROOM_POOL, 3)
+                .pool(OVERWORLD_SPRAWL_ROOM_POOL, 1)
+        );
+
+        DUNGEON_ROOM_REGISTRY.add(DungeonRoomTemplate.build(
+                        DungeonRoomTemplate.Type.NONE,
+                        "overworld_hallway_2",
+                        List.of(
+                                Pair.of("overworld/sprawl/hallway_2", TemplateHelper.EMPTY_BLOCK_POS)
+                        ),
+                        null,
+                        null,
+                        1.0
+                )
+                .pool(OVERWORLD_SPACER_ROOM_POOL, 3)
                 .pool(OVERWORLD_SPRAWL_ROOM_POOL, 1)
         );
 
@@ -208,7 +237,25 @@ public class OverworldDungeonRegistry {
 
         DUNGEON_BRANCH_REGISTRY.add(DungeonBranchTemplate.build("overworld_basic_sprawl",
                 new DungeonRegistry.DungeonLayout<DungeonRoomTemplate>()
-                        .add(WeightedPool.combine(Pair.of(OVERWORLD_SPRAWL_ROOM_POOL, 100)), 20),
+                        .add(WeightedPool.combine(Pair.of(OVERWORLD_SPRAWL_ROOM_POOL, 100)), 10),
+                OVERWORLD_MATERIAL_POOL, null, 1.0));
+
+        DUNGEON_BRANCH_REGISTRY.add(DungeonBranchTemplate.build("overworld_sprawl_shop",
+                new DungeonRegistry.DungeonLayout<DungeonRoomTemplate>()
+                        .add(WeightedPool.combine(Pair.of(OVERWORLD_SPRAWL_ROOM_POOL, 100)), 10)
+                        .add(WeightedPool.combine(Pair.of(OVERWORLD_SHOP_ROOM_POOL, 100)), 1),
+                OVERWORLD_MATERIAL_POOL, null, 1.0));
+
+        DUNGEON_BRANCH_REGISTRY.add(DungeonBranchTemplate.build("overworld_sprawl_perk",
+                new DungeonRegistry.DungeonLayout<DungeonRoomTemplate>()
+                        .add(WeightedPool.combine(Pair.of(OVERWORLD_SPRAWL_ROOM_POOL, 100)), 10)
+                        .add(WeightedPool.combine(Pair.of(OVERWORLD_LOOT_ROOM_POOL, 100)), 1),
+                OVERWORLD_MATERIAL_POOL, null, 1.0));
+
+        DUNGEON_BRANCH_REGISTRY.add(DungeonBranchTemplate.build("overworld_sprawl_rest",
+                new DungeonRegistry.DungeonLayout<DungeonRoomTemplate>()
+                        .add(WeightedPool.combine(Pair.of(OVERWORLD_SPRAWL_ROOM_POOL, 100)), 10)
+                        .add(WeightedPool.combine(Pair.of(OVERWORLD_REST_ROOM_POOL, 100)), 1),
                 OVERWORLD_MATERIAL_POOL, null, 1.0));
 
         DUNGEON_BRANCH_REGISTRY.add(DungeonBranchTemplate.build("overworld_ending_branch",
@@ -216,8 +263,9 @@ public class OverworldDungeonRegistry {
                         .add(WeightedPool.combine(Pair.of(OVERWORLD_SPACER_ROOM_POOL, 100)), 2)
                         .add(WeightedPool.combine(Pair.of(OVERWORLD_REST_ROOM_POOL, 100)), 1)
                         .add(WeightedPool.combine(Pair.of(OVERWORLD_LOOT_ROOM_POOL, 100)), 1)
-                        .add(WeightedPool.combine(Pair.of(OVERWORLD_SHOP_ROOM_POOL, 100)), 1)
                         .add(WeightedPool.combine(Pair.of(OVERWORLD_SPACER_ROOM_POOL, 100)), 1)
+                        .add(WeightedPool.combine(Pair.of(OVERWORLD_SHOP_ROOM_POOL, 100)), 1)
+                        .add(WeightedPool.combine(Pair.of(OVERWORLD_SPACER_ROOM_POOL, 100)), 2)
                         .addSimple(DUNGEON_ROOM_REGISTRY.get("overworld_boss")),
                 OVERWORLD_MATERIAL_POOL, null, 1.0));
 
@@ -226,7 +274,9 @@ public class OverworldDungeonRegistry {
                                 new DungeonRegistry.DungeonLayout<DungeonBranchTemplate>()
                                         .addSimple(DUNGEON_BRANCH_REGISTRY.get("overworld_starter_branch"))
                                         .addSimple(DUNGEON_BRANCH_REGISTRY.get("overworld_basic_sprawl"))
-                                        .addSimple(DUNGEON_BRANCH_REGISTRY.get("overworld_basic_sprawl"))
+                                        .addSimple(DUNGEON_BRANCH_REGISTRY.get("overworld_sprawl_perk"))
+                                        .addSimple(DUNGEON_BRANCH_REGISTRY.get("overworld_sprawl_shop"))
+                                        .addSimple(DUNGEON_BRANCH_REGISTRY.get("overworld_sprawl_rest"))
                                         .addSimple(DUNGEON_BRANCH_REGISTRY.get("overworld_ending_branch")), null, null, 1.0)
                         .pool(OVERWORLD_FLOOR_POOL, 1)
         );
