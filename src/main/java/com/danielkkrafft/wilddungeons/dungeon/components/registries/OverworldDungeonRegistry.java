@@ -30,19 +30,22 @@ public class OverworldDungeonRegistry {
 
         DUNGEON_MATERIAL_REGISTRY.add(new DungeonMaterial("OVERWORLD_COBBLESTONE",
                 List.of(new WeightedPool<BlockState>()
-                        .add(Blocks.COBBLESTONE.defaultBlockState(), 2)
-                        .add(Blocks.MOSSY_COBBLESTONE.defaultBlockState(), 1)
+                        .add(Blocks.COBBLESTONE.defaultBlockState(), 4)
+                        .add(Blocks.MOSSY_COBBLESTONE.defaultBlockState(), 2)
+                        .add(Blocks.STONE.defaultBlockState(), 1)
                 ),
                 List.of(new WeightedPool<BlockState>()
-                        .add(Blocks.COBBLESTONE_STAIRS.defaultBlockState(), 2)
-                        .add(Blocks.MOSSY_COBBLESTONE_STAIRS.defaultBlockState(), 1)
+                        .add(Blocks.COBBLESTONE_STAIRS.defaultBlockState(), 4)
+                        .add(Blocks.MOSSY_COBBLESTONE_STAIRS.defaultBlockState(), 2)
+                        .add(Blocks.STONE_STAIRS.defaultBlockState(), 1)
                 ),
                 List.of(new WeightedPool<BlockState>()
-                        .add(Blocks.COBBLESTONE_SLAB.defaultBlockState(), 2)
-                        .add(Blocks.MOSSY_COBBLESTONE_SLAB.defaultBlockState(), 1)
+                        .add(Blocks.COBBLESTONE_SLAB.defaultBlockState(), 4)
+                        .add(Blocks.MOSSY_COBBLESTONE_SLAB.defaultBlockState(), 2)
+                        .add(Blocks.STONE_SLAB.defaultBlockState(), 1)
                 ),
                 List.of(new WeightedPool<BlockState>()
-                        .add(Blocks.COBBLESTONE_WALL.defaultBlockState(), 2)
+                        .add(Blocks.COBBLESTONE_WALL.defaultBlockState(), 3)
                         .add(Blocks.MOSSY_COBBLESTONE_WALL.defaultBlockState(), 1)
                 ),
                 List.of(new WeightedPool<BlockState>()
@@ -50,8 +53,8 @@ public class OverworldDungeonRegistry {
                         .add(Blocks.SOUL_LANTERN.defaultBlockState(), 1)
                 ),
                 List.of(new WeightedPool<BlockState>()
-                        .add(Blocks.COBBLESTONE.defaultBlockState(), 2)
-                        .add(Blocks.MOSSY_COBBLESTONE.defaultBlockState(), 1)
+                        .add(Blocks.COBBLESTONE.defaultBlockState(), 1)
+                        .add(Blocks.MOSSY_COBBLESTONE.defaultBlockState(), 3)
                 ),
                 0.33f
         )
