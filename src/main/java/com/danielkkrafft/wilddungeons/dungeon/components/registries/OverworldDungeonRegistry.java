@@ -76,7 +76,7 @@ public class OverworldDungeonRegistry {
                         null,
                         1.0
                 )
-                .pool(OVERWORLD_SPRAWL_ROOM_POOL, 9));
+                .pool(OVERWORLD_SPRAWL_ROOM_POOL, 5));
 
         DUNGEON_ROOM_REGISTRY.add(DungeonRoomTemplate.build(
                         DungeonRoomTemplate.Type.NONE,
@@ -88,7 +88,7 @@ public class OverworldDungeonRegistry {
                         null,
                         1.0
                 )
-                .pool(OVERWORLD_SPRAWL_ROOM_POOL, 7));
+                .pool(OVERWORLD_SPRAWL_ROOM_POOL, 5));
 
         DUNGEON_ROOM_REGISTRY.add(DungeonRoomTemplate.build(
                         DungeonRoomTemplate.Type.NONE,
@@ -103,6 +103,18 @@ public class OverworldDungeonRegistry {
                 .pool(OVERWORLD_SPRAWL_ROOM_POOL, 1));
 
         DUNGEON_ROOM_REGISTRY.add(DungeonRoomTemplate.build(
+                        DungeonRoomTemplate.Type.NONE,
+                        "overworld_basic_4",
+                        List.of(
+                                Pair.of("overworld/sprawl/basic_4", TemplateHelper.EMPTY_BLOCK_POS)
+                        ),
+                        null,
+                        null,
+                        1.0
+                )
+                .pool(OVERWORLD_SPRAWL_ROOM_POOL, 2));
+
+        DUNGEON_ROOM_REGISTRY.add(DungeonRoomTemplate.build(
                         DungeonRoomTemplate.Type.COMBAT,
                         "overworld_basic_3",
                         List.of(
@@ -113,6 +125,18 @@ public class OverworldDungeonRegistry {
                         1.0
                 )
                 .pool(OVERWORLD_SPRAWL_ROOM_POOL, 2));
+
+        DUNGEON_ROOM_REGISTRY.add(DungeonRoomTemplate.build(
+                        DungeonRoomTemplate.Type.COMBAT,
+                        "overworld_basic_4",
+                        List.of(
+                                Pair.of("overworld/sprawl/basic_4", TemplateHelper.EMPTY_BLOCK_POS)
+                        ),
+                        null,
+                        null,
+                        1.0
+                )
+                .pool(OVERWORLD_SPRAWL_ROOM_POOL, 1));
 
         DUNGEON_ROOM_REGISTRY.add(DungeonRoomTemplate.build(
                         DungeonRoomTemplate.Type.NONE,
@@ -178,6 +202,19 @@ public class OverworldDungeonRegistry {
                         1.0
                 )
                 .pool(OVERWORLD_SPACER_ROOM_POOL, 3)
+                .pool(OVERWORLD_SPRAWL_ROOM_POOL, 1)
+        );
+
+        DUNGEON_ROOM_REGISTRY.add(DungeonRoomTemplate.build(
+                        DungeonRoomTemplate.Type.NONE,
+                        "overworld_crafting",
+                        List.of(
+                                Pair.of("overworld/crafting", TemplateHelper.EMPTY_BLOCK_POS)
+                        ),
+                        null,
+                        null,
+                        1.0
+                )
                 .pool(OVERWORLD_SPRAWL_ROOM_POOL, 1)
         );
 
@@ -274,9 +311,9 @@ public class OverworldDungeonRegistry {
                                 new DungeonRegistry.DungeonLayout<DungeonBranchTemplate>()
                                         .addSimple(DUNGEON_BRANCH_REGISTRY.get("overworld_starter_branch"))
                                         .addSimple(DUNGEON_BRANCH_REGISTRY.get("overworld_basic_sprawl"))
+                                        .addSimple(DUNGEON_BRANCH_REGISTRY.get("overworld_sprawl_rest"))
                                         .addSimple(DUNGEON_BRANCH_REGISTRY.get("overworld_sprawl_perk"))
                                         .addSimple(DUNGEON_BRANCH_REGISTRY.get("overworld_sprawl_shop"))
-                                        .addSimple(DUNGEON_BRANCH_REGISTRY.get("overworld_sprawl_rest"))
                                         .addSimple(DUNGEON_BRANCH_REGISTRY.get("overworld_ending_branch")), null, null, 1.0)
                         .pool(OVERWORLD_FLOOR_POOL, 1)
         );

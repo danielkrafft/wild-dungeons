@@ -74,15 +74,15 @@ public class DungeonRegistry {
         LOOT_ENTRY_REGISTRY.add(new LootEntry("SEEDS", Items.WHEAT_SEEDS, 8, 1.5f));
         LOOT_ENTRY_REGISTRY.add(new LootEntry("MELONS", Items.MELON_SLICE, 8, 1.5f));
         LOOT_ENTRY_REGISTRY.add(new LootEntry("LEATHER", Items.LEATHER, 6, 1.5f));
-        LOOT_ENTRY_REGISTRY.add(new LootEntry("COAL", Items.COAL, 3, 1.5f));
-        LOOT_ENTRY_REGISTRY.add(new LootEntry("CHARCOAL", Items.CHARCOAL, 5, 1.5f));
+        LOOT_ENTRY_REGISTRY.add(new LootEntry("COAL", Items.COAL, 8, 1.5f));
+        LOOT_ENTRY_REGISTRY.add(new LootEntry("CHARCOAL", Items.CHARCOAL, 8, 1.5f));
         LOOT_ENTRY_REGISTRY.add(new LootEntry("OAK_LOGS", Items.OAK_LOG, 10, 1.5f));
         LOOT_ENTRY_REGISTRY.add(new LootEntry("GUNPOWDER", Items.GUNPOWDER, 8, 1.5f));
         LOOT_ENTRY_REGISTRY.add(new LootEntry("STONE_SHOVEL", Items.STONE_SHOVEL, 1, 1f));
         LOOT_ENTRY_REGISTRY.add(new LootEntry("STONE_AXE", Items.STONE_AXE, 1, 1f));
         LOOT_ENTRY_REGISTRY.add(new LootEntry("STONE_PICKAXE", Items.STONE_PICKAXE, 1, 1f));
         LOOT_ENTRY_REGISTRY.add(new LootEntry("INK_SACS", Items.INK_SAC, 8, 1f));
-        LOOT_ENTRY_REGISTRY.add(new LootEntry("IRON_INGOTS", Items.IRON_INGOT, 6, 1.5f));
+        LOOT_ENTRY_REGISTRY.add(new LootEntry("IRON_INGOTS", Items.IRON_INGOT, 8, 1.5f));
         LOOT_ENTRY_REGISTRY.add(new LootEntry("LAPIS_LAZULI", Items.LAPIS_LAZULI, 10, 1.5f));
         LOOT_ENTRY_REGISTRY.add(new LootEntry("BOTTLES_O_ENCHANTING", Items.EXPERIENCE_BOTTLE, 5, 1.5f));
         LOOT_ENTRY_REGISTRY.add(new LootEntry("DIAMOND", Items.DIAMOND, 1, 1f));
@@ -96,9 +96,11 @@ public class DungeonRegistry {
                 .add(LOOT_ENTRY_REGISTRY.get("SEEDS"), 1)
                 .add(LOOT_ENTRY_REGISTRY.get("MELONS"), 1)
                 .add(LOOT_ENTRY_REGISTRY.get("LEATHER"), 1)
+                .add(LOOT_ENTRY_REGISTRY.get("INK_SACS"), 2)
                 .add(LOOT_ENTRY_REGISTRY.get("COAL"), 1));
 
         LOOT_POOL_REGISTRY.add(new WeightedPool<LootEntry>().setName("MEDIUM_LOOT_POOL")
+                .add(LOOT_ENTRY_REGISTRY.get("IRON_INGOTS"), 2)
                 .add(LOOT_ENTRY_REGISTRY.get("CHARCOAL"), 1)
                 .add(LOOT_ENTRY_REGISTRY.get("OAK_LOGS"), 1)
                 .add(LOOT_ENTRY_REGISTRY.get("GUNPOWDER"), 1)
@@ -107,8 +109,6 @@ public class DungeonRegistry {
                 .add(LOOT_ENTRY_REGISTRY.get("STONE_AXE"), 1));
 
         LOOT_POOL_REGISTRY.add(new WeightedPool<LootEntry>().setName("RARE_LOOT_POOL")
-                .add(LOOT_ENTRY_REGISTRY.get("INK_SACS"), 2)
-                .add(LOOT_ENTRY_REGISTRY.get("IRON_INGOTS"), 2)
                 .add(LOOT_ENTRY_REGISTRY.get("LAPIS_LAZULI"), 2)
                 .add(LOOT_ENTRY_REGISTRY.get("BOTTLES_O_ENCHANTING"), 2)
                 .add(LOOT_ENTRY_REGISTRY.get("DIAMOND"), 1));
