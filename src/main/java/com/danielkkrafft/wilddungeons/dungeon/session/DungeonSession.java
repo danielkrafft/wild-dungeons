@@ -3,7 +3,7 @@ package com.danielkkrafft.wilddungeons.dungeon.session;
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonPerk;
-import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRegistry;
+import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonPerkTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
@@ -28,6 +28,8 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
+import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRegistry.DUNGEON_REGISTRY;
+
 public class DungeonSession {
 
     public static final int SHUTDOWN_TIME = 300;
@@ -50,7 +52,7 @@ public class DungeonSession {
     public ServerLevel getEntranceLevel() {return DungeonSessionManager.getInstance().server.getLevel(this.entranceLevelKey);}
     public String getEntranceUUID() {return this.entranceUUID;}
     public List<DungeonFloor> getFloors() {return this.floors;}
-    public DungeonTemplate getTemplate() {return DungeonRegistry.DUNGEON_REGISTRY.get(this.template);}
+    public DungeonTemplate getTemplate() {return DUNGEON_REGISTRY.get(this.template);}
     public int getLives() {return this.lives;}
     public boolean isMarkedForShutdown() {return this.markedForShutdown;}
     public HashMap<String, DungeonPerk> getPerks() {return this.perks;}

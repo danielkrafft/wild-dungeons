@@ -1,6 +1,7 @@
 package com.danielkkrafft.wilddungeons.dungeon.components;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonBranchTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
@@ -19,6 +20,8 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 
 import java.util.*;
+
+import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonBranchRegistry.DUNGEON_BRANCH_REGISTRY;
 
 public class DungeonBranch {
 
@@ -40,7 +43,7 @@ public class DungeonBranch {
     @IgnoreSerialization
     private DungeonFloor floor = null;
 
-    public DungeonBranchTemplate getTemplate() {return DungeonRegistry.DUNGEON_BRANCH_REGISTRY.get(this.templateKey);}
+    public DungeonBranchTemplate getTemplate() {return DUNGEON_BRANCH_REGISTRY.get(this.templateKey);}
     public DungeonSession getSession() {return DungeonSessionManager.getInstance().getDungeonSession(this.sessionKey);}
     public DungeonFloor getFloor() {return floor != null ? floor : getSession().getFloors().get(this.floorIndex);}
     public WeightedPool<DungeonMaterial> getMaterials() {return this.getTemplate().materials() == null ? this.getFloor().getMaterials() : this.getTemplate().materials();}

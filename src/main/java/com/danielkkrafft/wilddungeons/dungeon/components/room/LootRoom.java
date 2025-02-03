@@ -3,9 +3,10 @@ package com.danielkkrafft.wilddungeons.dungeon.components.room;
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.components.ConnectionPoint;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
-import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRegistry;
+import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
+import com.danielkkrafft.wilddungeons.dungeon.registries.OfferingTemplateTableRegistry;
 import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import net.minecraft.core.BlockPos;
@@ -19,6 +20,8 @@ import net.minecraft.world.phys.Vec3;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import static com.danielkkrafft.wilddungeons.dungeon.registries.OfferingTemplateTableRegistry.FREE_PERK_OFFERING_TABLE;
 
 public class LootRoom extends DungeonRoom {
     public static final int SET_PURGE_INTERVAL = 20;
@@ -98,7 +101,7 @@ public class LootRoom extends DungeonRoom {
 
     @Override
     public void processOfferings() {
-        List<DungeonRegistry.OfferingTemplate> entries = DungeonRegistry.OFFERING_TEMPLATE_TABLE_REGISTRY.get("FREE_PERK_OFFERING_TABLE").randomResults(this.getTemplate().offerings().size(), (int) this.getDifficulty() * this.getTemplate().offerings().size(), 1.2f);
+        List<DungeonRegistration.OfferingTemplate> entries =FREE_PERK_OFFERING_TABLE.randomResults(this.getTemplate().offerings().size(), (int) this.getDifficulty() * this.getTemplate().offerings().size(), 1.2f);
         getTemplate().offerings().forEach(pos -> {
             if (entries.isEmpty()) return;
             Offering next = entries.removeFirst().asOffering(this.getBranch().getFloor().getLevel());

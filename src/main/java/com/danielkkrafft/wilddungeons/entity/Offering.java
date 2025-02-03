@@ -2,7 +2,9 @@ package com.danielkkrafft.wilddungeons.entity;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
-import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRegistry;
+import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
+import com.danielkkrafft.wilddungeons.dungeon.registries.DungeonPoolRegistry;
+import com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonPerkTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
@@ -31,6 +33,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import net.neoforged.neoforge.network.PacketDistributor;
+
+import static com.danielkkrafft.wilddungeons.dungeon.registries.PerkRegistry.DUNGEON_PERK_REGISTRY;
 
 public class Offering extends Entity implements IEntityWithComplexSpawn {
 
@@ -89,7 +93,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
 
     public DungeonPerkTemplate getPerk() {
         if (this.perk == null) {
-            perk = DungeonRegistry.DUNGEON_PERK_REGISTRY.get(this.offerID);
+            perk = DUNGEON_PERK_REGISTRY.get(this.offerID);
         }
         return perk;
     }
@@ -246,7 +250,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
             }
 
             case "random" -> {
-                DungeonTemplate dungeonTemplate = DungeonRegistry.DUNGEON_POOL.getRandom();
+                DungeonTemplate dungeonTemplate = DungeonPoolRegistry.TEST_DUNGEON_POOL.getRandom();
                 WildDungeons.getLogger().info("TRYING TO ENTER {}", dungeonTemplate.name());
 
                 DungeonSession dungeon = DungeonSessionManager.getInstance().getOrCreateDungeonSession(this.getStringUUID(), this.level().dimension(), dungeonTemplate.name());

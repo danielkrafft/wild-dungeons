@@ -3,7 +3,7 @@ package com.danielkkrafft.wilddungeons.util;
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
-import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRegistry;
+import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
@@ -25,7 +25,7 @@ public class SaveSystem {
     }
 
     public static void Load(){
-        DungeonRegistry.setupDungeons();
+        DungeonRegistration.setupRegistries();
         INSTANCE.load();
     }
 

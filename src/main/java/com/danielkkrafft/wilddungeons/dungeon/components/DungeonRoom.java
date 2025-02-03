@@ -1,6 +1,9 @@
 package com.danielkkrafft.wilddungeons.dungeon.components;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
+import com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomRegistry;
+import com.danielkkrafft.wilddungeons.dungeon.registries.LootTableRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
@@ -31,6 +34,11 @@ import org.joml.Vector2i;
 
 import java.util.*;
 
+import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialRegistry.DUNGEON_MATERIAL_REGISTRY;
+import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomRegistry.*;
+import static com.danielkkrafft.wilddungeons.dungeon.registries.OfferingTemplateTableRegistry.BASIC_SHOP_TABLE;
+import static com.danielkkrafft.wilddungeons.dungeon.registries.OfferingTemplateTableRegistry.OFFERING_TEMPLATE_TABLE_REGISTRY;
+
 public class DungeonRoom {
     private final String templateKey;
     private final BlockPos position;
@@ -53,10 +61,10 @@ public class DungeonRoom {
     @IgnoreSerialization
     protected DungeonBranch branch = null;
 
-    public DungeonRoomTemplate getTemplate() {return DungeonRegistry.DUNGEON_ROOM_REGISTRY.get(this.templateKey);}
+    public DungeonRoomTemplate getTemplate() {return DUNGEON_ROOM_REGISTRY.get(this.templateKey);}
     public DungeonSession getSession() {return DungeonSessionManager.getInstance().getDungeonSession(this.sessionKey);}
     public DungeonBranch getBranch() {return this.branch != null ? this.branch : this.getSession().getFloors().get(this.floorIndex).getBranches().get(this.branchIndex);}
-    public DungeonMaterial getMaterial() {return DungeonRegistry.DUNGEON_MATERIAL_REGISTRY.get(this.materialKey);}
+    public DungeonMaterial getMaterial() {return DUNGEON_MATERIAL_REGISTRY.get(this.materialKey);}
     public WeightedTable<EntityType<?>> getEnemyTable() {return this.getTemplate().enemyTable() == null ? this.getBranch().getEnemyTable() : this.getTemplate().enemyTable();}
     public double getDifficulty() {return this.getBranch().getDifficulty() * this.getTemplate().difficulty();}
     public boolean isRotated() {return rotation == Rotation.CLOCKWISE_90.getSerializedName() || rotation == Rotation.COUNTERCLOCKWISE_90.getSerializedName();}
@@ -128,7 +136,7 @@ public class DungeonRoom {
     }
 
     public void processOfferings() {
-        List<DungeonRegistry.OfferingTemplate> entries = DungeonRegistry.OFFERING_TEMPLATE_TABLE_REGISTRY.get("BASIC_SHOP_TABLE").randomResults(this.getTemplate().offerings().size(), (int) this.getDifficulty() * this.getTemplate().offerings().size(), 1.2f);
+        List<DungeonRegistration.OfferingTemplate> entries = BASIC_SHOP_TABLE.randomResults(this.getTemplate().offerings().size(), (int) this.getDifficulty() * this.getTemplate().offerings().size(), 1.2f);
         getTemplate().offerings().forEach(pos -> {
             if (entries.isEmpty()) return;
             Offering next = entries.removeFirst().asOffering(this.getBranch().getFloor().getLevel());
@@ -194,14 +202,14 @@ public class DungeonRoom {
         List<BlockPos> potentialLootBlockPositions = lootBlocks.stream().map(b -> TemplateHelper.transform(b.pos(), this)).toList();
         //get all block entities at those positions
         List<BlockEntity> lootBlockEntities = new ArrayList<>(potentialLootBlockPositions.stream().map(pos -> this.getBranch().getFloor().getLevel().getBlockEntity(pos)).toList());
-        //remove all null entities and entities that are not loot blocks
+        //remove all null entities and entities that are not loot blocks, just in case
         lootBlockEntities.removeIf(entity -> Objects.isNull(entity) || !(entity instanceof BaseContainerBlockEntity));
         //get a random number, between 1 and the number of loot blocks, but not more than 5
         int countedChests = RandomUtil.randIntBetween(1, Math.min(5, lootBlockEntities.size()));
         //determine the amount of items, between 3 and 10 times the number of counted chests
         int maxItems = RandomUtil.randIntBetween(3*countedChests, 10*countedChests);
         //get loot entries from the loot table registry
-        List<DungeonRegistry.LootEntry> entries = DungeonRegistry.LOOT_TABLE_REGISTRY.get("BASIC_LOOT_TABLE").randomResults(maxItems, (int) (5 * this.getDifficulty()), 2f);
+        List<DungeonRegistration.LootEntry> entries = LootTableRegistry.BASIC_LOOT_TABLE.randomResults(maxItems, (int) (5 * this.getDifficulty()), 2f);
         //for each entry, place it in a random chest
         entries.forEach(entry -> {
             //get a random chest
