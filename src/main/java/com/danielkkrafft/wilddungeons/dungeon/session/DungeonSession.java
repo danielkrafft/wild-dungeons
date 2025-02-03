@@ -1,6 +1,7 @@
 package com.danielkkrafft.wilddungeons.dungeon.session;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonPerk;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRegistry;
@@ -72,16 +73,24 @@ public class DungeonSession {
     public void generateFloor(int index, Consumer<Void> spawnPlayerCallback) {
         WDProfiler.INSTANCE.start();
         if (generationFutures == null) generationFutures = new ArrayList<>();
-        generationFutures.add(getTemplate().floorTemplates().get(floors.size()).getRandom().placeInWorld(this, TemplateHelper.EMPTY_BLOCK_POS, onFirstBranchComplete(spawnPlayerCallback), onCompleteCallback(index)));
+        generationFutures.add(getTemplate().floorTemplates().get(floors.size()).getRandom().placeInWorld(this, TemplateHelper.EMPTY_BLOCK_POS, onFirstBranchComplete(), onSequentialBranchComplete(spawnPlayerCallback), onCompleteCallback(index)));
         WDProfiler.INSTANCE.logTimestamp("generateFloor");
         WDProfiler.INSTANCE.end();
     }
 
-    private Consumer<Void> onFirstBranchComplete(Consumer<Void> spawnPlayerCallback) {
+    private Consumer<Void> onFirstBranchComplete() {
         return (v) -> {
             WildDungeons.getLogger().info("FIRST BRANCH COMPLETE");
-            spawnPlayerCallback.accept(null);
             this.floors.forEach(DungeonFloor::spawnFirstRift);
+        };
+    }
+
+    private Consumer<DungeonBranch> onSequentialBranchComplete(Consumer<Void> spawnPlayerCallback) {
+        return (branch) -> {
+            WildDungeons.getLogger().info("SEQUENTIAL BRANCH COMPLETE");
+            if (branch.getFloor().getActivePlayers().isEmpty() && branch.getFloor().getBranches().stream().mapToInt(b -> b.getRooms().size()).sum() > 10) {
+                spawnPlayerCallback.accept(null);
+            }
         };
     }
 

@@ -18,13 +18,13 @@ public record DungeonBranchTemplate(String name, DungeonRegistry.DungeonLayout<D
 
     public DungeonBranchTemplate pool(WeightedPool<DungeonBranchTemplate> pool, Integer weight) {pool.add(this, weight); return this;}
 
-    public void placeInWorld(DungeonFloor floor, BlockPos origin) {
+    public DungeonBranch placeInWorld(DungeonFloor floor, BlockPos origin) {
         DungeonBranch newBranch = new DungeonBranch(this.name, floor, origin);
         int tries = 0;
         while (tries < 50) {
             try {
                 if (newBranch.generateDungeonBranch()){
-                    return;
+                    return newBranch;
                 }
             } catch (Exception e) {
                 WildDungeons.getLogger().warn("Failed to generate branch {} on try {}", this.name, tries);
@@ -34,6 +34,7 @@ public record DungeonBranchTemplate(String name, DungeonRegistry.DungeonLayout<D
             tries++;
         }
         WildDungeons.getLogger().warn("Failed to generate branch {} after 50 tries", this.name);
+        return null;
         //todo if we fail 50 times, regen the previous branch too
     }
 }

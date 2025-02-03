@@ -58,6 +58,10 @@ public class DungeonFloor {
     public ServerLevel getLevel() {
         return DungeonSessionManager.getInstance().server.levels.get(this.LEVEL_KEY);
     }
+    public List<WDPlayer> getActivePlayers() {return this.playerStatuses.entrySet().stream().map(e -> {
+        if (e.getValue().inside) return WDPlayerManager.getInstance().getOrCreateWDPlayer(e.getKey());
+        return null;
+    }).filter(Objects::nonNull).toList();}
     public List<DungeonBranch> getBranches() {return this.dungeonBranches;}
     public String getTemplateKey() {return this.templateKey;}
     public BlockPos getOrigin() {return this.origin;}
@@ -82,7 +86,7 @@ public class DungeonFloor {
 
     //first future should generate just the first branch, then the second future should generate the second branch, and so on
     //each future should complete before the next one starts
-    public CompletableFuture<Void> asyncGenerateBranches(Consumer<Void> onFirstBranchComplete, Consumer<Void> onComplete) {
+    public CompletableFuture<Void> asyncGenerateBranches(Consumer<Void> onFirstBranchComplete, Consumer<DungeonBranch> onSequentialBranchComplete, Consumer<Void> onComplete) {
         CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
             DungeonBranchTemplate nextBranch = getTemplate().branchTemplates().get(0).getRandom();
             nextBranch.placeInWorld(this, origin);
@@ -96,11 +100,10 @@ public class DungeonFloor {
             final int index = i;
             future = future.thenCompose(result -> CompletableFuture.runAsync(() -> {
                 DungeonBranchTemplate nextBranch = getTemplate().branchTemplates().get(index).getRandom();
-                nextBranch.placeInWorld(this, origin);
-            }))/*.thenAccept(result -> {
-                if (onSequentialBranchComplete != null)
-                    onSequentialBranchComplete.accept(null);
-            })*/;
+                DungeonBranch branch = nextBranch.placeInWorld(this, origin);
+                onSequentialBranchComplete.accept(branch);
+            }));
+
             if (i == getTemplate().branchTemplates().size() - 1) {
                 future = future.thenAccept(result -> {
                     if (onComplete != null)
