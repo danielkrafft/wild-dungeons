@@ -17,7 +17,9 @@ import static com.danielkkrafft.wilddungeons.dungeon.components.DungeonRegistry.
 
 
 public class OverworldDungeonRegistry {
-    public static final WeightedPool<DungeonMaterial> OVERWORLD_MATERIAL_POOL = new WeightedPool<>();
+    public static final WeightedPool<DungeonMaterial> OVERWORLD_MATERIAL_POOL_0 = new WeightedPool<>();
+    public static final WeightedPool<DungeonMaterial> OVERWORLD_MATERIAL_POOL_1 = new WeightedPool<>();
+    public static final WeightedPool<DungeonMaterial> OVERWORLD_MATERIAL_POOL_2 = new WeightedPool<>();
     public static final WeightedPool<DungeonRoomTemplate> OVERWORLD_SPRAWL_ROOM_POOL = new WeightedPool<>();
     public static final WeightedPool<DungeonRoomTemplate> OVERWORLD_SPACER_ROOM_POOL = new WeightedPool<>();
     public static final WeightedPool<DungeonRoomTemplate> OVERWORLD_REST_ROOM_POOL = new WeightedPool<>();
@@ -28,34 +30,34 @@ public class OverworldDungeonRegistry {
 
     public static void register(){
 
-        DUNGEON_MATERIAL_REGISTRY.add(new DungeonMaterial("OVERWORLD_COBBLESTONE",
+        DUNGEON_MATERIAL_REGISTRY.add(new DungeonMaterial("OVERWORLD_MATERIAL_0",
                 List.of(new WeightedPool<BlockState>()
-                        .add(Blocks.COBBLESTONE.defaultBlockState(), 15)
-                        .add(Blocks.MOSSY_COBBLESTONE.defaultBlockState(), 7)
+                        .add(Blocks.COBBLESTONE.defaultBlockState(), 2)
+                        .add(Blocks.MOSSY_COBBLESTONE.defaultBlockState(), 1)
                         .add(Blocks.STONE.defaultBlockState(), 4)
                         .add(Blocks.GRANITE.defaultBlockState(), 1)
                         .add(Blocks.ANDESITE.defaultBlockState(), 1)
                         .add(Blocks.DIORITE.defaultBlockState(), 1)
                 ),
                 List.of(new WeightedPool<BlockState>()
-                        .add(Blocks.COBBLESTONE_STAIRS.defaultBlockState(), 15)
-                        .add(Blocks.MOSSY_COBBLESTONE_STAIRS.defaultBlockState(), 7)
+                        .add(Blocks.COBBLESTONE_STAIRS.defaultBlockState(), 2)
+                        .add(Blocks.MOSSY_COBBLESTONE_STAIRS.defaultBlockState(), 1)
                         .add(Blocks.STONE_STAIRS.defaultBlockState(), 4)
                         .add(Blocks.GRANITE_STAIRS.defaultBlockState(), 1)
                         .add(Blocks.ANDESITE_STAIRS.defaultBlockState(), 1)
                         .add(Blocks.DIORITE_STAIRS.defaultBlockState(), 1)
                 ),
                 List.of(new WeightedPool<BlockState>()
-                        .add(Blocks.COBBLESTONE_SLAB.defaultBlockState(), 15)
-                        .add(Blocks.MOSSY_COBBLESTONE_SLAB.defaultBlockState(), 7)
+                        .add(Blocks.COBBLESTONE_SLAB.defaultBlockState(), 2)
+                        .add(Blocks.MOSSY_COBBLESTONE_SLAB.defaultBlockState(), 1)
                         .add(Blocks.STONE_SLAB.defaultBlockState(), 4)
                         .add(Blocks.GRANITE_SLAB.defaultBlockState(), 1)
                         .add(Blocks.ANDESITE_SLAB.defaultBlockState(), 1)
                         .add(Blocks.DIORITE_SLAB.defaultBlockState(), 1)
                 ),
                 List.of(new WeightedPool<BlockState>()
-                        .add(Blocks.COBBLESTONE_WALL.defaultBlockState(), 15)
-                        .add(Blocks.MOSSY_COBBLESTONE_WALL.defaultBlockState(), 6)
+                        .add(Blocks.COBBLESTONE_WALL.defaultBlockState(), 2)
+                        .add(Blocks.MOSSY_COBBLESTONE_WALL.defaultBlockState(), 1)
                         .add(Blocks.GRANITE_WALL.defaultBlockState(), 1)
                         .add(Blocks.ANDESITE_WALL.defaultBlockState(), 1)
                         .add(Blocks.DIORITE_WALL.defaultBlockState(), 1)
@@ -63,6 +65,54 @@ public class OverworldDungeonRegistry {
                 List.of(new WeightedPool<BlockState>()
                         .add(Blocks.LANTERN.defaultBlockState(), 50)
                         .add(Blocks.SOUL_LANTERN.defaultBlockState(), 1)
+                ),
+                List.of(new WeightedPool<BlockState>()
+                        .add(Blocks.COBBLESTONE.defaultBlockState(), 1)
+                        .add(Blocks.MOSSY_COBBLESTONE.defaultBlockState(), 1)
+                        .add(Blocks.STONE.defaultBlockState(), 1)
+                        .add(Blocks.GRANITE.defaultBlockState(), 1)
+                        .add(Blocks.ANDESITE.defaultBlockState(), 1)
+                        .add(Blocks.DIORITE.defaultBlockState(), 1)
+                ),
+                0.33f
+        )
+                .pool(OVERWORLD_MATERIAL_POOL_0, 1).pool(ALL_MATERIAL_POOL, 1));
+
+        DUNGEON_MATERIAL_REGISTRY.add(new DungeonMaterial("OVERWORLD_MATERIAL_1",
+                List.of(new WeightedPool<BlockState>()
+                        .add(Blocks.COBBLESTONE.defaultBlockState(), 7)
+                        .add(Blocks.MOSSY_COBBLESTONE.defaultBlockState(), 5)
+                        .add(Blocks.STONE.defaultBlockState(), 4)
+                        .add(Blocks.GRANITE.defaultBlockState(), 1)
+                        .add(Blocks.ANDESITE.defaultBlockState(), 1)
+                        .add(Blocks.DIORITE.defaultBlockState(), 1)
+                ),
+                List.of(new WeightedPool<BlockState>()
+                        .add(Blocks.COBBLESTONE_STAIRS.defaultBlockState(), 7)
+                        .add(Blocks.MOSSY_COBBLESTONE_STAIRS.defaultBlockState(), 5)
+                        .add(Blocks.STONE_STAIRS.defaultBlockState(), 4)
+                        .add(Blocks.GRANITE_STAIRS.defaultBlockState(), 1)
+                        .add(Blocks.ANDESITE_STAIRS.defaultBlockState(), 1)
+                        .add(Blocks.DIORITE_STAIRS.defaultBlockState(), 1)
+                ),
+                List.of(new WeightedPool<BlockState>()
+                        .add(Blocks.COBBLESTONE_SLAB.defaultBlockState(), 7)
+                        .add(Blocks.MOSSY_COBBLESTONE_SLAB.defaultBlockState(), 5)
+                        .add(Blocks.STONE_SLAB.defaultBlockState(), 4)
+                        .add(Blocks.GRANITE_SLAB.defaultBlockState(), 1)
+                        .add(Blocks.ANDESITE_SLAB.defaultBlockState(), 1)
+                        .add(Blocks.DIORITE_SLAB.defaultBlockState(), 1)
+                ),
+                List.of(new WeightedPool<BlockState>()
+                        .add(Blocks.COBBLESTONE_WALL.defaultBlockState(), 7)
+                        .add(Blocks.MOSSY_COBBLESTONE_WALL.defaultBlockState(), 5)
+                        .add(Blocks.GRANITE_WALL.defaultBlockState(), 1)
+                        .add(Blocks.ANDESITE_WALL.defaultBlockState(), 1)
+                        .add(Blocks.DIORITE_WALL.defaultBlockState(), 1)
+                ),
+                List.of(new WeightedPool<BlockState>()
+                        .add(Blocks.LANTERN.defaultBlockState(), 45)
+                        .add(Blocks.SOUL_LANTERN.defaultBlockState(), 5)
                 ),
                 List.of(new WeightedPool<BlockState>()
                         .add(Blocks.COBBLESTONE.defaultBlockState(), 1)
@@ -74,7 +124,46 @@ public class OverworldDungeonRegistry {
                 ),
                 0.33f
         )
-                .pool(OVERWORLD_MATERIAL_POOL, 1).pool(ALL_MATERIAL_POOL, 1));
+                .pool(OVERWORLD_MATERIAL_POOL_1, 1).pool(ALL_MATERIAL_POOL, 1));
+
+        DUNGEON_MATERIAL_REGISTRY.add(new DungeonMaterial("OVERWORLD_MATERIAL_2",
+                List.of(new WeightedPool<BlockState>()
+                        .add(Blocks.COBBLESTONE.defaultBlockState(), 7)
+                        .add(Blocks.MOSSY_COBBLESTONE.defaultBlockState(), 5)
+                        .add(Blocks.TUFF.defaultBlockState(), 3)
+                        .add(Blocks.COBBLED_DEEPSLATE.defaultBlockState(), 1)
+                ),
+                List.of(new WeightedPool<BlockState>()
+                        .add(Blocks.COBBLESTONE_STAIRS.defaultBlockState(), 7)
+                        .add(Blocks.MOSSY_COBBLESTONE_STAIRS.defaultBlockState(), 5)
+                        .add(Blocks.TUFF_STAIRS.defaultBlockState(), 3)
+                        .add(Blocks.COBBLED_DEEPSLATE_STAIRS.defaultBlockState(), 3)
+                ),
+                List.of(new WeightedPool<BlockState>()
+                        .add(Blocks.COBBLESTONE_SLAB.defaultBlockState(), 7)
+                        .add(Blocks.MOSSY_COBBLESTONE_SLAB.defaultBlockState(), 5)
+                        .add(Blocks.TUFF_SLAB.defaultBlockState(), 3)
+                        .add(Blocks.COBBLED_DEEPSLATE_SLAB.defaultBlockState(), 1)
+                ),
+                List.of(new WeightedPool<BlockState>()
+                        .add(Blocks.COBBLESTONE_WALL.defaultBlockState(), 7)
+                        .add(Blocks.MOSSY_COBBLESTONE_WALL.defaultBlockState(), 5)
+                        .add(Blocks.TUFF_WALL.defaultBlockState(), 3)
+                        .add(Blocks.COBBLED_DEEPSLATE_WALL.defaultBlockState(), 1)
+                ),
+                List.of(new WeightedPool<BlockState>()
+                        .add(Blocks.LANTERN.defaultBlockState(), 40)
+                        .add(Blocks.SOUL_LANTERN.defaultBlockState(), 10)
+                ),
+                List.of(new WeightedPool<BlockState>()
+                        .add(Blocks.COBBLESTONE.defaultBlockState(), 1)
+                        .add(Blocks.MOSSY_COBBLESTONE.defaultBlockState(), 10)
+                        .add(Blocks.TUFF.defaultBlockState(), 1)
+                        .add(Blocks.COBBLED_DEEPSLATE.defaultBlockState(), 1)
+                ),
+                0.33f
+        )
+                .pool(OVERWORLD_MATERIAL_POOL_2, 1).pool(ALL_MATERIAL_POOL, 1));
 
         DUNGEON_ROOM_REGISTRY.add(DungeonRoomTemplate.build(
                 DungeonRoomTemplate.Type.NONE,
@@ -300,7 +389,7 @@ public class OverworldDungeonRegistry {
 
         DUNGEON_ROOM_REGISTRY.add(DungeonRoomTemplate.build(
                         DungeonRoomTemplate.Type.NONE,
-                        "overworld_boss",
+                        "overworld_exit",
                         List.of(
                                 Pair.of("overworld/boss", TemplateHelper.EMPTY_BLOCK_POS)
                         ),
@@ -314,30 +403,30 @@ public class OverworldDungeonRegistry {
         DUNGEON_BRANCH_REGISTRY.add(DungeonBranchTemplate.build("overworld_starter_branch",
                 new DungeonRegistry.DungeonLayout<DungeonRoomTemplate>()
                         .addSimple(DUNGEON_ROOM_REGISTRY.get("overworld_start")),
-                OVERWORLD_MATERIAL_POOL, null, 1.0));
+                OVERWORLD_MATERIAL_POOL_0, null, 1.0));
 
-        DUNGEON_BRANCH_REGISTRY.add(DungeonBranchTemplate.build("overworld_basic_sprawl",
+        DUNGEON_BRANCH_REGISTRY.add(DungeonBranchTemplate.build("overworld_sprawl_0",
                 new DungeonRegistry.DungeonLayout<DungeonRoomTemplate>()
                         .add(WeightedPool.combine(Pair.of(OVERWORLD_SPRAWL_ROOM_POOL, 100)), 10),
-                OVERWORLD_MATERIAL_POOL, null, 1.0));
+                OVERWORLD_MATERIAL_POOL_0, null, 1.0));
 
-        DUNGEON_BRANCH_REGISTRY.add(DungeonBranchTemplate.build("overworld_sprawl_shop",
-                new DungeonRegistry.DungeonLayout<DungeonRoomTemplate>()
-                        .add(WeightedPool.combine(Pair.of(OVERWORLD_SPRAWL_ROOM_POOL, 100)), 10)
-                        .add(WeightedPool.combine(Pair.of(OVERWORLD_SHOP_ROOM_POOL, 100)), 1),
-                OVERWORLD_MATERIAL_POOL, null, 1.0));
-
-        DUNGEON_BRANCH_REGISTRY.add(DungeonBranchTemplate.build("overworld_sprawl_perk",
-                new DungeonRegistry.DungeonLayout<DungeonRoomTemplate>()
-                        .add(WeightedPool.combine(Pair.of(OVERWORLD_SPRAWL_ROOM_POOL, 100)), 10)
-                        .add(WeightedPool.combine(Pair.of(OVERWORLD_LOOT_ROOM_POOL, 100)), 1),
-                OVERWORLD_MATERIAL_POOL, null, 1.0));
-
-        DUNGEON_BRANCH_REGISTRY.add(DungeonBranchTemplate.build("overworld_sprawl_rest",
+        DUNGEON_BRANCH_REGISTRY.add(DungeonBranchTemplate.build("overworld_sprawl_1",
                 new DungeonRegistry.DungeonLayout<DungeonRoomTemplate>()
                         .add(WeightedPool.combine(Pair.of(OVERWORLD_SPRAWL_ROOM_POOL, 100)), 10)
                         .add(WeightedPool.combine(Pair.of(OVERWORLD_REST_ROOM_POOL, 100)), 1),
-                OVERWORLD_MATERIAL_POOL, null, 1.0));
+                OVERWORLD_MATERIAL_POOL_1, null, 1.0));
+
+        DUNGEON_BRANCH_REGISTRY.add(DungeonBranchTemplate.build("overworld_sprawl_2",
+                new DungeonRegistry.DungeonLayout<DungeonRoomTemplate>()
+                        .add(WeightedPool.combine(Pair.of(OVERWORLD_SPRAWL_ROOM_POOL, 100)), 10)
+                        .add(WeightedPool.combine(Pair.of(OVERWORLD_LOOT_ROOM_POOL, 100)), 1),
+                OVERWORLD_MATERIAL_POOL_1, null, 1.0));
+
+        DUNGEON_BRANCH_REGISTRY.add(DungeonBranchTemplate.build("overworld_sprawl_3",
+                new DungeonRegistry.DungeonLayout<DungeonRoomTemplate>()
+                        .add(WeightedPool.combine(Pair.of(OVERWORLD_SPRAWL_ROOM_POOL, 100)), 10)
+                        .add(WeightedPool.combine(Pair.of(OVERWORLD_SHOP_ROOM_POOL, 100)), 1),
+                OVERWORLD_MATERIAL_POOL_2, null, 1.0));
 
         DUNGEON_BRANCH_REGISTRY.add(DungeonBranchTemplate.build("overworld_ending_branch",
                 new DungeonLayout<DungeonRoomTemplate>()
@@ -347,17 +436,17 @@ public class OverworldDungeonRegistry {
                         .add(WeightedPool.combine(Pair.of(OVERWORLD_SPACER_ROOM_POOL, 100)), 1)
                         .add(WeightedPool.combine(Pair.of(OVERWORLD_SHOP_ROOM_POOL, 100)), 1)
                         .add(WeightedPool.combine(Pair.of(OVERWORLD_SPACER_ROOM_POOL, 100)), 2)
-                        .addSimple(DUNGEON_ROOM_REGISTRY.get("overworld_boss")),
-                OVERWORLD_MATERIAL_POOL, null, 1.0));
+                        .addSimple(DUNGEON_ROOM_REGISTRY.get("overworld_exit")),
+                OVERWORLD_MATERIAL_POOL_2, null, 1.0));
 
         DUNGEON_FLOOR_REGISTRY.add(
                 DungeonFloorTemplate.build("overworld_basic",
                                 new DungeonRegistry.DungeonLayout<DungeonBranchTemplate>()
                                         .addSimple(DUNGEON_BRANCH_REGISTRY.get("overworld_starter_branch"))
-                                        .addSimple(DUNGEON_BRANCH_REGISTRY.get("overworld_basic_sprawl"))
-                                        .addSimple(DUNGEON_BRANCH_REGISTRY.get("overworld_sprawl_rest"))
-                                        .addSimple(DUNGEON_BRANCH_REGISTRY.get("overworld_sprawl_perk"))
-                                        .addSimple(DUNGEON_BRANCH_REGISTRY.get("overworld_sprawl_shop"))
+                                        .addSimple(DUNGEON_BRANCH_REGISTRY.get("overworld_sprawl_0"))
+                                        .addSimple(DUNGEON_BRANCH_REGISTRY.get("overworld_sprawl_1"))
+                                        .addSimple(DUNGEON_BRANCH_REGISTRY.get("overworld_sprawl_2"))
+                                        .addSimple(DUNGEON_BRANCH_REGISTRY.get("overworld_sprawl_3"))
                                         .addSimple(DUNGEON_BRANCH_REGISTRY.get("overworld_ending_branch")), null, null, 1.0)
                         .pool(OVERWORLD_FLOOR_POOL, 1)
         );
@@ -367,7 +456,7 @@ public class OverworldDungeonRegistry {
                         DungeonOpenBehavior.NONE,
                         new DungeonRegistry.DungeonLayout<DungeonFloorTemplate>()
                                 .add(OVERWORLD_FLOOR_POOL, 1),
-                        OVERWORLD_MATERIAL_POOL,
+                        OVERWORLD_MATERIAL_POOL_0,
                         ENEMY_TABLE_REGISTRY.get("BASIC_TABLE"),
                         1.0, 1.1,
                         DungeonSession.DungeonExitBehavior.RANDOMIZE,
