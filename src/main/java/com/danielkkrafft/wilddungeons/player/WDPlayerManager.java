@@ -1,6 +1,8 @@
 package com.danielkkrafft.wilddungeons.player;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.CombatRoom;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
@@ -141,6 +143,19 @@ public class WDPlayerManager {
                 player.level().broadcastEntityEvent(player, (byte)35);
                 BlockPos respawnPoint;
                 DungeonRoom room = wdPlayer.getCurrentRoom();
+
+                if (room == null) {
+                    DungeonFloor floor = wdPlayer.getCurrentFloor();
+                    int index = 0;
+                    for (DungeonBranch branch : floor.getBranches()) {
+                        if (branch.hasPlayerVisited(wdPlayer.getUUID())) {
+                            if (branch.getIndex() > index) {
+                                index = branch.getIndex();
+                            }
+                        }
+                    }
+                    room = floor.getBranches().get(index).getRooms().getFirst();
+                }
 
                 if (room.getBranch().getIndex() == 0) {
                     respawnPoint = room.getBranch().getRooms().getFirst().getSpawnPoint(room.getBranch().getFloor().getLevel());
