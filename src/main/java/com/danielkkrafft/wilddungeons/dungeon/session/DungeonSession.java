@@ -21,6 +21,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.PacketDistributor;
 
@@ -175,7 +176,9 @@ public class DungeonSession {
         for (WDPlayer wdPlayer : getPlayers()) {
             this.onExit(wdPlayer);
             wdPlayer.getServerPlayer().addItem(new ItemStack(Items.DIAMOND.asItem(), 1));
+            wdPlayer.setLastGameMode(wdPlayer.getServerPlayer().gameMode.getGameModeForPlayer());
             PacketDistributor.sendToPlayer(wdPlayer.getServerPlayer(), new ClientboundPostDungeonScreenPacket(Serializer.toCompoundTag(this.playerStats)));
+            wdPlayer.getServerPlayer().setGameMode(GameType.SPECTATOR);
         }
         this.handleExitBehavior();
     }

@@ -7,6 +7,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Pose;
 import org.joml.Matrix4f;
 
 public class WDFont {
@@ -39,6 +40,18 @@ public class WDFont {
             result += charSize == 8 ? charSize : charSize + 1;
         }
         return result;
+    }
+
+    public static void drawCenteredString(GuiGraphics guiGraphics, String text, int x, int y, int height, int color) {
+        float ratio = (float) WDFont.width(text) / 7;
+        float width = ratio * height;
+
+        int minX = (int) (x - (width / 2.0f));
+        int maxX = (int) (x + (width / 2.0f));
+        int minY = (int) (y - (height / 2.0f));
+        int maxY = (int) (y + (height / 2.0f));
+
+        WDFont.drawString(guiGraphics, text, minX, minY, maxX, maxY, color);
     }
 
     public static void drawString(GuiGraphics guiGraphics, String text, int minX, int minY, int maxX, int maxY, int color) {

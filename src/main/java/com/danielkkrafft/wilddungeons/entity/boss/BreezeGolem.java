@@ -221,6 +221,11 @@ public class BreezeGolem extends Monster implements RangedAttackMob, GeoEntity
     {
         return attacking;
     }
+
+    public void spawn(EntityType<?> entity, int count) {}
+
+
+
     /**
      * {@link net.minecraft.world.item.FlintAndSteelItem}
      */
@@ -323,6 +328,10 @@ public class BreezeGolem extends Monster implements RangedAttackMob, GeoEntity
                                                     scale(1.3),  this);
                                             proj.moveTo(handPos);
                                             level.addFreshEntity(proj);
+
+
+                                            spawn(WDEntities.WIND_CHARGE_PROJECTILE.get(), 5);
+                                            spawn(WDEntities.WIND_CHARGE_PROJECTILE.get(), 5);
                                         }
                                     }
                                 }
