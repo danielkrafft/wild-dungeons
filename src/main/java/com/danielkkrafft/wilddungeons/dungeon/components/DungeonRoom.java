@@ -22,6 +22,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
@@ -187,34 +188,31 @@ public class DungeonRoom {
 
     public void processLootBlocks() {
         if (this.getTemplate().lootBlocks().isEmpty()) return;
-
+        //get all loot blocks from template
         List<StructureTemplate.StructureBlockInfo> lootBlocks = this.getTemplate().lootBlocks();
-        WildDungeons.getLogger().info("FOUND {} LOOT BLOCKS", lootBlocks.size());
-        List<StructureTemplate.StructureBlockInfo> chosenBlocks = new ArrayList<>();
-        int maxChests = 3;
-
-        while (chosenBlocks.size() < maxChests) {
-            chosenBlocks.add(lootBlocks.get(RandomUtil.randIntBetween(0, lootBlocks.size()-1)));
-        }
-
-        BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
-        int remainingChests = maxChests;
-        List<DungeonRegistry.LootEntry> entries = DungeonRegistry.LOOT_TABLE_REGISTRY.get("BASIC_LOOT_TABLE").randomResults(5, (int) (5 * this.getDifficulty()), 1.5f);
-
-        for (StructureTemplate.StructureBlockInfo structureBlockInfo : chosenBlocks) {
-            mutableBlockPos.set(TemplateHelper.transform(structureBlockInfo.pos(), this));
-//            WildDungeons.getLogger().info("SEARCHING FOR BLOCK ENTITY AT {} IN LEVEL {}", mutableBlockPos, getBranch().getFloor().getLevel().dimension());
-
-            if (getBranch().getFloor().getLevel().getBlockEntity(mutableBlockPos) instanceof BaseContainerBlockEntity container) {
-//                WildDungeons.getLogger().info("FOUND ONE");
-                int slots = container.getContainerSize();
-                for (int i = 0; i < entries.size() / remainingChests; i++) {
-                    container.setItem(RandomUtil.randIntBetween(0, slots-1), entries.removeFirst().asItemStack());
-                }
-                remainingChests -= 1;
+        //transform them to the real room's position
+        List<BlockPos> potentialLootBlockPositions = lootBlocks.stream().map(b -> TemplateHelper.transform(b.pos(), this)).toList();
+        //get all block entities at those positions
+        List<BlockEntity> lootBlockEntities = new ArrayList<>(potentialLootBlockPositions.stream().map(pos -> this.getBranch().getFloor().getLevel().getBlockEntity(pos)).toList());
+        //remove all null entities and entities that are not loot blocks
+        lootBlockEntities.removeIf(entity -> Objects.isNull(entity) || !(entity instanceof BaseContainerBlockEntity));
+        //get a random number, between 1 and the number of loot blocks, but not more than 5
+        int countedChests = RandomUtil.randIntBetween(1, Math.min(5, lootBlockEntities.size()));
+        //determine the amount of items, between 3 and 10 times the number of counted chests
+        int maxItems = RandomUtil.randIntBetween(3*countedChests, 10*countedChests);
+        //get loot entries from the loot table registry
+        List<DungeonRegistry.LootEntry> entries = DungeonRegistry.LOOT_TABLE_REGISTRY.get("BASIC_LOOT_TABLE").randomResults(maxItems, (int) (5 * this.getDifficulty()), 2f);
+        //for each entry, place it in a random chest
+        entries.forEach(entry -> {
+            //get a random chest
+            BaseContainerBlockEntity lootBlock = (BaseContainerBlockEntity)lootBlockEntities.get(RandomUtil.randIntBetween(0, lootBlockEntities.size()-1));
+            int slot = RandomUtil.randIntBetween(0, lootBlock.getContainerSize()-1);
+            //make sure the slot is empty to prevent overwriting existing loot
+            while (!lootBlock.getItem(slot).isEmpty()) {
+                slot = RandomUtil.randIntBetween(0, lootBlock.getContainerSize()-1);
             }
-        }
-
+            lootBlock.setItem(slot, entry.asItemStack());
+        });
         WDProfiler.INSTANCE.logTimestamp("DungeonRoom::processLootBlocks");
     }
 
