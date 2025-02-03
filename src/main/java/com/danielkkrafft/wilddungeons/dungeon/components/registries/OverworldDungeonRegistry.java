@@ -412,20 +412,22 @@ public class OverworldDungeonRegistry {
 
         DUNGEON_BRANCH_REGISTRY.add(DungeonBranchTemplate.build("overworld_sprawl_1",
                 new DungeonRegistry.DungeonLayout<DungeonRoomTemplate>()
-                        .add(WeightedPool.combine(Pair.of(OVERWORLD_SPRAWL_ROOM_POOL, 100)), 10)
-                        .add(WeightedPool.combine(Pair.of(OVERWORLD_REST_ROOM_POOL, 100)), 1),
+                        .add(WeightedPool.combine(Pair.of(OVERWORLD_SPRAWL_ROOM_POOL, 100)), 15)
+                        .add(WeightedPool.combine(Pair.of(OVERWORLD_SHOP_ROOM_POOL, 100)), 1)
+                        .add(WeightedPool.combine(Pair.of(OVERWORLD_LOOT_ROOM_POOL, 100)), 1),
                 OVERWORLD_MATERIAL_POOL_1, null, 1.0));
 
         DUNGEON_BRANCH_REGISTRY.add(DungeonBranchTemplate.build("overworld_sprawl_2",
                 new DungeonRegistry.DungeonLayout<DungeonRoomTemplate>()
-                        .add(WeightedPool.combine(Pair.of(OVERWORLD_SPRAWL_ROOM_POOL, 100)), 10)
-                        .add(WeightedPool.combine(Pair.of(OVERWORLD_LOOT_ROOM_POOL, 100)), 1),
+                        .add(WeightedPool.combine(Pair.of(OVERWORLD_SPRAWL_ROOM_POOL, 100)), 15)
+                        .add(WeightedPool.combine(Pair.of(OVERWORLD_LOOT_ROOM_POOL, 100)), 1)
+                        .add(WeightedPool.combine(Pair.of(OVERWORLD_REST_ROOM_POOL, 100)), 1),
                 OVERWORLD_MATERIAL_POOL_1, null, 1.0));
 
         DUNGEON_BRANCH_REGISTRY.add(DungeonBranchTemplate.build("overworld_sprawl_3",
                 new DungeonRegistry.DungeonLayout<DungeonRoomTemplate>()
-                        .add(WeightedPool.combine(Pair.of(OVERWORLD_SPRAWL_ROOM_POOL, 100)), 10)
-                        .add(WeightedPool.combine(Pair.of(OVERWORLD_SHOP_ROOM_POOL, 100)), 1),
+                        .add(WeightedPool.combine(Pair.of(OVERWORLD_SPRAWL_ROOM_POOL, 100)), 20)
+                        .add(WeightedPool.combine(Pair.of(OVERWORLD_LOOT_ROOM_POOL, 100)), 2),
                 OVERWORLD_MATERIAL_POOL_2, null, 1.0));
 
         DUNGEON_BRANCH_REGISTRY.add(DungeonBranchTemplate.build("overworld_ending_branch",
