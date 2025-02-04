@@ -197,13 +197,14 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
 
             if (this.costAmount == 0 || this.costAmount <= levels) {
                 this.purchased = true;
-                this.costAmount = 0;
 
                 switch (this.getOfferingCostType()) {
                     case XP_LEVEL -> player.getServerPlayer().giveExperienceLevels(-this.costAmount);
                     case NETHER_XP_LEVEL -> player.giveEssenceLevels(-this.costAmount, "essence:nether");
                     case END_XP_LEVEL -> player.giveEssenceLevels(-this.costAmount, "essence:end");
                 }
+
+                this.costAmount = 0;
 
                 if (player.getCurrentRoom() != null) {
                     player.getCurrentRoom().getOfferingUUIDs().remove(this.getStringUUID());
