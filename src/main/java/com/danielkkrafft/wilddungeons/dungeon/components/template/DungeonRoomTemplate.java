@@ -32,6 +32,7 @@ public final class DungeonRoomTemplate implements DungeonComponent {
     private WeightedPool<DungeonMaterial> materials;
     private WeightedTable<DungeonRegistration.TargetTemplate> enemyTable;
     private double difficulty = 1.0;
+    private Boolean hasBedrockShell = null;
 
     public enum Type {
         NONE, SECRET, COMBAT, SHOP, LOOT
@@ -142,6 +143,8 @@ public final class DungeonRoomTemplate implements DungeonComponent {
         return difficulty;
     }
 
+    public Boolean hasBedrockShell() {return this.hasBedrockShell;}
+
     @Override
     public boolean equals(Object obj) {
         if (obj == this) return true;
@@ -239,6 +242,11 @@ public final class DungeonRoomTemplate implements DungeonComponent {
 
     public DungeonRoomTemplate setDifficulty(double difficulty) {
         this.difficulty = difficulty;
+        return this;
+    }
+
+    public DungeonRoomTemplate setBedrockShell(boolean bedrockShell) {
+        this.hasBedrockShell = bedrockShell;
         return this;
     }
 }

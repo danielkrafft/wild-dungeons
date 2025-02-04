@@ -55,7 +55,6 @@ public class DungeonRoom {
     private boolean clear = false;
     private final HashMap<String, DungeonSession.PlayerStatus> playerStatuses = new HashMap<>();
     private final Set<BlockPos> alwaysBreakable = new HashSet<>();
-    private boolean bedrockShell = true;
 
     @IgnoreSerialization
     protected DungeonBranch branch = null;
@@ -64,6 +63,7 @@ public class DungeonRoom {
     public DungeonSession getSession() {return DungeonSessionManager.getInstance().getDungeonSession(this.sessionKey);}
     public DungeonBranch getBranch() {return this.branch != null ? this.branch : this.getSession().getFloors().get(this.floorIndex).getBranches().get(this.branchIndex);}
     public DungeonMaterial getMaterial() {return DUNGEON_MATERIAL_REGISTRY.get(this.materialKey);}
+    public boolean hasBedrockShell() {return this.getTemplate().hasBedrockShell() == null ? this.getBranch().hasBedrockShell() : this.getTemplate().hasBedrockShell();}
     public WeightedTable<DungeonRegistration.TargetTemplate> getEnemyTable() {return this.getTemplate().enemyTable() == null ? this.getBranch().getEnemyTable() : this.getTemplate().enemyTable();}
     public double getDifficulty() {return this.getBranch().getDifficulty() * this.getTemplate().difficulty();}
     public boolean isRotated() {return rotation == Rotation.CLOCKWISE_90.getSerializedName() || rotation == Rotation.COUNTERCLOCKWISE_90.getSerializedName();}
@@ -130,7 +130,7 @@ public class DungeonRoom {
     }
 
     public void surroundWithBedrock() {
-        if (!bedrockShell) return;
+        if (!hasBedrockShell()) return;
 
         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
         ServerLevel level = this.getBranch().getFloor().getLevel();

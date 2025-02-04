@@ -30,6 +30,7 @@ public final class DungeonTemplate implements DungeonComponent {
     private int primaryColor = 0xFFFFFFFF;
     private int secondaryColor = 0xFFFFFFFF;
     private ResourceLocation iconLocation;
+    private boolean hasBedrockShell = true;
 
     public static DungeonTemplate create(String name) {
         return new DungeonTemplate().setName(name);
@@ -83,6 +84,8 @@ public final class DungeonTemplate implements DungeonComponent {
     public ResourceLocation iconLocation() {
         return iconLocation;
     }
+
+    public boolean hasBedrockShell() {return this.hasBedrockShell;}
 
     @Override
     public boolean equals(Object obj) {
@@ -174,6 +177,11 @@ public final class DungeonTemplate implements DungeonComponent {
 
     public DungeonTemplate setIconLocation(ResourceLocation iconLocation) {
         this.iconLocation = iconLocation;
+        return this;
+    }
+
+    public DungeonTemplate setBedrockShell(boolean hasBedrockShell) {
+        this.hasBedrockShell = hasBedrockShell;
         return this;
     }
 }

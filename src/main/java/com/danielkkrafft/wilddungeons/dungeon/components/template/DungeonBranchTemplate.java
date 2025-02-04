@@ -24,6 +24,7 @@ public final class DungeonBranchTemplate implements DungeonComponent {
     private WeightedTable<DungeonRegistration.TargetTemplate> enemyTable = null;
     private double difficulty = 1.0;
     private double difficultyScaling = -1;
+    private Boolean hasBedrockShell = null;
 
 
     public static DungeonBranchTemplate create(String name) {
@@ -84,6 +85,8 @@ public final class DungeonBranchTemplate implements DungeonComponent {
     public double difficultyScaling() {
         return difficultyScaling;
     }
+
+    public Boolean hasBedrockShell() {return this.hasBedrockShell;}
 
     @Override
     public boolean equals(Object obj) {
@@ -149,6 +152,11 @@ public final class DungeonBranchTemplate implements DungeonComponent {
 
     public DungeonBranchTemplate setDifficultyScaling(double difficultyScaling) {
         this.difficultyScaling = difficultyScaling;
+        return this;
+    }
+
+    public DungeonBranchTemplate setBedrockShell(boolean hasBedrockShell) {
+        this.hasBedrockShell = hasBedrockShell;
         return this;
     }
 }
