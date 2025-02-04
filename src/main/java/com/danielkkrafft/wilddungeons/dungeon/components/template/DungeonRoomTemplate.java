@@ -33,9 +33,13 @@ public final class DungeonRoomTemplate implements DungeonComponent {
     private WeightedTable<DungeonRegistration.TargetTemplate> enemyTable;
     private double difficulty = 1.0;
     private Boolean hasBedrockShell = null;
+    private DestructionRule destructionRule = null;
 
     public enum Type {
         NONE, SECRET, COMBAT, SHOP, LOOT
+    }
+    public enum DestructionRule {
+        SHELL, NONE
     }
 
     public static DungeonRoomTemplate create(String name, List<Pair<String, BlockPos>> structures) {
@@ -145,6 +149,8 @@ public final class DungeonRoomTemplate implements DungeonComponent {
 
     public Boolean hasBedrockShell() {return this.hasBedrockShell;}
 
+    public DestructionRule getDestructionRule() {return this.destructionRule;}
+
     @Override
     public boolean equals(Object obj) {
         if (obj == this) return true;
@@ -247,6 +253,11 @@ public final class DungeonRoomTemplate implements DungeonComponent {
 
     public DungeonRoomTemplate setBedrockShell(boolean bedrockShell) {
         this.hasBedrockShell = bedrockShell;
+        return this;
+    }
+
+    public DungeonRoomTemplate setDestructionRule(DestructionRule rule) {
+        this.destructionRule = rule;
         return this;
     }
 }

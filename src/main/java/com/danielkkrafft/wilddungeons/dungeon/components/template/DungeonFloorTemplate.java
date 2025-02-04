@@ -22,7 +22,7 @@ public final class DungeonFloorTemplate implements DungeonComponent {
     private double difficulty = 1.0;
     private double difficultyScaling = -1;
     private Boolean hasBedrockShell = null;
-
+    private DungeonRoomTemplate.DestructionRule destructionRule = null;
 
     public static DungeonFloorTemplate create(String name) {
         return new DungeonFloorTemplate().setName(name);
@@ -61,6 +61,8 @@ public final class DungeonFloorTemplate implements DungeonComponent {
     }
 
     public Boolean hasBedrockShell() {return this.hasBedrockShell;}
+
+    public DungeonRoomTemplate.DestructionRule getDestructionRule() {return this.destructionRule;}
 
     @Override
     public boolean equals(Object obj) {
@@ -122,6 +124,11 @@ public final class DungeonFloorTemplate implements DungeonComponent {
 
     public DungeonFloorTemplate setBedrockShell(boolean hasBedrockShell) {
         this.hasBedrockShell = hasBedrockShell;
+        return this;
+    }
+
+    public DungeonFloorTemplate setDestructionRule(DungeonRoomTemplate.DestructionRule rule) {
+        this.destructionRule = rule;
         return this;
     }
 }

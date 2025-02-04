@@ -25,7 +25,7 @@ public final class DungeonBranchTemplate implements DungeonComponent {
     private double difficulty = 1.0;
     private double difficultyScaling = -1;
     private Boolean hasBedrockShell = null;
-
+    private DungeonRoomTemplate.DestructionRule destructionRule = null;
 
     public static DungeonBranchTemplate create(String name) {
         return new DungeonBranchTemplate().setName(name);
@@ -87,6 +87,8 @@ public final class DungeonBranchTemplate implements DungeonComponent {
     }
 
     public Boolean hasBedrockShell() {return this.hasBedrockShell;}
+
+    public DungeonRoomTemplate.DestructionRule getDestructionRule() {return this.destructionRule;}
 
     @Override
     public boolean equals(Object obj) {
@@ -157,6 +159,11 @@ public final class DungeonBranchTemplate implements DungeonComponent {
 
     public DungeonBranchTemplate setBedrockShell(boolean hasBedrockShell) {
         this.hasBedrockShell = hasBedrockShell;
+        return this;
+    }
+
+    public DungeonBranchTemplate setDestructionRule(DungeonRoomTemplate.DestructionRule rule) {
+        this.destructionRule = rule;
         return this;
     }
 }

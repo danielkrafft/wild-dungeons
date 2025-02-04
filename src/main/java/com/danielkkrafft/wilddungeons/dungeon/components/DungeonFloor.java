@@ -4,6 +4,7 @@ import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonBranchTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonFloorTemplate;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.entity.Offering;
@@ -55,6 +56,7 @@ public class DungeonFloor {
     public DungeonSession getSession() {return DungeonSessionManager.getInstance().getDungeonSession(this.sessionKey);}
     public WeightedPool<DungeonMaterial> getMaterials() {return this.getTemplate().materials() == null ? this.getSession().getTemplate().materials() : this.getTemplate().materials();}
     public boolean hasBedrockShell() {return this.getTemplate().hasBedrockShell() == null ? this.getSession().getTemplate().hasBedrockShell() : this.getTemplate().hasBedrockShell();}
+    public DungeonRoomTemplate.DestructionRule getDestructionRule() {return this.getTemplate().getDestructionRule() == null ? this.getSession().getTemplate().getDestructionRule() : this.getTemplate().getDestructionRule();}
     public WeightedTable<DungeonRegistration.TargetTemplate> getEnemyTable() {return this.getTemplate().enemyTable() == null ? this.getSession().getTemplate().enemyTable() : this.getTemplate().enemyTable();}
     public double getDifficultyScaling(){
         double difficultyScaling = this.getTemplate().difficultyScaling();
@@ -127,7 +129,7 @@ public class DungeonFloor {
     }
 
     public static ResourceKey<Level> buildFloorLevelKey(DungeonFloor floor) {
-        return ResourceKey.create(Registries.DIMENSION, WildDungeons.rl(DungeonSessionManager.buildDungeonSessionKey(floor.getSession().getEntranceUUID()) + "_" + floor.getTemplate().name() + "_" + floor.index));
+        return ResourceKey.create(Registries.DIMENSION, WildDungeons.rl(DungeonSessionManager.buildDungeonSessionKey(floor.getSession().getEntranceUUID()) + "___" + floor.getTemplate().name() + "___" + floor.index));
     }
 
     protected boolean isBoundingBoxValid(List<BoundingBox> proposedBoxes) {

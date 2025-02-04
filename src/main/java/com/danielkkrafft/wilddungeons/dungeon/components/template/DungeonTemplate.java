@@ -31,6 +31,7 @@ public final class DungeonTemplate implements DungeonComponent {
     private int secondaryColor = 0xFFFFFFFF;
     private ResourceLocation iconLocation;
     private boolean hasBedrockShell = true;
+    private DungeonRoomTemplate.DestructionRule destructionRule = DungeonRoomTemplate.DestructionRule.NONE;
 
     public static DungeonTemplate create(String name) {
         return new DungeonTemplate().setName(name);
@@ -86,6 +87,8 @@ public final class DungeonTemplate implements DungeonComponent {
     }
 
     public boolean hasBedrockShell() {return this.hasBedrockShell;}
+
+    public DungeonRoomTemplate.DestructionRule getDestructionRule() {return this.destructionRule;}
 
     @Override
     public boolean equals(Object obj) {
@@ -182,6 +185,11 @@ public final class DungeonTemplate implements DungeonComponent {
 
     public DungeonTemplate setBedrockShell(boolean hasBedrockShell) {
         this.hasBedrockShell = hasBedrockShell;
+        return this;
+    }
+
+    public DungeonTemplate setDestructionRule(DungeonRoomTemplate.DestructionRule rule) {
+        this.destructionRule = rule;
         return this;
     }
 }

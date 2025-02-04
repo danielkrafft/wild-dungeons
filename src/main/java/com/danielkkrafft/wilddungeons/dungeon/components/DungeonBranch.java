@@ -48,6 +48,7 @@ public class DungeonBranch {
     public DungeonFloor getFloor() {return floor != null ? floor : getSession().getFloors().get(this.floorIndex);}
     public WeightedPool<DungeonMaterial> getMaterials() {return this.getTemplate().materials() == null ? this.getFloor().getMaterials() : this.getTemplate().materials();}
     public boolean hasBedrockShell() {return this.getTemplate().hasBedrockShell() == null ? this.getFloor().hasBedrockShell() : this.getTemplate().hasBedrockShell();}
+    public DungeonRoomTemplate.DestructionRule getDestructionRule() {return this.getTemplate().getDestructionRule() == null ? this.getFloor().getDestructionRule() : this.getTemplate().getDestructionRule();}
     public WeightedTable<DungeonRegistration.TargetTemplate> getEnemyTable() {return this.getTemplate().enemyTable() == null ? this.getFloor().getEnemyTable() : this.getTemplate().enemyTable();}
     public double getDifficultyScaling(){
         double difficultyScaling = this.getTemplate().difficultyScaling();

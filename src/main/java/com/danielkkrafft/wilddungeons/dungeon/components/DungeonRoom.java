@@ -64,6 +64,7 @@ public class DungeonRoom {
     public DungeonBranch getBranch() {return this.branch != null ? this.branch : this.getSession().getFloors().get(this.floorIndex).getBranches().get(this.branchIndex);}
     public DungeonMaterial getMaterial() {return DUNGEON_MATERIAL_REGISTRY.get(this.materialKey);}
     public boolean hasBedrockShell() {return this.getTemplate().hasBedrockShell() == null ? this.getBranch().hasBedrockShell() : this.getTemplate().hasBedrockShell();}
+    public DungeonRoomTemplate.DestructionRule getDestructionRule() {return this.getTemplate().getDestructionRule() == null ? this.getBranch().getDestructionRule() : this.getTemplate().getDestructionRule();}
     public WeightedTable<DungeonRegistration.TargetTemplate> getEnemyTable() {return this.getTemplate().enemyTable() == null ? this.getBranch().getEnemyTable() : this.getTemplate().enemyTable();}
     public double getDifficulty() {return this.getBranch().getDifficulty() * this.getTemplate().difficulty();}
     public boolean isRotated() {return rotation == Rotation.CLOCKWISE_90.getSerializedName() || rotation == Rotation.COUNTERCLOCKWISE_90.getSerializedName();}
@@ -81,6 +82,7 @@ public class DungeonRoom {
     public boolean isClear() {return this.clear;}
     public Set<BlockPos> getAlwaysBreakable() {return this.alwaysBreakable;}
     public BlockPos getPosition() {return this.position;}
+
 
     public DungeonRoom(DungeonBranch branch, String templateKey, BlockPos position, StructurePlaceSettings settings, List<ConnectionPoint> allConnectionPoints) {
         ServerLevel level = branch.getFloor().getLevel();
@@ -358,13 +360,6 @@ public class DungeonRoom {
         }
         return false;
     }
-
-
-
-    public enum DestructionRule {
-        DEFAULT, SHELL, NONE
-    }
-    public DestructionRule getDestructionRule() {return DestructionRule.SHELL;}
 
     public void onGenerate() {}
     public void onEnter(WDPlayer player) {

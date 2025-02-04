@@ -1,6 +1,7 @@
 package com.danielkkrafft.wilddungeons.dungeon.session;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.util.SaveSystem;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
@@ -59,9 +60,14 @@ public class DungeonSessionManager {
     }
 
     public DungeonSession getFromKey(ResourceKey<Level> levelKey) {
-        String sessionKey = levelKey.location().getPath().split("_")[0];
+        String sessionKey = levelKey.location().getPath().split("___")[0];
         WildDungeons.getLogger().info("TRYING TO GET SESSION KEY: {}", sessionKey);
         return this.getDungeonSession(sessionKey);
+    }
+
+    public DungeonFloor getFloorFromKey(ResourceKey<Level> levelKey) {
+        DungeonSession session = this.getFromKey(levelKey);
+        return session.getFloors().get(Integer.parseInt(levelKey.location().getPath().split("___")[2]));
     }
 
     public static void tick() {

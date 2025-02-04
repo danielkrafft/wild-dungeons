@@ -6,6 +6,7 @@ import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.CombatRoom;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.EnemyPurgeRoom;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundUpdateWDPlayerPacket;
@@ -22,6 +23,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
@@ -31,6 +33,7 @@ import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
+import org.joml.Vector2i;
 
 import java.util.*;
 
@@ -78,18 +81,16 @@ public class WDPlayerManager {
 
     @SubscribeEvent
     public static void onBlockBreak(BlockEvent.BreakEvent event) {
-        if (event.getLevel() instanceof ServerLevel serverLevel) {
+        if (event.getLevel() instanceof ServerLevel serverLevel && event.getPlayer() instanceof ServerPlayer serverPlayer) {
             WildDungeons.getLogger().info("FOUND BLOCK BREAK");
-            event.setCanceled(isProtectedBlock(event.getPos(), serverLevel));
-            if (!event.isCanceled() && event.getPlayer() instanceof ServerPlayer serverPlayer) {
-                WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(serverPlayer);
-                if (wdPlayer.getCurrentDungeon() == null) return;
-                wdPlayer.getCurrentDungeon().getStats(wdPlayer).blocksBroken += 1;
+            event.setCanceled(isProtectedBlock(serverPlayer, event.getPos(), serverLevel));
+            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(serverPlayer);
+            if (wdPlayer.getCurrentDungeon() == null) return;
+            wdPlayer.getCurrentDungeon().getStats(wdPlayer).blocksBroken += 1;
 
-                if (wdPlayer.getCurrentRoom() instanceof EnemyPurgeRoom enemyPurgeRoom) {
-                    if (event.getLevel().getBlockState(event.getPos()).is(Blocks.SPAWNER)) {
-                        enemyPurgeRoom.discardByBlockPos(event.getPos());
-                    }
+            if (wdPlayer.getCurrentRoom() instanceof EnemyPurgeRoom enemyPurgeRoom) {
+                if (event.getLevel().getBlockState(event.getPos()).is(Blocks.SPAWNER)) {
+                    enemyPurgeRoom.discardByBlockPos(event.getPos());
                 }
             }
         }
@@ -97,36 +98,45 @@ public class WDPlayerManager {
 
     @SubscribeEvent
     public static void onBlockPlace(BlockEvent.EntityPlaceEvent event) {
-        if (event.getLevel() instanceof ServerLevel serverLevel) {
-            event.setCanceled(isProtectedBlock(event.getPos(), serverLevel));
-            if (!event.isCanceled() && event.getEntity() instanceof ServerPlayer serverPlayer) {
-                WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(serverPlayer);
-                if (wdPlayer.getCurrentDungeon() == null) return;
-                wdPlayer.getCurrentDungeon().getStats(wdPlayer).blocksPlaced += 1;
-            }
+        if (event.getLevel() instanceof ServerLevel serverLevel && event.getEntity() instanceof ServerPlayer serverPlayer) {
+            event.setCanceled(isProtectedBlock(serverPlayer, event.getPos(), serverLevel));
+            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(serverPlayer.getStringUUID());
+            if (wdPlayer.getCurrentDungeon() == null) return;
+            wdPlayer.getCurrentDungeon().getStats(wdPlayer).blocksPlaced += 1;
         }
     }
 
-    public static boolean isProtectedBlock(BlockPos pos, ServerLevel level) {
-        DungeonSession session = DungeonSessionManager.getInstance().getFromKey(level.dimension());
-        if (session == null) return false;
-        WildDungeons.getLogger().info("FOUND DUNGEON SESSION");
+    public static boolean isProtectedBlock(ServerPlayer player, BlockPos pos, ServerLevel level) {
+        DungeonFloor floor = DungeonSessionManager.getInstance().getFloorFromKey(level.dimension());
+        if (floor == null) return false;
+        WildDungeons.getLogger().info("FOUND DUNGEON FLOOR");
 
-        for (WDPlayer wdPlayer : session.getPlayers()) {
-            DungeonRoom room = wdPlayer.getCurrentRoom();
-            if (room == null) continue;
-            WildDungeons.getLogger().info("FOUND DUNGEON ROOM WITH DESTRUCTION RULE: {}", room.getDestructionRule());
-            if (room.getAlwaysBreakable().contains(pos)) return false;
+        DungeonRoom room = null;
 
-            if (room.getDestructionRule() == DungeonRoom.DestructionRule.DEFAULT) {
-                for (BoundingBox box : room.getBoundingBoxes()) {
-                    if (box.isInside(pos)) return false;
+        for (Vector2i vec2 : floor.getChunkMap().getOrDefault(new ChunkPos(pos), new ArrayList<>())) {
+            DungeonRoom possibleMatch = floor.getBranches().get(vec2.x).getRooms().get(vec2.y);
+            if (possibleMatch == null) continue;
+            for (BoundingBox box : possibleMatch.getBoundingBoxes()) {
+                if (box.isInside(pos)) {
+                    room = possibleMatch;
                 }
             }
+        }
 
-            if (room.getDestructionRule() == DungeonRoom.DestructionRule.SHELL) {
-                if (room.isPosInsideShell(pos)) return false;
-            }
+        if (room == null) return false;
+        WildDungeons.getLogger().info("FOUND DUNGEON ROOM");
+
+        if (room.getAlwaysBreakable().contains(pos)) return false;
+
+        WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(player.getStringUUID());
+        if (wdPlayer.getCurrentBranch() != null && !room.getBranch().hasPlayerVisited(player.getStringUUID())) return true;
+
+        if (room.getDestructionRule() == DungeonRoomTemplate.DestructionRule.NONE) {
+            return false;
+        }
+
+        if (room.getDestructionRule() == DungeonRoomTemplate.DestructionRule.SHELL) {
+            if (room.isPosInsideShell(pos)) return false;
         }
 
         WildDungeons.getLogger().info("POSITION IS PROTECTED");
