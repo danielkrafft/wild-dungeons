@@ -40,7 +40,7 @@ public class DungeonRoomRegistry {
             "stone/small_5",
             List.of(
                     of("stone/composite_1", EMPTY_BLOCK_POS),
-                    of("stone/composite_2", new BlockPos(2,0,4))
+                    of("stone/composite_2", new BlockPos(2, 0, 4))
             ));
     public static final DungeonRoomTemplate MEDIUM_1 = create(
             "stone/medium_1",
@@ -79,7 +79,7 @@ public class DungeonRoomRegistry {
             List.of(
                     of("stone/boss_comp_1", EMPTY_BLOCK_POS),
                     of("stone/boss_comp_2", new BlockPos(0, 0, 48)),
-                    of("stone/boss_comp_3", new BlockPos(20,20,-16))
+                    of("stone/boss_comp_3", new BlockPos(20, 20, -16))
             ));
     public static final DungeonRoomTemplate SECRET_1 = create(
             "secret/1",
@@ -175,15 +175,15 @@ public class DungeonRoomRegistry {
                     of("overworld/sprawl/stair_room", EMPTY_BLOCK_POS)
             ));
     public static final DungeonRoomTemplate OVERWORLD_STAIRWAY_1 = create(
-                    "overworld_stairway_1",
-                    List.of(
-                            of("overworld/sprawl/stairway_1", EMPTY_BLOCK_POS)
-                    ));
+            "overworld_stairway_1",
+            List.of(
+                    of("overworld/sprawl/stairway_1", EMPTY_BLOCK_POS)
+            ));
     public static final DungeonRoomTemplate OVERWORLD_HALLWAY_1 = create(
             "overworld_hallway_1",
             List.of(
                     of("overworld/sprawl/hallway_1", EMPTY_BLOCK_POS)
-            ) );
+            ));
     public static final DungeonRoomTemplate OVERWORLD_HALLWAY_2 = create(
             "overworld_hallway_2",
             List.of(
@@ -217,7 +217,7 @@ public class DungeonRoomRegistry {
                     of("overworld/exit", EMPTY_BLOCK_POS)
             ));
 
-    public static void setupDungeonRooms(){
+    public static void setupDungeonRooms() {
         DUNGEON_ROOM_REGISTRY.add(SMALL_1);
         DUNGEON_ROOM_REGISTRY.add(SMALL_2);
         DUNGEON_ROOM_REGISTRY.add(SMALL_3);

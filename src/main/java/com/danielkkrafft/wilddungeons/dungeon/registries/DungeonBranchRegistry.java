@@ -52,7 +52,7 @@ public class DungeonBranchRegistry {
     public static final DungeonBranchTemplate OVERWORLD_SPRAWL_0 = create("OVERWORLD_SPRAWL_0")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .add(combine(
-                            of(OVERWORLD_SPRAWL_ROOM_POOL, 100)),
+                                    of(OVERWORLD_SPRAWL_ROOM_POOL, 100)),
                             10))
             .setMaterials(OVERWORLD_MATERIAL_POOL_0);
     public static final DungeonBranchTemplate OVERWORLD_SPRAWL_1 = create("OVERWORLD_SPRAWL_1")

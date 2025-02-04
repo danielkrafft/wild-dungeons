@@ -12,12 +12,11 @@ public class DungeonFloorRegistry {
     public static final DungeonRegistration.DungeonComponentRegistry<DungeonFloorTemplate> DUNGEON_FLOOR_REGISTRY = new DungeonRegistration.DungeonComponentRegistry<>();
 
     public static final DungeonFloorTemplate TEST_FLOOR = DungeonFloorTemplate.create("test_floor")//must be lowercase or the game will crash
-            .setBranchTemplates(
-                    new DungeonLayout<DungeonBranchTemplate>()
-                            .addSimple(STARTER_BRANCH)
-                            .add(new WeightedPool<DungeonBranchTemplate>()
-                                    .add(TEST_BRANCH,1),1)
-                            .addSimple(ENDING_BRANCH));
+            .setBranchTemplates(new DungeonLayout<DungeonBranchTemplate>()
+                    .addSimple(STARTER_BRANCH)
+                    .add(new WeightedPool<DungeonBranchTemplate>()
+                            .add(TEST_BRANCH, 1), 1)
+                    .addSimple(ENDING_BRANCH));
 
     public static final DungeonFloorTemplate OVERWORLD_BASIC_FLOOR = DungeonFloorTemplate.create("overworld_basic_floor")//must be lowercase or the game will crash
             .setBranchTemplates(new DungeonLayout<DungeonBranchTemplate>()
@@ -28,7 +27,7 @@ public class DungeonFloorRegistry {
                     .addSimple(OVERWORLD_SPRAWL_3)
                     .addSimple(OVERWORLD_ENDING_BRANCH));
 
-    public static void setupFloors(){
+    public static void setupFloors() {
         DUNGEON_FLOOR_REGISTRY.add(TEST_FLOOR);
         DUNGEON_FLOOR_REGISTRY.add(OVERWORLD_BASIC_FLOOR);
     }

@@ -24,7 +24,7 @@ public class DungeonRegistry {
             .setExitBehavior(RANDOMIZE)
             .setNextDungeon(OVERWORLD_DUNGEON_POOL);
 
-    public static void setupDungeons(){
+    public static void setupDungeons() {
         DUNGEON_REGISTRY.add(TEST_DUNGEON);
         DUNGEON_REGISTRY.add(OVERWORLD_BASIC_DUNGEON);
     }
