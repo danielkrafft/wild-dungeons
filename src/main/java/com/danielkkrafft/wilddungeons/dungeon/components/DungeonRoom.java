@@ -55,6 +55,7 @@ public class DungeonRoom {
     private boolean clear = false;
     private final HashMap<String, DungeonSession.PlayerStatus> playerStatuses = new HashMap<>();
     private final Set<BlockPos> alwaysBreakable = new HashSet<>();
+    private boolean bedrockShell = true;
 
     @IgnoreSerialization
     protected DungeonBranch branch = null;
@@ -124,7 +125,43 @@ public class DungeonRoom {
         } else {this.spawnPoint = null;}
 
         this.handleChunkMap();
+        this.surroundWithBedrock();
         WDProfiler.INSTANCE.logTimestamp("DungeonRoom::new");
+    }
+
+    public void surroundWithBedrock() {
+        if (!bedrockShell) return;
+
+        BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
+        ServerLevel level = this.getBranch().getFloor().getLevel();
+
+        for (BoundingBox box : this.getBoundingBoxes()) {
+
+            int[] minX = {box.minX(), box.minX(), box.minY(), box.minY(), box.minZ(), box.minZ()};
+            int[] minY = {box.minZ(), box.minZ(), box.minX(), box.minX(), box.minY(), box.minY()};
+            int[] maxX = {box.maxX(), box.maxX(), box.maxY(), box.maxY(), box.maxZ(), box.maxZ()};
+            int[] maxY = {box.maxZ(), box.maxZ(), box.maxX(), box.maxX(), box.maxY(), box.maxY()};
+            int[] minZ = {box.minY()-1, box.maxY()+1, box.minZ()-1, box.maxZ()+1, box.minX()-1, box.maxX()+1};
+
+            for (int i = 0; i < 6; i++) {
+                for (int x = minX[i]; x <= maxX[i]; x++) {
+                    for (int y = minY[i]; y <= maxY[i]; y++) {
+                        switch(i) {
+                            case 0,1 -> mutableBlockPos.set(x, minZ[i], y);
+                            case 2,3 -> mutableBlockPos.set(y, x, minZ[i]);
+                            case 4,5 -> mutableBlockPos.set(minZ[i], y, x);
+                        }
+                        List<BoundingBox> potentialConflicts = new ArrayList<>();
+                        this.getBranch().getFloor().getChunkMap().getOrDefault(new ChunkPos(mutableBlockPos), new ArrayList<>()).forEach(vector2i -> {
+                            potentialConflicts.addAll(this.getBranch().getFloor().getBranches().get(vector2i.x).getRooms().get(vector2i.y).getBoundingBoxes());
+                        });
+                        if (potentialConflicts.stream().noneMatch(potentialConflict -> potentialConflict.isInside(mutableBlockPos))) {
+                            level.setBlock(mutableBlockPos, Blocks.BEDROCK.defaultBlockState(), 2);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public void processRifts() {
