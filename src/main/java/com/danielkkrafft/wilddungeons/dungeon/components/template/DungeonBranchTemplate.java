@@ -23,6 +23,7 @@ public final class DungeonBranchTemplate implements DungeonComponent {
     private WeightedPool<DungeonMaterial> materials = null;
     private WeightedTable<DungeonRegistration.TargetTemplate> enemyTable = null;
     private double difficulty = 1.0;
+    private double difficultyScaling = -1;
 
 
     public static DungeonBranchTemplate create(String name) {
@@ -78,6 +79,10 @@ public final class DungeonBranchTemplate implements DungeonComponent {
 
     public List<Pair<DungeonRoomTemplate, Integer>> limitedRooms() {
         return limitedRooms;
+    }
+
+    public double difficultyScaling() {
+        return difficultyScaling;
     }
 
     @Override
@@ -139,6 +144,11 @@ public final class DungeonBranchTemplate implements DungeonComponent {
 
     public DungeonBranchTemplate setLimitedRooms(List<Pair<DungeonRoomTemplate, Integer>> limitedRooms) {
         this.limitedRooms = limitedRooms;
+        return this;
+    }
+
+    public DungeonBranchTemplate setDifficultyScaling(double difficultyScaling) {
+        this.difficultyScaling = difficultyScaling;
         return this;
     }
 }
