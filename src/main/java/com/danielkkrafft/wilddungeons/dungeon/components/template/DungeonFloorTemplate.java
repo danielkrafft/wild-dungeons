@@ -28,10 +28,6 @@ public final class DungeonFloorTemplate implements DungeonComponent {
         return new DungeonFloorTemplate().setName(name);
     }
 
-    public DungeonFloorTemplate pool(WeightedPool<DungeonFloorTemplate> pool, Integer weight) {
-        pool.add(this, weight);
-        return this;
-    }
 
     public CompletableFuture<Void> placeInWorld(DungeonSession session, BlockPos position, Consumer<Void> onFirstBranchComplete, Consumer<DungeonBranch> onSequentialBranchComplete, Consumer<Void> onComplete) {
         WildDungeons.getLogger().info("PLACING FLOOR: {}", this.name());

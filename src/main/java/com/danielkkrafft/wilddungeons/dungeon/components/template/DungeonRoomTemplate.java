@@ -74,10 +74,6 @@ public final class DungeonRoomTemplate implements DungeonComponent {
         return boundingBoxes;
     }
 
-    public DungeonRoomTemplate pool(WeightedPool<DungeonRoomTemplate> pool, Integer weight) {
-        pool.add(this, weight);
-        return this;
-    }
 
     public DungeonRoom placeInWorld(DungeonBranch branch, ServerLevel level, BlockPos position, StructurePlaceSettings settings, List<ConnectionPoint> connectionPoints) {
         switch (this.type()) {

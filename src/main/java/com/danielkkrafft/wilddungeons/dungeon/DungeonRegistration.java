@@ -94,6 +94,5 @@ public class DungeonRegistration {
             return new Offering(level, type, adjustedAmount, id, costType, adjustedCost);
         }
 
-        public OfferingTemplate pool(WeightedPool<OfferingTemplate> pool, int weight) {pool.add(this, weight); return this;}
     }
 }

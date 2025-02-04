@@ -24,5 +24,4 @@ public class DungeonPerkTemplate implements DungeonComponent {
     }
 
     public Vector2i getTexCoords() {return texCoords;}
-    public DungeonPerkTemplate pool(WeightedPool<DungeonPerkTemplate> pool, Integer weight) {pool.add(this, weight); return this;}
 }

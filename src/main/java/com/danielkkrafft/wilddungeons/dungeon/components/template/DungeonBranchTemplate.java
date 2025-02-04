@@ -25,10 +25,6 @@ public final class DungeonBranchTemplate implements DungeonComponent {
         return new DungeonBranchTemplate().setName(name);
     }
 
-    public DungeonBranchTemplate pool(WeightedPool<DungeonBranchTemplate> pool, Integer weight) {
-        pool.add(this, weight);
-        return this;
-    }
 
     public DungeonBranch placeInWorld(DungeonFloor floor, BlockPos origin) {
         DungeonBranch newBranch = new DungeonBranch(this.name, floor, origin);

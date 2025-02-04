@@ -65,5 +65,4 @@ public class DungeonMaterial implements DungeonComponent {
 
     @Override
     public String name() {return this.name;}
-    public DungeonMaterial pool(WeightedPool<DungeonMaterial> pool, Integer weight) {pool.add(this, weight); return this;}
 }
