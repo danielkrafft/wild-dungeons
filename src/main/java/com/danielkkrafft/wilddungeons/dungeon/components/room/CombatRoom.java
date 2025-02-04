@@ -47,14 +47,14 @@ public class CombatRoom extends DungeonRoom {
     public void startBattle() {
         if (this.started) return;
         this.started = true;
-        WildDungeons.getLogger().info("BLOCKING THE EXITS");
+//        WildDungeons.getLogger().info("BLOCKING THE EXITS");
 
         this.getBranch().getFloor().getLevel().playSound(null, this.getPosition(), SoundEvents.IRON_DOOR_CLOSE, SoundSource.BLOCKS, .5f, 1f);
         this.getConnectionPoints().forEach(point -> {
             if (point.isConnected()) point.block(this.getBranch().getFloor().getLevel());
         });
 
-        WildDungeons.getLogger().info("SPAWNING MOBS");
+//        WildDungeons.getLogger().info("SPAWNING MOBS");
         List<EntityType<?>> entities = this.getEnemyTable().randomResults(Mth.ceil(RandomUtil.randFloatBetween(BASE_QUANTITY / QUANTITY_VARIANCE, BASE_QUANTITY * QUANTITY_VARIANCE)), (int) (BASE_DIFFICULTY * this.getDifficulty()), 2);
 
         entities.forEach(entityType -> {
@@ -64,7 +64,7 @@ public class CombatRoom extends DungeonRoom {
 
     public void spawnNext() {
         for (int i = 0; i < Math.floor(groupSize * this.getDifficulty()); i++) {
-            WildDungeons.getLogger().info("SPAWNING A GROUP OF {}", Math.floor(groupSize * this.getDifficulty()));
+//            WildDungeons.getLogger().info("SPAWNING A GROUP OF {}", Math.floor(groupSize * this.getDifficulty()));
             if (toSpawn.isEmpty()) return;
             LivingEntity entity = (LivingEntity) EntityType.byString(toSpawn.removeFirst()).get().create(this.getBranch().getFloor().getLevel());
             List<BlockPos> validPoints = this.sampleSpawnablePositions(getBranch().getFloor().getLevel(), 3);
@@ -111,11 +111,18 @@ public class CombatRoom extends DungeonRoom {
 
         if (!this.started) return;
 
-        if (aliveUUIDs.isEmpty() && toSpawn.isEmpty()) {this.onClear(); return;}
-        if (checkTimer == 0) {purgeEntitySet(); checkTimer = SET_PURGE_INTERVAL;}
-        if (spawnTimer == 0 || aliveUUIDs.isEmpty()) {spawnNext(); spawnTimer = SPAWN_INTERVAL;}
+        if (aliveUUIDs.isEmpty()){
+            spawnTimer-=1;//spawn next wave 2x faster when all mobs are dead
+            if (toSpawn.isEmpty()) {
+                this.onClear();
+                return;
+            }
+        }
+
         checkTimer -= 1;
+        if (checkTimer <= 0) {purgeEntitySet(); checkTimer = SET_PURGE_INTERVAL;}
         spawnTimer -= 1;
+        if (spawnTimer <= 0 || aliveUUIDs.isEmpty()) {spawnNext(); spawnTimer = SPAWN_INTERVAL;}
     }
 
     @Override

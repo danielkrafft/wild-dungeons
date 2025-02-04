@@ -1,6 +1,7 @@
 package com.danielkkrafft.wilddungeons.dungeon.components;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonBranchTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonFloorTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
@@ -36,6 +37,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
+import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonFloorRegistry.DUNGEON_FLOOR_REGISTRY;
 import static com.danielkkrafft.wilddungeons.registry.WDDimensions.WILDDUNGEON;
 
 public class DungeonFloor {
@@ -49,7 +51,7 @@ public class DungeonFloor {
     private final int index;
     private final HashMap<ChunkPos, List<Vector2i>> chunkMap = new HashMap<>();
     private final HashMap<String, DungeonSession.PlayerStatus> playerStatuses = new HashMap<>();
-    public DungeonFloorTemplate getTemplate() {return DungeonRegistry.DUNGEON_FLOOR_REGISTRY.get(this.templateKey);}
+    public DungeonFloorTemplate getTemplate() {return DUNGEON_FLOOR_REGISTRY.get(this.templateKey);}
 
     public DungeonSession getSession() {return DungeonSessionManager.getInstance().getDungeonSession(this.sessionKey);}
     public WeightedPool<DungeonMaterial> getMaterials() {return this.getTemplate().materials() == null ? this.getSession().getTemplate().materials() : this.getTemplate().materials();}

@@ -1,0 +1,78 @@
+package com.danielkkrafft.wilddungeons.dungeon.registries;
+
+import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
+import com.danielkkrafft.wilddungeons.util.WeightedPool;
+
+import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomRegistry.*;
+
+public class DungeonRoomPoolRegistry {
+    public static final WeightedPool<DungeonRoomTemplate> SMALL_ROOM_POOL = new WeightedPool<>();
+    public static final WeightedPool<DungeonRoomTemplate> MEDIUM_ROOM_POOL = new WeightedPool<>();
+    public static final WeightedPool<DungeonRoomTemplate> SECRET_POOL = new WeightedPool<>();
+    public static final WeightedPool<DungeonRoomTemplate> SHOP_POOL = new WeightedPool<>();
+    public static final WeightedPool<DungeonRoomTemplate> LOOT_POOL = new WeightedPool<>();
+    public static final WeightedPool<DungeonRoomTemplate> REST_POOL = new WeightedPool<>();
+    public static final WeightedPool<DungeonRoomTemplate> PARKOUR_POOL = new WeightedPool<>();
+    public static final WeightedPool<DungeonRoomTemplate> COMBAT_ROOM_POOL = new WeightedPool<>();
+
+    public static final WeightedPool<DungeonRoomTemplate> OVERWORLD_SPRAWL_ROOM_POOL = new WeightedPool<>();
+    public static final WeightedPool<DungeonRoomTemplate> OVERWORLD_SPACER_ROOM_POOL = new WeightedPool<>();
+    public static final WeightedPool<DungeonRoomTemplate> OVERWORLD_REST_ROOM_POOL = new WeightedPool<>();
+    public static final WeightedPool<DungeonRoomTemplate> OVERWORLD_LOOT_ROOM_POOL = new WeightedPool<>();
+    public static final WeightedPool<DungeonRoomTemplate> OVERWORLD_SHOP_ROOM_POOL = new WeightedPool<>();
+
+    public static void setupRoomPools(){
+        SMALL_ROOM_POOL
+                .add(SMALL_1,1)
+                .add(SMALL_2,1)
+                .add(SMALL_3,1)
+                .add(SMALL_4,1)
+                .add(SMALL_5,1);
+        MEDIUM_ROOM_POOL
+                .add(MEDIUM_1,1)
+                .add(MEDIUM_2,1)
+                .add(MEDIUM_3,1)
+                .add(MEDIUM_4,1);
+        SECRET_POOL
+                .add(SECRET_1,1);
+        SHOP_POOL
+                .add(SHOP_1,1);
+        LOOT_POOL
+                .add(LOOT_1,1);
+        REST_POOL
+                .add(REST,1);
+        PARKOUR_POOL
+                .add(PARKOUR,1);
+        COMBAT_ROOM_POOL
+                .add(LARGE_1,1);
+
+        OVERWORLD_SPRAWL_ROOM_POOL
+                .add(OVERWORLD_BASIC_1,5)
+                .add(OVERWORLD_BASIC_2,5)
+                .add(OVERWORLD_BASIC_3,1)
+                .add(OVERWORLD_BASIC_4,2)
+                .add(OVERWORLD_BASIC_5,2)
+                .add(OVERWORLD_COMBAT_1,1)
+                .add(OVERWORLD_COMBAT_2,1)
+                .add(OVERWORLD_COMBAT_3,1)
+                .add(OVERWORLD_CHEST_ROOM,2)
+                .add(OVERWORLD_STAIRCASE,1)
+                .add(OVERWORLD_STAIRWAY_1,1)
+                .add(OVERWORLD_HALLWAY_1,1)
+                .add(OVERWORLD_HALLWAY_2,1)
+                .add(OVERWORLD_CRAFTING_ROOM,1);
+        OVERWORLD_SPACER_ROOM_POOL
+                .add(OVERWORLD_STAIRWAY_1,1)
+                .add(OVERWORLD_HALLWAY_1,3)
+                .add(OVERWORLD_HALLWAY_2,2);
+        OVERWORLD_REST_ROOM_POOL
+                .add(OVERWORLD_REST_ROOM,1);
+        OVERWORLD_SHOP_ROOM_POOL
+                .add(OVERWORLD_SHOP_ROOM,1);
+        OVERWORLD_LOOT_ROOM_POOL
+                .add(OVERWORLD_FREE_PERK,1);
+
+
+
+    }
+}

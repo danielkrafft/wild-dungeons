@@ -4,15 +4,15 @@ import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonMaterial;
-import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRegistry;
+import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.util.WeightedTable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.EntityType;
 
-public record DungeonBranchTemplate(String name, DungeonRegistry.DungeonLayout<DungeonRoomTemplate> roomTemplates, WeightedPool<DungeonMaterial> materials, WeightedTable<EntityType<?>> enemyTable, double difficulty) implements DungeonComponent {
+public record DungeonBranchTemplate(String name, DungeonRegistration.DungeonLayout<DungeonRoomTemplate> roomTemplates, WeightedPool<DungeonMaterial> materials, WeightedTable<EntityType<?>> enemyTable, double difficulty) implements DungeonComponent {
 
-    public static DungeonBranchTemplate build(String name, DungeonRegistry.DungeonLayout<DungeonRoomTemplate> roomTemplates, WeightedPool<DungeonMaterial> materials, WeightedTable<EntityType<?>> enemyTable, double difficulty) {
+    public static DungeonBranchTemplate build(String name, DungeonRegistration.DungeonLayout<DungeonRoomTemplate> roomTemplates, WeightedPool<DungeonMaterial> materials, WeightedTable<EntityType<?>> enemyTable, double difficulty) {
         return new DungeonBranchTemplate(name, roomTemplates, materials, enemyTable, difficulty);
     }
 
