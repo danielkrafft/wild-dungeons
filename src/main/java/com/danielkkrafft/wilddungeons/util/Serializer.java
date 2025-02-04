@@ -8,7 +8,6 @@ import com.danielkkrafft.wilddungeons.player.SavedTransform;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -55,6 +54,7 @@ public class Serializer
         addCustom(DungeonSession.DungeonStats.class);
         addCustom(DungeonSession.PlayerStatus.class);
         addCustom(DungeonPerk.class);
+        addCustom(DungeonTarget.class);
     }
 
     private static void addCustom(Class<?> clazz) {

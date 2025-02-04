@@ -41,7 +41,6 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     public static final int BUBBLE_ANIMATION_TIME = 10;
 
     public enum Type {ITEM, PERK, RIFT}
-
     public enum CostType {XP_LEVEL, NETHER_XP_LEVEL, END_XP_LEVEL}
 
     private String type;

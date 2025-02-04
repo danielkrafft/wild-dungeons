@@ -2,7 +2,7 @@ package com.danielkkrafft.wilddungeons.dungeon.components;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
-import com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomRegistry;
+import com.danielkkrafft.wilddungeons.dungeon.components.room.EnemyPurgeRoom;
 import com.danielkkrafft.wilddungeons.dungeon.registries.LootTableRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
@@ -19,7 +19,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Mirror;
@@ -37,7 +36,6 @@ import java.util.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialRegistry.DUNGEON_MATERIAL_REGISTRY;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomRegistry.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.OfferingTemplateTableRegistry.BASIC_SHOP_TABLE;
-import static com.danielkkrafft.wilddungeons.dungeon.registries.OfferingTemplateTableRegistry.OFFERING_TEMPLATE_TABLE_REGISTRY;
 
 public class DungeonRoom {
     private final String templateKey;
@@ -65,7 +63,7 @@ public class DungeonRoom {
     public DungeonSession getSession() {return DungeonSessionManager.getInstance().getDungeonSession(this.sessionKey);}
     public DungeonBranch getBranch() {return this.branch != null ? this.branch : this.getSession().getFloors().get(this.floorIndex).getBranches().get(this.branchIndex);}
     public DungeonMaterial getMaterial() {return DUNGEON_MATERIAL_REGISTRY.get(this.materialKey);}
-    public WeightedTable<EntityType<?>> getEnemyTable() {return this.getTemplate().enemyTable() == null ? this.getBranch().getEnemyTable() : this.getTemplate().enemyTable();}
+    public WeightedTable<DungeonRegistration.TargetTemplate> getEnemyTable() {return this.getTemplate().enemyTable() == null ? this.getBranch().getEnemyTable() : this.getTemplate().enemyTable();}
     public double getDifficulty() {return this.getBranch().getDifficulty() * this.getTemplate().difficulty();}
     public boolean isRotated() {return rotation == Rotation.CLOCKWISE_90.getSerializedName() || rotation == Rotation.COUNTERCLOCKWISE_90.getSerializedName();}
     public StructurePlaceSettings getSettings() {return new StructurePlaceSettings().setMirror(Mirror.valueOf(this.mirror)).setRotation(Rotation.valueOf(this.rotation));}
@@ -122,7 +120,7 @@ public class DungeonRoom {
             this.riftUUIDs.add(rift.getStringUUID());
         });
 
-        this.processOfferings();
+        if (!(this instanceof EnemyPurgeRoom)) this.processOfferings();
 
         DungeonSessionManager.getInstance().server.execute(this::processLootBlocks);
 

@@ -9,7 +9,6 @@ import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.util.WeightedTable;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.EntityType;
 
 import java.util.Objects;
 
@@ -17,7 +16,7 @@ public final class DungeonBranchTemplate implements DungeonComponent {
     private String name;
     private DungeonLayout<DungeonRoomTemplate> roomTemplates;
     private WeightedPool<DungeonMaterial> materials = null;
-    private WeightedTable<EntityType<?>> enemyTable = null;
+    private WeightedTable<DungeonRegistration.TargetTemplate> enemyTable = null;
     private double difficulty = 1.0;
 
 
@@ -63,7 +62,7 @@ public final class DungeonBranchTemplate implements DungeonComponent {
         return materials;
     }
 
-    public WeightedTable<EntityType<?>> enemyTable() {
+    public WeightedTable<DungeonRegistration.TargetTemplate> enemyTable() {
         return enemyTable;
     }
 
@@ -113,7 +112,7 @@ public final class DungeonBranchTemplate implements DungeonComponent {
         return this;
     }
 
-    public DungeonBranchTemplate setEnemyTable(WeightedTable<EntityType<?>> enemyTable) {
+    public DungeonBranchTemplate setEnemyTable(WeightedTable<DungeonRegistration.TargetTemplate> enemyTable) {
         this.enemyTable = enemyTable;
         return this;
     }
