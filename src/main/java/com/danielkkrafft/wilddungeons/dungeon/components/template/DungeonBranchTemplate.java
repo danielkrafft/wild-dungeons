@@ -45,9 +45,10 @@ public final class DungeonBranchTemplate implements DungeonComponent {
             }
             tries++;
         }
-        WildDungeons.getLogger().warn("Failed to generate branch {} after 50 tries", this.name);
+        WildDungeons.getLogger().warn("Failed to generate branch {} after 50 tries. Shutting down Dungeon and ejecting Players", this.name);
+        floor.getSession().shutdown();
         return null;
-        //todo if we fail 50 times, regen the previous branch too or fail dungeon entirely
+        //todo tell the player what happened
     }
 
     @Override

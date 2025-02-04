@@ -236,10 +236,10 @@ public class DungeonSession {
 
     public void shutdown() {
         WildDungeons.getLogger().warn("SHUTTING DOWN DUNGEON SESSION");
+        cancelGenerations();
         getPlayers().forEach(this::onExit);
         floors.forEach(DungeonFloor::shutdown);
         SaveSystem.DeleteSession(this);
-        cancelGenerations();
         markedForShutdown = true;
     }
 
