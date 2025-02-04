@@ -1,6 +1,7 @@
 package com.danielkkrafft.wilddungeons.dungeon.components.template;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.components.*;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.*;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
@@ -9,7 +10,6 @@ import com.danielkkrafft.wilddungeons.util.WeightedTable;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
@@ -30,7 +30,7 @@ public final class DungeonRoomTemplate implements DungeonComponent {
     private List<StructureTemplate.StructureBlockInfo> materialBlocks;
     private List<StructureTemplate.StructureBlockInfo> lootBlocks;
     private WeightedPool<DungeonMaterial> materials;
-    private WeightedTable<EntityType<?>> enemyTable;
+    private WeightedTable<DungeonRegistration.TargetTemplate> enemyTable;
     private double difficulty = 1.0;
 
     public enum Type {
@@ -134,7 +134,7 @@ public final class DungeonRoomTemplate implements DungeonComponent {
         return materials;
     }
 
-    public WeightedTable<EntityType<?>> enemyTable() {
+    public WeightedTable<DungeonRegistration.TargetTemplate> enemyTable() {
         return enemyTable;
     }
 
@@ -232,7 +232,7 @@ public final class DungeonRoomTemplate implements DungeonComponent {
         return this;
     }
 
-    public DungeonRoomTemplate setEnemyTable(WeightedTable<EntityType<?>> enemyTable) {
+    public DungeonRoomTemplate setEnemyTable(WeightedTable<DungeonRegistration.TargetTemplate> enemyTable) {
         this.enemyTable = enemyTable;
         return this;
     }

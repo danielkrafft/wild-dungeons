@@ -1,11 +1,16 @@
 package com.danielkkrafft.wilddungeons.dungeon;
 
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonTarget;
 import com.danielkkrafft.wilddungeons.dungeon.registries.*;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.*;
 import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
-import com.danielkkrafft.wilddungeons.util.WeightedTable;
+import com.mojang.datafixers.util.Pair;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -13,9 +18,6 @@ import net.minecraft.world.level.Level;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import static com.danielkkrafft.wilddungeons.entity.Offering.CostType.*;
-import static com.danielkkrafft.wilddungeons.entity.Offering.Type.*;
 
 public class DungeonRegistration {
     public static void setupRegistries() {
@@ -48,6 +50,7 @@ public class DungeonRegistration {
         OfferingTemplateTableRegistry.setupOfferingTables();
 
         RiftPoolRegistry.setupRiftPools();
+        TargetTemplateRegistry.setupTargetTemplateRegistry();
     }
 
     public static class DungeonComponentRegistry<T extends DungeonComponent> {
@@ -94,5 +97,46 @@ public class DungeonRegistration {
             return new Offering(level, type, adjustedAmount, id, costType, adjustedCost);
         }
 
+    }
+
+    public static class TargetTemplate implements DungeonComponent{
+        public String name;
+        public String type;
+        public String entityType;
+        public int helmetItem = -1;
+        public int chestItem =- 1;
+        public int legsItem = -1;
+        public int bootsItem = -1;
+        public int mainHandItem = -1;
+        public int offHandItem = -1;
+        public List<Pair<Integer, Integer>> mobEffects = new ArrayList<>();
+
+        public TargetTemplate(String name, DungeonTarget.Type type) {
+            this.name = name;
+            this.type = type.toString();
+        }
+
+        public DungeonTarget asEnemy() {
+            DungeonTarget enemy = new DungeonTarget(DungeonTarget.Type.valueOf(this.type), this.entityType);
+            enemy.helmetItem = helmetItem;
+            enemy.chestItem = chestItem;
+            enemy.legsItem = legsItem;
+            enemy.bootsItem = bootsItem;
+            enemy.mainHandItem = mainHandItem;
+            enemy.offHandItem = offHandItem;
+            enemy.mobEffects.addAll(this.mobEffects);
+            return enemy;
+        }
+
+        @Override
+        public String name() {return this.name;}
+        public TargetTemplate setEntityType(EntityType<?> entityType) {this.entityType = EntityType.getKey(entityType).toString(); return this;}
+        public TargetTemplate setHelmet(Item item) {this.helmetItem = Item.getId(item); return this;}
+        public TargetTemplate setChestplate(Item item) {this.chestItem = Item.getId(item); return this;}
+        public TargetTemplate setLeggings(Item item) {this.legsItem = Item.getId(item); return this;}
+        public TargetTemplate setBoots(Item item) {this.bootsItem = Item.getId(item); return this;}
+        public TargetTemplate setMainHandItem(Item item) {this.mainHandItem = Item.getId(item); return this;}
+        public TargetTemplate setOffHandItem(Item item) {this.offHandItem = Item.getId(item); return this;}
+        public TargetTemplate addMobEffect(Holder<MobEffect> effect, int amplifier) {this.mobEffects.add(Pair.of(BuiltInRegistries.MOB_EFFECT.getId(effect.value()), amplifier)); return this;}
     }
 }

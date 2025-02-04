@@ -4,7 +4,6 @@ import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.DungeonLayout;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonMaterial;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonOpenBehavior;
-import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession.DungeonExitBehavior;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.util.WeightedTable;
@@ -23,7 +22,7 @@ public final class DungeonTemplate implements DungeonComponent {
     private String openBehavior = DungeonOpenBehavior.NONE;
     private DungeonLayout<DungeonFloorTemplate> floorTemplates = new DungeonLayout<DungeonFloorTemplate>().add(TEST_FLOOR_POOL, 1);
     private WeightedPool<DungeonMaterial> materials = ALL_MATERIAL_POOL;
-    private WeightedTable<EntityType<?>> enemyTable = BASIC_ENEMY_TABLE;
+    private WeightedTable<DungeonRegistration.TargetTemplate> enemyTable = BASIC_ENEMY_TABLE;
     private double difficulty = 1.0;
     private double difficultyScaling = 1.1;
     private DungeonExitBehavior exitBehavior = DESTROY;
@@ -53,7 +52,7 @@ public final class DungeonTemplate implements DungeonComponent {
         return materials;
     }
 
-    public WeightedTable<EntityType<?>> enemyTable() {
+    public WeightedTable<DungeonRegistration.TargetTemplate> enemyTable() {
         return enemyTable;
     }
 
@@ -138,7 +137,7 @@ public final class DungeonTemplate implements DungeonComponent {
         return this;
     }
 
-    public DungeonTemplate setEnemyTable(WeightedTable<EntityType<?>> enemyTable) {
+    public DungeonTemplate setEnemyTable(WeightedTable<DungeonRegistration.TargetTemplate> enemyTable) {
         this.enemyTable = enemyTable;
         return this;
     }

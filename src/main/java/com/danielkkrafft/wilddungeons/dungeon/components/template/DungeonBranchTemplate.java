@@ -1,6 +1,7 @@
 package com.danielkkrafft.wilddungeons.dungeon.components.template;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.DungeonLayout;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
@@ -9,7 +10,6 @@ import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.util.WeightedTable;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.EntityType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ public final class DungeonBranchTemplate implements DungeonComponent {
     private List<Pair<DungeonRoomTemplate, Integer>> mandatoryRooms = new ArrayList<>();
     private List<Pair<DungeonRoomTemplate, Integer>> limitedRooms = new ArrayList<>();
     private WeightedPool<DungeonMaterial> materials = null;
-    private WeightedTable<EntityType<?>> enemyTable = null;
+    private WeightedTable<DungeonRegistration.TargetTemplate> enemyTable = null;
     private double difficulty = 1.0;
 
 
@@ -63,7 +63,7 @@ public final class DungeonBranchTemplate implements DungeonComponent {
         return materials;
     }
 
-    public WeightedTable<EntityType<?>> enemyTable() {
+    public WeightedTable<DungeonRegistration.TargetTemplate> enemyTable() {
         return enemyTable;
     }
 
@@ -121,7 +121,7 @@ public final class DungeonBranchTemplate implements DungeonComponent {
         return this;
     }
 
-    public DungeonBranchTemplate setEnemyTable(WeightedTable<EntityType<?>> enemyTable) {
+    public DungeonBranchTemplate setEnemyTable(WeightedTable<DungeonRegistration.TargetTemplate> enemyTable) {
         this.enemyTable = enemyTable;
         return this;
     }

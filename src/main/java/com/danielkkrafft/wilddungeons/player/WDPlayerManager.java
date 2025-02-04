@@ -5,6 +5,7 @@ import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.CombatRoom;
+import com.danielkkrafft.wilddungeons.dungeon.components.room.EnemyPurgeRoom;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundUpdateWDPlayerPacket;
@@ -21,6 +22,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -80,6 +82,12 @@ public class WDPlayerManager {
                 WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(serverPlayer);
                 if (wdPlayer.getCurrentDungeon() == null) return;
                 wdPlayer.getCurrentDungeon().getStats(wdPlayer).blocksBroken += 1;
+
+                if (wdPlayer.getCurrentRoom() instanceof EnemyPurgeRoom enemyPurgeRoom) {
+                    if (event.getLevel().getBlockState(event.getPos()).is(Blocks.SPAWNER)) {
+                        enemyPurgeRoom.discardByBlockPos(event.getPos());
+                    }
+                }
             }
         }
     }
@@ -184,7 +192,7 @@ public class WDPlayerManager {
 
             if (wdPlayer.getCurrentDungeon() == null) return;
             wdPlayer.getCurrentDungeon().getStats(wdPlayer).mobsKilled += 1;
-            if (wdPlayer.getCurrentRoom() instanceof CombatRoom room) room.aliveUUIDs.remove(event.getEntity().getStringUUID());
+            if (wdPlayer.getCurrentRoom() instanceof EnemyPurgeRoom room) room.discardByUUID(event.getEntity().getStringUUID());
         }
     }
 
