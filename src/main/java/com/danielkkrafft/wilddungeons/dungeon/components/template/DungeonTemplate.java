@@ -8,6 +8,7 @@ import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession.DungeonExitBehavior;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.util.WeightedTable;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 
 import java.util.Objects;
@@ -27,6 +28,9 @@ public final class DungeonTemplate implements DungeonComponent {
     private double difficultyScaling = 1.1;
     private DungeonExitBehavior exitBehavior = DESTROY;
     private WeightedPool<DungeonTemplate> nextDungeon;
+    private int primaryColor = 0xFFFFFFFF;
+    private int secondaryColor = 0xFFFFFFFF;
+    private ResourceLocation iconLocation;
 
     public static DungeonTemplate create(String name) {
         return new DungeonTemplate().setName(name);
@@ -69,6 +73,18 @@ public final class DungeonTemplate implements DungeonComponent {
         return nextDungeon;
     }
 
+    public int primaryColor() {
+        return primaryColor;
+    }
+
+    public int secondaryColor() {
+        return secondaryColor;
+    }
+
+    public ResourceLocation iconLocation() {
+        return iconLocation;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == this) return true;
@@ -89,7 +105,6 @@ public final class DungeonTemplate implements DungeonComponent {
     public int hashCode() {
         return Objects.hash(name, openBehavior, floorTemplates, materials, enemyTable, difficulty, difficultyScaling, exitBehavior, nextDungeon);
     }
-
     @Override
     public String toString() {
         return "DungeonTemplate[" +
@@ -103,15 +118,16 @@ public final class DungeonTemplate implements DungeonComponent {
                 "exitBehavior=" + exitBehavior + ", " +
                 "nextDungeon=" + nextDungeon + ']';
     }
-
     public DungeonTemplate setName(String name) {
         this.name = name;
         return this;
     }
+
     public DungeonTemplate setOpenBehavior(DungeonOpenBehavior openBehavior) {
         this.openBehavior = openBehavior.toString();
         return this;
     }
+
     public DungeonTemplate setFloorTemplates(DungeonLayout<DungeonFloorTemplate> floorTemplates) {
         this.floorTemplates = floorTemplates;
         return this;
@@ -144,6 +160,21 @@ public final class DungeonTemplate implements DungeonComponent {
 
     public DungeonTemplate setNextDungeon(WeightedPool<DungeonTemplate> nextDungeon) {
         this.nextDungeon = nextDungeon;
+        return this;
+    }
+
+    public DungeonTemplate setPrimaryColor(int primaryColor) {
+        this.primaryColor = primaryColor;
+        return this;
+    }
+
+    public DungeonTemplate setSecondaryColor(int secondaryColor) {
+        this.secondaryColor = secondaryColor;
+        return this;
+    }
+
+    public DungeonTemplate setIconLocation(ResourceLocation iconLocation) {
+        this.iconLocation = iconLocation;
         return this;
     }
 }
