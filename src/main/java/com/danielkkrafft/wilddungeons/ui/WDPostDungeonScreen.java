@@ -43,7 +43,8 @@ public class WDPostDungeonScreen extends Screen {
 
     public final List<AnimationStep> steps = new ArrayList<>();
     public int step = 0;
-    public float ticks = 0.0f;
+    private long timestamp;
+    private float elapsedMs = 0;
     int xOffset = 0;
     public interface QuadConsumer<T, U, V, W> { void accept(T t, U u, V v, W w);}
 
@@ -52,36 +53,36 @@ public class WDPostDungeonScreen extends Screen {
         public final float minYRatio;
         public final float maxXRatio;
         public final float maxYRatio;
-        public final float animTicks;
-        public final float totalTicks;
+        public final int animMs;
+        public final int totalMs;
+        public float drawMs;
         public QuadConsumer<GuiGraphics, Integer, Integer, AnimationStep> drawLogic;
         public Screen screen;
-        public float drawTicks;
         public int id = 0;
 
-        public AnimationStep(float minXRatio, float minYRatio, float maxXRatio, float maxYRatio, float animTicks, float totalTicks, QuadConsumer<GuiGraphics, Integer, Integer, AnimationStep> drawLogic, Screen screen) {
+        public AnimationStep(float minXRatio, float minYRatio, float maxXRatio, float maxYRatio, int animMs, int totalMs, QuadConsumer<GuiGraphics, Integer, Integer, AnimationStep> drawLogic, Screen screen) {
             this.minXRatio = minXRatio;
             this.minYRatio = minYRatio;
             this.maxXRatio = maxXRatio;
             this.maxYRatio = maxYRatio;
-            this.animTicks = animTicks;
-            this.totalTicks = totalTicks;
+            this.animMs = animMs;
+            this.totalMs = totalMs;
             this.drawLogic = drawLogic;
             this.screen = screen;
         }
 
         public AnimationStep copy(int id) {
-            AnimationStep copiedStep = new AnimationStep(this.minXRatio, this.minYRatio, this.maxXRatio, this.maxYRatio, this.animTicks, this.totalTicks, this.drawLogic, this.screen);
+            AnimationStep copiedStep = new AnimationStep(this.minXRatio, this.minYRatio, this.maxXRatio, this.maxYRatio, this.animMs, this.totalMs, this.drawLogic, this.screen);
             copiedStep.id = id;
             return copiedStep;
         }
 
         public void draw(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean animate, WDPostDungeonScreen screen) {
-            this.drawTicks = animate ? screen.ticks : this.animTicks;
+            this.drawMs = animate ? screen.elapsedMs : this.animMs;
             drawLogic.accept(guiGraphics, mouseX, mouseY, this);
-            if (animate && this.drawTicks >= this.totalTicks) {
+            if (animate && this.drawMs >= this.totalMs) {
                 screen.step++;
-                screen.ticks = 0f;
+                screen.elapsedMs = 0;
             }
         }
 
@@ -97,6 +98,7 @@ public class WDPostDungeonScreen extends Screen {
 
     public WDPostDungeonScreen(CompoundTag data) {
         super(GameNarrator.NO_TITLE);
+        timestamp = System.currentTimeMillis();
         defaultSkin = Minecraft.getInstance().getSkinManager().getInsecureSkin(Minecraft.getInstance().getGameProfile()).texture();
         stats = Serializer.fromCompoundTag(data);
         clearTicks = stats == null ? 300 : this.stats.values().stream().sorted(Comparator.comparingInt(o -> o.time)).toList().getLast().time;
@@ -168,8 +170,11 @@ public class WDPostDungeonScreen extends Screen {
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+
         super.render(guiGraphics, mouseX, mouseY, partialTick);
-        this.ticks += partialTick;
+        float elapsed = System.currentTimeMillis() - timestamp;
+        timestamp = System.currentTimeMillis();
+        this.elapsedMs += elapsed;
         int size = this.steps.size();
         for (int i = 0; i <= step; i++) {
             if (i >= size) return;
@@ -177,38 +182,38 @@ public class WDPostDungeonScreen extends Screen {
         }
     }
 
-    public final AnimationStep TITLE_BACKGROUND = new AnimationStep(0.0f, 0.1f, 1.0f, 0.2f, 10f, 15f, this::drawTitleBackground, this);
+    public final AnimationStep TITLE_BACKGROUND = new AnimationStep(0.0f, 0.1f, 1.0f, 0.2f, 500, 750, this::drawTitleBackground, this);
     public void drawTitleBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
     {
-        int maxX = Mth.lerpInt(Math.min(step.drawTicks/step.animTicks, 1), 0, this.width);
+        int maxX = Mth.lerpInt(Math.min(step.drawMs/step.animMs, 1), 0, this.width);
         guiGraphics.fill(0, step.minY(), maxX, step.maxY(), 0x800d0f18);
     }
 
-    public final AnimationStep TITLE = new AnimationStep(TITLE_BACKGROUND.minXRatio, TITLE_BACKGROUND.minYRatio, TITLE_BACKGROUND.maxXRatio, TITLE_BACKGROUND.maxYRatio, 20f, 30f, this::drawTitle, this);
+    public final AnimationStep TITLE = new AnimationStep(TITLE_BACKGROUND.minXRatio, TITLE_BACKGROUND.minYRatio, TITLE_BACKGROUND.maxXRatio, TITLE_BACKGROUND.maxYRatio, 500, 750, this::drawTitle, this);
     public void drawTitle(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
     {
         String finalTitle = "WAIT OF THE WORLD";
-        String title = finalTitle.substring(0, Mth.lerpInt(Math.min(step.drawTicks/step.animTicks, 1), 0, finalTitle.length()));
+        String title = finalTitle.substring(0, Mth.lerpInt(Math.min(step.drawMs/step.animMs, 1), 0, finalTitle.length()));
 
-        if (step.drawTicks < step.animTicks) title = title + WDFont.getRandomGlitch() + WDFont.getRandomGlitch();
+        if (step.drawMs < step.animMs) title = title + WDFont.getRandomGlitch() + WDFont.getRandomGlitch();
         WDFont.drawCenteredString(guiGraphics, title, step.xCenter(), step.yCenter(), step.ySize()/2, 0xFFFFFFFF);
     }
 
-    public final AnimationStep ICON_BACKGROUND = new AnimationStep(0.0f, 0.05f, 0.1f, 0.15f, 20f, 30f, this::drawIconBackground, this);
+    public final AnimationStep ICON_BACKGROUND = new AnimationStep(0.0f, 0.05f, 0.1f, 0.15f, 500, 750, this::drawIconBackground, this);
     public void drawIconBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
     {
         int maxX = this.width / 10;
         guiGraphics.fill(step.minX(), step.minY(), maxX, step.maxY(), 0xFFFFFFFF);
     }
 
-    public final AnimationStep ICON = new AnimationStep(ICON_BACKGROUND.minXRatio, ICON_BACKGROUND.minYRatio, ICON_BACKGROUND.maxXRatio, ICON_BACKGROUND.maxYRatio, 20f, 30f, this::drawIcon, this);
+    public final AnimationStep ICON = new AnimationStep(ICON_BACKGROUND.minXRatio, ICON_BACKGROUND.minYRatio, ICON_BACKGROUND.maxXRatio, ICON_BACKGROUND.maxYRatio, 500, 750, this::drawIcon, this);
     public void drawIcon(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
     {
         String title = "1-4";
         WDFont.drawCenteredString(guiGraphics, title, step.xCenter(), step.yCenter(), step.ySize()/2, 0xFFFF0000);
     }
 
-    public final AnimationStep TIME_BACKGROUND = new AnimationStep(0.35f, 0.38f, 0.65f, 0.52f, 20f, 30f, this::drawTimeBackground, this);
+    public final AnimationStep TIME_BACKGROUND = new AnimationStep(0.35f, 0.38f, 0.65f, 0.52f, 500, 750, this::drawTimeBackground, this);
     public void drawTimeBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
     {
         float ratio = Math.min(this.targetTicks / this.clearTicks, 1.0f);
@@ -216,7 +221,7 @@ public class WDPostDungeonScreen extends Screen {
         guiGraphics.fill(step.minX() + xOffset, step.minY(), step.maxX() + xOffset, step.maxY(), 0x800d0f18);
     }
 
-    public final AnimationStep TIME = new AnimationStep(TIME_BACKGROUND.minXRatio, TIME_BACKGROUND.minYRatio, TIME_BACKGROUND.maxXRatio, TIME_BACKGROUND.maxYRatio, 20f, 30f, this::drawTime, this);
+    public final AnimationStep TIME = new AnimationStep(TIME_BACKGROUND.minXRatio, TIME_BACKGROUND.minYRatio, TIME_BACKGROUND.maxXRatio, TIME_BACKGROUND.maxYRatio, 500, 750, this::drawTime, this);
     public void drawTime(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
     {
         String title = "Time: ";
@@ -230,34 +235,34 @@ public class WDPostDungeonScreen extends Screen {
         WDFont.drawCenteredString(guiGraphics, title, step.xCenter() + xOffset, step.yCenter(), step.ySize()/5, 0xFFFFFFFF);
     }
 
-    public final AnimationStep PERFECT_TIME = new AnimationStep(TIME_BACKGROUND.minXRatio, TIME_BACKGROUND.minYRatio, TIME_BACKGROUND.maxXRatio, TIME_BACKGROUND.maxYRatio, 20f, 30f, this::drawPerfectTime, this);
+    public final AnimationStep PERFECT_TIME = new AnimationStep(TIME_BACKGROUND.minXRatio, TIME_BACKGROUND.minYRatio, TIME_BACKGROUND.maxXRatio, TIME_BACKGROUND.maxYRatio, 500, 750, this::drawPerfectTime, this);
     public void drawPerfectTime(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
     {
         guiGraphics.fill(step.minX() + xOffset, step.minY(), step.maxX() + xOffset, step.maxY(), 0xFFFF0000);
         drawTime(guiGraphics, mouseX, mouseY, TIME);
     }
 
-    public final AnimationStep DEATHS_BACKGROUND = new AnimationStep(TIME_BACKGROUND.minXRatio, 0.53f, TIME_BACKGROUND.maxXRatio, 0.67f, 20f, 30f, this::drawDeathsBackground, this);
+    public final AnimationStep DEATHS_BACKGROUND = new AnimationStep(TIME_BACKGROUND.minXRatio, 0.53f, TIME_BACKGROUND.maxXRatio, 0.67f, 500, 750, this::drawDeathsBackground, this);
     public void drawDeathsBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
     {
         guiGraphics.fill(step.minX() + xOffset, step.minY(), step.maxX() + xOffset, step.maxY(), 0x800d0f18);
     }
 
-    public final AnimationStep DEATHS = new AnimationStep(DEATHS_BACKGROUND.minXRatio, DEATHS_BACKGROUND.minYRatio, DEATHS_BACKGROUND.maxXRatio, DEATHS_BACKGROUND.maxYRatio, 20f, 30f, this::drawDeaths, this);
+    public final AnimationStep DEATHS = new AnimationStep(DEATHS_BACKGROUND.minXRatio, DEATHS_BACKGROUND.minYRatio, DEATHS_BACKGROUND.maxXRatio, DEATHS_BACKGROUND.maxYRatio, 500, 750, this::drawDeaths, this);
     public void drawDeaths(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
     {
         String title = "Deaths: " + clearDeaths;
         WDFont.drawCenteredString(guiGraphics, title, step.xCenter() + xOffset, step.yCenter(), step.ySize()/5, 0xFFFFFFFF);
     }
 
-    public final AnimationStep PERFECT_DEATHS = new AnimationStep(DEATHS_BACKGROUND.minXRatio, DEATHS_BACKGROUND.minYRatio, TIME_BACKGROUND.maxXRatio, DEATHS_BACKGROUND.maxYRatio, 20f, 30f, this::drawPerfectDeaths, this);
+    public final AnimationStep PERFECT_DEATHS = new AnimationStep(DEATHS_BACKGROUND.minXRatio, DEATHS_BACKGROUND.minYRatio, TIME_BACKGROUND.maxXRatio, DEATHS_BACKGROUND.maxYRatio, 500, 750, this::drawPerfectDeaths, this);
     public void drawPerfectDeaths(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
     {
         guiGraphics.fill(step.minX() + xOffset, step.minY(), step.maxX() + xOffset, step.maxY(), 0xFFFF0000);
         drawDeaths(guiGraphics, mouseX, mouseY, DEATHS);
     }
 
-    public final AnimationStep SCORE_BACKGROUND = new AnimationStep(TIME_BACKGROUND.minXRatio, 0.68f, TIME_BACKGROUND.maxXRatio, 0.82f, 20f, 30f, this::drawScoreBackground, this);
+    public final AnimationStep SCORE_BACKGROUND = new AnimationStep(TIME_BACKGROUND.minXRatio, 0.68f, TIME_BACKGROUND.maxXRatio, 0.82f, 500, 750, this::drawScoreBackground, this);
     public void drawScoreBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
     {
         float ratio = Math.min((float) this.clearScore / this.targetScore, 1.0f);
@@ -265,21 +270,21 @@ public class WDPostDungeonScreen extends Screen {
         guiGraphics.fill(step.minX() + xOffset, step.minY(), step.maxX() + xOffset, step.maxY(), 0x800d0f18);
     }
 
-    public final AnimationStep SCORE = new AnimationStep(SCORE_BACKGROUND.minXRatio, SCORE_BACKGROUND.minYRatio, SCORE_BACKGROUND.maxXRatio, SCORE_BACKGROUND.maxYRatio, 20f, 30f, this::drawScore, this);
+    public final AnimationStep SCORE = new AnimationStep(SCORE_BACKGROUND.minXRatio, SCORE_BACKGROUND.minYRatio, SCORE_BACKGROUND.maxXRatio, SCORE_BACKGROUND.maxYRatio, 500, 750, this::drawScore, this);
     public void drawScore(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
     {
         String title = "Score: " + clearScore;
         WDFont.drawCenteredString(guiGraphics, title, step.xCenter() + xOffset, step.yCenter(), step.ySize()/5, 0xFFFFFFFF);
     }
 
-    public final AnimationStep PERFECT_SCORE = new AnimationStep(SCORE_BACKGROUND.minXRatio, SCORE_BACKGROUND.minYRatio, SCORE_BACKGROUND.maxXRatio, SCORE_BACKGROUND.maxYRatio, 20f, 30f, this::drawPerfectScore, this);
+    public final AnimationStep PERFECT_SCORE = new AnimationStep(SCORE_BACKGROUND.minXRatio, SCORE_BACKGROUND.minYRatio, SCORE_BACKGROUND.maxXRatio, SCORE_BACKGROUND.maxYRatio, 500, 750, this::drawPerfectScore, this);
     public void drawPerfectScore(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
     {
         guiGraphics.fill(step.minX() + xOffset, step.minY(), step.maxX() + xOffset, step.maxY(), 0xFFFF0000);
         drawScore(guiGraphics, mouseX, mouseY, SCORE);
     }
 
-    public final AnimationStep PERFECT_CLEAR = new AnimationStep(TITLE_BACKGROUND.minXRatio, TITLE_BACKGROUND.minYRatio, TITLE_BACKGROUND.maxXRatio, TITLE_BACKGROUND.maxYRatio, 20f, 30f, this::drawPerfectClear, this);
+    public final AnimationStep PERFECT_CLEAR = new AnimationStep(TITLE_BACKGROUND.minXRatio, TITLE_BACKGROUND.minYRatio, TITLE_BACKGROUND.maxXRatio, TITLE_BACKGROUND.maxYRatio, 500, 750, this::drawPerfectClear, this);
     public void drawPerfectClear(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
     {
         guiGraphics.fill(step.minX(), step.minY(), step.maxX(), step.maxY(), 0xFFFF0000);
@@ -288,19 +293,19 @@ public class WDPostDungeonScreen extends Screen {
         drawIcon(guiGraphics, mouseX, mouseY, ICON);
     }
 
-    public final AnimationStep SWIPE_TO_CHART = new AnimationStep(0.0f, 0.0f, 0.0f, 0.0f, 20f, 30f, this::swipeToChart, this);
+    public final AnimationStep SWIPE_TO_CHART = new AnimationStep(0.0f, 0.0f, 0.0f, 0.0f, 500, 750, this::swipeToChart, this);
     public void swipeToChart(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
     {
         this.xOffset = -this.width;
     }
 
-    public final AnimationStep CHART_BACKGROUND = new AnimationStep(0.25f, 0.3f, 0.75f, 1.0f, 20f, 30f, this::drawChartBackground, this);
+    public final AnimationStep CHART_BACKGROUND = new AnimationStep(0.25f, 0.3f, 0.75f, 1.0f, 500, 750, this::drawChartBackground, this);
     public void drawChartBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
     {
         guiGraphics.fill(step.minX() + xOffset + this.width, step.minY(), step.maxX() + xOffset + this.width, step.maxY(), 0x800d0f18);
     }
 
-    public final AnimationStep CHART_ENTRY = new AnimationStep(CHART_BACKGROUND.minXRatio, CHART_BACKGROUND.minYRatio, CHART_BACKGROUND.maxXRatio, CHART_BACKGROUND.maxYRatio, 20f, 30f, this::drawChartEntry, this);
+    public final AnimationStep CHART_ENTRY = new AnimationStep(CHART_BACKGROUND.minXRatio, CHART_BACKGROUND.minYRatio, CHART_BACKGROUND.maxXRatio, CHART_BACKGROUND.maxYRatio, 500, 750, this::drawChartEntry, this);
     public void drawChartEntry(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
     {
         int padding = (int) (step.xSize()*0.05f);
