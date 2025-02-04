@@ -165,7 +165,6 @@ public class DungeonFloor {
         wdPlayer.travelToFloor(wdPlayer, wdPlayer.getCurrentFloor(), this);
         wdPlayer.getServerPlayer().setGameMode(wdPlayer.getLastGameMode());
         PacketDistributor.sendToPlayer(wdPlayer.getServerPlayer(), new ClientboundNullScreenPacket(new CompoundTag()));
-
         WDPlayerManager.syncAll(this.playerStatuses.keySet().stream().toList());
     }
 
