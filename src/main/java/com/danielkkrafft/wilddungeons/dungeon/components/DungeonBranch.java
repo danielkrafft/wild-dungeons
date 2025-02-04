@@ -48,13 +48,18 @@ public class DungeonBranch {
     public DungeonFloor getFloor() {return floor != null ? floor : getSession().getFloors().get(this.floorIndex);}
     public WeightedPool<DungeonMaterial> getMaterials() {return this.getTemplate().materials() == null ? this.getFloor().getMaterials() : this.getTemplate().materials();}
     public WeightedTable<DungeonRegistration.TargetTemplate> getEnemyTable() {return this.getTemplate().enemyTable() == null ? this.getFloor().getEnemyTable() : this.getTemplate().enemyTable();}
+    public double getDifficultyScaling(){
+        double difficultyScaling = this.getTemplate().difficultyScaling();
+        if (difficultyScaling == -1) difficultyScaling = this.getFloor().getDifficultyScaling();
+        return difficultyScaling;
+    }
     public double getDifficulty() {
         int totalBranches = 0;
         for (int i = 0; i < this.getFloor().getIndex(); i++) {
             totalBranches += this.getFloor().getSession().getFloors().get(i).getBranches().size();
         }
         totalBranches += this.getIndex();
-        return this.getFloor().getDifficulty() * this.getTemplate().difficulty() * Math.max(Math.pow(this.getSession().getTemplate().difficultyScaling(), totalBranches), 1);
+        return (this.getFloor().getDifficulty() * this.getTemplate().difficulty()) * Math.max(Math.pow(this.getDifficultyScaling(), totalBranches), 1);
     }
     public List<WDPlayer> getActivePlayers() {return this.playerStatuses.entrySet().stream().map(e -> {
         if (e.getValue().inside) return WDPlayerManager.getInstance().getOrCreateWDPlayer(e.getKey());

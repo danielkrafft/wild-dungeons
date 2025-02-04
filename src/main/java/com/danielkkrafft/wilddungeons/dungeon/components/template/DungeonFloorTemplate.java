@@ -20,6 +20,7 @@ public final class DungeonFloorTemplate implements DungeonComponent {
     private WeightedPool<DungeonMaterial> materials = null;
     private WeightedTable<DungeonRegistration.TargetTemplate> enemyTable = null;
     private double difficulty = 1.0;
+    private double difficultyScaling = -1;
 
 
 
@@ -53,6 +54,10 @@ public final class DungeonFloorTemplate implements DungeonComponent {
 
     public double difficulty() {
         return difficulty;
+    }
+
+    public double difficultyScaling() {
+        return difficultyScaling;
     }
 
     @Override
@@ -104,6 +109,12 @@ public final class DungeonFloorTemplate implements DungeonComponent {
 
     public DungeonFloorTemplate setDifficulty(double difficulty) {
         this.difficulty = difficulty;
+        return this;
+    }
+
+
+    public DungeonFloorTemplate setDifficultyScaling(double difficultyScaling) {
+        this.difficultyScaling = difficultyScaling;
         return this;
     }
 }

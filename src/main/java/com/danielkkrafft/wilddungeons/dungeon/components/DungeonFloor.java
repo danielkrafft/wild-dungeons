@@ -55,6 +55,11 @@ public class DungeonFloor {
     public DungeonSession getSession() {return DungeonSessionManager.getInstance().getDungeonSession(this.sessionKey);}
     public WeightedPool<DungeonMaterial> getMaterials() {return this.getTemplate().materials() == null ? this.getSession().getTemplate().materials() : this.getTemplate().materials();}
     public WeightedTable<DungeonRegistration.TargetTemplate> getEnemyTable() {return this.getTemplate().enemyTable() == null ? this.getSession().getTemplate().enemyTable() : this.getTemplate().enemyTable();}
+    public double getDifficultyScaling(){
+        double difficultyScaling = this.getTemplate().difficultyScaling();
+        if (difficultyScaling == -1) difficultyScaling = this.getSession().getTemplate().difficultyScaling();
+        return difficultyScaling;
+    }
     public double getDifficulty() {return this.getSession().getTemplate().difficulty() * this.getSession().getPlayers().size() * this.getTemplate().difficulty();}
     public ServerLevel getLevel() {
         return DungeonSessionManager.getInstance().server.levels.get(this.LEVEL_KEY);
