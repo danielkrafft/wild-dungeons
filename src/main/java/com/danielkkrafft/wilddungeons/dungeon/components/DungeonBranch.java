@@ -10,6 +10,7 @@ import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.danielkkrafft.wilddungeons.util.IgnoreSerialization;
+import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.util.WeightedTable;
 import com.danielkkrafft.wilddungeons.util.debug.WDProfiler;
@@ -124,6 +125,14 @@ public class DungeonBranch {
     private boolean populateNextRoom() {
 
         DungeonRoomTemplate nextRoom = selectNextRoom();
+        //in order to keep the openConnections from getting too low, we will try to find a room with at least 3 connection points
+        if (openConnections < OPEN_CONNECTIONS_TARGET) {
+            int tries = 0;
+            while (nextRoom.connectionPoints().size() < 3 && tries < 15) {
+                nextRoom = selectNextRoom();
+                tries++;
+            }
+        }
 
         List<ConnectionPoint> templateConnectionPoints = new ArrayList<>();
         for (ConnectionPoint point : nextRoom.connectionPoints()) {
@@ -198,17 +207,53 @@ public class DungeonBranch {
         }
         return false;
     }
+    private boolean shouldPlaceMandatoryRoom(int mandatoryRoomsLeft, int roomsLeftToGenerate) {
+        double probability = (double) mandatoryRoomsLeft / roomsLeftToGenerate;
+        return RandomUtil.randFloatBetween(0, 1) < probability;
+    }
 
     private DungeonRoomTemplate selectNextRoom() {
-        DungeonRoomTemplate nextRoom = getTemplate().roomTemplates().get(branchRooms.size()).getRandom();
-
-        if (openConnections < OPEN_CONNECTIONS_TARGET) {
-            int tries = 0;
-            while (nextRoom.connectionPoints().size() < 3 && tries < 15) {
-                nextRoom = getTemplate().roomTemplates().get(branchRooms.size()).getRandom();
-                tries++;
+        List<Pair<DungeonRoomTemplate, Integer>> mandatoryRooms = new ArrayList<>(getTemplate().mandatoryRooms());
+        for (Pair<DungeonRoomTemplate, Integer> mandatoryRoom : mandatoryRooms) {
+            //check how many of the mandatory rooms are already placed
+            int placedRooms = 0;
+            for (DungeonRoom room : branchRooms) {
+                if (room.getTemplate().equals(mandatoryRoom.getFirst())) {
+                    placedRooms++;
+                }
+            }
+            if (placedRooms >= mandatoryRoom.getSecond()) continue;
+            mandatoryRoom = new Pair<>(mandatoryRoom.getFirst(), mandatoryRoom.getSecond() - placedRooms);
+            if (mandatoryRoom.getSecond() > 0 && shouldPlaceMandatoryRoom(mandatoryRoom.getSecond(), getTemplate().roomTemplates().size() - branchRooms.size())) {
+//                WildDungeons.getLogger().info("PLACING MANDATORY ROOM: {}", mandatoryRoom.getFirst().name());
+                return mandatoryRoom.getFirst();
             }
         }
+        DungeonRoomTemplate nextRoom = getTemplate().roomTemplates().get(branchRooms.size()).getRandom();
+
+        boolean overPlaced = false;
+        do {
+            overPlaced = false;
+            //if next room is in limited rooms, count how many times we already placed it
+            for (Pair<DungeonRoomTemplate, Integer> limitedRoom : getTemplate().limitedRooms()) {
+                if (limitedRoom.getFirst().equals(nextRoom)) {
+                    int placedRooms = 0;
+                    for (DungeonRoom room : branchRooms) {
+                        if (room.getTemplate().equals(nextRoom)) {
+                            placedRooms++;
+                        }
+                    }
+                    if (placedRooms > limitedRoom.getSecond()) {
+//                        WildDungeons.getLogger().info("OVERPLACED LIMITED ROOM: {}", nextRoom.name());
+                        nextRoom = getTemplate().roomTemplates().get(branchRooms.size()).getRandom();
+                        overPlaced = true;
+                        break;
+                    } else {
+                        overPlaced = false;
+                    }
+                }
+            }
+        } while (overPlaced);
 
         WDProfiler.INSTANCE.logTimestamp("DungeonBranch::selectNextRoom");
         return nextRoom;

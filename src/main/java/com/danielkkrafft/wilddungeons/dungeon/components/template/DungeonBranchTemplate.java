@@ -5,17 +5,21 @@ import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.DungeonLayout;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonMaterial;
-import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.util.WeightedTable;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.EntityType;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public final class DungeonBranchTemplate implements DungeonComponent {
     private String name;
     private DungeonLayout<DungeonRoomTemplate> roomTemplates;
+    private List<Pair<DungeonRoomTemplate, Integer>> mandatoryRooms = new ArrayList<>();
+    private List<Pair<DungeonRoomTemplate, Integer>> limitedRooms = new ArrayList<>();
     private WeightedPool<DungeonMaterial> materials = null;
     private WeightedTable<EntityType<?>> enemyTable = null;
     private double difficulty = 1.0;
@@ -43,7 +47,7 @@ public final class DungeonBranchTemplate implements DungeonComponent {
         }
         WildDungeons.getLogger().warn("Failed to generate branch {} after 50 tries", this.name);
         return null;
-        //todo if we fail 50 times, regen the previous branch too
+        //todo if we fail 50 times, regen the previous branch too or fail dungeon entirely
     }
 
     @Override
@@ -65,6 +69,14 @@ public final class DungeonBranchTemplate implements DungeonComponent {
 
     public double difficulty() {
         return difficulty;
+    }
+
+    public List<Pair<DungeonRoomTemplate, Integer>> mandatoryRooms() {
+        return mandatoryRooms;
+    }
+
+    public List<Pair<DungeonRoomTemplate, Integer>> limitedRooms() {
+        return limitedRooms;
     }
 
     @Override
@@ -116,6 +128,16 @@ public final class DungeonBranchTemplate implements DungeonComponent {
 
     public DungeonBranchTemplate setDifficulty(double difficulty) {
         this.difficulty = difficulty;
+        return this;
+    }
+
+    public DungeonBranchTemplate setMandatoryRooms(List<Pair<DungeonRoomTemplate, Integer>> mandatoryRooms) {
+        this.mandatoryRooms = mandatoryRooms;
+        return this;
+    }
+
+    public DungeonBranchTemplate setLimitedRooms(List<Pair<DungeonRoomTemplate, Integer>> limitedRooms) {
+        this.limitedRooms = limitedRooms;
         return this;
     }
 }
