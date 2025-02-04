@@ -17,14 +17,27 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-public record DungeonRoomTemplate(Type type, String name, List<Pair<StructureTemplate, BlockPos>> templates, List<ConnectionPoint> connectionPoints, BlockPos spawnPoint, List<Vec3> rifts, List<Vec3> offerings, List<StructureTemplate.StructureBlockInfo> materialBlocks, List<StructureTemplate.StructureBlockInfo> lootBlocks, WeightedPool<DungeonMaterial> materials, WeightedTable<EntityType<?>> enemyTable, double difficulty) implements DungeonComponent {
+public final class DungeonRoomTemplate implements DungeonComponent {
+    private Type type;
+    private String name;
+    private List<Pair<StructureTemplate, BlockPos>> templates;
+    private List<ConnectionPoint> connectionPoints;
+    private BlockPos spawnPoint;
+    private List<Vec3> rifts;
+    private List<Vec3> offerings;
+    private List<StructureTemplate.StructureBlockInfo> materialBlocks;
+    private List<StructureTemplate.StructureBlockInfo> lootBlocks;
+    private WeightedPool<DungeonMaterial> materials;
+    private WeightedTable<EntityType<?>> enemyTable;
+    private double difficulty = 1.0;
 
     public enum Type {
         NONE, SECRET, COMBAT, SHOP, LOOT
     }
 
-    public static DungeonRoomTemplate build(Type type, String name, List<Pair<String, BlockPos>> structures, WeightedPool<DungeonMaterial> materials, WeightedTable<EntityType<?>> enemyTable, double difficulty) {
+    public static DungeonRoomTemplate create(String name, List<Pair<String, BlockPos>> structures) {
 
         List<Pair<StructureTemplate, BlockPos>> templates = new ArrayList<>();
         for (Pair<String, BlockPos> structure : structures) {
@@ -40,7 +53,15 @@ public record DungeonRoomTemplate(Type type, String name, List<Pair<StructureTem
         List<Vec3> offerings = TemplateHelper.locateOfferings(templates);
         List<StructureTemplate.StructureBlockInfo> materialBlocks = TemplateHelper.locateMaterialBlocks(templates);
         List<StructureTemplate.StructureBlockInfo> lootBlocks = TemplateHelper.locateLootTargets(templates);
-        return new DungeonRoomTemplate(type, name, templates, connectionPoints, spawnPoint, rifts, offerings, materialBlocks, lootBlocks, materials, enemyTable, difficulty);
+        return new DungeonRoomTemplate()
+                .setName(name)
+                .setTemplates(templates)
+                .setConnectionPoints(connectionPoints)
+                .setSpawnPoint(spawnPoint)
+                .setRifts(rifts)
+                .setOfferings(offerings)
+                .setMaterialBlocks(materialBlocks)
+                .setLootBlocks(lootBlocks);
     }
 
     public List<BoundingBox> getBoundingBoxes(StructurePlaceSettings settings, BlockPos position) {
@@ -53,7 +74,10 @@ public record DungeonRoomTemplate(Type type, String name, List<Pair<StructureTem
         return boundingBoxes;
     }
 
-    public DungeonRoomTemplate pool(WeightedPool<DungeonRoomTemplate> pool, Integer weight) {pool.add(this, weight); return this;}
+    public DungeonRoomTemplate pool(WeightedPool<DungeonRoomTemplate> pool, Integer weight) {
+        pool.add(this, weight);
+        return this;
+    }
 
     public DungeonRoom placeInWorld(DungeonBranch branch, ServerLevel level, BlockPos position, StructurePlaceSettings settings, List<ConnectionPoint> connectionPoints) {
         switch (this.type()) {
@@ -71,5 +95,154 @@ public record DungeonRoomTemplate(Type type, String name, List<Pair<StructureTem
             }
         }
 
+    }
+
+    public Type type() {
+        return type;
+    }
+
+    @Override
+    public String name() {
+        return name;
+    }
+
+    public List<Pair<StructureTemplate, BlockPos>> templates() {
+        return templates;
+    }
+
+    public List<ConnectionPoint> connectionPoints() {
+        return connectionPoints;
+    }
+
+    public BlockPos spawnPoint() {
+        return spawnPoint;
+    }
+
+    public List<Vec3> rifts() {
+        return rifts;
+    }
+
+    public List<Vec3> offerings() {
+        return offerings;
+    }
+
+    public List<StructureTemplate.StructureBlockInfo> materialBlocks() {
+        return materialBlocks;
+    }
+
+    public List<StructureTemplate.StructureBlockInfo> lootBlocks() {
+        return lootBlocks;
+    }
+
+    public WeightedPool<DungeonMaterial> materials() {
+        return materials;
+    }
+
+    public WeightedTable<EntityType<?>> enemyTable() {
+        return enemyTable;
+    }
+
+    public double difficulty() {
+        return difficulty;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (obj == null || obj.getClass() != this.getClass()) return false;
+        var that = (DungeonRoomTemplate) obj;
+        return Objects.equals(this.type, that.type) &&
+                Objects.equals(this.name, that.name) &&
+                Objects.equals(this.templates, that.templates) &&
+                Objects.equals(this.connectionPoints, that.connectionPoints) &&
+                Objects.equals(this.spawnPoint, that.spawnPoint) &&
+                Objects.equals(this.rifts, that.rifts) &&
+                Objects.equals(this.offerings, that.offerings) &&
+                Objects.equals(this.materialBlocks, that.materialBlocks) &&
+                Objects.equals(this.lootBlocks, that.lootBlocks) &&
+                Objects.equals(this.materials, that.materials) &&
+                Objects.equals(this.enemyTable, that.enemyTable) &&
+                Double.doubleToLongBits(this.difficulty) == Double.doubleToLongBits(that.difficulty);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, name, templates, connectionPoints, spawnPoint, rifts, offerings, materialBlocks, lootBlocks, materials, enemyTable, difficulty);
+    }
+
+    @Override
+    public String toString() {
+        return "DungeonRoomTemplate[" +
+                "type=" + type + ", " +
+                "name=" + name + ", " +
+                "templates=" + templates + ", " +
+                "connectionPoints=" + connectionPoints + ", " +
+                "spawnPoint=" + spawnPoint + ", " +
+                "rifts=" + rifts + ", " +
+                "offerings=" + offerings + ", " +
+                "materialBlocks=" + materialBlocks + ", " +
+                "lootBlocks=" + lootBlocks + ", " +
+                "materials=" + materials + ", " +
+                "enemyTable=" + enemyTable + ", " +
+                "difficulty=" + difficulty + ']';
+    }
+    public DungeonRoomTemplate setName(String name) {
+        this.name = name;
+        return this;
+    }
+
+    public DungeonRoomTemplate setType(Type type) {
+        this.type = type;
+        return this;
+    }
+
+    private DungeonRoomTemplate setTemplates(List<Pair<StructureTemplate, BlockPos>> templates) {
+        this.templates = templates;
+        return this;
+    }
+
+    private DungeonRoomTemplate setConnectionPoints(List<ConnectionPoint> connectionPoints) {
+        this.connectionPoints = connectionPoints;
+        return this;
+    }
+
+    private DungeonRoomTemplate setSpawnPoint(BlockPos spawnPoint) {
+        this.spawnPoint = spawnPoint;
+        return this;
+    }
+
+    private DungeonRoomTemplate setRifts(List<Vec3> rifts) {
+        this.rifts = rifts;
+        return this;
+    }
+
+    private DungeonRoomTemplate setOfferings(List<Vec3> offerings) {
+        this.offerings = offerings;
+        return this;
+    }
+
+    private DungeonRoomTemplate setMaterialBlocks(List<StructureTemplate.StructureBlockInfo> materialBlocks) {
+        this.materialBlocks = materialBlocks;
+        return this;
+    }
+
+    private DungeonRoomTemplate setLootBlocks(List<StructureTemplate.StructureBlockInfo> lootBlocks) {
+        this.lootBlocks = lootBlocks;
+        return this;
+    }
+
+    public DungeonRoomTemplate setMaterials(WeightedPool<DungeonMaterial> materials) {
+        this.materials = materials;
+        return this;
+    }
+
+    public DungeonRoomTemplate setEnemyTable(WeightedTable<EntityType<?>> enemyTable) {
+        this.enemyTable = enemyTable;
+        return this;
+    }
+
+    public DungeonRoomTemplate setDifficulty(double difficulty) {
+        this.difficulty = difficulty;
+        return this;
     }
 }

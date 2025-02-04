@@ -204,6 +204,7 @@ public class DungeonRoom {
         List<BlockEntity> lootBlockEntities = new ArrayList<>(potentialLootBlockPositions.stream().map(pos -> this.getBranch().getFloor().getLevel().getBlockEntity(pos)).toList());
         //remove all null entities and entities that are not loot blocks, just in case
         lootBlockEntities.removeIf(entity -> Objects.isNull(entity) || !(entity instanceof BaseContainerBlockEntity));
+        if (lootBlockEntities.isEmpty()) return;
         //get a random number, between 1 and the number of loot blocks, but not more than 5
         int countedChests = RandomUtil.randIntBetween(1, Math.min(5, lootBlockEntities.size()));
         //determine the amount of items, between 3 and 10 times the number of counted chests

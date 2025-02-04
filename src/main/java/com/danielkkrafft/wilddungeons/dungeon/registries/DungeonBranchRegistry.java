@@ -15,101 +15,75 @@ import static com.mojang.datafixers.util.Pair.*;
 public class DungeonBranchRegistry {
     public static final DungeonRegistration.DungeonComponentRegistry<DungeonBranchTemplate> DUNGEON_BRANCH_REGISTRY = new DungeonRegistration.DungeonComponentRegistry<>();
 
-    public static final DungeonBranchTemplate STARTER_BRANCH = build(
-            "STARTER_BRANCH",
-            new DungeonLayout<DungeonRoomTemplate>()
-                    .addSimple(START),
-            null,
-            null,
-            1.0);
-    public static final DungeonBranchTemplate TEST_BRANCH = build(
-            "TEST_BRANCH",
-            new DungeonLayout<DungeonRoomTemplate>()
-                    .add(combine(
-                            of(SMALL_ROOM_POOL, 15),
-                            of(MEDIUM_ROOM_POOL, 15),
-                            of(SECRET_POOL, 2),
-                            of(COMBAT_ROOM_POOL, 5),
-                            of(PARKOUR_POOL, 5),
-                            of(LOOT_POOL, 5),
-                            of(REST_POOL, 5)),
-                            30)
-                    .addSimple(SHOP_1),
-            null,
-            null,
-            1.0);
-    public static final DungeonBranchTemplate ENDING_BRANCH = build(
-            "ENDING_BRANCH",
-            new DungeonLayout<DungeonRoomTemplate>()
-                    .add(combine(
-                            of(SMALL_ROOM_POOL, 15),
-                            of(MEDIUM_ROOM_POOL, 15),
-                            of(SECRET_POOL, 2),
-                            of(COMBAT_ROOM_POOL, 5),
-                            of(PARKOUR_POOL, 5),
-                            of(LOOT_POOL, 5),
-                            of(REST_POOL, 5)),
-                            10),
-            null,
-            null,
-            1.0);
+    public static final DungeonBranchTemplate STARTER_BRANCH = create("STARTER_BRANCH")
+            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
+                    .addSimple(START));
 
-    public static final DungeonBranchTemplate OVERWORLD_STARTER_BRANCH = build(
-            "OVERWORLD_STARTER_BRANCH",
-            new DungeonLayout<DungeonRoomTemplate>()
-                    .addSimple(OVERWORLD_START),
-            OVERWORLD_MATERIAL_POOL_0,
-            null,
-            1.0);
-    public static final DungeonBranchTemplate OVERWORLD_SPRAWL_0 = build(
-            "OVERWORLD_SPRAWL_0",
-            new DungeonLayout<DungeonRoomTemplate>()
-                    .add(combine(of(OVERWORLD_SPRAWL_ROOM_POOL, 100)), 10),
-            OVERWORLD_MATERIAL_POOL_0,
-            null,
-            1.0);
-    public static final DungeonBranchTemplate OVERWORLD_SPRAWL_1 = build(
-            "OVERWORLD_SPRAWL_1",
-            new DungeonLayout<DungeonRoomTemplate>()
+    public static final DungeonBranchTemplate TEST_BRANCH = create("TEST_BRANCH")
+            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
+                    .add(combine(
+                                    of(SMALL_ROOM_POOL, 15),
+                                    of(MEDIUM_ROOM_POOL, 15),
+                                    of(SECRET_POOL, 2),
+                                    of(COMBAT_ROOM_POOL, 5),
+                                    of(PARKOUR_POOL, 5),
+                                    of(LOOT_POOL, 5),
+                                    of(REST_POOL, 5)),
+                            30)
+                    .addSimple(SHOP_1));
+
+    public static final DungeonBranchTemplate ENDING_BRANCH = create("ENDING_BRANCH")
+            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
+                    .add(combine(
+                                    of(SMALL_ROOM_POOL, 15),
+                                    of(MEDIUM_ROOM_POOL, 15),
+                                    of(SECRET_POOL, 2),
+                                    of(COMBAT_ROOM_POOL, 5),
+                                    of(PARKOUR_POOL, 5),
+                                    of(LOOT_POOL, 5),
+                                    of(REST_POOL, 5)),
+                            10));
+
+    public static final DungeonBranchTemplate OVERWORLD_STARTER_BRANCH = create("OVERWORLD_STARTER_BRANCH")
+            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
+                    .addSimple(OVERWORLD_START))
+            .setMaterials(OVERWORLD_MATERIAL_POOL_0);
+
+    public static final DungeonBranchTemplate OVERWORLD_SPRAWL_0 = create("OVERWORLD_SPRAWL_0")
+            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
+                    .add(combine(
+                            of(OVERWORLD_SPRAWL_ROOM_POOL, 100)),
+                            10))
+            .setMaterials(OVERWORLD_MATERIAL_POOL_0);
+    public static final DungeonBranchTemplate OVERWORLD_SPRAWL_1 = create("OVERWORLD_SPRAWL_1")
+            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .add(combine(of(OVERWORLD_SPRAWL_ROOM_POOL, 100)), 15)
                     .add(combine(of(OVERWORLD_SHOP_ROOM_POOL, 100)), 1)
-                    .add(combine(of(OVERWORLD_LOOT_ROOM_POOL, 100)), 1),
-            OVERWORLD_MATERIAL_POOL_1,
-            null,
-            1.0);
-    public static final DungeonBranchTemplate OVERWORLD_SPRAWL_2 = build(
-            "OVERWORLD_SPRAWL_2",
-            new DungeonLayout<DungeonRoomTemplate>()
+                    .add(combine(of(OVERWORLD_LOOT_ROOM_POOL, 100)), 1))
+            .setMaterials(OVERWORLD_MATERIAL_POOL_1);
+    public static final DungeonBranchTemplate OVERWORLD_SPRAWL_2 = create("OVERWORLD_SPRAWL_2")
+            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .add(combine(of(OVERWORLD_SPRAWL_ROOM_POOL, 100)), 15)
                     .add(combine(of(OVERWORLD_LOOT_ROOM_POOL, 100)), 1)
-                    .add(combine(of(OVERWORLD_REST_ROOM_POOL, 100)), 1),
-            OVERWORLD_MATERIAL_POOL_1,
-            null,
-            1.0);
-    public static final DungeonBranchTemplate OVERWORLD_SPRAWL_3 = build(
-            "OVERWORLD_SPRAWL_3",
-            new DungeonLayout<DungeonRoomTemplate>()
+                    .add(combine(of(OVERWORLD_REST_ROOM_POOL, 100)), 1))
+            .setMaterials(OVERWORLD_MATERIAL_POOL_1);
+    public static final DungeonBranchTemplate OVERWORLD_SPRAWL_3 = create("OVERWORLD_SPRAWL_3")
+            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .add(combine(of(OVERWORLD_SPRAWL_ROOM_POOL, 100)), 20)
-                    .add(combine(of(OVERWORLD_LOOT_ROOM_POOL, 100)), 2),
-            OVERWORLD_MATERIAL_POOL_2,
-            null,
-            1.0);
-    public static final DungeonBranchTemplate OVERWORLD_ENDING_BRANCH = build(
-            "OVERWORLD_ENDING_BRANCH",
-            new DungeonLayout<DungeonRoomTemplate>()
+                    .add(combine(of(OVERWORLD_LOOT_ROOM_POOL, 100)), 2))
+            .setMaterials(OVERWORLD_MATERIAL_POOL_2);
+    public static final DungeonBranchTemplate OVERWORLD_ENDING_BRANCH = create("OVERWORLD_ENDING_BRANCH")
+            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .add(combine(of(OVERWORLD_SPACER_ROOM_POOL, 100)), 2)
                     .add(combine(of(OVERWORLD_REST_ROOM_POOL, 100)), 1)
                     .add(combine(of(OVERWORLD_LOOT_ROOM_POOL, 100)), 1)
                     .add(combine(of(OVERWORLD_SPACER_ROOM_POOL, 100)), 1)
                     .add(combine(of(OVERWORLD_SHOP_ROOM_POOL, 100)), 1)
                     .add(combine(of(OVERWORLD_SPACER_ROOM_POOL, 100)), 2)
-                    .addSimple(OVERWORLD_EXIT_ROOM),
-            OVERWORLD_MATERIAL_POOL_2,
-            null,
-            1.0);
+                    .addSimple(OVERWORLD_EXIT_ROOM))
+            .setMaterials(OVERWORLD_MATERIAL_POOL_2);
 
-
-    public static void setupBranches(){
+    public static void setupBranches() {
         DUNGEON_BRANCH_REGISTRY.add(STARTER_BRANCH);
         DUNGEON_BRANCH_REGISTRY.add(TEST_BRANCH);
         DUNGEON_BRANCH_REGISTRY.add(ENDING_BRANCH);
