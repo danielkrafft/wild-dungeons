@@ -14,7 +14,8 @@ import static net.minecraft.world.level.block.Blocks.*;
 public class DungeonMaterialRegistry {
     public static final DungeonRegistration.DungeonComponentRegistry<DungeonMaterial> DUNGEON_MATERIAL_REGISTRY = new DungeonRegistration.DungeonComponentRegistry<>();
 
-    public static final DungeonMaterial STONE_BRICK = new DungeonMaterial( "STONE_BRICK",
+    public static final DungeonMaterial STONE_BRICK = new DungeonMaterial(
+            "STONE_BRICK",
             of(new WeightedPool<BlockState>()
                     .add(STONE_BRICKS.defaultBlockState(), 10)
                     .add(STONE.defaultBlockState(), 10)
@@ -35,7 +36,8 @@ public class DungeonMaterialRegistry {
                     .add(CRACKED_STONE_BRICKS.defaultBlockState(), 1)),
             0.33f
     );
-    public static final DungeonMaterial SANDSTONE = new DungeonMaterial( "SANDSTONE",
+    public static final DungeonMaterial SANDSTONE = new DungeonMaterial(
+            "SANDSTONE",
             of(new WeightedPool<BlockState>().add(Blocks.SANDSTONE.defaultBlockState(), 1)
                     .add(SMOOTH_SANDSTONE.defaultBlockState(), 1)),
             of(new WeightedPool<BlockState>()
@@ -52,7 +54,8 @@ public class DungeonMaterialRegistry {
                     .add(SAND.defaultBlockState(), 1)),
             0.33f
     );
-    public static final DungeonMaterial PRISMARINE =new DungeonMaterial( "PRISMARINE",
+    public static final DungeonMaterial PRISMARINE =new DungeonMaterial(
+            "PRISMARINE",
             of(new WeightedPool<BlockState>()
                     .add(PRISMARINE_BRICKS.defaultBlockState(), 1)
                     .add(Blocks.PRISMARINE.defaultBlockState(), 3)
@@ -73,7 +76,8 @@ public class DungeonMaterialRegistry {
                     .add(PRISMARINE_BRICKS.defaultBlockState(), 1)),
             0.33f
     );
-    public static final DungeonMaterial END_STONE =new DungeonMaterial( "END_STONE",
+    public static final DungeonMaterial END_STONE =new DungeonMaterial(
+            "END_STONE",
             of(new WeightedPool<BlockState>()
                     .add(Blocks.END_STONE.defaultBlockState(), 5)
                     .add(END_STONE_BRICKS.defaultBlockState(), 1)),
@@ -89,7 +93,8 @@ public class DungeonMaterialRegistry {
                     .add(END_STONE_BRICKS.defaultBlockState(), 1)),
             0.33f
     );
-    public static final DungeonMaterial OAK_WOOD = new DungeonMaterial( "OAK_WOOD",
+    public static final DungeonMaterial OAK_WOOD = new DungeonMaterial(
+            "OAK_WOOD",
             of(new WeightedPool<BlockState>()
                     .add(STRIPPED_OAK_WOOD.defaultBlockState(), 2)
                     .add(Blocks.OAK_WOOD.defaultBlockState(), 2)
@@ -111,7 +116,8 @@ public class DungeonMaterialRegistry {
             0.33f
     );
 
-    public static final DungeonMaterial OVERWORLD_MATERIAL_0 = new DungeonMaterial("OVERWORLD_MATERIAL_0",
+    public static final DungeonMaterial OVERWORLD_MATERIAL_0 = new DungeonMaterial(
+            "OVERWORLD_MATERIAL_0",
             of(new WeightedPool<BlockState>()
                     .add(COBBLESTONE.defaultBlockState(), 2)
                     .add(MOSSY_COBBLESTONE.defaultBlockState(), 1)
@@ -156,7 +162,8 @@ public class DungeonMaterialRegistry {
                     .add(DIORITE.defaultBlockState(), 1)
             ),
             0.33f);
-    public static final DungeonMaterial OVERWORLD_MATERIAL_1 = new DungeonMaterial("OVERWORLD_MATERIAL_1",
+    public static final DungeonMaterial OVERWORLD_MATERIAL_1 = new DungeonMaterial(
+            "OVERWORLD_MATERIAL_1",
             of(new WeightedPool<BlockState>()
                     .add(COBBLESTONE.defaultBlockState(), 7)
                     .add(MOSSY_COBBLESTONE.defaultBlockState(), 5)
@@ -201,7 +208,8 @@ public class DungeonMaterialRegistry {
                     .add(DIORITE.defaultBlockState(), 1)
             ),
             0.33f);
-    public static final DungeonMaterial OVERWORLD_MATERIAL_2 = new DungeonMaterial("OVERWORLD_MATERIAL_2",
+    public static final DungeonMaterial OVERWORLD_MATERIAL_2 = new DungeonMaterial(
+            "OVERWORLD_MATERIAL_2",
             of(new WeightedPool<BlockState>()
                     .add(COBBLESTONE.defaultBlockState(), 7)
                     .add(MOSSY_COBBLESTONE.defaultBlockState(), 5)
