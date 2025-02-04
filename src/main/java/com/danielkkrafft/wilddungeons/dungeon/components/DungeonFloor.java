@@ -115,31 +115,6 @@ public class DungeonFloor {
         return future;
     }
 
-    public void spawnFirstRift(){
-        if (!this.dungeonBranches.getFirst().getRooms().getFirst().getRiftUUIDs().isEmpty()) {
-            DungeonSessionManager.getInstance().server.execute(()->{
-                Offering spawnRift = (Offering) this.getLevel().getEntity(UUID.fromString(this.dungeonBranches.getFirst().getRooms().getFirst().getRiftUUIDs().getFirst()));
-                if (spawnRift != null) {
-                    WildDungeons.getLogger().info("ASSIGNING FIRST RIFT WITH OFFERING ID: {}", index-1);
-                    spawnRift.setOfferingId(""+(index-1));
-                }
-            });
-        }
-    }
-
-    public void spawnExitRift(WeightedPool<String> destinations) {
-        if (!this.dungeonBranches.getLast().getRooms().isEmpty() && !this.dungeonBranches.getLast().getRooms().getLast().getRiftUUIDs().isEmpty()) {
-            DungeonSessionManager.getInstance().server.execute(()->{
-                Offering exitRift = (Offering) this.getLevel().getEntity(UUID.fromString(this.dungeonBranches.getLast().getRooms().getLast().getRiftUUIDs().getLast()));
-                if (exitRift != null) {
-                    exitRift.setOfferingId(destinations.getRandom());
-                    WildDungeons.getLogger().info("PICKED NEXT RIFT DESTINATION FOR THIS FLOOR: {}", exitRift.getOfferingId());
-                }
-            });
-        }
-    }
-
-
     public void shutdown() {
         InfiniverseAPI.get().markDimensionForUnregistration(DungeonSessionManager.getInstance().server, this.LEVEL_KEY);
         FileUtil.deleteDirectoryContents(FileUtil.getWorldPath().resolve("dimensions").resolve(WildDungeons.MODID).resolve(this.LEVEL_KEY.location().getPath()), true);

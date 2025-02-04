@@ -83,7 +83,6 @@ public class DungeonSession {
     private Consumer<Void> onFirstBranchComplete() {
         return (v) -> {
             WildDungeons.getLogger().info("FIRST BRANCH COMPLETE");
-            this.floors.forEach(DungeonFloor::spawnFirstRift);
         };
     }
 
@@ -99,10 +98,6 @@ public class DungeonSession {
     private Consumer<Void> onCompleteCallback(int floorIndex){
         return (v) -> {
             WildDungeons.getLogger().info("FLOOR {} COMPLETE", floorIndex);
-            WeightedPool<String> destinations = floors.size() == getTemplate().floorTemplates().size() ?
-                    new WeightedPool<String>().add("win", 1) :
-                    new WeightedPool<String>().add("" + (floorIndex+1), 1);
-            getFloors().get(floorIndex).spawnExitRift(destinations);
         };
     }
 

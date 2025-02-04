@@ -29,8 +29,8 @@ public class LockableEventRoom extends DungeonRoom {
     public boolean started = false;
     public boolean generated = false;
 
-    public LockableEventRoom(DungeonBranch branch, String templateKey, ServerLevel level, BlockPos position, StructurePlaceSettings settings, List<ConnectionPoint> allConnectionPoints) {
-        super(branch, templateKey, level, position, settings, allConnectionPoints);
+    public LockableEventRoom(DungeonBranch branch, String templateKey, BlockPos position, StructurePlaceSettings settings, List<ConnectionPoint> allConnectionPoints) {
+        super(branch, templateKey, position, settings, allConnectionPoints);
     }
 
     public void start() {

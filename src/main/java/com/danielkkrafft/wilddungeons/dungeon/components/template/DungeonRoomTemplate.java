@@ -78,16 +78,16 @@ public final class DungeonRoomTemplate implements DungeonComponent {
     public DungeonRoom placeInWorld(DungeonBranch branch, ServerLevel level, BlockPos position, StructurePlaceSettings settings, List<ConnectionPoint> connectionPoints) {
         switch (this.type()) {
             case SECRET -> {
-                return new SecretRoom(branch, this.name, level, position, settings, connectionPoints);
+                return new SecretRoom(branch, this.name, position, settings, connectionPoints);
             }
             case COMBAT -> {
-                return new CombatRoom(branch, this.name, level, position, settings, connectionPoints);
+                return new CombatRoom(branch, this.name, position, settings, connectionPoints);
             }
             case LOOT -> {
-                return new LootRoom(branch, this.name, level, position, settings, connectionPoints);
+                return new LootRoom(branch, this.name, position, settings, connectionPoints);
             }
             case null, default -> {
-                return new DungeonRoom(branch, this.name, level, position, settings, connectionPoints);
+                return new DungeonRoom(branch, this.name, position, settings, connectionPoints);
             }
         }
 

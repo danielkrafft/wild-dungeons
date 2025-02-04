@@ -11,8 +11,8 @@ import java.util.List;
 
 public class SecretRoom extends DungeonRoom {
 
-    public SecretRoom(DungeonBranch branch, String templateKey, ServerLevel level, BlockPos position, StructurePlaceSettings settings, List<ConnectionPoint> allConnectionPoints) {
-        super(branch, templateKey, level, position, settings, allConnectionPoints);
+    public SecretRoom(DungeonBranch branch, String templateKey, BlockPos position, StructurePlaceSettings settings, List<ConnectionPoint> allConnectionPoints) {
+        super(branch, templateKey, position, settings, allConnectionPoints);
     }
 
     @Override

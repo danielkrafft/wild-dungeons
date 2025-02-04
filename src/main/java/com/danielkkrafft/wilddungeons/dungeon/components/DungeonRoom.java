@@ -81,7 +81,8 @@ public class DungeonRoom {
     public Set<BlockPos> getAlwaysBreakable() {return this.alwaysBreakable;}
     public BlockPos getPosition() {return this.position;}
 
-    public DungeonRoom(DungeonBranch branch, String templateKey, ServerLevel level, BlockPos position, StructurePlaceSettings settings, List<ConnectionPoint> allConnectionPoints) {
+    public DungeonRoom(DungeonBranch branch, String templateKey, BlockPos position, StructurePlaceSettings settings, List<ConnectionPoint> allConnectionPoints) {
+        ServerLevel level = branch.getFloor().getLevel();
         this.branch = branch;
         this.setIndex(this.branch.getRooms().size());
         this.branch.getRooms().add(this);
@@ -111,14 +112,7 @@ public class DungeonRoom {
             TemplateHelper.placeInWorld(template.getFirst(), this, this.getMaterial(), level, newPosition, template.getSecond(), settings, 2);
         });
 
-        getTemplate().rifts().forEach(pos -> {
-            Offering rift = new Offering(this.getBranch().getFloor().getLevel(), Offering.Type.RIFT, 1, "next", Offering.CostType.XP_LEVEL, 0);
-            Vec3 pos1 = StructureTemplate.transform(pos, this.getSettings().getMirror(), this.getSettings().getRotation(), TemplateHelper.EMPTY_BLOCK_POS).add(this.position.getX(), this.position.getY(), this.position.getZ());            WildDungeons.getLogger().info("ADDING RIFT AT {}", pos1);
-            rift.setPos(pos1);
-            WildDungeons.getLogger().info("ADDING RIFT AT {}", pos1);
-            level.addFreshEntity(rift);
-            this.riftUUIDs.add(rift.getStringUUID());
-        });
+        this.processRifts();
 
         if (!(this instanceof EnemyPurgeRoom)) this.processOfferings();
 
@@ -131,6 +125,25 @@ public class DungeonRoom {
 
         this.handleChunkMap();
         WDProfiler.INSTANCE.logTimestamp("DungeonRoom::new");
+    }
+
+    public void processRifts() {
+        getTemplate().rifts().forEach(pos -> {
+            String destination;
+            if (this.getBranch().getIndex() == 0) {
+                destination = String.valueOf(this.getBranch().getFloor().getIndex()-1);
+            } else if (this.getBranch().getFloor().getIndex() == this.getBranch().getFloor().getSession().getTemplate().floorTemplates().size()-1) {
+                destination = "win";
+            } else {
+                destination = String.valueOf(this.getBranch().getFloor().getIndex()+1);
+            }
+
+            Offering rift = new Offering(this.getBranch().getFloor().getLevel(), Offering.Type.RIFT, 1, destination, Offering.CostType.XP_LEVEL, 0);
+            Vec3 pos1 = StructureTemplate.transform(pos, this.getSettings().getMirror(), this.getSettings().getRotation(), TemplateHelper.EMPTY_BLOCK_POS).add(this.position.getX(), this.position.getY(), this.position.getZ());            WildDungeons.getLogger().info("ADDING RIFT AT {}", pos1);
+            rift.setPos(pos1);
+            this.getBranch().getFloor().getLevel().addFreshEntity(rift);
+            this.riftUUIDs.add(rift.getStringUUID());
+        });
     }
 
     public void processOfferings() {
