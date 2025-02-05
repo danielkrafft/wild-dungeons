@@ -57,6 +57,7 @@ public class Serializer
         addCustom(DungeonPerk.class);
         addCustom(DungeonTarget.class);
         addCustom(Pair.class);
+        addCustom(DungeonSession.DungeonStatsHolder.class);
     }
 
     private static void addCustom(Class<?> clazz) {

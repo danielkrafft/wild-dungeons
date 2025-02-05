@@ -20,6 +20,13 @@ import static com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession.Dung
 public final class DungeonTemplate implements DungeonComponent {
     private String name;
     private String displayName;
+
+    private String icon;
+    private int primaryColor = 0xFFFFFFFF;
+    private int secondaryColor = 0xFFFFFFFF;
+    private int targetTime;
+    private int targetDeaths;
+    private int targetScore;
     private String openBehavior = DungeonOpenBehavior.NONE;
     private DungeonLayout<DungeonFloorTemplate> floorTemplates = new DungeonLayout<DungeonFloorTemplate>().add(TEST_FLOOR_POOL, 1);
     private WeightedPool<DungeonMaterial> materials = ALL_MATERIAL_POOL;
@@ -28,9 +35,6 @@ public final class DungeonTemplate implements DungeonComponent {
     private double difficultyScaling = 1.1;
     private DungeonExitBehavior exitBehavior = DESTROY;
     private WeightedPool<DungeonTemplate> nextDungeon;
-    private int primaryColor = 0xFFFFFFFF;
-    private int secondaryColor = 0xFFFFFFFF;
-    private ResourceLocation iconLocation;
     private boolean hasBedrockShell = true;
     private DungeonRoomTemplate.DestructionRule destructionRule = DungeonRoomTemplate.DestructionRule.NONE;
 
@@ -83,17 +87,28 @@ public final class DungeonTemplate implements DungeonComponent {
         return secondaryColor;
     }
 
-    public ResourceLocation iconLocation() {
-        return iconLocation;
-    }
-
     public boolean hasBedrockShell() {return this.hasBedrockShell;}
 
     public DungeonRoomTemplate.DestructionRule getDestructionRule() {return this.destructionRule;}
 
+    public String getIcon() {return icon;}
+
     public String displayName() {
         return displayName;
     }
+
+    public int targetTime() {
+        return targetTime;
+    }
+
+    public int targetDeaths() {
+        return targetDeaths;
+    }
+
+    public int targetScore() {
+        return targetScore;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == this) return true;
@@ -182,11 +197,6 @@ public final class DungeonTemplate implements DungeonComponent {
         return this;
     }
 
-    public DungeonTemplate setIconLocation(ResourceLocation iconLocation) {
-        this.iconLocation = iconLocation;
-        return this;
-    }
-
     public DungeonTemplate setBedrockShell(boolean hasBedrockShell) {
         this.hasBedrockShell = hasBedrockShell;
         return this;
@@ -199,6 +209,26 @@ public final class DungeonTemplate implements DungeonComponent {
 
     public DungeonTemplate setDisplayName(String displayName) {
         this.displayName = displayName;
+        return this;
+    }
+
+    public DungeonTemplate setIcon(String icon) {
+        this.icon = icon;
+        return this;
+    }
+
+    public DungeonTemplate setTargetTime(int targetTime) {
+        this.targetTime = targetTime;
+        return this;
+    }
+
+    public DungeonTemplate setTargetDeaths(int targetDeaths) {
+        this.targetDeaths = targetDeaths;
+        return this;
+    }
+
+    public DungeonTemplate setTargetScore(int targetScore) {
+        this.targetScore = targetScore;
         return this;
     }
 }

@@ -21,6 +21,12 @@ public class DungeonRegistry {
             .setFloorTemplates(new DungeonLayout<DungeonFloorTemplate>()
                     .add(OVERWORLD_FLOOR_POOL, 2))
             .setMaterials(OVERWORLD_MATERIAL_POOL_0)
+            .setDisplayName("MEGA DUNGEON")
+            .setIcon("1-1")
+            .setPrimaryColor(0xFF44cc00)
+            .setTargetTime(12000)
+            .setTargetDeaths(0)
+            .setTargetScore(100000)
             .setExitBehavior(DESTROY)
             .setNextDungeon(OVERWORLD_DUNGEON_POOL);
 

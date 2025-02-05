@@ -18,6 +18,7 @@ import com.danielkkrafft.wilddungeons.util.Serializer;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.util.debug.WDProfiler;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
@@ -193,7 +194,8 @@ public class DungeonSession {
             this.onExit(wdPlayer);
             wdPlayer.getServerPlayer().addItem(new ItemStack(Items.DIAMOND.asItem(), 1));
             wdPlayer.setLastGameMode(wdPlayer.getServerPlayer().gameMode.getGameModeForPlayer());
-            PacketDistributor.sendToPlayer(wdPlayer.getServerPlayer(), new ClientboundPostDungeonScreenPacket(Serializer.toCompoundTag(this.playerStats)));
+            DungeonStatsHolder holder = new DungeonStatsHolder(this.playerStats, this.getTemplate().displayName(), this.getTemplate().getIcon(), this.getTemplate().primaryColor(), this.getTemplate().secondaryColor(), this.getTemplate().targetTime(), this.getTemplate().targetDeaths(), this.getTemplate().targetScore());
+            PacketDistributor.sendToPlayer(wdPlayer.getServerPlayer(), new ClientboundPostDungeonScreenPacket(Serializer.toCompoundTag(holder)));
             wdPlayer.getServerPlayer().setGameMode(GameType.SPECTATOR);
         }
         this.handleExitBehavior();
@@ -265,6 +267,28 @@ public class DungeonSession {
             generationFutures.forEach(future -> {
             if (!future.isDone()) future.cancel(true);
         });
+    }
+
+    public static class DungeonStatsHolder {
+        public HashMap<String, DungeonStats> playerStats;
+        public String title;
+        public String icon;
+        public int primaryColor;
+        public int secondaryColor;
+        public int targetTime;
+        public int targetDeaths;
+        public int targetScore;
+
+        public DungeonStatsHolder(HashMap<String, DungeonStats> playerStats, String title, String icon, int primaryColor, int secondaryColor, int targetTime, int targetDeaths, int targetScore) {
+            this.playerStats = playerStats;
+            this.title = title;
+            this.icon = icon;
+            this.primaryColor = primaryColor;
+            this.secondaryColor = secondaryColor;
+            this.targetTime = targetTime;
+            this.targetDeaths = targetDeaths;
+            this.targetScore = targetScore;
+        }
     }
 
     public static class DungeonStats {
