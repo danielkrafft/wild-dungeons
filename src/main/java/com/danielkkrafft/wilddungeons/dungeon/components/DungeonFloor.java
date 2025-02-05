@@ -68,7 +68,7 @@ public class DungeonFloor {
         return DungeonSessionManager.getInstance().server.levels.get(this.LEVEL_KEY);
     }
     public List<WDPlayer> getActivePlayers() {return this.playerStatuses.entrySet().stream().map(e -> {
-        if (e.getValue().inside) return WDPlayerManager.getInstance().getOrCreateWDPlayer(e.getKey());
+        if (e.getValue().inside) return WDPlayerManager.getInstance().getOrCreateServerWDPlayer(e.getKey());
         return null;
     }).filter(Objects::nonNull).toList();}
     public List<DungeonBranch> getBranches() {return this.dungeonBranches;}
@@ -224,7 +224,7 @@ public class DungeonFloor {
 
     private void regenerateSpecificBranch(int branchIndex) {
         this.playerStatuses.forEach((k, v) -> {
-            WDPlayer player = WDPlayerManager.getInstance().getOrCreateWDPlayer(k);
+            WDPlayer player = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(k);
             if (player.getCurrentDungeon() == this.getSession() && player.getCurrentFloor() == this){
                 if (player.getCurrentBranch() == null && player.getCurrentBranchIndex()==branchIndex){
                     //teleport the player to the previous branch
@@ -239,6 +239,6 @@ public class DungeonFloor {
         });
 
         DungeonBranchTemplate nextBranch = getTemplate().branchTemplates().get(branchIndex).getRandom();
-        nextBranch.placeInWorld(this, origin); // TODO THIS SHOULD BE A FUTURE
+        nextBranch.placeInWorld(this, origin);
     }
 }

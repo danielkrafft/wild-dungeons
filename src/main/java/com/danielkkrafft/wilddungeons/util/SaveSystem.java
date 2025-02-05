@@ -54,7 +54,7 @@ public class SaveSystem {
         SaveFile saveFile = new SaveFile();
         Stack<DungeonSession> sessions = new Stack<>();
         DungeonSessionManager.getInstance().getSessions().forEach((key, value) -> sessions.push(value));
-        saveFile.AddPlayers(WDPlayerManager.getInstance().getPlayers());
+        saveFile.AddPlayers(WDPlayerManager.getInstance().getServerPlayers());
 
         while (sessions.iterator().hasNext()) {
             DungeonSession session = sessions.pop();
@@ -63,6 +63,7 @@ public class SaveSystem {
             session.getFloors().forEach(floors::push);
             while (floors.iterator().hasNext()) {
                 DungeonFloor floor = floors.pop();
+                if (floor == null) continue;
                 DungeonFloorFile floorFile = new DungeonFloorFile(floor);
                 Stack<DungeonBranch> branches = new Stack<>();
                 floor.getBranches().forEach(branches::push);
@@ -112,7 +113,7 @@ public class SaveSystem {
     private void load() {
         loaded = false;
         loading = true;
-        WDPlayerManager.getInstance().setPlayers(new HashMap<>());
+        WDPlayerManager.getInstance().setServerPlayers(new HashMap<>());
         DungeonSessionManager.getInstance().setSessions(new HashMap<>());
         SaveFile saveFile = Serializer.fromCompoundTag(FileUtil.readNbt(FileUtil.getWorldPath().resolve("data").resolve("dungeons.nbt").toFile()));
         if (saveFile == null) {
@@ -168,7 +169,7 @@ public class SaveSystem {
             session.sortFloors();
             sessions.put(session.getSessionKey(), session);
         });
-        WDPlayerManager.getInstance().setPlayers(players);
+        WDPlayerManager.getInstance().setServerPlayers(players);
         WildDungeons.getLogger().info("Loaded {} players", players.size());
         WildDungeons.getLogger().info("Loaded {} sessions", sessions.size());
         WildDungeons.getLogger().info("Loaded {} floors", sessions.values().stream().mapToInt(session -> session.getFloors().size()).sum());

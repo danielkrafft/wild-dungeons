@@ -77,7 +77,7 @@ public class DungeonRoom {
     public int getIndex() {return this.index;}
     public void setIndex(int index) {this.index = index;}
     public List<WDPlayer> getActivePlayers() {return this.playerStatuses.entrySet().stream().map(e -> {
-        if (e.getValue().inside) return WDPlayerManager.getInstance().getOrCreateWDPlayer(e.getKey());
+        if (e.getValue().inside) return WDPlayerManager.getInstance().getOrCreateServerWDPlayer(e.getKey());
         return null;
     }).filter(Objects::nonNull).toList();}
     public boolean isClear() {return this.clear;}
@@ -393,7 +393,7 @@ public class DungeonRoom {
         if (this.playerStatuses.values().stream().noneMatch(v -> v.inside)) return;
         playerStatuses.forEach((key, value) -> {
             if (!value.insideShell) {
-                WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(key);
+                WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(key);
                 ServerPlayer player = wdPlayer.getServerPlayer();
                 if (player != null && this.isPosInsideShell(player.blockPosition())) {
                     value.insideShell = true;

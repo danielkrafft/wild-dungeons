@@ -11,6 +11,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
@@ -27,7 +28,7 @@ public record ServerboundRestorePlayerGamemodePacket(CompoundTag data) implement
 
     public void handle(IPayloadContext context) {
         context.enqueueWork(() -> {
-            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(context.player());
+            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer((ServerPlayer) context.player());
             wdPlayer.getServerPlayer().setGameMode(wdPlayer.getLastGameMode());
         });
     }

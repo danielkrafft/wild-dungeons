@@ -19,9 +19,9 @@ public class DungeonRegistry {
 
     public static DungeonTemplate OVERWORLD_BASIC_DUNGEON = DungeonTemplate.create("overworld_basic")
             .setFloorTemplates(new DungeonLayout<DungeonFloorTemplate>()
-                    .add(OVERWORLD_FLOOR_POOL, 1))
+                    .add(OVERWORLD_FLOOR_POOL, 2))
             .setMaterials(OVERWORLD_MATERIAL_POOL_0)
-            .setExitBehavior(RANDOMIZE)
+            .setExitBehavior(DESTROY)
             .setNextDungeon(OVERWORLD_DUNGEON_POOL);
 
     public static void setupDungeons() {

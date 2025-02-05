@@ -19,7 +19,7 @@ public class EssenceBar implements LayeredDraw.Layer {
 
     @Override
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
-        WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(Minecraft.getInstance().player);
+        WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateClientWDPlayer(Minecraft.getInstance().player);
         int i = guiGraphics.guiWidth() / 2 - 91;
         if (Minecraft.getInstance().player.jumpableVehicle() == null && Minecraft.getInstance().gameMode.hasExperience() && !wdPlayer.getRecentEssence().equals("essence:overworld")) {
             this.renderEssenceBar(guiGraphics, deltaTracker, i, wdPlayer);

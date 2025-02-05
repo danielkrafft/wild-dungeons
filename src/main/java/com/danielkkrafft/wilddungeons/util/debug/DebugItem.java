@@ -31,10 +31,10 @@ public class DebugItem extends Item {
 
         PacketDistributor.sendToPlayer((ServerPlayer) player, new ClientboundPostDungeonScreenPacket(new CompoundTag()));
 
-        DungeonSession dungeonSession = WDPlayerManager.getInstance().getPlayers().get(player.getStringUUID()).getCurrentDungeon();
-        DungeonFloor dungeonFloor = WDPlayerManager.getInstance().getPlayers().get(player.getStringUUID()).getCurrentFloor();
-        DungeonBranch dungeonBranch = WDPlayerManager.getInstance().getPlayers().get(player.getStringUUID()).getCurrentBranch();
-        DungeonRoom dungeonRoom = WDPlayerManager.getInstance().getPlayers().get(player.getStringUUID()).getCurrentRoom();
+        DungeonSession dungeonSession = WDPlayerManager.getInstance().getServerPlayers().get(player.getStringUUID()).getCurrentDungeon();
+        DungeonFloor dungeonFloor = WDPlayerManager.getInstance().getServerPlayers().get(player.getStringUUID()).getCurrentFloor();
+        DungeonBranch dungeonBranch = WDPlayerManager.getInstance().getServerPlayers().get(player.getStringUUID()).getCurrentBranch();
+        DungeonRoom dungeonRoom = WDPlayerManager.getInstance().getServerPlayers().get(player.getStringUUID()).getCurrentRoom();
         DungeonSession.DungeonStats dungeonStats = dungeonSession.getStats(String.valueOf(player.getUUID()));
 
         WildDungeons.getLogger().info("BEEN IN THIS DUNGEON FOR: {}", dungeonStats.time/20);
@@ -59,8 +59,8 @@ public class DebugItem extends Item {
         WildDungeons.getLogger().info("CURRENT ROOM: {} INDEX: {}", dungeonRoom == null ? "none" : dungeonRoom.getTemplate().name(), dungeonRoom == null ? "-1" : dungeonRoom.getIndex());
         WildDungeons.getLogger().info("CURRENT ROOM BOUNDING BOXES: {}", dungeonRoom == null ? "none" : dungeonRoom.getBoundingBoxes());
         WildDungeons.getLogger().info("CURRENT ROOM DIFFICULTY: {}", dungeonRoom == null ? "none" : dungeonRoom.getDifficulty());
-        WildDungeons.getLogger().info("CURRENT POSITIONS: {}", WDPlayerManager.getInstance().getPlayers().get(player.getStringUUID()).getPositions().values().stream().map(SavedTransform::getBlockPos).toList());
-        WildDungeons.getLogger().info("CURRENT RESPAWNS: {}", WDPlayerManager.getInstance().getPlayers().get(player.getStringUUID()).getRespawns().values().stream().map(SavedTransform::getBlockPos).toList());
+        WildDungeons.getLogger().info("CURRENT POSITIONS: {}", WDPlayerManager.getInstance().getServerPlayers().get(player.getStringUUID()).getPositions().values().stream().map(SavedTransform::getBlockPos).toList());
+        WildDungeons.getLogger().info("CURRENT RESPAWNS: {}", WDPlayerManager.getInstance().getServerPlayers().get(player.getStringUUID()).getRespawns().values().stream().map(SavedTransform::getBlockPos).toList());
         WildDungeons.getLogger().info("CURRENT LIVES: {}", dungeonSession == null ? "none" : dungeonSession.getLives());
 
         return InteractionResultHolder.pass(player.getItemInHand(usedHand));

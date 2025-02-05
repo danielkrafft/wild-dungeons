@@ -40,7 +40,7 @@ public class DungeonPerk {
     @SubscribeEvent
     public static void onHit(LivingDamageEvent.Pre event) {
         if (event.getSource().getEntity() instanceof ServerPlayer serverPlayer) {
-            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(serverPlayer);
+            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer);
 
             if (wdPlayer.getCurrentDungeon() == null) return;
             if (serverPlayer.getWeaponItem().getItem() instanceof SwordItem) {

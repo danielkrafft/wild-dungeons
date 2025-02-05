@@ -50,7 +50,7 @@ public class WDEvents {
     public static void onXP(PlayerXpEvent.PickupXp event) {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
             if (!(event.getOrb() instanceof EssenceOrb)) {
-                WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(serverPlayer);
+                WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer);
                 wdPlayer.setRecentEssence("essence:overworld");
             }
         }
@@ -78,7 +78,7 @@ public class WDEvents {
     @SubscribeEvent
     public static void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
-            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(serverPlayer.getStringUUID());
+            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer.getStringUUID());
             PacketDistributor.sendToPlayer(serverPlayer, new ClientboundUpdateWDPlayerPacket(Serializer.toCompoundTag(wdPlayer)));
         }
     }
@@ -96,7 +96,7 @@ public class WDEvents {
 
     @SubscribeEvent
     public static void onServerTick(ServerTickEvent.Post event) {
-        WDPlayerManager.getInstance().getPlayers().forEach((key, value) -> value.tick());
+        WDPlayerManager.getInstance().getServerPlayers().forEach((key, value) -> value.tick());
         DungeonSessionManager.tick();
     }
 
