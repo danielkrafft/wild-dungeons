@@ -119,13 +119,7 @@ public class DungeonBranch {
 
     public void destroy() {
         if (index-1>=0)
-            this.getFloor().getBranches().get(this.index-1).getRooms().forEach(dungeonRoom -> {
-                    dungeonRoom.getConnectionPoints().forEach(connectionPoint -> {
-                        if (connectionPoint.isConnected() && connectionPoint.getConnectedBranchIndex() == this.index) {
-                            connectionPoint.unSetConnectedPoint();
-                        }
-                    });
-                });
+            this.getFloor().getBranches().get(this.index-1).getRooms().forEach(DungeonRoom::unsetConnectedPoints);
         branchRooms.forEach(DungeonRoom::destroy);
         branchRooms.clear();
         openConnections = 0;

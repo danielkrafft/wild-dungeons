@@ -60,29 +60,88 @@ public class DungeonRoom {
     @IgnoreSerialization
     protected DungeonBranch branch = null;
 
-    public DungeonRoomTemplate getTemplate() {return DUNGEON_ROOM_REGISTRY.get(this.templateKey);}
-    public DungeonSession getSession() {return DungeonSessionManager.getInstance().getDungeonSession(this.sessionKey);}
-    public DungeonBranch getBranch() {return this.branch != null ? this.branch : this.getSession().getFloors().get(this.floorIndex).getBranches().get(this.branchIndex);}
-    public DungeonMaterial getMaterial() {return DUNGEON_MATERIAL_REGISTRY.get(this.materialKey);}
-    public boolean hasBedrockShell() {return this.getTemplate().hasBedrockShell() == null ? this.getBranch().hasBedrockShell() : this.getTemplate().hasBedrockShell();}
-    public DungeonRoomTemplate.DestructionRule getDestructionRule() {return this.getTemplate().getDestructionRule() == null ? this.getBranch().getDestructionRule() : this.getTemplate().getDestructionRule();}
-    public WeightedTable<DungeonRegistration.TargetTemplate> getEnemyTable() {return this.getTemplate().enemyTable() == null ? this.getBranch().getEnemyTable() : this.getTemplate().enemyTable();}
-    public double getDifficulty() {return this.getBranch().getDifficulty() * this.getTemplate().difficulty();}
-    public boolean isRotated() {return rotation == Rotation.CLOCKWISE_90.getSerializedName() || rotation == Rotation.COUNTERCLOCKWISE_90.getSerializedName();}
-    public StructurePlaceSettings getSettings() {return new StructurePlaceSettings().setMirror(Mirror.valueOf(this.mirror)).setRotation(Rotation.valueOf(this.rotation));}
-    public List<ConnectionPoint> getConnectionPoints() {return this.connectionPoints;}
-    public List<String> getRiftUUIDs() {return this.riftUUIDs;}
-    public List<String> getOfferingUUIDs() {return this.offeringUUIDs;}
-    public List<BoundingBox> getBoundingBoxes() {return this.boundingBoxes;}
-    public int getIndex() {return this.index;}
-    public void setIndex(int index) {this.index = index;}
-    public List<WDPlayer> getActivePlayers() {return this.playerStatuses.entrySet().stream().map(e -> {
-        if (e.getValue().inside) return WDPlayerManager.getInstance().getOrCreateWDPlayer(e.getKey());
-        return null;
-    }).filter(Objects::nonNull).toList();}
-    public boolean isClear() {return this.clear;}
-    public Set<BlockPos> getAlwaysBreakable() {return this.alwaysBreakable;}
-    public BlockPos getPosition() {return this.position;}
+    public DungeonRoomTemplate getTemplate() {
+        return DUNGEON_ROOM_REGISTRY.get(this.templateKey);
+    }
+
+    public DungeonSession getSession() {
+        return DungeonSessionManager.getInstance().getDungeonSession(this.sessionKey);
+    }
+
+    public DungeonBranch getBranch() {
+        return this.branch != null ? this.branch : this.getSession().getFloors().get(this.floorIndex).getBranches().get(this.branchIndex);
+    }
+
+    public DungeonMaterial getMaterial() {
+        return DUNGEON_MATERIAL_REGISTRY.get(this.materialKey);
+    }
+
+    public boolean hasBedrockShell() {
+        return this.getTemplate().hasBedrockShell() == null ? this.getBranch().hasBedrockShell() : this.getTemplate().hasBedrockShell();
+    }
+
+    public DungeonRoomTemplate.DestructionRule getDestructionRule() {
+        return this.getTemplate().getDestructionRule() == null ? this.getBranch().getDestructionRule() : this.getTemplate().getDestructionRule();
+    }
+
+    public WeightedTable<DungeonRegistration.TargetTemplate> getEnemyTable() {
+        return this.getTemplate().enemyTable() == null ? this.getBranch().getEnemyTable() : this.getTemplate().enemyTable();
+    }
+
+    public double getDifficulty() {
+        return this.getBranch().getDifficulty() * this.getTemplate().difficulty();
+    }
+
+    public boolean isRotated() {
+        return rotation == Rotation.CLOCKWISE_90.getSerializedName() || rotation == Rotation.COUNTERCLOCKWISE_90.getSerializedName();
+    }
+
+    public StructurePlaceSettings getSettings() {
+        return new StructurePlaceSettings().setMirror(Mirror.valueOf(this.mirror)).setRotation(Rotation.valueOf(this.rotation));
+    }
+
+    public List<ConnectionPoint> getConnectionPoints() {
+        return this.connectionPoints;
+    }
+
+    public List<String> getRiftUUIDs() {
+        return this.riftUUIDs;
+    }
+
+    public List<String> getOfferingUUIDs() {
+        return this.offeringUUIDs;
+    }
+
+    public List<BoundingBox> getBoundingBoxes() {
+        return this.boundingBoxes;
+    }
+
+    public int getIndex() {
+        return this.index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    public List<WDPlayer> getActivePlayers() {
+        return this.playerStatuses.entrySet().stream().map(e -> {
+            if (e.getValue().inside) return WDPlayerManager.getInstance().getOrCreateWDPlayer(e.getKey());
+            return null;
+        }).filter(Objects::nonNull).toList();
+    }
+
+    public boolean isClear() {
+        return this.clear;
+    }
+
+    public Set<BlockPos> getAlwaysBreakable() {
+        return this.alwaysBreakable;
+    }
+
+    public BlockPos getPosition() {
+        return this.position;
+    }
 
 
     public DungeonRoom(DungeonBranch branch, String templateKey, BlockPos position, StructurePlaceSettings settings, List<ConnectionPoint> allConnectionPoints) {
@@ -125,13 +184,15 @@ public class DungeonRoom {
         if (getTemplate().spawnPoint() != null) {
             this.spawnPoint = TemplateHelper.transform(getTemplate().spawnPoint(), this);
             level.setBlock(spawnPoint, Blocks.AIR.defaultBlockState(), 2);
-        } else {this.spawnPoint = null;}
+        } else {
+            this.spawnPoint = null;
+        }
 
         this.handleChunkMap();
         WDProfiler.INSTANCE.logTimestamp("DungeonRoom::new");
     }
 
-    public void processShell(){
+    public void processShell() {
         if (this.hasBedrockShell()) this.surroundWith(Blocks.BEDROCK.defaultBlockState());
     }
 
@@ -145,19 +206,20 @@ public class DungeonRoom {
     public static void surroundBoxWith(DungeonFloor floor, ServerLevel level, BoundingBox box, BlockState blockState) {
         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
 
-        int[] minX = {box.minX(), box.minX(), box.minY(), box.minY(), box.minZ(), box.minZ()};
-        int[] minY = {box.minZ(), box.minZ(), box.minX(), box.minX(), box.minY(), box.minY()};
-        int[] maxX = {box.maxX(), box.maxX(), box.maxY(), box.maxY(), box.maxZ(), box.maxZ()};
-        int[] maxY = {box.maxZ(), box.maxZ(), box.maxX(), box.maxX(), box.maxY(), box.maxY()};
-        int[] minZ = {box.minY()-1, box.maxY()+1, box.minZ()-1, box.maxZ()+1, box.minX()-1, box.maxX()+1};
+        int[] minX = {box.minX() - 1, box.minX() - 1, box.minY() - 1, box.minY() - 1, box.minZ() - 1, box.minZ() - 1};
+        int[] minY = {box.minZ() - 1, box.minZ() - 1, box.minX() - 1, box.minX() - 1, box.minY() - 1, box.minY() - 1};
+        int[] maxX = {box.maxX() + 1, box.maxX() + 1, box.maxY() + 1, box.maxY() + 1, box.maxZ() + 1, box.maxZ() + 1};
+        int[] maxY = {box.maxZ() + 1, box.maxZ() + 1, box.maxX() + 1, box.maxX() + 1, box.maxY() + 1, box.maxY() + 1};
+        //determines how far outside the bounding box to start placing blocks
+        int[] wallOffset = {box.minY() - 1, box.maxY() + 1, box.minZ() - 1, box.maxZ() + 1, box.minX() - 1, box.maxX() + 1};
 
         for (int i = 0; i < 6; i++) {
             for (int x = minX[i]; x <= maxX[i]; x++) {
                 for (int y = minY[i]; y <= maxY[i]; y++) {
-                    switch(i) {
-                        case 0,1 -> mutableBlockPos.set(x, minZ[i], y);
-                        case 2,3 -> mutableBlockPos.set(y, x, minZ[i]);
-                        case 4,5 -> mutableBlockPos.set(minZ[i], y, x);
+                    switch (i) {
+                        case 0, 1 -> mutableBlockPos.set(x, wallOffset[i], y);
+                        case 2, 3 -> mutableBlockPos.set(y, x, wallOffset[i]);
+                        case 4, 5 -> mutableBlockPos.set(wallOffset[i], y, x);
                     }
                     List<BoundingBox> potentialConflicts = new ArrayList<>();
                     floor.getChunkMap().getOrDefault(new ChunkPos(mutableBlockPos), new ArrayList<>()).forEach(vector2i -> {
@@ -175,15 +237,16 @@ public class DungeonRoom {
         getTemplate().rifts().forEach(pos -> {
             String destination;
             if (this.getBranch().getIndex() == 0) {
-                destination = String.valueOf(this.getBranch().getFloor().getIndex()-1);
-            } else if (this.getBranch().getFloor().getIndex() == this.getBranch().getFloor().getSession().getTemplate().floorTemplates().size()-1) {
+                destination = String.valueOf(this.getBranch().getFloor().getIndex() - 1);
+            } else if (this.getBranch().getFloor().getIndex() == this.getBranch().getFloor().getSession().getTemplate().floorTemplates().size() - 1) {
                 destination = "win";
             } else {
-                destination = String.valueOf(this.getBranch().getFloor().getIndex()+1);
+                destination = String.valueOf(this.getBranch().getFloor().getIndex() + 1);
             }
 
             Offering rift = new Offering(this.getBranch().getFloor().getLevel(), Offering.Type.RIFT, 1, destination, Offering.CostType.XP_LEVEL, 0);
-            Vec3 pos1 = StructureTemplate.transform(pos, this.getSettings().getMirror(), this.getSettings().getRotation(), TemplateHelper.EMPTY_BLOCK_POS).add(this.position.getX(), this.position.getY(), this.position.getZ());            WildDungeons.getLogger().info("ADDING RIFT AT {}", pos1);
+            Vec3 pos1 = StructureTemplate.transform(pos, this.getSettings().getMirror(), this.getSettings().getRotation(), TemplateHelper.EMPTY_BLOCK_POS).add(this.position.getX(), this.position.getY(), this.position.getZ());
+            WildDungeons.getLogger().info("ADDING RIFT AT {}", pos1);
             rift.setPos(pos1);
             this.getBranch().getFloor().getLevel().addFreshEntity(rift);
             this.riftUUIDs.add(rift.getStringUUID());
@@ -224,20 +287,18 @@ public class DungeonRoom {
 
     public List<BlockPos> sampleSpawnablePositions(ServerLevel level, int count) {
         List<BlockPos> result = new ArrayList<>();
-        int tries = count*10;
+        int tries = count * 10;
         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
         while (result.size() < count && tries > 0) {
-            BoundingBox innerShell = this.boundingBoxes.get(RandomUtil.randIntBetween(0, this.boundingBoxes.size()-1)).inflatedBy(-1);
+            BoundingBox innerShell = this.boundingBoxes.get(RandomUtil.randIntBetween(0, this.boundingBoxes.size() - 1)).inflatedBy(-1);
             int randX = RandomUtil.randIntBetween(innerShell.minX(), innerShell.maxX());
             int randZ = RandomUtil.randIntBetween(innerShell.minZ(), innerShell.maxZ());
 
             for (int y = innerShell.minY(); y < innerShell.maxY(); y++) {
                 mutableBlockPos.set(randX, y, randZ);
-                if (level.getBlockState(mutableBlockPos) == Blocks.AIR.defaultBlockState())
-                {
-                    mutableBlockPos.set(randX, y+1, randZ);
-                    if (level.getBlockState(mutableBlockPos) == Blocks.AIR.defaultBlockState())
-                    {
+                if (level.getBlockState(mutableBlockPos) == Blocks.AIR.defaultBlockState()) {
+                    mutableBlockPos.set(randX, y + 1, randZ);
+                    if (level.getBlockState(mutableBlockPos) == Blocks.AIR.defaultBlockState()) {
                         result.add(mutableBlockPos.below());
                         break;
                     }
@@ -263,17 +324,17 @@ public class DungeonRoom {
         //get a random number, between 1 and the number of loot blocks, but not more than 5
         int countedChests = RandomUtil.randIntBetween(1, Math.min(5, lootBlockEntities.size()));
         //determine the amount of items, between 3 and 10 times the number of counted chests
-        int maxItems = RandomUtil.randIntBetween(3*countedChests, 10*countedChests);
+        int maxItems = RandomUtil.randIntBetween(3 * countedChests, 10 * countedChests);
         //get loot entries from the loot table registry
         List<DungeonRegistration.LootEntry> entries = LootTableRegistry.BASIC_LOOT_TABLE.randomResults(maxItems, (int) (5 * this.getDifficulty()), 2f);
         //for each entry, place it in a random chest
         entries.forEach(entry -> {
             //get a random chest
-            BaseContainerBlockEntity lootBlock = (BaseContainerBlockEntity)lootBlockEntities.get(RandomUtil.randIntBetween(0, lootBlockEntities.size()-1));
-            int slot = RandomUtil.randIntBetween(0, lootBlock.getContainerSize()-1);
+            BaseContainerBlockEntity lootBlock = (BaseContainerBlockEntity) lootBlockEntities.get(RandomUtil.randIntBetween(0, lootBlockEntities.size() - 1));
+            int slot = RandomUtil.randIntBetween(0, lootBlock.getContainerSize() - 1);
             //make sure the slot is empty to prevent overwriting existing loot
             while (!lootBlock.getItem(slot).isEmpty()) {
-                slot = RandomUtil.randIntBetween(0, lootBlock.getContainerSize()-1);
+                slot = RandomUtil.randIntBetween(0, lootBlock.getContainerSize() - 1);
             }
             lootBlock.setItem(slot, entry.asItemStack());
         });
@@ -363,7 +424,7 @@ public class DungeonRoom {
                     boolean zConnected = otherBox.inflatedBy(0, 0, 1).isInside(pos);
 
                     //Only one axis is connected, indicating it's adjacent to another box, but not a corner
-                    if ((xConnected ? 1 : 0) + (yConnected ? 1: 0) + (zConnected ? 1 : 0) == 1) {
+                    if ((xConnected ? 1 : 0) + (yConnected ? 1 : 0) + (zConnected ? 1 : 0) == 1) {
                         if (box.inflatedBy(xConnected ? 0 : -1, yConnected ? 0 : -1, zConnected ? 0 : -1).isInside(pos)) {
                             return true;
                         }
@@ -374,23 +435,36 @@ public class DungeonRoom {
         return false;
     }
 
-    public void onGenerate() {}
+    public void onGenerate() {
+    }
+
     public void onEnter(WDPlayer player) {
         WildDungeons.getLogger().info("ENTERING ROOM {} OF CLASS {}", this.getTemplate().name(), this.getClass().getSimpleName());
-        playerStatuses.computeIfAbsent(player.getUUID(), key -> {getSession().getStats(key).roomsFound += 1; return new DungeonSession.PlayerStatus();});
+        playerStatuses.computeIfAbsent(player.getUUID(), key -> {
+            getSession().getStats(key).roomsFound += 1;
+            return new DungeonSession.PlayerStatus();
+        });
         this.playerStatuses.get(player.getUUID()).inside = true;
     }
-    public void onBranchEnter(WDPlayer player) {}
+
+    public void onBranchEnter(WDPlayer player) {
+    }
+
     public void onEnterInner(WDPlayer player) {
     }
+
     public void onExit(WDPlayer player) {
         this.playerStatuses.get(player.getUUID()).inside = false;
         this.playerStatuses.get(player.getUUID()).insideShell = false;
     }
+
     public void onClear() {
         this.clear = true;
     }
-    public void reset() {}
+
+    public void reset() {
+    }
+
     public void tick() {
         if (this.playerStatuses.values().stream().noneMatch(v -> v.inside)) return;
         playerStatuses.forEach((key, value) -> {
@@ -401,6 +475,22 @@ public class DungeonRoom {
                     value.insideShell = true;
                     this.onEnterInner(wdPlayer);
                 }
+            }
+        });
+    }
+
+    public void unsetAttachedPoints() {
+        getConnectionPoints().forEach(connectionPoint -> {
+            if (connectionPoint.isConnected()) {
+                connectionPoint.getConnectedPoint().unSetConnectedPoint();
+            }
+        });
+    }
+
+    public void unsetConnectedPoints() {
+        getConnectionPoints().forEach(connectionPoint -> {
+            if (connectionPoint.isConnected() && connectionPoint.getConnectedBranchIndex() == this.index) {
+                connectionPoint.unSetConnectedPoint();
             }
         });
     }
