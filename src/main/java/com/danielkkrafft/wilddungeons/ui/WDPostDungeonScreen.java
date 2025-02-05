@@ -25,20 +25,25 @@ import java.util.*;
 public class WDPostDungeonScreen extends Screen {
 
     public final HashMap<String, DungeonSession.DungeonStats> stats;
+    public String title;
+    public String icon;
+    public int primaryColor;
+    public int secondaryColor;
+    public int targetTime;
+    public int targetDeaths;
+    public int targetScore;
+
     public final float clearTicks;
-    public final float targetTicks = 600;
     public final int clearSeconds;
     public final int clearMinutes;
     public final int clearHours;
     public final boolean perfectTime;
 
     public final int clearDeaths;
-    public final int targetDeaths = 0;
     public final boolean perfectDeaths;
 
     public final int clearScore;
     public final List<Pair<Integer, ResourceLocation>> clearScores = new ArrayList<>();
-    public final int targetScore = 100000;
     public final boolean perfectScore;
     public final ResourceLocation defaultSkin;
 
@@ -95,29 +100,38 @@ public class WDPostDungeonScreen extends Screen {
         public int minY() {return (int) (screen.height * minYRatio);}
         public int maxX() {return (int) (screen.width * maxXRatio);}
         public int maxY() {return (int) (screen.height * maxYRatio);}
+        public float completion() {return Math.min(this.drawMs/this.animMs, 1);}
     }
 
     public WDPostDungeonScreen(CompoundTag data) {
         super(GameNarrator.NO_TITLE);
         timestamp = System.currentTimeMillis();
         defaultSkin = Minecraft.getInstance().getSkinManager().getInsecureSkin(Minecraft.getInstance().getGameProfile()).texture();
-        stats = Serializer.fromCompoundTag(data);
+
+        DungeonSession.DungeonStatsHolder holder = Serializer.fromCompoundTag(data);
+        this.stats = holder.playerStats;
+        this.title = holder.title;
+        this.icon = holder.icon;
+        this.primaryColor = holder.primaryColor;
+        this.secondaryColor = holder.secondaryColor;
+        this.targetTime = holder.targetTime;
+        this.targetDeaths = holder.targetDeaths;
+        this.targetScore = holder.targetScore;
+
         clearTicks = stats == null ? 300 : this.stats.values().stream().sorted(Comparator.comparingInt(o -> o.time)).toList().getLast().time;
         clearSeconds = Mth.floor((clearTicks / 20) % 60);
         clearMinutes = Mth.floor((clearTicks / 1200) % 60);
         clearHours = Mth.floor((clearTicks / 72000) % 24);
-        perfectTime = targetTicks / clearTicks >= 1;
+        perfectTime = this.targetTime / clearTicks >= 1;
 
         clearDeaths = stats == null ? 0 : this.stats.values().stream().mapToInt(o -> o.deaths).sum();
         perfectDeaths = clearDeaths <= targetDeaths;
 
         if (this.stats != null) this.stats.forEach((key, value) -> {
-            WildDungeons.getLogger().info("PLAYERS IN CLIENT LEVEL: {}", Minecraft.getInstance().level.players());
             Player player = Minecraft.getInstance().level.getPlayerByUUID(UUID.fromString(key));
             ResourceLocation skin = null;
             if (player != null) {
                 GameProfile profile = player.getGameProfile();
-                WildDungeons.getLogger().info("GETTING SKIN FOR PLAYER: {}", profile.getName());
                 skin = Minecraft.getInstance().getSkinManager().getInsecureSkin(profile).texture();
             }
             if (skin == null) skin = defaultSkin;
@@ -197,8 +211,8 @@ public class WDPostDungeonScreen extends Screen {
     public final AnimationStep TITLE = new AnimationStep(TITLE_BACKGROUND.minXRatio, TITLE_BACKGROUND.minYRatio, TITLE_BACKGROUND.maxXRatio, TITLE_BACKGROUND.maxYRatio, 500, 750, this::drawTitle, this);
     public void drawTitle(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
     {
-        String finalTitle = "WAIT OF THE WORLD";
-        String title = finalTitle.substring(0, Mth.lerpInt(Math.min(step.drawMs/step.animMs, 1), 0, finalTitle.length()));
+        String finalTitle = this.title;
+        String title = finalTitle.substring(0, Mth.lerpInt(step.completion(), 0, finalTitle.length()));
 
         if (step.drawMs < step.animMs) title = title + WDFont.getRandomGlitch() + WDFont.getRandomGlitch();
         WDFont.drawCenteredString(guiGraphics, title, step.xCenter(), step.yCenter(), step.ySize()/2, 0xFFFFFFFF);
@@ -207,21 +221,22 @@ public class WDPostDungeonScreen extends Screen {
     public final AnimationStep ICON_BACKGROUND = new AnimationStep(0.0f, 0.05f, 0.1f, 0.15f, 500, 750, this::drawIconBackground, this);
     public void drawIconBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
     {
-        int maxX = this.width / 10;
+        int maxX = Mth.lerpInt(step.completion(), step.minX(), step.maxX());
         guiGraphics.fill(step.minX(), step.minY(), maxX, step.maxY(), 0xFFFFFFFF);
     }
 
     public final AnimationStep ICON = new AnimationStep(ICON_BACKGROUND.minXRatio, ICON_BACKGROUND.minYRatio, ICON_BACKGROUND.maxXRatio, ICON_BACKGROUND.maxYRatio, 500, 750, this::drawIcon, this);
     public void drawIcon(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
     {
-        String title = "1-4";
-        WDFont.drawCenteredString(guiGraphics, title, step.xCenter(), step.yCenter(), step.ySize()/2, 0xFFFF0000);
+        String finalTitle = this.icon;
+        String title = finalTitle.substring(0, Mth.lerpInt(step.completion(), 0, finalTitle.length()));
+        WDFont.drawCenteredString(guiGraphics, title, step.xCenter(), step.yCenter(), step.ySize()/2, this.primaryColor);
     }
 
     public final AnimationStep TIME_BACKGROUND = new AnimationStep(0.35f, 0.38f, 0.65f, 0.52f, 500, 750, this::drawTimeBackground, this);
     public void drawTimeBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
     {
-        float ratio = Math.min(this.targetTicks / this.clearTicks, 1.0f);
+        float ratio = Math.min(this.targetTime / this.clearTicks, 1.0f);
         guiGraphics.fill(step.minX() + xOffset, step.minY(), (int) (step.minX() + step.xSize() * ratio + xOffset), step.maxY(), 0x80FF0000);
         guiGraphics.fill(step.minX() + xOffset, step.minY(), step.maxX() + xOffset, step.maxY(), 0x800d0f18);
     }
@@ -243,7 +258,7 @@ public class WDPostDungeonScreen extends Screen {
     public final AnimationStep PERFECT_TIME = new AnimationStep(TIME_BACKGROUND.minXRatio, TIME_BACKGROUND.minYRatio, TIME_BACKGROUND.maxXRatio, TIME_BACKGROUND.maxYRatio, 500, 750, this::drawPerfectTime, this);
     public void drawPerfectTime(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
     {
-        guiGraphics.fill(step.minX() + xOffset, step.minY(), step.maxX() + xOffset, step.maxY(), 0xFFFF0000);
+        guiGraphics.fill(step.minX() + xOffset, step.minY(), step.maxX() + xOffset, step.maxY(), this.primaryColor);
         drawTime(guiGraphics, mouseX, mouseY, TIME);
     }
 
@@ -263,7 +278,7 @@ public class WDPostDungeonScreen extends Screen {
     public final AnimationStep PERFECT_DEATHS = new AnimationStep(DEATHS_BACKGROUND.minXRatio, DEATHS_BACKGROUND.minYRatio, TIME_BACKGROUND.maxXRatio, DEATHS_BACKGROUND.maxYRatio, 500, 750, this::drawPerfectDeaths, this);
     public void drawPerfectDeaths(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
     {
-        guiGraphics.fill(step.minX() + xOffset, step.minY(), step.maxX() + xOffset, step.maxY(), 0xFFFF0000);
+        guiGraphics.fill(step.minX() + xOffset, step.minY(), step.maxX() + xOffset, step.maxY(), this.primaryColor);
         drawDeaths(guiGraphics, mouseX, mouseY, DEATHS);
     }
 
@@ -285,14 +300,14 @@ public class WDPostDungeonScreen extends Screen {
     public final AnimationStep PERFECT_SCORE = new AnimationStep(SCORE_BACKGROUND.minXRatio, SCORE_BACKGROUND.minYRatio, SCORE_BACKGROUND.maxXRatio, SCORE_BACKGROUND.maxYRatio, 500, 750, this::drawPerfectScore, this);
     public void drawPerfectScore(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
     {
-        guiGraphics.fill(step.minX() + xOffset, step.minY(), step.maxX() + xOffset, step.maxY(), 0xFFFF0000);
+        guiGraphics.fill(step.minX() + xOffset, step.minY(), step.maxX() + xOffset, step.maxY(), this.primaryColor);
         drawScore(guiGraphics, mouseX, mouseY, SCORE);
     }
 
     public final AnimationStep PERFECT_CLEAR = new AnimationStep(TITLE_BACKGROUND.minXRatio, TITLE_BACKGROUND.minYRatio, TITLE_BACKGROUND.maxXRatio, TITLE_BACKGROUND.maxYRatio, 500, 750, this::drawPerfectClear, this);
     public void drawPerfectClear(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
     {
-        guiGraphics.fill(step.minX(), step.minY(), step.maxX(), step.maxY(), 0xFFFF0000);
+        guiGraphics.fill(step.minX(), step.minY(), step.maxX(), step.maxY(), this.primaryColor);
         drawTitle(guiGraphics, mouseX, mouseY, TITLE);
         drawIconBackground(guiGraphics, mouseX, mouseY, ICON_BACKGROUND);
         drawIcon(guiGraphics, mouseX, mouseY, ICON);
@@ -350,7 +365,7 @@ public class WDPostDungeonScreen extends Screen {
         ResourceLocation skin = clearScores.get(step.id).getSecond();
         if (skin == null) skin = defaultSkin;
 
-        guiGraphics.fill(minX + xOffset + this.width, minY, maxX + xOffset + this.width, maxY, 0xFFFF0000);
+        guiGraphics.fill(minX + xOffset + this.width, minY, maxX + xOffset + this.width, maxY, this.primaryColor);
         drawCenteredSquare(guiGraphics, skin, minX + ((maxX-minX)/2), maxY, padding*2, 8f/64f, 8f/64f, 16f/64f, 16f/64f, 0xFFFFFFFF);
         WDFont.drawCenteredString(guiGraphics, String.valueOf(clearScores.get(step.id).getFirst()), minX + ((maxX-minX)/2), Math.min(minY-padding, maxY-padding*2), padding, 0xFFFFFFFF);
     }
