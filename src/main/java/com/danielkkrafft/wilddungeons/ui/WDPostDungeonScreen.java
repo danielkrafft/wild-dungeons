@@ -1,5 +1,6 @@
 package com.danielkkrafft.wilddungeons.ui;
 
+import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.network.serverbound.ServerboundRestorePlayerGamemodePacket;
 import com.danielkkrafft.wilddungeons.util.Serializer;
@@ -111,12 +112,15 @@ public class WDPostDungeonScreen extends Screen {
         perfectDeaths = clearDeaths <= targetDeaths;
 
         if (this.stats != null) this.stats.forEach((key, value) -> {
+            WildDungeons.getLogger().info("PLAYERS IN CLIENT LEVEL: {}", Minecraft.getInstance().level.players());
             Player player = Minecraft.getInstance().level.getPlayerByUUID(UUID.fromString(key));
             ResourceLocation skin = null;
             if (player != null) {
                 GameProfile profile = player.getGameProfile();
+                WildDungeons.getLogger().info("GETTING SKIN FOR PLAYER: {}", profile.getName());
                 skin = Minecraft.getInstance().getSkinManager().getInsecureSkin(profile).texture();
             }
+            if (skin == null) skin = defaultSkin;
             this.clearScores.add(new Pair<>(value.getScore(), skin));
         });
         if (this.stats == null) {
@@ -151,6 +155,7 @@ public class WDPostDungeonScreen extends Screen {
         if (this.clearScores.size() > 1) {
             this.steps.add(SWIPE_TO_CHART);
             this.steps.add(CHART_BACKGROUND);
+            this.steps.add(GET_SKINS);
             for (int i = 0; i < this.clearScores.size(); i++) {
                 this.steps.add(CHART_ENTRY.copy(i));
             }
@@ -305,6 +310,29 @@ public class WDPostDungeonScreen extends Screen {
         guiGraphics.fill(step.minX() + xOffset + this.width, step.minY(), step.maxX() + xOffset + this.width, step.maxY(), 0x800d0f18);
     }
 
+    public boolean skinsLocated = false;
+    public final AnimationStep GET_SKINS = new AnimationStep(CHART_BACKGROUND.minXRatio, CHART_BACKGROUND.minYRatio, CHART_BACKGROUND.maxXRatio, CHART_BACKGROUND.maxYRatio, 100, 100, this::getSkins, this);
+    public void getSkins(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
+    {
+        if (skinsLocated) return;
+        clearScores.clear();
+        if (this.stats != null) this.stats.forEach((key, value) -> {
+            WildDungeons.getLogger().info("PLAYERS IN CLIENT LEVEL: {}", Minecraft.getInstance().level.players());
+            Player player = Minecraft.getInstance().level.getPlayerByUUID(UUID.fromString(key));
+            ResourceLocation skin = null;
+            if (player != null) {
+                GameProfile profile = player.getGameProfile();
+                WildDungeons.getLogger().info("GETTING SKIN FOR PLAYER: {}", profile.getName());
+                skin = Minecraft.getInstance().getSkinManager().getInsecureSkin(profile).texture();
+            }
+            if (skin == null) skin = defaultSkin;
+            this.clearScores.add(new Pair<>(value.getScore(), skin));
+        });
+
+        clearScores.sort(Comparator.comparingInt(Pair::getFirst));
+        skinsLocated = true;
+    }
+
     public final AnimationStep CHART_ENTRY = new AnimationStep(CHART_BACKGROUND.minXRatio, CHART_BACKGROUND.minYRatio, CHART_BACKGROUND.maxXRatio, CHART_BACKGROUND.maxYRatio, 500, 750, this::drawChartEntry, this);
     public void drawChartEntry(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
     {
@@ -319,8 +347,11 @@ public class WDPostDungeonScreen extends Screen {
         int minY = Mth.lerpInt(ratio, step.maxY() - padding*2, step.minY() + padding*2);
         int maxY = step.maxY() - padding*2;
 
+        ResourceLocation skin = clearScores.get(step.id).getSecond();
+        if (skin == null) skin = defaultSkin;
+
         guiGraphics.fill(minX + xOffset + this.width, minY, maxX + xOffset + this.width, maxY, 0xFFFF0000);
-        drawCenteredSquare(guiGraphics, clearScores.get(step.id).getSecond(), minX + ((maxX-minX)/2), maxY, padding*2, 8f/64f, 8f/64f, 16f/64f, 16f/64f, 0xFFFFFFFF);
+        drawCenteredSquare(guiGraphics, skin, minX + ((maxX-minX)/2), maxY, padding*2, 8f/64f, 8f/64f, 16f/64f, 16f/64f, 0xFFFFFFFF);
         WDFont.drawCenteredString(guiGraphics, String.valueOf(clearScores.get(step.id).getFirst()), minX + ((maxX-minX)/2), Math.min(minY-padding, maxY-padding*2), padding, 0xFFFFFFFF);
     }
 
