@@ -315,18 +315,24 @@ public class DungeonRoom {
         if (this.hasBedrockShell()) this.surroundWith(Blocks.AIR.defaultBlockState());
 
         this.boundingBoxes.forEach(box -> {
-            for (int x = box.minX(); x <= box.maxX(); x++) {
-                for (int y = box.minY(); y <= box.maxY(); y++) {
-                    for (int z = box.minZ(); z <= box.maxZ(); z++) {
-                        this.getBranch().getFloor().getLevel().setBlock(new BlockPos(x, y, z), Blocks.AIR.defaultBlockState(),2);
-                    }
-                }
-            }
+            removeBlocks(this.getBranch().getFloor(), box);
         });
         branch.getFloor().getChunkMap().forEach((key, value) -> {
             value.removeIf(v -> v.x == branch.getIndex() && v.y == this.index);
         });
         destroyEntities();
+    }
+
+    public static void removeBlocks(DungeonFloor floor, BoundingBox box) {
+        BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
+        for (int x = box.minX(); x <= box.maxX(); x++) {
+            for (int y = box.minY(); y <= box.maxY(); y++) {
+                for (int z = box.minZ(); z <= box.maxZ(); z++) {
+                    mutableBlockPos.set(x, y, z);
+                    floor.getLevel().setBlock(mutableBlockPos, Blocks.AIR.defaultBlockState(), 2);
+                }
+            }
+        }
     }
 
     private void destroyEntities() {

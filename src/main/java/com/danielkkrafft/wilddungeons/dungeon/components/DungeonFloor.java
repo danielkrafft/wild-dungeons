@@ -199,15 +199,10 @@ public class DungeonFloor {
                 entities.forEach(entity -> entity.remove(Entity.RemovalReason.DISCARDED));
             });
 
-            DungeonRoom.surroundBoxWith(this, this.getLevel(), box, Blocks.AIR.defaultBlockState()); //TODO needs to replace bedrock after unwrapping also needs to delete red doors
+            DungeonRoom.surroundBoxWith(this, this.getLevel(), box, Blocks.AIR.defaultBlockState());
+            //TODO needs to replace bedrock after unwrapping also needs to delete red doors
 
-            for (int x = box.minX(); x <= box.maxX(); x++) {
-                for (int y = box.minY(); y <= box.maxY(); y++) {
-                    for (int z = box.minZ(); z <= box.maxZ(); z++) {
-                        getLevel().setBlock(new BlockPos(x, y, z), Blocks.AIR.defaultBlockState(),2);
-                    }
-                }
-            }
+            DungeonRoom.removeBlocks(this,box);
         });
         halfGeneratedRooms.clear();
         validateAndRegen(onComplete);
