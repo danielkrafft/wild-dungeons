@@ -10,7 +10,7 @@ public class PerkRegistry {
     public static final DungeonPerkTemplate SWORD_DAMAGE = new DungeonPerkTemplate("SWORD_DAMAGE", new Vector2i(0,0));
     public static final DungeonPerkTemplate AXE_DAMAGE = new DungeonPerkTemplate("AXE_DAMAGE", new Vector2i(1,0));
     public static final DungeonPerkTemplate BOW_DAMAGE = new DungeonPerkTemplate("BOW_DAMAGE", new Vector2i(2,0));
-    public static final DungeonPerkTemplate EXTRA_LIFE = new DungeonPerkTemplate("EXTRA_LIFE", new Vector2i(0,1));
+    public static final DungeonPerkTemplate EXTRA_LIFE = new DungeonPerkTemplate("EXTRA_LIFE", new Vector2i(3,0));
 
     public static void setupPerks(){
         DUNGEON_PERK_REGISTRY.add(SWORD_DAMAGE);
