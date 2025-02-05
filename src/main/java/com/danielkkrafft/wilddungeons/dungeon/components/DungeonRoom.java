@@ -128,13 +128,15 @@ public class DungeonRoom {
         } else {this.spawnPoint = null;}
 
         this.handleChunkMap();
-        if (this.hasBedrockShell()) this.surroundWith(Blocks.BEDROCK.defaultBlockState());
         WDProfiler.INSTANCE.logTimestamp("DungeonRoom::new");
+    }
+
+    public void processShell(){
+        if (this.hasBedrockShell()) this.surroundWith(Blocks.BEDROCK.defaultBlockState());
     }
 
     public void surroundWith(BlockState blockState) {
         ServerLevel level = this.getBranch().getFloor().getLevel();
-
         for (BoundingBox box : this.getBoundingBoxes()) {
             surroundBoxWith(this.getBranch().getFloor(), level, box, blockState);
         }

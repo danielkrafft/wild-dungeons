@@ -104,7 +104,10 @@ public class DungeonBranch {
             return false;
         }
 
-        this.branchRooms.forEach(room -> room.processConnectionPoints(floor));
+        this.branchRooms.forEach(room -> {
+            room.processConnectionPoints(floor);
+            room.processShell();
+        });
 
         setupBoundingBox();
         this.spawnPoint = floor.getBranches().size() == 1 ? this.branchRooms.getFirst().getSpawnPoint(floor.getLevel()) : floor.getBranches().getLast().branchRooms.getLast().getSpawnPoint(floor.getLevel());
