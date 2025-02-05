@@ -65,7 +65,7 @@ public class WDPlayer {
     public int getCurrentBranchIndex() {return this.currentBranch;}
     public void setCurrentBranch(DungeonBranch branch) {this.currentBranch = branch == null ? -1 : branch.getIndex();}
     public DungeonRoom getCurrentRoom() {
-        return this.currentRoom == -1 ? null : this.getCurrentBranch().getRooms().get(this.currentRoom);
+        return this.currentRoom == -1 ? null : this.getCurrentBranch() == null ? null : this.getCurrentBranch().getRooms().get(this.currentRoom);
     }
     public void setCurrentRoom(DungeonRoom room) {this.currentRoom = room == null ? -1 : room.getIndex();}
     public int getCurrentLives() {return this.currentLives;}

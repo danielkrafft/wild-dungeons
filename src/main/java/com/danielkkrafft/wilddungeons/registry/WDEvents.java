@@ -2,6 +2,7 @@ package com.danielkkrafft.wilddungeons.registry;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.block.WDBlocks;
+import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.entity.EssenceOrb;
 import com.danielkkrafft.wilddungeons.entity.WDEntities;
@@ -62,6 +63,7 @@ public class WDEvents {
         FileUtil.setWorldPath(event.getServer().getWorldPath(LevelResource.ROOT));
         DungeonSessionManager.getInstance().server = event.getServer();
         if (SaveSystem.isLoading()) return;
+        DungeonRegistration.setupRegistries();
         WildDungeons.getLogger().info("STARTING DUNGEON FILE LOADING...");
         asyncLoad = CompletableFuture.runAsync(SaveSystem::Load);
         asyncLoad.thenAccept(v -> {
@@ -88,7 +90,7 @@ public class WDEvents {
     }
 
     @SubscribeEvent
-    public static void onServerShutdown(ServerStoppingEvent event){
+    public static void onServerShutdown(ServerStoppingEvent event) {
         DungeonSessionManager.onShutdown();
     }
 

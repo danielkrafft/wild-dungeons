@@ -49,7 +49,7 @@ public class DungeonSession {
     private boolean markedForShutdown = false;
     private final HashMap<String, DungeonPerk> perks = new HashMap<>();
     @IgnoreSerialization
-    private List<CompletableFuture<Void>> generationFutures = new ArrayList<>();
+    public List<CompletableFuture<Void>> generationFutures = new ArrayList<>();
 
     public ServerLevel getEntranceLevel() {return DungeonSessionManager.getInstance().server.getLevel(this.entranceLevelKey);}
     public String getEntranceUUID() {return this.entranceUUID;}

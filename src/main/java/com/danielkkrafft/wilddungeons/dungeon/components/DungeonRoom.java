@@ -25,6 +25,7 @@ import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
@@ -127,39 +128,41 @@ public class DungeonRoom {
         } else {this.spawnPoint = null;}
 
         this.handleChunkMap();
-        this.surroundWithBedrock();
+        if (this.hasBedrockShell()) this.surroundWith(Blocks.BEDROCK.defaultBlockState());
         WDProfiler.INSTANCE.logTimestamp("DungeonRoom::new");
     }
 
-    public void surroundWithBedrock() {
-        if (!hasBedrockShell()) return;
-
-        BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
+    public void surroundWith(BlockState blockState) {
         ServerLevel level = this.getBranch().getFloor().getLevel();
 
         for (BoundingBox box : this.getBoundingBoxes()) {
+            surroundBoxWith(this.getBranch().getFloor(), level, box, blockState);
+        }
+    }
 
-            int[] minX = {box.minX(), box.minX(), box.minY(), box.minY(), box.minZ(), box.minZ()};
-            int[] minY = {box.minZ(), box.minZ(), box.minX(), box.minX(), box.minY(), box.minY()};
-            int[] maxX = {box.maxX(), box.maxX(), box.maxY(), box.maxY(), box.maxZ(), box.maxZ()};
-            int[] maxY = {box.maxZ(), box.maxZ(), box.maxX(), box.maxX(), box.maxY(), box.maxY()};
-            int[] minZ = {box.minY()-1, box.maxY()+1, box.minZ()-1, box.maxZ()+1, box.minX()-1, box.maxX()+1};
+    public static void surroundBoxWith(DungeonFloor floor, ServerLevel level, BoundingBox box, BlockState blockState) {
+        BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
 
-            for (int i = 0; i < 6; i++) {
-                for (int x = minX[i]; x <= maxX[i]; x++) {
-                    for (int y = minY[i]; y <= maxY[i]; y++) {
-                        switch(i) {
-                            case 0,1 -> mutableBlockPos.set(x, minZ[i], y);
-                            case 2,3 -> mutableBlockPos.set(y, x, minZ[i]);
-                            case 4,5 -> mutableBlockPos.set(minZ[i], y, x);
-                        }
-                        List<BoundingBox> potentialConflicts = new ArrayList<>();
-                        this.getBranch().getFloor().getChunkMap().getOrDefault(new ChunkPos(mutableBlockPos), new ArrayList<>()).forEach(vector2i -> {
-                            potentialConflicts.addAll(this.getBranch().getFloor().getBranches().get(vector2i.x).getRooms().get(vector2i.y).getBoundingBoxes());
-                        });
-                        if (potentialConflicts.stream().noneMatch(potentialConflict -> potentialConflict.isInside(mutableBlockPos))) {
-                            level.setBlock(mutableBlockPos, Blocks.BEDROCK.defaultBlockState(), 2);
-                        }
+        int[] minX = {box.minX(), box.minX(), box.minY(), box.minY(), box.minZ(), box.minZ()};
+        int[] minY = {box.minZ(), box.minZ(), box.minX(), box.minX(), box.minY(), box.minY()};
+        int[] maxX = {box.maxX(), box.maxX(), box.maxY(), box.maxY(), box.maxZ(), box.maxZ()};
+        int[] maxY = {box.maxZ(), box.maxZ(), box.maxX(), box.maxX(), box.maxY(), box.maxY()};
+        int[] minZ = {box.minY()-1, box.maxY()+1, box.minZ()-1, box.maxZ()+1, box.minX()-1, box.maxX()+1};
+
+        for (int i = 0; i < 6; i++) {
+            for (int x = minX[i]; x <= maxX[i]; x++) {
+                for (int y = minY[i]; y <= maxY[i]; y++) {
+                    switch(i) {
+                        case 0,1 -> mutableBlockPos.set(x, minZ[i], y);
+                        case 2,3 -> mutableBlockPos.set(y, x, minZ[i]);
+                        case 4,5 -> mutableBlockPos.set(minZ[i], y, x);
+                    }
+                    List<BoundingBox> potentialConflicts = new ArrayList<>();
+                    floor.getChunkMap().getOrDefault(new ChunkPos(mutableBlockPos), new ArrayList<>()).forEach(vector2i -> {
+                        potentialConflicts.addAll(floor.getBranches().get(vector2i.x).getRooms().get(vector2i.y).getBoundingBoxes());
+                    });
+                    if (potentialConflicts.stream().noneMatch(potentialConflict -> potentialConflict.isInside(mutableBlockPos))) {
+                        if (!level.getServer().isShutdown()) level.setBlock(mutableBlockPos, blockState, 2);
                     }
                 }
             }
@@ -309,6 +312,8 @@ public class DungeonRoom {
     }
 
     public void destroy() {
+        if (this.hasBedrockShell()) this.surroundWith(Blocks.AIR.defaultBlockState());
+
         this.boundingBoxes.forEach(box -> {
             for (int x = box.minX(); x <= box.maxX(); x++) {
                 for (int y = box.minY(); y <= box.maxY(); y++) {

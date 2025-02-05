@@ -25,7 +25,6 @@ public class SaveSystem {
     }
 
     public static void Load(){
-        DungeonRegistration.setupRegistries();
         INSTANCE.load();
     }
 

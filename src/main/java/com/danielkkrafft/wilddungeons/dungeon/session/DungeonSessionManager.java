@@ -27,7 +27,8 @@ public class DungeonSessionManager {
 //        WildDungeons.getLogger().info("Validating Sessions");
         INSTANCE.sessions.forEach((key, session) -> {
             try {
-                CompletableFuture.runAsync(session::validate);
+                if (session.generationFutures == null) session.generationFutures = new ArrayList<>();
+                session.generationFutures.add(CompletableFuture.runAsync(session::validate));
             } catch (Exception e) {
                 WildDungeons.getLogger().error("Error validating session: {}", key);
                 e.printStackTrace();

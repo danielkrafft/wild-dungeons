@@ -7,7 +7,6 @@ import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonTarget;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 
@@ -37,7 +36,7 @@ public class CombatRoom extends EnemyPurgeRoom {
 
         templates.forEach(template -> {
             DungeonTarget enemy = template.asEnemy();
-            enemies.add(enemy);
+            targets.add(enemy);
             toSpawn.add(enemy);
         });
         super.start();
@@ -56,7 +55,7 @@ public class CombatRoom extends EnemyPurgeRoom {
     public void tick() {
         super.tick();
         if (!this.started || this.isClear() || this.getActivePlayers().isEmpty()) return;
-        if (spawnTimer == 0 || toSpawn.size() == enemies.size()) {spawnNext(); spawnTimer = SPAWN_INTERVAL;}
+        if (spawnTimer == 0 || toSpawn.size() == targets.size()) {spawnNext(); spawnTimer = SPAWN_INTERVAL;}
         spawnTimer -= 1;
     }
 }

@@ -8,7 +8,6 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper
 import com.danielkkrafft.wilddungeons.dungeon.registries.OfferingTemplateTableRegistry;
 import com.danielkkrafft.wilddungeons.entity.Offering;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.phys.Vec3;
@@ -31,7 +30,7 @@ public class LootRoom extends EnemyPurgeRoom {
             next.setPos(pos1);
             this.getBranch().getFloor().getLevel().addFreshEntity(next);
             this.getOfferingUUIDs().add(next.getStringUUID());
-            this.enemies.add(new DungeonTarget(next));
+            this.targets.add(new DungeonTarget(next));
         });
     }
 }
