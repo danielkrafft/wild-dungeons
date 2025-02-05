@@ -62,8 +62,8 @@ public class WDEvents {
     public static void onServerAboutToStart(ServerAboutToStartEvent event) {
         FileUtil.setWorldPath(event.getServer().getWorldPath(LevelResource.ROOT));
         DungeonSessionManager.getInstance().server = event.getServer();
-        if (SaveSystem.isLoading()) return;
         DungeonRegistration.setupRegistries();
+        if (SaveSystem.isLoading()) return;
         WildDungeons.getLogger().info("STARTING DUNGEON FILE LOADING...");
         asyncLoad = CompletableFuture.runAsync(SaveSystem::Load);
         asyncLoad.thenAccept(v -> {
