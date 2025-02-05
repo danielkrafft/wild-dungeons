@@ -96,10 +96,10 @@ public class WDPlayerManager {
     @SubscribeEvent
     public static void onBlockBreak(BlockEvent.BreakEvent event) {
         if (event.getLevel() instanceof ServerLevel serverLevel && event.getPlayer() instanceof ServerPlayer serverPlayer) {
-            WildDungeons.getLogger().info("FOUND BLOCK BREAK");
-            event.setCanceled(isProtectedBlock(serverPlayer, event.getPos(), serverLevel));
             WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer);
             if (wdPlayer.getCurrentDungeon() == null) return;
+            WildDungeons.getLogger().info("FOUND BLOCK BREAK");
+            event.setCanceled(isProtectedBlock(serverPlayer, event.getPos(), serverLevel));
             wdPlayer.getCurrentDungeon().getStats(wdPlayer).blocksBroken += 1;
 
             if (wdPlayer.getCurrentRoom() instanceof EnemyPurgeRoom enemyPurgeRoom) {
@@ -113,9 +113,9 @@ public class WDPlayerManager {
     @SubscribeEvent
     public static void onBlockPlace(BlockEvent.EntityPlaceEvent event) {
         if (event.getLevel() instanceof ServerLevel serverLevel && event.getEntity() instanceof ServerPlayer serverPlayer) {
-            event.setCanceled(isProtectedBlock(serverPlayer, event.getPos(), serverLevel));
             WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer.getStringUUID());
             if (wdPlayer.getCurrentDungeon() == null) return;
+            event.setCanceled(isProtectedBlock(serverPlayer, event.getPos(), serverLevel));
             wdPlayer.getCurrentDungeon().getStats(wdPlayer).blocksPlaced += 1;
         }
     }

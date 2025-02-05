@@ -1,11 +1,10 @@
 package com.danielkkrafft.wilddungeons;
 
+import com.danielkkrafft.wilddungeons.block.MyGeometryLoader;
 import com.danielkkrafft.wilddungeons.block.WDBlocks;
 import com.danielkkrafft.wilddungeons.block.WDFluids;
-import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.components.Alignments;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonPerk;
-import com.danielkkrafft.wilddungeons.dungeon.components.room.CombatRoom;
 import com.danielkkrafft.wilddungeons.dungeon.registries.PerkRegistry;
 import com.danielkkrafft.wilddungeons.entity.WDEntities;
 import com.danielkkrafft.wilddungeons.entity.boss.BreezeGolem;
@@ -35,6 +34,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.common.NeoForge;
@@ -144,6 +144,11 @@ public class WildDungeons {
         ItemBlockRenderTypes.setRenderLayer(WDFluids.LIFE_LIQUID.get(), RenderType.translucent());
         ItemBlockRenderTypes.setRenderLayer(WDFluids.FLOWING_LIFE_LIQUID.get(), RenderType.translucent());
 
+    }
+
+    @SubscribeEvent
+    public static void registerGeometryLoaders(ModelEvent.RegisterGeometryLoaders event) {
+        event.register(MyGeometryLoader.ID, MyGeometryLoader.INSTANCE);
     }
 
     @SubscribeEvent
