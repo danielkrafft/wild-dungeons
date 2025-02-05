@@ -139,6 +139,10 @@ public class WDPlayerManager {
             if (room.isPosInsideShell(pos)) return false;
         }
 
+        if (room.getDestructionRule() == DungeonRoomTemplate.DestructionRule.SHELL_CLEAR && room.isClear()) {
+            return false;
+        }
+
         WildDungeons.getLogger().info("POSITION IS PROTECTED");
         return true;
     }

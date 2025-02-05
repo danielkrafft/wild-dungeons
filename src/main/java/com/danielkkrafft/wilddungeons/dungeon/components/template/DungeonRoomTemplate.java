@@ -39,7 +39,7 @@ public final class DungeonRoomTemplate implements DungeonComponent {
         NONE, SECRET, COMBAT, SHOP, LOOT
     }
     public enum DestructionRule {
-        SHELL, NONE
+        SHELL, NONE, SHELL_CLEAR
     }
 
     public static DungeonRoomTemplate create(String name, List<Pair<String, BlockPos>> structures) {

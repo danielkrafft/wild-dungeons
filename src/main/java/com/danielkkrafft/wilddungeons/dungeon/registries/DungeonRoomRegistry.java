@@ -149,7 +149,7 @@ public class DungeonRoomRegistry {
             List.of(
                     of("overworld/sprawl/basic_3", EMPTY_BLOCK_POS)
             ))
-            .setDestructionRule(DestructionRule.SHELL)
+            .setDestructionRule(DestructionRule.SHELL_CLEAR)
             .setType(COMBAT);
     public static final DungeonRoomTemplate OVERWORLD_COMBAT_2 = create(
             "overworld_combat_2",
@@ -157,7 +157,7 @@ public class DungeonRoomRegistry {
                     of("overworld/sprawl/basic_4", EMPTY_BLOCK_POS)
             ))
             .setType(COMBAT)
-            .setDestructionRule(DestructionRule.SHELL)
+            .setDestructionRule(DestructionRule.SHELL_CLEAR)
             .setDifficulty(0.5);
     public static final DungeonRoomTemplate OVERWORLD_COMBAT_3 = create(
             "overworld_combat_3",
@@ -165,7 +165,7 @@ public class DungeonRoomRegistry {
                     of("overworld/sprawl/basic_5", EMPTY_BLOCK_POS)
             ))
             .setType(COMBAT)
-            .setDestructionRule(DestructionRule.SHELL)
+            .setDestructionRule(DestructionRule.SHELL_CLEAR)
             .setDifficulty(0.75);
     public static final DungeonRoomTemplate OVERWORLD_CHEST_ROOM = create(
             "overworld_chest_room",
