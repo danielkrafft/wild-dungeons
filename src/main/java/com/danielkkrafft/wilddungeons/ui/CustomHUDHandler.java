@@ -19,7 +19,7 @@ public class CustomHUDHandler {
     public static void onRenderGameOverlay(RenderGuiLayerEvent.Pre event) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) {return;}
-        WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(player);
+        WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateClientWDPlayer(player);
 
         if (!wdPlayer.getRecentEssence().equals("essence:overworld")) {
             if (event.getName().getPath().equals("experience_level") || event.getName().getPath().equals("experience_bar")) {

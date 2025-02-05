@@ -2,9 +2,11 @@ package com.danielkkrafft.wilddungeons;
 
 import com.danielkkrafft.wilddungeons.block.WDBlocks;
 import com.danielkkrafft.wilddungeons.block.WDFluids;
+import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.components.Alignments;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonPerk;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.CombatRoom;
+import com.danielkkrafft.wilddungeons.dungeon.registries.PerkRegistry;
 import com.danielkkrafft.wilddungeons.entity.WDEntities;
 import com.danielkkrafft.wilddungeons.entity.boss.BreezeGolem;
 import com.danielkkrafft.wilddungeons.entity.boss.MutantBogged;
@@ -61,8 +63,9 @@ public class WildDungeons {
         WDStructurePieceTypes.STRUCTURE_PIECE_TYPES.register(modEventBus);
         WDSoundEvents.SOUND_EVENTS.register(modEventBus);
 
-        modEventBus.register(WildDungeons.class);
+        PerkRegistry.setupPerks();
 
+        modEventBus.register(WildDungeons.class);
         NeoForge.EVENT_BUS.register(WDEvents.class);
         NeoForge.EVENT_BUS.register(WDPlayerManager.class);
         NeoForge.EVENT_BUS.register(DungeonPerk.class);

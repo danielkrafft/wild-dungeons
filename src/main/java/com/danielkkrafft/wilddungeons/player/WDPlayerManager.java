@@ -12,6 +12,7 @@ import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundUpdateWDPlayerPacket;
 import com.danielkkrafft.wilddungeons.util.Serializer;
 import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -33,33 +34,42 @@ import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
+import org.apache.logging.log4j.core.jmx.Server;
 import org.joml.Vector2i;
 
 import java.util.*;
 
 public class WDPlayerManager {
     private static final WDPlayerManager INSTANCE = new WDPlayerManager();
-    private Map<String, WDPlayer> players = new HashMap<>();
+    private Map<String, WDPlayer> serverPlayers = new HashMap<>();
+    private WDPlayer clientPlayer = null;
 
     private WDPlayerManager(){}
 
-    public WDPlayer getOrCreateWDPlayer(Player player) {
-        return players.computeIfAbsent(player.getStringUUID(), k -> new WDPlayer(player.getStringUUID()));
+    public WDPlayer getOrCreateClientWDPlayer(LocalPlayer player) {
+        return this.clientPlayer == null ? new WDPlayer(player.getStringUUID()) : this.clientPlayer;
     }
 
-    public WDPlayer getOrCreateWDPlayer(String uuid) {
-        return players.computeIfAbsent(uuid, k -> new WDPlayer(uuid));
+    public WDPlayer getOrCreateClientWDPlayer(String uuid) {
+        return this.clientPlayer == null ? new WDPlayer(uuid) : this.clientPlayer;
     }
 
-    public void replaceWDPlayer(String playerUUID, WDPlayer wdPlayer) {
-        players.put(playerUUID, wdPlayer);
+    public void replaceClientPlayer(WDPlayer wdPlayer) {
+        this.clientPlayer = wdPlayer;
+    }
+
+    public WDPlayer getOrCreateServerWDPlayer(ServerPlayer player) {
+        return this.getServerPlayers().computeIfAbsent(player.getStringUUID(), k -> new WDPlayer(player.getStringUUID()));
+    }
+
+    public WDPlayer getOrCreateServerWDPlayer(String uuid) {
+        return this.getServerPlayers().computeIfAbsent(uuid, k -> new WDPlayer(uuid));
     }
 
     public static void syncAll(List<String> playerUUIDs) {
         WildDungeons.getLogger().info("SYNCING {} PLAYERS", playerUUIDs.size());
         for (int i = 0; i < playerUUIDs.size(); i++) {
-            WDPlayer player = getInstance().getOrCreateWDPlayer(playerUUIDs.get(i));
-            WildDungeons.getLogger().info("SYNCING PLAYER {} OF {}", i, playerUUIDs.size());
+            WDPlayer player = getInstance().getOrCreateServerWDPlayer(playerUUIDs.get(i));
 
             DungeonSession session = player.getCurrentDungeon();
             if (session != null) player.setCurrentLives(session.getLives());
@@ -67,13 +77,17 @@ public class WDPlayerManager {
         }
     }
 
-    public Map<String, WDPlayer> getPlayers() {return this.players;}
-    public void setPlayers(Map<String, WDPlayer> map) {this.players = map;}
+    public Map<String, WDPlayer> getServerPlayers() {
+        return this.serverPlayers;
+    }
+    public void setServerPlayers(Map<String, WDPlayer> map) {
+        this.serverPlayers = map;
+    }
     public static WDPlayerManager getInstance() {return INSTANCE;}
 
     public List<String> getPlayerNames(MinecraftServer server) {
         List<String> result = new ArrayList<>();
-        players.forEach((k,v) -> {
+        getServerPlayers().forEach((k,v) -> {
             result.add(server.getPlayerList().getPlayer(UUID.fromString(k)).getName().toString());
         });
         return result;
@@ -84,7 +98,7 @@ public class WDPlayerManager {
         if (event.getLevel() instanceof ServerLevel serverLevel && event.getPlayer() instanceof ServerPlayer serverPlayer) {
             WildDungeons.getLogger().info("FOUND BLOCK BREAK");
             event.setCanceled(isProtectedBlock(serverPlayer, event.getPos(), serverLevel));
-            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(serverPlayer);
+            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer);
             if (wdPlayer.getCurrentDungeon() == null) return;
             wdPlayer.getCurrentDungeon().getStats(wdPlayer).blocksBroken += 1;
 
@@ -100,7 +114,7 @@ public class WDPlayerManager {
     public static void onBlockPlace(BlockEvent.EntityPlaceEvent event) {
         if (event.getLevel() instanceof ServerLevel serverLevel && event.getEntity() instanceof ServerPlayer serverPlayer) {
             event.setCanceled(isProtectedBlock(serverPlayer, event.getPos(), serverLevel));
-            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(serverPlayer.getStringUUID());
+            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer.getStringUUID());
             if (wdPlayer.getCurrentDungeon() == null) return;
             wdPlayer.getCurrentDungeon().getStats(wdPlayer).blocksPlaced += 1;
         }
@@ -128,7 +142,7 @@ public class WDPlayerManager {
 
         if (room.getAlwaysBreakable().contains(pos)) return false;
 
-        WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(player.getStringUUID());
+        WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(player.getStringUUID());
         if (wdPlayer.getCurrentBranch() != null && !room.getBranch().hasPlayerVisited(player.getStringUUID())) return true;
 
         if (room.getDestructionRule() == DungeonRoomTemplate.DestructionRule.NONE) {
@@ -150,7 +164,7 @@ public class WDPlayerManager {
     @SubscribeEvent
     public static void onDeath(LivingDeathEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
-            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(player);
+            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(player);
             if (wdPlayer.getCurrentDungeon() == null) return;
 
             WildDungeons.getLogger().info("TESTING DEATH WITH DUNGEON LIVES: {}", wdPlayer.getCurrentDungeon().getLives());
@@ -205,7 +219,7 @@ public class WDPlayerManager {
     @SubscribeEvent
     public static void onMobDeath(LivingDeathEvent event) {
         if (event.getSource().getEntity() instanceof ServerPlayer serverPlayer) {
-            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(serverPlayer);
+            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer);
 
             if (wdPlayer.getCurrentDungeon() == null) return;
             wdPlayer.getCurrentDungeon().getStats(wdPlayer).mobsKilled += 1;
@@ -216,7 +230,7 @@ public class WDPlayerManager {
     @SubscribeEvent
     public static void onHit(LivingDamageEvent.Post event) {
         if (event.getSource().getEntity() instanceof ServerPlayer serverPlayer) {
-            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(serverPlayer);
+            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer);
             if (wdPlayer.getCurrentDungeon() == null || event.getSource().typeHolder().equals(DamageTypes.GENERIC_KILL)) return;
             wdPlayer.getCurrentDungeon().getStats(wdPlayer).damageDealt += event.getNewDamage();
         }
@@ -225,7 +239,7 @@ public class WDPlayerManager {
     @SubscribeEvent
     public static void onDamage(LivingDamageEvent.Post event) {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
-            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(serverPlayer);
+            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer);
             if (wdPlayer.getCurrentDungeon() == null) return;
             wdPlayer.getCurrentDungeon().getStats(wdPlayer).damageTaken += event.getNewDamage();
         }

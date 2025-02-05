@@ -302,7 +302,7 @@ public final class DynamicDimensionManager implements InfiniverseAPI
                 }
                 // save the world now or it won't be saved later and data that may be wanted to
                 // be kept may be lost
-                removedLevel.save(null, false, removedLevel.noSave());//todo this causes file not found errors when the level is removed
+                removedLevel.save(null, false, removedLevel.noSave()); //todo this causes file not found errors when the level is removed
 
                 // fire world unload event -- when the server stops, this would fire after
                 // worlds get saved, we'll do that here too

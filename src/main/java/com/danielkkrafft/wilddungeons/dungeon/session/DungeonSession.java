@@ -72,10 +72,10 @@ public class DungeonSession {
 
     }
 
-    public void generateFloor(int index, Consumer<Void> spawnPlayerCallback) {
+    public void generateFloor(int index) {
         WDProfiler.INSTANCE.start();
         if (generationFutures == null) generationFutures = new ArrayList<>();
-        generationFutures.add(getTemplate().floorTemplates().get(floors.size()).getRandom().placeInWorld(this, TemplateHelper.EMPTY_BLOCK_POS, onFirstBranchComplete(), onSequentialBranchComplete(spawnPlayerCallback), onCompleteCallback(index)));
+        generationFutures.add(getTemplate().floorTemplates().get(index).getRandom().placeInWorld(this, TemplateHelper.EMPTY_BLOCK_POS, onFirstBranchComplete(), onSequentialBranchComplete(spawnPlayersCallback()), onCompleteCallback(index)));
         WDProfiler.INSTANCE.logTimestamp("generateFloor");
         WDProfiler.INSTANCE.end();
     }
@@ -86,11 +86,11 @@ public class DungeonSession {
         };
     }
 
-    private Consumer<DungeonBranch> onSequentialBranchComplete(Consumer<Void> spawnPlayerCallback) {
+    private Consumer<DungeonBranch> onSequentialBranchComplete(Consumer<Integer> spawnPlayerCallback) {
         return (branch) -> {
             WildDungeons.getLogger().info("SEQUENTIAL BRANCH COMPLETE");
-            if (branch.getFloor().getActivePlayers().isEmpty() && branch.getFloor().getBranches().stream().mapToInt(b -> b.getRooms().size()).sum() > 10) {
-                spawnPlayerCallback.accept(null);
+            if (!playersWaitingToEnter.get(branch.getFloor().getIndex()).isEmpty() && branch.getFloor().getBranches().stream().mapToInt(b -> b.getRooms().size()).sum() > 10) {
+                spawnPlayerCallback.accept(branch.getFloor().getIndex());
             }
         };
     }
@@ -101,30 +101,40 @@ public class DungeonSession {
         };
     }
 
-    boolean generating = false;
-    public void onEnter(WDPlayer wdPlayer) {
-        if (generating) return;
-        PlayerStatus status = this.playerStatuses.get(wdPlayer.getUUID());
-        if (status !=null && status.inside) return;
-        if (floors.isEmpty()){
-            generating = true;
-            generateFloor(0, (v)->{
-                WildDungeons.getLogger().info("SPAWNING PLAYER IN DUNGEON");
-                playerStatuses.putIfAbsent(wdPlayer.getUUID(), new PlayerStatus());
-                this.playerStatuses.get(wdPlayer.getUUID()).inside = true;
-                playerStats.putIfAbsent(wdPlayer.getUUID(), new DungeonStats());
-                floors.getFirst().onEnter(wdPlayer);
-                this.addInitialLives(wdPlayer);
-                generating = false;
+    List<Set<WDPlayer>> playersWaitingToEnter = new ArrayList<>();
+    private Consumer<Integer> spawnPlayersCallback() {
+        return (i) -> {
+            DungeonSessionManager.getInstance().server.execute(() -> {
+                for (WDPlayer wdPlayer : playersWaitingToEnter.get(i)) {
+                    WildDungeons.getLogger().info("SPAWNING PLAYER IN DUNGEON");
+                    PlayerStatus status = this.playerStatuses.get(wdPlayer.getUUID());
+                    if (status == null) {
+                        playerStatuses.putIfAbsent(wdPlayer.getUUID(), new PlayerStatus());
+                        this.playerStatuses.get(wdPlayer.getUUID()).inside = true;
+                        playerStats.putIfAbsent(wdPlayer.getUUID(), new DungeonStats());
+                        this.addInitialLives(wdPlayer);
+                    }
+                    floors.get(i).onEnter(wdPlayer);
+                    playersWaitingToEnter.get(i).remove(wdPlayer);
+                    generating.set(i, false);
+                    shutdownTimer = SHUTDOWN_TIME;
+                }
             });
-        } else {
-            playerStatuses.putIfAbsent(wdPlayer.getUUID(), new PlayerStatus());
-            this.playerStatuses.get(wdPlayer.getUUID()).inside = true;
-            playerStats.putIfAbsent(wdPlayer.getUUID(), new DungeonStats());
-            floors.getFirst().onEnter(wdPlayer);
-            this.addInitialLives(wdPlayer);
+        };
+    }
+
+    List<Boolean> generating = new ArrayList<>();
+    public void onEnter(WDPlayer wdPlayer, int floorIndex) {
+        for (int i = this.getFloors().size(); i <= floorIndex; i++) {
+            generateFloor(i);
+            generating.add(true);
+            playersWaitingToEnter.add(new HashSet<>());
         }
-        shutdownTimer = SHUTDOWN_TIME;
+
+        Set<WDPlayer> playersList = playersWaitingToEnter.get(floorIndex);
+        playersList.add(wdPlayer);
+
+        if (!generating.get(floorIndex)) spawnPlayersCallback().accept(floorIndex);
     }
 
     public void onExit(WDPlayer wdPlayer) {
@@ -150,7 +160,7 @@ public class DungeonSession {
         WildDungeons.getLogger().info("OFFSETTING LIVES");
         this.lives += offset;
         for (String playerUUID : this.playerStatuses.keySet()) {
-            WDPlayer player = WDPlayerManager.getInstance().getOrCreateWDPlayer(playerUUID);
+            WDPlayer player = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(playerUUID);
             player.setCurrentLives(this.lives);
         }
         if (this.lives <= 0 && this.playerStatuses.values().stream().anyMatch(value -> value.inside)) {
@@ -173,7 +183,7 @@ public class DungeonSession {
     public Set<WDPlayer> getPlayers() {
         Set<WDPlayer> result = new HashSet<>();
         for (String uuid : this.playerStatuses.keySet()) {
-            result.add(WDPlayerManager.getInstance().getOrCreateWDPlayer(uuid));
+            result.add(WDPlayerManager.getInstance().getOrCreateServerWDPlayer(uuid));
         }
         return result;
     }
@@ -217,7 +227,7 @@ public class DungeonSession {
     }
 
     public void tick() {
-        if (playerStatuses.values().stream().noneMatch(v -> v.inside) && !floors.isEmpty()) {shutdownTimer -= 1;}
+        if (playerStatuses.values().stream().noneMatch(v -> v.inside) && !floors.isEmpty() && !generating.getFirst()) {shutdownTimer -= 1;}
         if (shutdownTimer == 0) {
             WildDungeons.getLogger().info("SHUTTING DOWN DUE TO TIMER");
             shutdown();return;}

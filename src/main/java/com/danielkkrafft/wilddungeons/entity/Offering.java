@@ -182,7 +182,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     public void playerTouch(Player player) {
         super.playerTouch(player);
         if (player instanceof ServerPlayer serverPlayer) {
-            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(serverPlayer);
+            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer);
             attemptPurchase(wdPlayer);
         }
     }
@@ -229,7 +229,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     }
 
     public void handleRift(WDPlayer wdPlayer) {
-        if (wdPlayer.getRiftCooldown() > 0 || this.offerID == null) {
+        if (wdPlayer.getRiftCooldown() > 0 || this.offerID == null || wdPlayer.getServerPlayer().gameMode.getGameModeForPlayer().equals(GameType.SPECTATOR)) {
             return;
         }
 
@@ -249,18 +249,6 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
                 dungeon.win();
             }
 
-            case "random" -> {
-                DungeonTemplate dungeonTemplate = DungeonPoolRegistry.TEST_DUNGEON_POOL.getRandom();
-                WildDungeons.getLogger().info("TRYING TO ENTER {}", dungeonTemplate.name());
-
-                DungeonSession dungeon = DungeonSessionManager.getInstance().getOrCreateDungeonSession(this.getStringUUID(), this.level().dimension(), dungeonTemplate.name());
-                wdPlayer.setLastGameMode(wdPlayer.getServerPlayer().gameMode.getGameModeForPlayer());
-                PacketDistributor.sendToPlayer(wdPlayer.getServerPlayer(), new ClientboundLoadingScreenPacket(new CompoundTag()));
-                wdPlayer.getServerPlayer().setGameMode(GameType.SPECTATOR);
-                dungeon.onEnter(wdPlayer);
-                wdPlayer.setRiftCooldown(100);
-            }
-
             default -> {
                 if (offerID.split("-")[0].equals("wd")) {
 
@@ -272,22 +260,18 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
                         wdPlayer.setLastGameMode(wdPlayer.getServerPlayer().gameMode.getGameModeForPlayer());
                         PacketDistributor.sendToPlayer(wdPlayer.getServerPlayer(), new ClientboundLoadingScreenPacket(new CompoundTag()));
                         wdPlayer.getServerPlayer().setGameMode(GameType.SPECTATOR);
-                        dungeon.onEnter(wdPlayer);
+                        dungeon.onEnter(wdPlayer, 0);
                         wdPlayer.setRiftCooldown(100);
                     }
 
                 } else {
-                    purchased = true;//prevent spamming the rift
                     DungeonSession dungeon = wdPlayer.getCurrentDungeon();
-                    while (dungeon.getFloors().size() <= Integer.parseInt(this.offerID))
-                        dungeon.generateFloor(dungeon.getFloors().size(), (v) -> {
-                            WildDungeons.getLogger().info("TRYING TO ENTER FLOOR: {}", Integer.parseInt(this.offerID));
-                            DungeonFloor newFloor = dungeon.getFloors().get(Integer.parseInt(this.offerID));
-                            wdPlayer.setLastGameMode(wdPlayer.getServerPlayer().gameMode.getGameModeForPlayer());
-                            PacketDistributor.sendToPlayer(wdPlayer.getServerPlayer(), new ClientboundLoadingScreenPacket(new CompoundTag()));
-                            wdPlayer.getServerPlayer().setGameMode(GameType.SPECTATOR);
-                            newFloor.onEnter(wdPlayer);
-                        });
+                    WildDungeons.getLogger().info("TRYING TO ENTER FLOOR: {}", Integer.parseInt(this.offerID));
+                    wdPlayer.setLastGameMode(wdPlayer.getServerPlayer().gameMode.getGameModeForPlayer());
+                    PacketDistributor.sendToPlayer(wdPlayer.getServerPlayer(), new ClientboundLoadingScreenPacket(new CompoundTag()));
+                    wdPlayer.getServerPlayer().setGameMode(GameType.SPECTATOR);
+                    dungeon.onEnter(wdPlayer, Integer.parseInt(this.offerID));
+                    wdPlayer.setRiftCooldown(100);
                 }
             }
         }

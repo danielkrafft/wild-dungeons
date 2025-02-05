@@ -64,7 +64,7 @@ public class DungeonBranch {
         return (this.getFloor().getDifficulty() * this.getTemplate().difficulty()) * Math.max(Math.pow(this.getDifficultyScaling(), totalBranches), 1);
     }
     public List<WDPlayer> getActivePlayers() {return this.playerStatuses.entrySet().stream().map(e -> {
-        if (e.getValue().inside) return WDPlayerManager.getInstance().getOrCreateWDPlayer(e.getKey());
+        if (e.getValue().inside) return WDPlayerManager.getInstance().getOrCreateServerWDPlayer(e.getKey());
         return null;
     }).filter(Objects::nonNull).toList();}
     public List<DungeonRoom> getRooms() {return this.branchRooms;}

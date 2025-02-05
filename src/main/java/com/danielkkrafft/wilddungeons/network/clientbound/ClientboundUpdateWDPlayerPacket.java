@@ -24,6 +24,6 @@ public record ClientboundUpdateWDPlayerPacket(CompoundTag data) implements Custo
     }
 
     public void handle(IPayloadContext context) {
-        context.enqueueWork(() -> WDPlayerManager.getInstance().replaceWDPlayer(context.player().getStringUUID(), Serializer.fromCompoundTag(data)));
+        context.enqueueWork(() -> WDPlayerManager.getInstance().replaceClientPlayer(Serializer.fromCompoundTag(data)));
     }
 }

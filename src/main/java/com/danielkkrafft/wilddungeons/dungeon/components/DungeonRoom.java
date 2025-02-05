@@ -60,88 +60,29 @@ public class DungeonRoom {
     @IgnoreSerialization
     protected DungeonBranch branch = null;
 
-    public DungeonRoomTemplate getTemplate() {
-        return DUNGEON_ROOM_REGISTRY.get(this.templateKey);
-    }
-
-    public DungeonSession getSession() {
-        return DungeonSessionManager.getInstance().getDungeonSession(this.sessionKey);
-    }
-
-    public DungeonBranch getBranch() {
-        return this.branch != null ? this.branch : this.getSession().getFloors().get(this.floorIndex).getBranches().get(this.branchIndex);
-    }
-
-    public DungeonMaterial getMaterial() {
-        return DUNGEON_MATERIAL_REGISTRY.get(this.materialKey);
-    }
-
-    public boolean hasBedrockShell() {
-        return this.getTemplate().hasBedrockShell() == null ? this.getBranch().hasBedrockShell() : this.getTemplate().hasBedrockShell();
-    }
-
-    public DungeonRoomTemplate.DestructionRule getDestructionRule() {
-        return this.getTemplate().getDestructionRule() == null ? this.getBranch().getDestructionRule() : this.getTemplate().getDestructionRule();
-    }
-
-    public WeightedTable<DungeonRegistration.TargetTemplate> getEnemyTable() {
-        return this.getTemplate().enemyTable() == null ? this.getBranch().getEnemyTable() : this.getTemplate().enemyTable();
-    }
-
-    public double getDifficulty() {
-        return this.getBranch().getDifficulty() * this.getTemplate().difficulty();
-    }
-
-    public boolean isRotated() {
-        return rotation == Rotation.CLOCKWISE_90.getSerializedName() || rotation == Rotation.COUNTERCLOCKWISE_90.getSerializedName();
-    }
-
-    public StructurePlaceSettings getSettings() {
-        return new StructurePlaceSettings().setMirror(Mirror.valueOf(this.mirror)).setRotation(Rotation.valueOf(this.rotation));
-    }
-
-    public List<ConnectionPoint> getConnectionPoints() {
-        return this.connectionPoints;
-    }
-
-    public List<String> getRiftUUIDs() {
-        return this.riftUUIDs;
-    }
-
-    public List<String> getOfferingUUIDs() {
-        return this.offeringUUIDs;
-    }
-
-    public List<BoundingBox> getBoundingBoxes() {
-        return this.boundingBoxes;
-    }
-
-    public int getIndex() {
-        return this.index;
-    }
-
-    public void setIndex(int index) {
-        this.index = index;
-    }
-
-    public List<WDPlayer> getActivePlayers() {
-        return this.playerStatuses.entrySet().stream().map(e -> {
-            if (e.getValue().inside) return WDPlayerManager.getInstance().getOrCreateWDPlayer(e.getKey());
-            return null;
-        }).filter(Objects::nonNull).toList();
-    }
-
-    public boolean isClear() {
-        return this.clear;
-    }
-
-    public Set<BlockPos> getAlwaysBreakable() {
-        return this.alwaysBreakable;
-    }
-
-    public BlockPos getPosition() {
-        return this.position;
-    }
+    public DungeonRoomTemplate getTemplate() {return DUNGEON_ROOM_REGISTRY.get(this.templateKey);}
+    public DungeonSession getSession() {return DungeonSessionManager.getInstance().getDungeonSession(this.sessionKey);}
+    public DungeonBranch getBranch() {return this.branch != null ? this.branch : this.getSession().getFloors().get(this.floorIndex).getBranches().get(this.branchIndex);}
+    public DungeonMaterial getMaterial() {return DUNGEON_MATERIAL_REGISTRY.get(this.materialKey);}
+    public boolean hasBedrockShell() {return this.getTemplate().hasBedrockShell() == null ? this.getBranch().hasBedrockShell() : this.getTemplate().hasBedrockShell();}
+    public DungeonRoomTemplate.DestructionRule getDestructionRule() {return this.getTemplate().getDestructionRule() == null ? this.getBranch().getDestructionRule() : this.getTemplate().getDestructionRule();}
+    public WeightedTable<DungeonRegistration.TargetTemplate> getEnemyTable() {return this.getTemplate().enemyTable() == null ? this.getBranch().getEnemyTable() : this.getTemplate().enemyTable();}
+    public double getDifficulty() {return this.getBranch().getDifficulty() * this.getTemplate().difficulty();}
+    public boolean isRotated() {return rotation == Rotation.CLOCKWISE_90.getSerializedName() || rotation == Rotation.COUNTERCLOCKWISE_90.getSerializedName();}
+    public StructurePlaceSettings getSettings() {return new StructurePlaceSettings().setMirror(Mirror.valueOf(this.mirror)).setRotation(Rotation.valueOf(this.rotation));}
+    public List<ConnectionPoint> getConnectionPoints() {return this.connectionPoints;}
+    public List<String> getRiftUUIDs() {return this.riftUUIDs;}
+    public List<String> getOfferingUUIDs() {return this.offeringUUIDs;}
+    public List<BoundingBox> getBoundingBoxes() {return this.boundingBoxes;}
+    public int getIndex() {return this.index;}
+    public void setIndex(int index) {this.index = index;}
+    public List<WDPlayer> getActivePlayers() {return this.playerStatuses.entrySet().stream().map(e -> {
+        if (e.getValue().inside) return WDPlayerManager.getInstance().getOrCreateServerWDPlayer(e.getKey());
+        return null;
+    }).filter(Objects::nonNull).toList();}
+    public boolean isClear() {return this.clear;}
+    public Set<BlockPos> getAlwaysBreakable() {return this.alwaysBreakable;}
+    public BlockPos getPosition() {return this.position;}
 
 
     public DungeonRoom(DungeonBranch branch, String templateKey, BlockPos position, StructurePlaceSettings settings, List<ConnectionPoint> allConnectionPoints) {
@@ -184,9 +125,7 @@ public class DungeonRoom {
         if (getTemplate().spawnPoint() != null) {
             this.spawnPoint = TemplateHelper.transform(getTemplate().spawnPoint(), this);
             level.setBlock(spawnPoint, Blocks.AIR.defaultBlockState(), 2);
-        } else {
-            this.spawnPoint = null;
-        }
+        } else {this.spawnPoint = null;}
 
         this.handleChunkMap();
         WDProfiler.INSTANCE.logTimestamp("DungeonRoom::new");
@@ -237,16 +176,15 @@ public class DungeonRoom {
         getTemplate().rifts().forEach(pos -> {
             String destination;
             if (this.getBranch().getIndex() == 0) {
-                destination = String.valueOf(this.getBranch().getFloor().getIndex() - 1);
-            } else if (this.getBranch().getFloor().getIndex() == this.getBranch().getFloor().getSession().getTemplate().floorTemplates().size() - 1) {
+                destination = String.valueOf(this.getBranch().getFloor().getIndex()-1);
+            } else if (this.getBranch().getFloor().getIndex() == this.getBranch().getFloor().getSession().getTemplate().floorTemplates().size()-1) {
                 destination = "win";
             } else {
-                destination = String.valueOf(this.getBranch().getFloor().getIndex() + 1);
+                destination = String.valueOf(this.getBranch().getFloor().getIndex()+1);
             }
 
             Offering rift = new Offering(this.getBranch().getFloor().getLevel(), Offering.Type.RIFT, 1, destination, Offering.CostType.XP_LEVEL, 0);
-            Vec3 pos1 = StructureTemplate.transform(pos, this.getSettings().getMirror(), this.getSettings().getRotation(), TemplateHelper.EMPTY_BLOCK_POS).add(this.position.getX(), this.position.getY(), this.position.getZ());
-            WildDungeons.getLogger().info("ADDING RIFT AT {}", pos1);
+            Vec3 pos1 = StructureTemplate.transform(pos, this.getSettings().getMirror(), this.getSettings().getRotation(), TemplateHelper.EMPTY_BLOCK_POS).add(this.position.getX(), this.position.getY(), this.position.getZ());            WildDungeons.getLogger().info("ADDING RIFT AT {}", pos1);
             rift.setPos(pos1);
             this.getBranch().getFloor().getLevel().addFreshEntity(rift);
             this.riftUUIDs.add(rift.getStringUUID());
@@ -287,10 +225,10 @@ public class DungeonRoom {
 
     public List<BlockPos> sampleSpawnablePositions(ServerLevel level, int count) {
         List<BlockPos> result = new ArrayList<>();
-        int tries = count * 10;
+        int tries = count*10;
         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
         while (result.size() < count && tries > 0) {
-            BoundingBox innerShell = this.boundingBoxes.get(RandomUtil.randIntBetween(0, this.boundingBoxes.size() - 1)).inflatedBy(-1);
+            BoundingBox innerShell = this.boundingBoxes.get(RandomUtil.randIntBetween(0, this.boundingBoxes.size()-1)).inflatedBy(-1);
             int randX = RandomUtil.randIntBetween(innerShell.minX(), innerShell.maxX());
             int randZ = RandomUtil.randIntBetween(innerShell.minZ(), innerShell.maxZ());
 
@@ -435,9 +373,7 @@ public class DungeonRoom {
         return false;
     }
 
-    public void onGenerate() {
-    }
-
+    public void onGenerate() {}
     public void onEnter(WDPlayer player) {
         WildDungeons.getLogger().info("ENTERING ROOM {} OF CLASS {}", this.getTemplate().name(), this.getClass().getSimpleName());
         playerStatuses.computeIfAbsent(player.getUUID(), key -> {
@@ -469,7 +405,7 @@ public class DungeonRoom {
         if (this.playerStatuses.values().stream().noneMatch(v -> v.inside)) return;
         playerStatuses.forEach((key, value) -> {
             if (!value.insideShell) {
-                WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(key);
+                WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(key);
                 ServerPlayer player = wdPlayer.getServerPlayer();
                 if (player != null && this.isPosInsideShell(player.blockPosition())) {
                     value.insideShell = true;

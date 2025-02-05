@@ -223,7 +223,7 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
 
     public void renderBubble(Offering entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
         if (entity.isLookingAtMe(Minecraft.getInstance().player) && entity.getCostAmount() > 0) {
-            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateWDPlayer(Minecraft.getInstance().player);
+            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateClientWDPlayer(Minecraft.getInstance().player);
 
             String text = "x " + entity.getCostAmount();
             int textWidth = Minecraft.getInstance().font.width(text);

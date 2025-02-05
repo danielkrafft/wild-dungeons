@@ -32,6 +32,7 @@ public class WDPlayer {
     private String UUID;
     private int riftCooldown = 100;
     private String currentDungeon = "none";
+    private String currentDungeonKey = "none";
     private int currentFloor = -1;
     private int currentBranch = -1;
     private int currentRoom = -1;
@@ -58,6 +59,7 @@ public class WDPlayer {
         return Objects.equals(this.currentDungeon, "none") ? null : DungeonSessionManager.getInstance().getDungeonSession(this.currentDungeon);}
     public void setCurrentDungeon(DungeonSession session) {
         this.currentDungeon = session == null ? "none" : DungeonSessionManager.buildDungeonSessionKey(session.getEntranceUUID());
+        this.currentDungeonKey = this.currentDungeon;
     }
     public DungeonFloor getCurrentFloor() {return this.currentFloor == -1 ? null : this.getCurrentDungeon().getFloors().get(this.currentFloor);}
     public void setCurrentFloor(DungeonFloor floor) {this.currentFloor = floor == null ? -1 : floor.getIndex();}
@@ -72,8 +74,9 @@ public class WDPlayer {
     public void setCurrentLives(int currentLives) {this.currentLives = currentLives;}
 
     public ServerPlayer getServerPlayer() {return DungeonSessionManager.getInstance().server.getPlayerList().getPlayer(java.util.UUID.fromString(this.UUID));}
-
-    public WDPlayer(String playerUUID){this.UUID = playerUUID;}
+    public WDPlayer(String playerUUID){
+        this.UUID = playerUUID;
+    }
 
     public void tick() {
         if (riftCooldown > 0) {
