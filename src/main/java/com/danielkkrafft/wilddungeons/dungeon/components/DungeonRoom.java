@@ -128,13 +128,15 @@ public class DungeonRoom {
         } else {this.spawnPoint = null;}
 
         this.handleChunkMap();
-        if (this.hasBedrockShell()) this.surroundWith(Blocks.BEDROCK.defaultBlockState());
         WDProfiler.INSTANCE.logTimestamp("DungeonRoom::new");
+    }
+
+    public void processShell() {
+        if (this.hasBedrockShell()) this.surroundWith(Blocks.BEDROCK.defaultBlockState());
     }
 
     public void surroundWith(BlockState blockState) {
         ServerLevel level = this.getBranch().getFloor().getLevel();
-
         for (BoundingBox box : this.getBoundingBoxes()) {
             surroundBoxWith(this.getBranch().getFloor(), level, box, blockState);
         }
@@ -143,19 +145,20 @@ public class DungeonRoom {
     public static void surroundBoxWith(DungeonFloor floor, ServerLevel level, BoundingBox box, BlockState blockState) {
         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
 
-        int[] minX = {box.minX(), box.minX(), box.minY(), box.minY(), box.minZ(), box.minZ()};
-        int[] minY = {box.minZ(), box.minZ(), box.minX(), box.minX(), box.minY(), box.minY()};
-        int[] maxX = {box.maxX(), box.maxX(), box.maxY(), box.maxY(), box.maxZ(), box.maxZ()};
-        int[] maxY = {box.maxZ(), box.maxZ(), box.maxX(), box.maxX(), box.maxY(), box.maxY()};
-        int[] minZ = {box.minY()-1, box.maxY()+1, box.minZ()-1, box.maxZ()+1, box.minX()-1, box.maxX()+1};
+        int[] minX = {box.minX() - 1, box.minX() - 1, box.minY() - 1, box.minY() - 1, box.minZ() - 1, box.minZ() - 1};
+        int[] minY = {box.minZ() - 1, box.minZ() - 1, box.minX() - 1, box.minX() - 1, box.minY() - 1, box.minY() - 1};
+        int[] maxX = {box.maxX() + 1, box.maxX() + 1, box.maxY() + 1, box.maxY() + 1, box.maxZ() + 1, box.maxZ() + 1};
+        int[] maxY = {box.maxZ() + 1, box.maxZ() + 1, box.maxX() + 1, box.maxX() + 1, box.maxY() + 1, box.maxY() + 1};
+        //determines how far outside the bounding box to start placing blocks
+        int[] wallOffset = {box.minY() - 1, box.maxY() + 1, box.minZ() - 1, box.maxZ() + 1, box.minX() - 1, box.maxX() + 1};
 
         for (int i = 0; i < 6; i++) {
             for (int x = minX[i]; x <= maxX[i]; x++) {
                 for (int y = minY[i]; y <= maxY[i]; y++) {
-                    switch(i) {
-                        case 0,1 -> mutableBlockPos.set(x, minZ[i], y);
-                        case 2,3 -> mutableBlockPos.set(y, x, minZ[i]);
-                        case 4,5 -> mutableBlockPos.set(minZ[i], y, x);
+                    switch (i) {
+                        case 0, 1 -> mutableBlockPos.set(x, wallOffset[i], y);
+                        case 2, 3 -> mutableBlockPos.set(y, x, wallOffset[i]);
+                        case 4, 5 -> mutableBlockPos.set(wallOffset[i], y, x);
                     }
                     List<BoundingBox> potentialConflicts = new ArrayList<>();
                     floor.getChunkMap().getOrDefault(new ChunkPos(mutableBlockPos), new ArrayList<>()).forEach(vector2i -> {
@@ -231,11 +234,9 @@ public class DungeonRoom {
 
             for (int y = innerShell.minY(); y < innerShell.maxY(); y++) {
                 mutableBlockPos.set(randX, y, randZ);
-                if (level.getBlockState(mutableBlockPos) == Blocks.AIR.defaultBlockState())
-                {
-                    mutableBlockPos.set(randX, y+1, randZ);
-                    if (level.getBlockState(mutableBlockPos) == Blocks.AIR.defaultBlockState())
-                    {
+                if (level.getBlockState(mutableBlockPos) == Blocks.AIR.defaultBlockState()) {
+                    mutableBlockPos.set(randX, y + 1, randZ);
+                    if (level.getBlockState(mutableBlockPos) == Blocks.AIR.defaultBlockState()) {
                         result.add(mutableBlockPos.below());
                         break;
                     }
@@ -261,17 +262,17 @@ public class DungeonRoom {
         //get a random number, between 1 and the number of loot blocks, but not more than 5
         int countedChests = RandomUtil.randIntBetween(1, Math.min(5, lootBlockEntities.size()));
         //determine the amount of items, between 3 and 10 times the number of counted chests
-        int maxItems = RandomUtil.randIntBetween(3*countedChests, 10*countedChests);
+        int maxItems = RandomUtil.randIntBetween(3 * countedChests, 10 * countedChests);
         //get loot entries from the loot table registry
         List<DungeonRegistration.LootEntry> entries = LootTableRegistry.BASIC_LOOT_TABLE.randomResults(maxItems, (int) (5 * this.getDifficulty()), 2f);
         //for each entry, place it in a random chest
         entries.forEach(entry -> {
             //get a random chest
-            BaseContainerBlockEntity lootBlock = (BaseContainerBlockEntity)lootBlockEntities.get(RandomUtil.randIntBetween(0, lootBlockEntities.size()-1));
-            int slot = RandomUtil.randIntBetween(0, lootBlock.getContainerSize()-1);
+            BaseContainerBlockEntity lootBlock = (BaseContainerBlockEntity) lootBlockEntities.get(RandomUtil.randIntBetween(0, lootBlockEntities.size() - 1));
+            int slot = RandomUtil.randIntBetween(0, lootBlock.getContainerSize() - 1);
             //make sure the slot is empty to prevent overwriting existing loot
             while (!lootBlock.getItem(slot).isEmpty()) {
-                slot = RandomUtil.randIntBetween(0, lootBlock.getContainerSize()-1);
+                slot = RandomUtil.randIntBetween(0, lootBlock.getContainerSize() - 1);
             }
             lootBlock.setItem(slot, entry.asItemStack());
         });
@@ -361,7 +362,7 @@ public class DungeonRoom {
                     boolean zConnected = otherBox.inflatedBy(0, 0, 1).isInside(pos);
 
                     //Only one axis is connected, indicating it's adjacent to another box, but not a corner
-                    if ((xConnected ? 1 : 0) + (yConnected ? 1: 0) + (zConnected ? 1 : 0) == 1) {
+                    if ((xConnected ? 1 : 0) + (yConnected ? 1 : 0) + (zConnected ? 1 : 0) == 1) {
                         if (box.inflatedBy(xConnected ? 0 : -1, yConnected ? 0 : -1, zConnected ? 0 : -1).isInside(pos)) {
                             return true;
                         }
@@ -375,20 +376,31 @@ public class DungeonRoom {
     public void onGenerate() {}
     public void onEnter(WDPlayer player) {
         WildDungeons.getLogger().info("ENTERING ROOM {} OF CLASS {}", this.getTemplate().name(), this.getClass().getSimpleName());
-        playerStatuses.computeIfAbsent(player.getUUID(), key -> {getSession().getStats(key).roomsFound += 1; return new DungeonSession.PlayerStatus();});
+        playerStatuses.computeIfAbsent(player.getUUID(), key -> {
+            getSession().getStats(key).roomsFound += 1;
+            return new DungeonSession.PlayerStatus();
+        });
         this.playerStatuses.get(player.getUUID()).inside = true;
     }
-    public void onBranchEnter(WDPlayer player) {}
+
+    public void onBranchEnter(WDPlayer player) {
+    }
+
     public void onEnterInner(WDPlayer player) {
     }
+
     public void onExit(WDPlayer player) {
         this.playerStatuses.get(player.getUUID()).inside = false;
         this.playerStatuses.get(player.getUUID()).insideShell = false;
     }
+
     public void onClear() {
         this.clear = true;
     }
-    public void reset() {}
+
+    public void reset() {
+    }
+
     public void tick() {
         if (this.playerStatuses.values().stream().noneMatch(v -> v.inside)) return;
         playerStatuses.forEach((key, value) -> {
@@ -399,6 +411,22 @@ public class DungeonRoom {
                     value.insideShell = true;
                     this.onEnterInner(wdPlayer);
                 }
+            }
+        });
+    }
+
+    public void unsetAttachedPoints() {
+        getConnectionPoints().forEach(connectionPoint -> {
+            if (connectionPoint.isConnected()) {
+                connectionPoint.getConnectedPoint().unSetConnectedPoint();
+            }
+        });
+    }
+
+    public void unsetConnectedPoints() {
+        getConnectionPoints().forEach(connectionPoint -> {
+            if (connectionPoint.isConnected() && connectionPoint.getConnectedBranchIndex() == this.index) {
+                connectionPoint.unSetConnectedPoint();
             }
         });
     }

@@ -200,7 +200,6 @@ public class DungeonFloor {
             });
 
             DungeonRoom.surroundBoxWith(this, this.getLevel(), box, Blocks.AIR.defaultBlockState());
-            //TODO needs to replace bedrock after unwrapping also needs to delete red doors
 
             DungeonRoom.removeBlocks(this,box);
         });
@@ -210,6 +209,12 @@ public class DungeonFloor {
 
     public void validateAndRegen(Consumer<Void> onComplete) {
         DungeonFloorTemplate template = this.getTemplate();
+        for (DungeonBranch dungeonBranch : dungeonBranches) {
+            for (DungeonRoom room : dungeonBranch.getRooms()) {
+                room.processConnectionPoints(this);
+                room.processShell();
+            }
+        }
         int branchCount = this.dungeonBranches.size();
         int branchTemplateCount = template.branchTemplates().size();
         if (branchCount < branchTemplateCount) {

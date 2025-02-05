@@ -73,6 +73,7 @@ public class SaveSystem {
                         WildDungeons.getLogger().info("Skipping branch {} because it is not fully generated", branch.getIndex());
                         floorFile.floor.halfGeneratedRooms = new ArrayList<>();
                         branch.getRooms().forEach(dungeonRoom -> {
+                            dungeonRoom.unsetAttachedPoints();
                             floorFile.floor.halfGeneratedRooms.addAll(dungeonRoom.getBoundingBoxes());
                         });
                         floorFile.floor.getChunkMap().forEach((key, value) -> {

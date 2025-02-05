@@ -104,7 +104,10 @@ public class DungeonBranch {
             return false;
         }
 
-        this.branchRooms.forEach(room -> room.processConnectionPoints(floor));
+        this.branchRooms.forEach(room -> {
+            room.processConnectionPoints(floor);
+            room.processShell();
+        });
 
         setupBoundingBox();
         this.spawnPoint = floor.getBranches().size() == 1 ? this.branchRooms.getFirst().getSpawnPoint(floor.getLevel()) : floor.getBranches().getLast().branchRooms.getLast().getSpawnPoint(floor.getLevel());
@@ -116,13 +119,7 @@ public class DungeonBranch {
 
     public void destroy() {
         if (index-1>=0)
-            this.getFloor().getBranches().get(this.index-1).getRooms().forEach(dungeonRoom -> {
-                    dungeonRoom.getConnectionPoints().forEach(connectionPoint -> {
-                        if (connectionPoint.isConnected() && connectionPoint.getConnectedBranchIndex() == this.index) {
-                            connectionPoint.unSetConnectedPoint();
-                        }
-                    });
-                });
+            this.getFloor().getBranches().get(this.index-1).getRooms().forEach(DungeonRoom::unsetConnectedPoints);
         branchRooms.forEach(DungeonRoom::destroy);
         branchRooms.clear();
         openConnections = 0;

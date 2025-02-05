@@ -19,6 +19,7 @@ import static com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession.Dung
 
 public final class DungeonTemplate implements DungeonComponent {
     private String name;
+    private String displayName;
     private String openBehavior = DungeonOpenBehavior.NONE;
     private DungeonLayout<DungeonFloorTemplate> floorTemplates = new DungeonLayout<DungeonFloorTemplate>().add(TEST_FLOOR_POOL, 1);
     private WeightedPool<DungeonMaterial> materials = ALL_MATERIAL_POOL;
@@ -90,6 +91,9 @@ public final class DungeonTemplate implements DungeonComponent {
 
     public DungeonRoomTemplate.DestructionRule getDestructionRule() {return this.destructionRule;}
 
+    public String displayName() {
+        return displayName;
+    }
     @Override
     public boolean equals(Object obj) {
         if (obj == this) return true;
@@ -190,6 +194,11 @@ public final class DungeonTemplate implements DungeonComponent {
 
     public DungeonTemplate setDestructionRule(DungeonRoomTemplate.DestructionRule rule) {
         this.destructionRule = rule;
+        return this;
+    }
+
+    public DungeonTemplate setDisplayName(String displayName) {
+        this.displayName = displayName;
         return this;
     }
 }
