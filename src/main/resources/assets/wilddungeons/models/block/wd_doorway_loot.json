@@ -1,0 +1,7 @@
+﻿{
+  "render_type": "minecraft:translucent",
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "wilddungeons:block/wd_doorway_loot"
+  }
+}

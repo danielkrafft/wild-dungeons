@@ -1,0 +1,10 @@
+﻿{
+  "variants": {
+    "door_type=combat": {
+      "model": "wilddungeons:block/wd_doorway_combat"
+    },
+    "door_type=loot": {
+      "model": "wilddungeons:block/wd_doorway_loot"
+    }
+  }
+}

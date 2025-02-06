@@ -277,7 +277,11 @@ public class DungeonRoom {
         for (ConnectionPoint point : connectionPoints) {
             point.setupBlockstates(getSettings(), getPosition(), this.getBranch().getFloor().getLevel());
             if (point.isConnected()) {
-                point.unBlock(floor.getLevel());
+                switch (getTemplate().type()){
+                    case COMBAT -> point.combatRoomUnblock(floor.getLevel());
+                    case LOOT -> point.lootRoomUnblock(floor.getLevel());
+                    case null, default -> point.unBlock(floor.getLevel());
+                }
                 ConnectionPoint otherPoint = point.getConnectedPoint();
                 otherPoint.unBlock(floor.getLevel());
             }
@@ -386,6 +390,7 @@ public class DungeonRoom {
         this.boundingBoxes.forEach(box -> {
             removeBlocks(this.getBranch().getFloor(), box);
         });
+        unsetAttachedPoints();
         branch.getFloor().getChunkMap().forEach((key, value) -> {
             value.removeIf(v -> v.x == branch.getIndex() && v.y == this.index);
         });

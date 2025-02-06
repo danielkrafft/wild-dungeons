@@ -60,7 +60,7 @@ public class LockableEventRoom extends DungeonRoom {
         WildDungeons.getLogger().info("LOCKABLE ROOM TICKING");
 
         if (!this.started && this.startCooldown > 0) {
-            this.startCooldown-=1;
+            this.startCooldown -= 1;
             if (this.getActivePlayers().size() >= this.getBranch().getActivePlayers().size() + this.getBranch().getFloor().getBranches().get(this.getBranch().getIndex() - 1).getActivePlayers().size()) {
                 this.startCooldown -= 5;
             }
@@ -79,7 +79,6 @@ public class LockableEventRoom extends DungeonRoom {
         this.getConnectionPoints().forEach(point -> {
             if (point.isConnected()) {
                 point.unBlock(this.getBranch().getFloor().getLevel());
-                point.getConnectedPoint().unBlock(this.getBranch().getFloor().getLevel());
             }
         });
     }
@@ -102,9 +101,18 @@ public class LockableEventRoom extends DungeonRoom {
         super.onBranchEnter(wdPlayer);
         if (this.generated) return;
         this.getConnectionPoints().forEach(point -> {
-            if (point.isConnected() && (((point.getConnectedPoint().getRoom().getIndex() > this.getIndex() && point.getConnectedPoint().getBranchIndex() == this.getBranch().getIndex()))
-                || point.getConnectedPoint().getBranchIndex() > this.getBranch().getIndex())) {
-                point.block(this.getBranch().getFloor().getLevel());
+            if (point.isConnected()) {
+                if (((point.getConnectedPoint().getRoom().getIndex() > this.getIndex()
+                        && point.getConnectedPoint().getBranchIndex() == this.getBranch().getIndex()))
+                        || point.getConnectedPoint().getBranchIndex() > this.getBranch().getIndex()) {
+                    point.block(this.getBranch().getFloor().getLevel());
+                } else {
+                    switch (getTemplate().type()) {
+                        case COMBAT -> point.combatRoomUnblock(this.getBranch().getFloor().getLevel());
+                        case LOOT -> point.lootRoomUnblock(this.getBranch().getFloor().getLevel());
+                        case null, default -> point.unBlock(this.getBranch().getFloor().getLevel());
+                    }
+                }
             }
         });
         this.generated = true;

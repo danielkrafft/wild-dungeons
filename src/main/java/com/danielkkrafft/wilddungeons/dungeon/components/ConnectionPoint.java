@@ -1,6 +1,7 @@
 package com.danielkkrafft.wilddungeons.dungeon.components;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.block.DoorwayBlock;
 import com.danielkkrafft.wilddungeons.block.WDBedrockBlock;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
@@ -101,18 +102,6 @@ public class ConnectionPoint {
         }
         return result;
     }
-
-//    public List<BlockPos> getPositions(BoundingBox custom) {
-//        List<BlockPos> result = new ArrayList<>();
-//        for (int x = custom.minX(); x < custom.maxX(); x++) {
-//            for (int y = custom.minY(); y < custom.maxY(); y++) {
-//                for (int z = custom.minZ(); z < custom.maxZ(); z++) {
-//                    result.add(new BlockPos(x, y , z));
-//                }
-//            }
-//        }
-//        return result;
-//    }
 
     public Direction getDirection(StructurePlaceSettings settings) {
         Direction direction;
@@ -260,6 +249,14 @@ public class ConnectionPoint {
 
     public void loadingBlock(ServerLevel level) {
         unBlockedBlockStates.forEach((pos, blockState) -> level.setBlock(pos, Blocks.REDSTONE_BLOCK.defaultBlockState(), 2));
+    }
+
+    public void combatRoomUnblock(ServerLevel level) {
+        unBlockedBlockStates.forEach((pos, blockState) -> level.setBlock(pos, DoorwayBlock.of(DoorwayBlock.DoorType.COMBAT), 2));
+    }
+
+    public void lootRoomUnblock(ServerLevel level) {
+        unBlockedBlockStates.forEach((pos, blockState) -> level.setBlock(pos, DoorwayBlock.of(DoorwayBlock.DoorType.LOOT), 2));
     }
 
     public void unSetConnectedPoint() {

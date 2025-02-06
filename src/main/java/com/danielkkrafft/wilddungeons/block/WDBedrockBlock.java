@@ -18,7 +18,7 @@ import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.BlockHitResult;
 
 public class WDBedrockBlock extends Block {
-    public static final IntegerProperty MIMIC = IntegerProperty.create("mimic", 0, 2000);//currently there are 1020 blocks in the game
+    public static final IntegerProperty MIMIC = IntegerProperty.create("mimic", 0, 2000);//currently there are 1060 blocks in the game
 
     public WDBedrockBlock(Properties properties) {
         super(properties);
