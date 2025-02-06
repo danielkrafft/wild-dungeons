@@ -148,20 +148,18 @@ public class WDPlayerManager {
         WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(player.getStringUUID());
         if (wdPlayer.getCurrentBranch() != null && !room.getBranch().hasPlayerVisited(player.getStringUUID())) return true;
 
-        if (room.getDestructionRule() == DungeonRoomTemplate.DestructionRule.NONE) {
-            return false;
-        }
-
-        if (room.getDestructionRule() == DungeonRoomTemplate.DestructionRule.SHELL) {
-            if (room.isPosInsideShell(pos)) return false;
-        }
-
-        if (room.getDestructionRule() == DungeonRoomTemplate.DestructionRule.SHELL_CLEAR && room.isClear()) {
-            return false;
-        }
-
-        WildDungeons.getLogger().info("POSITION IS PROTECTED");
-        return true;
+//        if (room.getDestructionRule() == DungeonRoomTemplate.DestructionRule.NONE) {
+//            return false;
+//        }
+//
+//        if (room.getDestructionRule() == DungeonRoomTemplate.DestructionRule.SHELL) {
+//            if (room.isPosInsideShell(pos)) return false;
+//        }
+//
+//        if (room.getDestructionRule() == DungeonRoomTemplate.DestructionRule.SHELL_CLEAR && room.isClear()) {
+//            return false;
+//        }
+        return false;
     }
 
     @SubscribeEvent

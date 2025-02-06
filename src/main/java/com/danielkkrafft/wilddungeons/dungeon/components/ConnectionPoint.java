@@ -1,6 +1,7 @@
 package com.danielkkrafft.wilddungeons.dungeon.components;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.block.WDBedrockBlock;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
@@ -234,7 +235,13 @@ public class ConnectionPoint {
                 wdPlayer.getServerPlayer().moveTo(newPosition);
             }
         });
-        getPositions(this.getRoom().getSettings(), this.getRoom().getPosition()).forEach((pos) -> level.setBlock(pos, this.getRoom().getMaterial().getBasic(0), 2));
+        getPositions(this.getRoom().getSettings(), this.getRoom().getPosition()).forEach((pos) -> {
+            if (this.getRoom().getDestructionRule().equals(DungeonRoomTemplate.DestructionRule.SHELL) || (this.getRoom().getDestructionRule().equals(DungeonRoomTemplate.DestructionRule.SHELL_CLEAR) && !this.getRoom().isClear())) {
+                level.setBlock(pos, WDBedrockBlock.of(this.getRoom().getMaterial().getBasic(0).getBlock()), 2);
+            } else {
+                level.setBlock(pos, this.getRoom().getMaterial().getBasic(0), 2);
+            }
+        });
         WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::block");
     }
 
