@@ -41,6 +41,7 @@ import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
@@ -52,6 +53,7 @@ public class WDEvents {
             if (!(event.getOrb() instanceof EssenceOrb)) {
                 WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer);
                 wdPlayer.setRecentEssence("essence:overworld");
+                WDPlayerManager.syncAll(List.of(wdPlayer.getUUID()));
             }
         }
     }
