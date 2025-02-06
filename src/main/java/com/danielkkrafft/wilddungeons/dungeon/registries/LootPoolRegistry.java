@@ -1,16 +1,16 @@
 package com.danielkkrafft.wilddungeons.dungeon.registries;
 
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
-import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.LootEntry;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 
-import static com.danielkkrafft.wilddungeons.dungeon.registries.LootEntryRegistry.*;
+import static com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.*;
+import static com.danielkkrafft.wilddungeons.dungeon.registries.ItemTemplateRegistry.*;
 
 public class LootPoolRegistry {
-    public static final DungeonRegistration.DungeonComponentRegistry<WeightedPool<LootEntry>> LOOT_POOL_REGISTRY = new DungeonRegistration.DungeonComponentRegistry<>();
-    public static final WeightedPool<LootEntry> COMMON_LOOT_POOL = new WeightedPool<LootEntry>().setName("COMMON_LOOT_POOL");
-    public static final WeightedPool<LootEntry> MEDIUM_LOOT_POOL = new WeightedPool<LootEntry>().setName("MEDIUM_LOOT_POOL");
-    public static final WeightedPool<LootEntry> RARE_LOOT_POOL = new WeightedPool<LootEntry>().setName("RARE_LOOT_POOL");
+    public static final DungeonRegistration.DungeonComponentRegistry<WeightedPool<ItemTemplate>> LOOT_POOL_REGISTRY = new DungeonRegistration.DungeonComponentRegistry<>();
+    public static final WeightedPool<ItemTemplate> COMMON_LOOT_POOL = new WeightedPool<ItemTemplate>().setName("COMMON_LOOT_POOL");
+    public static final WeightedPool<ItemTemplate> MEDIUM_LOOT_POOL = new WeightedPool<ItemTemplate>().setName("MEDIUM_LOOT_POOL");
+    public static final WeightedPool<ItemTemplate> RARE_LOOT_POOL = new WeightedPool<ItemTemplate>().setName("RARE_LOOT_POOL");
 
     public static void setupLootPools(){
         COMMON_LOOT_POOL

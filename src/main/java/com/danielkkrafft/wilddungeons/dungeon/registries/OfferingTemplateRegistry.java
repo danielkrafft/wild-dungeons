@@ -11,15 +11,15 @@ import static com.danielkkrafft.wilddungeons.entity.Offering.Type.*;
 public class OfferingTemplateRegistry {
     public static final DungeonComponentRegistry<OfferingTemplate> OFFERING_TEMPLATE_REGISTRY = new DungeonComponentRegistry<>();
 
-    public static final OfferingTemplate ARROWS = new OfferingTemplate("ARROWS", ITEM, 32, "arrow", XP_LEVEL, 4, 1.5f);
-    public static final OfferingTemplate STEAKS = new OfferingTemplate("STEAKS", ITEM, 8, "cooked_beef", XP_LEVEL, 4, 1.5f);
-    public static final OfferingTemplate BAKED_POTATOES =new OfferingTemplate("BAKED_POTATOES", ITEM, 24, "baked_potato", XP_LEVEL, 4, 1.5f);
-    public static final OfferingTemplate IRON_INGOTS = new OfferingTemplate("IRON_INGOTS", ITEM, 4, "iron_ingot", XP_LEVEL, 4, 1.5f);
+    public static final OfferingTemplate ARROWS = new OfferingTemplate("ARROWS", ItemTemplateRegistry.ARROWS, XP_LEVEL, 4, 1.5f);
+    public static final OfferingTemplate STEAKS = new OfferingTemplate("STEAKS", ItemTemplateRegistry.COOKED_BEEF, XP_LEVEL, 4, 1.5f);
+    public static final OfferingTemplate BAKED_POTATOES =new OfferingTemplate("BAKED_POTATOES", ItemTemplateRegistry.BAKED_POTATOES, XP_LEVEL, 4, 1.5f);
+    public static final OfferingTemplate IRON_INGOTS = new OfferingTemplate("IRON_INGOTS", ItemTemplateRegistry.IRON_INGOTS, XP_LEVEL, 6, 1.5f);
 
-    public static final OfferingTemplate EMERALDS = new OfferingTemplate("EMERALDS", ITEM, 24, "emerald", XP_LEVEL, 8, 1.5f);
-    public static final OfferingTemplate BLAZE_RODS = new OfferingTemplate("BLAZE_RODS", ITEM, 8, "blaze_rod", NETHER_XP_LEVEL, 4, 1.5f);
-    public static final OfferingTemplate ENDER_PEARLS = new OfferingTemplate("ENDER_PEARLS", ITEM, 8, "ender_pearl", END_XP_LEVEL, 4, 1.5f);
-    public static final OfferingTemplate COAL = new OfferingTemplate("COAL", ITEM, 48, "coal", XP_LEVEL, 4, 1.5f);
+    public static final OfferingTemplate EMERALDS = new OfferingTemplate("EMERALDS",ItemTemplateRegistry.EMERALD, XP_LEVEL, 8, 1.5f);
+    public static final OfferingTemplate BLAZE_RODS = new OfferingTemplate("BLAZE_RODS", ItemTemplateRegistry.BLAZE_ROD, NETHER_XP_LEVEL, 4, 1.5f);
+    public static final OfferingTemplate ENDER_PEARLS = new OfferingTemplate("ENDER_PEARLS", ItemTemplateRegistry.ENDER_PEARL, END_XP_LEVEL, 4, 1.5f);
+    public static final OfferingTemplate COAL = new OfferingTemplate("COAL",ItemTemplateRegistry.COAL, XP_LEVEL, 2, 1.5f);
 
     public static final OfferingTemplate FREE_SWORD_DAMAGE = new OfferingTemplate("FREE_SWORD_DAMAGE", PERK, 1, "SWORD_DAMAGE", XP_LEVEL, 0, 1);
     public static final OfferingTemplate FREE_AXE_DAMAGE = new OfferingTemplate("FREE_AXE_DAMAGE", PERK, 1, "AXE_DAMAGE", XP_LEVEL, 0, 1);

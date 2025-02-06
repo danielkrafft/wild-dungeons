@@ -18,10 +18,11 @@ import net.minecraft.world.level.Level;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class DungeonRegistration {
     public static void setupRegistries() {
-        LootEntryRegistry.setupLootEntries();
+        ItemTemplateRegistry.setupLootEntries();
         LootPoolRegistry.setupLootPools();
         LootTableRegistry.setupLootTables();
 
@@ -84,19 +85,43 @@ public class DungeonRegistration {
         public WeightedPool<T> getLast() {return this.order.getLast();}
     }
 
-    public record LootEntry(String name, Item item, int count, float deviance) implements DungeonComponent {
-        public ItemStack asItemStack() {
-            return new ItemStack(item, RandomUtil.randIntBetween((int) (count / deviance), (int) (count * deviance)));
-        }
-    }
+    public static final class OfferingTemplate implements DungeonComponent {
+        private final String name;
+        private final Offering.Type type;
+        private final int amount;
+        private final String id;
+        private final Offering.CostType costType;
+        private final int costAmount;
+        private final float deviance;
 
-    public record OfferingTemplate(String name, Offering.Type type, int amount, String id, Offering.CostType costType, int costAmount, float deviance) implements DungeonComponent {
+        public OfferingTemplate(String name, Offering.Type type, int amount, String id, Offering.CostType costType, int costAmount, float costDeviance) {
+            this.name = name;
+            this.type = type;
+            this.amount = amount;
+            this.id = id;
+            this.costType = costType;
+            this.costAmount = costAmount;
+            this.deviance = costDeviance;
+        }
+
+        public OfferingTemplate(String name, ItemTemplate itemTemplate, Offering.CostType costType, int costAmount, float costDeviance) {
+            this(name, Offering.Type.ITEM, itemTemplate.getDeviatedCount(), itemTemplate.name, costType, costAmount, costDeviance);
+        }
+
         public Offering asOffering(Level level) {
             int adjustedAmount = RandomUtil.randIntBetween((int) (amount / deviance), (int) (amount * deviance));
             int adjustedCost = RandomUtil.randIntBetween((int) (costAmount / deviance), (int) (costAmount * deviance));
             return new Offering(level, type, adjustedAmount, id, costType, adjustedCost);
         }
 
+        @Override
+        public String name() {return name;}
+        public Offering.Type type() {return type;}
+        public int amount() {return amount;}
+        public String id() {return id;}
+        public Offering.CostType costType() {return costType;}
+        public int costAmount() {return costAmount;}
+        public float deviance() {return deviance;}
     }
 
     public static class TargetTemplate implements DungeonComponent{
@@ -138,5 +163,31 @@ public class DungeonRegistration {
         public TargetTemplate setMainHandItem(Item item) {this.mainHandItem = Item.getId(item); return this;}
         public TargetTemplate setOffHandItem(Item item) {this.offHandItem = Item.getId(item); return this;}
         public TargetTemplate addMobEffect(Holder<MobEffect> effect, int amplifier) {this.mobEffects.add(Pair.of(BuiltInRegistries.MOB_EFFECT.getId(effect.value()), amplifier)); return this;}
+    }
+
+    public static class ItemTemplate implements DungeonComponent {
+        public String name;
+        public int itemID;
+        public int count = 1;
+        public float deviance = 1;
+
+        public ItemTemplate(String name, Item item, int count) {
+            this.name = name;
+            this.itemID = Item.getId(item);
+            this.count = count;
+        }
+
+        public int getDeviatedCount() {
+            return RandomUtil.randIntBetween((int) (count / deviance), (int) (count * deviance));
+        }
+
+        public ItemStack asItemStack() {
+            return new ItemStack(Item.byId(itemID), getDeviatedCount());
+        }
+
+        @Override
+        public String name() {return this.name;}
+        public ItemTemplate setCount(int count) {this.count = count; return this;}
+        public ItemTemplate setDeviance(float deviance) {this.deviance = deviance; return this;}
     }
 }
