@@ -29,6 +29,7 @@ public class LootPoolRegistry {
                 .add(GUNPOWDER, 1)
                 .add(STONE_SHOVEL, 1)
                 .add(STONE_PICKAXE, 1)
+                .add(HEALTH_POTION,1)
                 .add(STONE_AXE, 1);
         LOOT_POOL_REGISTRY.add(MEDIUM_LOOT_POOL);
 

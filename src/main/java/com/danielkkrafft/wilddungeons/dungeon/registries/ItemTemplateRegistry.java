@@ -3,6 +3,7 @@ package com.danielkkrafft.wilddungeons.dungeon.registries;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.ItemTemplate;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.Potions;
 
 public class ItemTemplateRegistry {
     public static final DungeonRegistration.DungeonComponentRegistry<ItemTemplate> LOOT_ENTRY_REGISTRY = new DungeonRegistration.DungeonComponentRegistry<>();
@@ -28,6 +29,7 @@ public class ItemTemplateRegistry {
     public static ItemTemplate EMERALD = new ItemTemplate("emeralds_24", Items.EMERALD, 24);
     public static ItemTemplate BLAZE_ROD = new ItemTemplate("blaze_rod_8", Items.BLAZE_ROD, 8);
     public static ItemTemplate ENDER_PEARL = new ItemTemplate("ender_pearl_8", Items.ENDER_PEARL, 8);
+    public static ItemTemplate HEALTH_POTION = new ItemTemplate("health_potion", Potions.HEALING);
 
 
 
@@ -52,6 +54,7 @@ public class ItemTemplateRegistry {
         add(EMERALD);
         add(BLAZE_ROD);
         add(ENDER_PEARL);
+        add(HEALTH_POTION);
     }
 
 

@@ -13,6 +13,9 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
@@ -170,11 +173,17 @@ public class DungeonRegistration {
         public int itemID;
         public int count = 1;
         public float deviance = 1;
+        public int potionType = -1;
 
         public ItemTemplate(String name, Item item, int count) {
             this.name = name;
             this.itemID = Item.getId(item);
             this.count = count;
+        }
+        public ItemTemplate(String name, Holder<Potion> potion) {
+            this.name = name;
+            this.itemID = Item.getId(Items.POTION);
+            this.potionType = BuiltInRegistries.POTION.getId(potion.value());
         }
 
         public int getDeviatedCount() {
@@ -182,6 +191,9 @@ public class DungeonRegistration {
         }
 
         public ItemStack asItemStack() {
+            if (potionType != -1) {
+                return PotionContents.createItemStack(Items.POTION, BuiltInRegistries.POTION.getHolder(potionType).get());
+            }
             return new ItemStack(Item.byId(itemID), getDeviatedCount());
         }
 
