@@ -23,13 +23,13 @@ public class LootPoolRegistry {
         LOOT_POOL_REGISTRY.add(COMMON_LOOT_POOL);
 
         MEDIUM_LOOT_POOL
+                .add(HEALTH_POTION,1)
                 .add(IRON_INGOTS, 2)
                 .add(CHARCOAL, 1)
                 .add(OAK_LOGS, 1)
                 .add(GUNPOWDER, 1)
                 .add(STONE_SHOVEL, 1)
                 .add(STONE_PICKAXE, 1)
-                .add(HEALTH_POTION,1)
                 .add(STONE_AXE, 1);
         LOOT_POOL_REGISTRY.add(MEDIUM_LOOT_POOL);
 

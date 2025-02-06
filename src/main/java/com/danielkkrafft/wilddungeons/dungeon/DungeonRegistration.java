@@ -21,7 +21,6 @@ import net.minecraft.world.level.Level;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 public class DungeonRegistration {
     public static void setupRegistries() {
