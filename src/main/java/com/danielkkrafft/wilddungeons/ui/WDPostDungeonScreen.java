@@ -109,14 +109,14 @@ public class WDPostDungeonScreen extends Screen {
         defaultSkin = Minecraft.getInstance().getSkinManager().getInsecureSkin(Minecraft.getInstance().getGameProfile()).texture();
 
         DungeonSession.DungeonStatsHolder holder = Serializer.fromCompoundTag(data);
-        this.stats = holder.playerStats;
-        this.title = holder.title;
-        this.icon = holder.icon;
-        this.primaryColor = holder.primaryColor;
-        this.secondaryColor = holder.secondaryColor;
-        this.targetTime = holder.targetTime;
-        this.targetDeaths = holder.targetDeaths;
-        this.targetScore = holder.targetScore;
+        this.stats = holder == null ? null : holder.playerStats;
+        this.title = holder == null ? "WAIT OF THE WORLD" : holder.title;
+        this.icon = holder == null ? "1-4" : holder.icon;
+        this.primaryColor = holder == null ? 0xFFFF0000 : holder.primaryColor;
+        this.secondaryColor = holder == null ? 0xFFFF0000 : holder.secondaryColor;
+        this.targetTime = holder == null ? 1200 : holder.targetTime;
+        this.targetDeaths = holder == null ? 0 : holder.targetDeaths;
+        this.targetScore = holder == null ? 1000 : holder.targetScore;
 
         clearTicks = stats == null ? 300 : this.stats.values().stream().sorted(Comparator.comparingInt(o -> o.time)).toList().getLast().time;
         clearSeconds = Mth.floor((clearTicks / 20) % 60);
@@ -218,14 +218,14 @@ public class WDPostDungeonScreen extends Screen {
         WDFont.drawCenteredString(guiGraphics, title, step.xCenter(), step.yCenter(), step.ySize()/2, 0xFFFFFFFF);
     }
 
-    public final AnimationStep ICON_BACKGROUND = new AnimationStep(0.0f, 0.05f, 0.1f, 0.15f, 500, 750, this::drawIconBackground, this);
+    public final AnimationStep ICON_BACKGROUND = new AnimationStep(0.0f, 0.05f, 0.1f, 0.15f, 250, 250, this::drawIconBackground, this);
     public void drawIconBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
     {
         int maxX = Mth.lerpInt(step.completion(), step.minX(), step.maxX());
         guiGraphics.fill(step.minX(), step.minY(), maxX, step.maxY(), 0xFFFFFFFF);
     }
 
-    public final AnimationStep ICON = new AnimationStep(ICON_BACKGROUND.minXRatio, ICON_BACKGROUND.minYRatio, ICON_BACKGROUND.maxXRatio, ICON_BACKGROUND.maxYRatio, 500, 750, this::drawIcon, this);
+    public final AnimationStep ICON = new AnimationStep(ICON_BACKGROUND.minXRatio, ICON_BACKGROUND.minYRatio, ICON_BACKGROUND.maxXRatio, ICON_BACKGROUND.maxYRatio, 250, 250, this::drawIcon, this);
     public void drawIcon(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
     {
         String finalTitle = this.icon;
@@ -268,8 +268,6 @@ public class WDPostDungeonScreen extends Screen {
         drawTime(guiGraphics, mouseX, mouseY, TIME);
     }
 
-    // BASIC ANIMATION UP TO THIS POINT
-
     public final AnimationStep DEATHS_BACKGROUND = new AnimationStep(TIME_BACKGROUND.minXRatio, 0.53f, TIME_BACKGROUND.maxXRatio, 0.67f, 500, 750, this::drawDeathsBackground, this);
     public void drawDeathsBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
     {
@@ -279,14 +277,14 @@ public class WDPostDungeonScreen extends Screen {
     public final AnimationStep DEATHS = new AnimationStep(DEATHS_BACKGROUND.minXRatio, DEATHS_BACKGROUND.minYRatio, DEATHS_BACKGROUND.maxXRatio, DEATHS_BACKGROUND.maxYRatio, 500, 750, this::drawDeaths, this);
     public void drawDeaths(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
     {
-        String title = "Deaths: " + clearDeaths;
+        String title = "Deaths: " + (int) (this.clearDeaths * step.completion());
         WDFont.drawCenteredString(guiGraphics, title, step.xCenter() + xOffset, step.yCenter(), step.ySize()/5, 0xFFFFFFFF);
     }
 
     public final AnimationStep PERFECT_DEATHS = new AnimationStep(DEATHS_BACKGROUND.minXRatio, DEATHS_BACKGROUND.minYRatio, TIME_BACKGROUND.maxXRatio, DEATHS_BACKGROUND.maxYRatio, 500, 750, this::drawPerfectDeaths, this);
     public void drawPerfectDeaths(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
     {
-        guiGraphics.fill(step.minX() + xOffset, step.minY(), step.maxX() + xOffset, step.maxY(), this.primaryColor);
+        guiGraphics.fill(step.minX() + xOffset, step.minY(), Mth.lerpInt(step.completion(), step.minX(), step.maxX()) + xOffset, step.maxY(), this.primaryColor);
         drawDeaths(guiGraphics, mouseX, mouseY, DEATHS);
     }
 
@@ -294,28 +292,30 @@ public class WDPostDungeonScreen extends Screen {
     public void drawScoreBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
     {
         float ratio = Math.min((float) this.clearScore / this.targetScore, 1.0f);
-        guiGraphics.fill(step.minX() + xOffset, step.minY(), (int) (step.minX() + ((step.xSize()) * ratio)) + xOffset, step.maxY(), 0x80FF0000);
-        guiGraphics.fill(step.minX() + xOffset, step.minY(), step.maxX() + xOffset, step.maxY(), 0x800d0f18);
+        int maxX1 = Mth.lerpInt(step.completion(), step.minX(), step.maxX());
+        int maxX2 = Mth.lerpInt(step.completion(), step.minX(), (int) (step.minX() + step.xSize() * ratio));
+        guiGraphics.fill(step.minX() + xOffset, step.minY(), maxX1 + xOffset, step.maxY(), 0x80FF0000);
+        guiGraphics.fill(step.minX() + xOffset, step.minY(), maxX2 + xOffset, step.maxY(), 0x800d0f18);
     }
 
     public final AnimationStep SCORE = new AnimationStep(SCORE_BACKGROUND.minXRatio, SCORE_BACKGROUND.minYRatio, SCORE_BACKGROUND.maxXRatio, SCORE_BACKGROUND.maxYRatio, 500, 750, this::drawScore, this);
     public void drawScore(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
     {
-        String title = "Score: " + clearScore;
+        String title = "Score: " + (int) (clearScore * step.completion());
         WDFont.drawCenteredString(guiGraphics, title, step.xCenter() + xOffset, step.yCenter(), step.ySize()/5, 0xFFFFFFFF);
     }
 
     public final AnimationStep PERFECT_SCORE = new AnimationStep(SCORE_BACKGROUND.minXRatio, SCORE_BACKGROUND.minYRatio, SCORE_BACKGROUND.maxXRatio, SCORE_BACKGROUND.maxYRatio, 500, 750, this::drawPerfectScore, this);
     public void drawPerfectScore(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
     {
-        guiGraphics.fill(step.minX() + xOffset, step.minY(), step.maxX() + xOffset, step.maxY(), this.primaryColor);
+        guiGraphics.fill(step.minX() + xOffset, step.minY(), Mth.lerpInt(step.completion(), step.minX(), step.maxX()) + xOffset, step.maxY(), this.primaryColor);
         drawScore(guiGraphics, mouseX, mouseY, SCORE);
     }
 
     public final AnimationStep PERFECT_CLEAR = new AnimationStep(TITLE_BACKGROUND.minXRatio, TITLE_BACKGROUND.minYRatio, TITLE_BACKGROUND.maxXRatio, TITLE_BACKGROUND.maxYRatio, 500, 750, this::drawPerfectClear, this);
     public void drawPerfectClear(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
     {
-        guiGraphics.fill(step.minX(), step.minY(), step.maxX(), step.maxY(), this.primaryColor);
+        guiGraphics.fill(step.minX(), step.minY(), Mth.lerpInt(step.completion(), step.minX(), step.maxX()), step.maxY(), this.primaryColor);
         drawTitle(guiGraphics, mouseX, mouseY, TITLE);
         drawIconBackground(guiGraphics, mouseX, mouseY, ICON_BACKGROUND);
         drawIcon(guiGraphics, mouseX, mouseY, ICON);
@@ -324,20 +324,20 @@ public class WDPostDungeonScreen extends Screen {
     public final AnimationStep SWIPE_TO_CHART = new AnimationStep(0.0f, 0.0f, 0.0f, 0.0f, 500, 750, this::swipeToChart, this);
     public void swipeToChart(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
     {
-        this.xOffset = -this.width;
+        this.xOffset = (int) -(step.completion() * this.width);
     }
 
     public final AnimationStep CHART_BACKGROUND = new AnimationStep(0.25f, 0.3f, 0.75f, 1.0f, 500, 750, this::drawChartBackground, this);
     public void drawChartBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
     {
-        guiGraphics.fill(step.minX() + xOffset + this.width, step.minY(), step.maxX() + xOffset + this.width, step.maxY(), 0x800d0f18);
+        guiGraphics.fill(step.minX() + xOffset + this.width, Mth.lerpInt(step.completion(), step.maxY(), step.minY()), step.maxX() + xOffset + this.width, step.maxY(), 0x800d0f18);
     }
 
     public boolean skinsLocated = false;
     public final AnimationStep GET_SKINS = new AnimationStep(CHART_BACKGROUND.minXRatio, CHART_BACKGROUND.minYRatio, CHART_BACKGROUND.maxXRatio, CHART_BACKGROUND.maxYRatio, 100, 100, this::getSkins, this);
     public void getSkins(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
     {
-        if (skinsLocated) return;
+        if (skinsLocated || stats == null) return;
         clearScores.clear();
         if (this.stats != null) this.stats.forEach((key, value) -> {
             WildDungeons.getLogger().info("PLAYERS IN CLIENT LEVEL: {}", Minecraft.getInstance().level.players());
@@ -361,21 +361,18 @@ public class WDPostDungeonScreen extends Screen {
     {
         int padding = (int) (step.xSize()*0.05f);
         int barWidth = ((step.xSize()-padding*3) / this.clearScores.size()) - padding;
-
         int minX = step.minX() + padding*2 + (step.id * (barWidth + padding));
         int maxX = minX + barWidth;
-
         float ratio = (float) clearScores.get(step.id).getFirst() /clearScores.getLast().getFirst();
-
         int minY = Mth.lerpInt(ratio, step.maxY() - padding*2, step.minY() + padding*2);
         int maxY = step.maxY() - padding*2;
 
         ResourceLocation skin = clearScores.get(step.id).getSecond();
         if (skin == null) skin = defaultSkin;
 
-        guiGraphics.fill(minX + xOffset + this.width, minY, maxX + xOffset + this.width, maxY, this.primaryColor);
-        drawCenteredSquare(guiGraphics, skin, minX + ((maxX-minX)/2), maxY, padding*2, 8f/64f, 8f/64f, 16f/64f, 16f/64f, 0xFFFFFFFF);
-        WDFont.drawCenteredString(guiGraphics, String.valueOf(clearScores.get(step.id).getFirst()), minX + ((maxX-minX)/2), Math.min(minY-padding, maxY-padding*2), padding, 0xFFFFFFFF);
+        guiGraphics.fill(minX + xOffset + this.width, Mth.lerpInt(step.completion(), maxY, minY), maxX + xOffset + this.width, maxY, this.primaryColor);
+        drawCenteredSquare(guiGraphics, skin, minX + ((maxX-minX)/2), maxY, (int) (step.completion()*padding*2), 8f/64f, 8f/64f, 16f/64f, 16f/64f, 0xFFFFFFFF);
+        WDFont.drawCenteredString(guiGraphics, String.valueOf((int) (clearScores.get(step.id).getFirst()*step.completion())), minX + ((maxX-minX)/2), Math.min(minY-padding, maxY-padding*2), padding, 0xFFFFFFFF);
     }
 
     public static void drawTexturedQuad(GuiGraphics guiGraphics, ResourceLocation texture, int minX, int minY, int maxX, int maxY, float minU, float minV, float maxU, float maxV, int color) {
