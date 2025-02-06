@@ -89,9 +89,7 @@ public class LockableEventRoom extends DungeonRoom {
         WildDungeons.getLogger().info("LOCKABLE ROOM RESETTING");
         this.started = false;
         startCooldown = START_COOLDOWN;
-        this.getConnectionPoints().forEach(point -> {
-            if (point.isConnected()) point.unBlock(this.getBranch().getFloor().getLevel());
-        });
+        setPreviewDoorways();
         this.generated = false;
         this.onBranchEnter(null);
     }
@@ -100,6 +98,11 @@ public class LockableEventRoom extends DungeonRoom {
     public void onBranchEnter(WDPlayer wdPlayer) {
         super.onBranchEnter(wdPlayer);
         if (this.generated) return;
+        setPreviewDoorways();
+        this.generated = true;
+    }
+
+    private void setPreviewDoorways() {
         this.getConnectionPoints().forEach(point -> {
             if (point.isConnected()) {
                 if (((point.getConnectedPoint().getRoom().getIndex() > this.getIndex()
@@ -115,6 +118,5 @@ public class LockableEventRoom extends DungeonRoom {
                 }
             }
         });
-        this.generated = true;
     }
 }

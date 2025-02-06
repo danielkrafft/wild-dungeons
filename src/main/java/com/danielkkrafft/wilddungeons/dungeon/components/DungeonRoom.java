@@ -282,8 +282,7 @@ public class DungeonRoom {
                     case LOOT -> point.lootRoomUnblock(floor.getLevel());
                     case null, default -> point.unBlock(floor.getLevel());
                 }
-                ConnectionPoint otherPoint = point.getConnectedPoint();
-                otherPoint.unBlock(floor.getLevel());
+                point.getConnectedPoint().unBlock(floor.getLevel());
             }
             if (!point.isConnected()) point.block(floor.getLevel());
             point.complete();
