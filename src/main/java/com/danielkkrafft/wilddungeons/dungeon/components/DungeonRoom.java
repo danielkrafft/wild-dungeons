@@ -1,6 +1,8 @@
 package com.danielkkrafft.wilddungeons.dungeon.components;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.block.WDBedrockBlock;
+import com.danielkkrafft.wilddungeons.block.WDBlocks;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.EnemyPurgeRoom;
 import com.danielkkrafft.wilddungeons.dungeon.registries.LootTableRegistry;
@@ -16,10 +18,13 @@ import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import com.danielkkrafft.wilddungeons.util.WeightedTable;
 import com.danielkkrafft.wilddungeons.util.debug.WDProfiler;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Vec3i;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
@@ -30,10 +35,16 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.phys.Vec3;
+import org.apache.commons.lang3.function.TriFunction;
 import org.joml.Vector2i;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
+import static com.danielkkrafft.wilddungeons.block.WDBedrockBlock.MIMIC;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialRegistry.DUNGEON_MATERIAL_REGISTRY;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomRegistry.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.OfferingTemplateTableRegistry.BASIC_SHOP_TABLE;
@@ -133,24 +144,47 @@ public class DungeonRoom {
 
     public void processShell() {
         if (this.hasBedrockShell()) this.surroundWith(Blocks.BEDROCK.defaultBlockState());
+        if (this.getDestructionRule() == DungeonRoomTemplate.DestructionRule.SHELL || this.getDestructionRule() == DungeonRoomTemplate.DestructionRule.SHELL_CLEAR) {
+            this.createProtectedShell(WDBedrockBlock.of(Blocks.DIAMOND_BLOCK));
+            for (ConnectionPoint point : this.connectionPoints) {
+                if (point.isConnected()) point.unBlock(this.getBranch().getFloor().getLevel());
+            }
+        }
     }
 
     public void surroundWith(BlockState blockState) {
         ServerLevel level = this.getBranch().getFloor().getLevel();
         for (BoundingBox box : this.getBoundingBoxes()) {
-            surroundBoxWith(this.getBranch().getFloor(), level, box, blockState);
+            fillShellWith(this.getBranch().getFloor(), this, level, box, blockState, 1, isSafeForBoundingBoxes());
         }
     }
 
-    public static void surroundBoxWith(DungeonFloor floor, ServerLevel level, BoundingBox box, BlockState blockState) {
+    public void createProtectedShell(BlockState blockState) {
+        ServerLevel level = this.getBranch().getFloor().getLevel();
+        for (BoundingBox box : this.getBoundingBoxes()) {
+            fillShellWith(this.getBranch().getFloor(), this, level, box, blockState, 0, handlePlaceProtectedShell());
+        }
+        WildDungeons.getLogger().info("PLACED A TOTAL OF {}", this.totalPlaced);
+    }
+
+    public void removeProtectedShell(BlockState blockState) {
+        WildDungeons.getLogger().info("REMOVING PROTECTED SHELL");
+        ServerLevel level = this.getBranch().getFloor().getLevel();
+        for (BoundingBox box : this.getBoundingBoxes()) {
+            fillShellWith(this.getBranch().getFloor(), this, level, box, blockState, 0, handleRemoveProtectedShell());
+        }
+        WildDungeons.getLogger().info("REMOVED A TOTAL OF {}", this.totalRemoved);
+    }
+
+    public static void fillShellWith(DungeonFloor floor, DungeonRoom room, ServerLevel level, BoundingBox box, BlockState blockState, int shellDepth, TriFunction<DungeonFloor, DungeonRoom, BlockPos, Boolean> predicate) {
         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
 
-        int[] minX = {box.minX() - 1, box.minX() - 1, box.minY() - 1, box.minY() - 1, box.minZ() - 1, box.minZ() - 1};
-        int[] minY = {box.minZ() - 1, box.minZ() - 1, box.minX() - 1, box.minX() - 1, box.minY() - 1, box.minY() - 1};
-        int[] maxX = {box.maxX() + 1, box.maxX() + 1, box.maxY() + 1, box.maxY() + 1, box.maxZ() + 1, box.maxZ() + 1};
-        int[] maxY = {box.maxZ() + 1, box.maxZ() + 1, box.maxX() + 1, box.maxX() + 1, box.maxY() + 1, box.maxY() + 1};
+        int[] minX = {box.minX() - shellDepth, box.minX() - shellDepth, box.minY() - shellDepth + 1, box.minY() - shellDepth + 1, box.minZ() - shellDepth + 1, box.minZ() - shellDepth + 1};
+        int[] minY = {box.minZ() - shellDepth, box.minZ() - shellDepth, box.minX() - shellDepth, box.minX() - shellDepth, box.minY() - shellDepth + 1, box.minY() - shellDepth + 1};
+        int[] maxX = {box.maxX() + shellDepth, box.maxX() + shellDepth, box.maxY() + shellDepth - 1, box.maxY() + shellDepth - 1, box.maxZ() + shellDepth - 1, box.maxZ() + shellDepth - 1};
+        int[] maxY = {box.maxZ() + shellDepth, box.maxZ() + shellDepth, box.maxX() + shellDepth, box.maxX() + shellDepth, box.maxY() + shellDepth - 1, box.maxY() + shellDepth -1};
         //determines how far outside the bounding box to start placing blocks
-        int[] wallOffset = {box.minY() - 1, box.maxY() + 1, box.minZ() - 1, box.maxZ() + 1, box.minX() - 1, box.maxX() + 1};
+        int[] wallOffset = {box.minY() - shellDepth, box.maxY() + shellDepth, box.minZ() - shellDepth, box.maxZ() + shellDepth, box.minX() - shellDepth, box.maxX() + shellDepth};
 
         for (int i = 0; i < 6; i++) {
             for (int x = minX[i]; x <= maxX[i]; x++) {
@@ -160,16 +194,50 @@ public class DungeonRoom {
                         case 2, 3 -> mutableBlockPos.set(y, x, wallOffset[i]);
                         case 4, 5 -> mutableBlockPos.set(wallOffset[i], y, x);
                     }
-                    List<BoundingBox> potentialConflicts = new ArrayList<>();
-                    floor.getChunkMap().getOrDefault(new ChunkPos(mutableBlockPos), new ArrayList<>()).forEach(vector2i -> {
-                        potentialConflicts.addAll(floor.getBranches().get(vector2i.x).getRooms().get(vector2i.y).getBoundingBoxes());
-                    });
-                    if (potentialConflicts.stream().noneMatch(potentialConflict -> potentialConflict.isInside(mutableBlockPos))) {
-                        if (!level.getServer().isShutdown()) level.setBlock(mutableBlockPos, blockState, 2);
-                    }
+
+                    if (predicate.apply(floor, room, mutableBlockPos) && !level.getServer().isShutdown()) level.setBlock(mutableBlockPos, blockState, 2);
                 }
             }
         }
+    }
+
+    public static TriFunction<DungeonFloor, DungeonRoom, BlockPos, Boolean> isSafeForBoundingBoxes() {
+        return (floor, room, blockPos) -> {
+            List<BoundingBox> potentialConflicts = new ArrayList<>();
+            floor.getChunkMap().getOrDefault(new ChunkPos(blockPos), new ArrayList<>()).forEach(vector2i -> {
+                potentialConflicts.addAll(floor.getBranches().get(vector2i.x).getRooms().get(vector2i.y).getBoundingBoxes());
+            });
+            if (potentialConflicts.stream().noneMatch(potentialConflict -> potentialConflict.isInside(blockPos))) {
+                return true;
+            }
+            return false;
+        };
+    }
+
+    int totalPlaced = 0;
+    public static TriFunction<DungeonFloor, DungeonRoom, BlockPos, Boolean> handlePlaceProtectedShell() {
+        return (floor, room, blockPos) -> {
+            if (!room.isPosInsideShell(blockPos)) {
+                Block block = floor.getLevel().getBlockState(blockPos).getBlock();
+                if (block != WDBlocks.WD_BEDROCK.get()) {
+                    floor.getLevel().setBlock(blockPos, WDBedrockBlock.of(floor.getLevel().getBlockState(blockPos).getBlock()), 2);
+                    room.totalPlaced++;
+                }
+            }
+            return false;
+        };
+    }
+
+    int totalRemoved = 0;
+    public static TriFunction<DungeonFloor, DungeonRoom, BlockPos, Boolean> handleRemoveProtectedShell() {
+        return (floor, room, blockPos) -> {
+            if (!room.isPosInsideShell(blockPos)) {
+                room.totalRemoved++;
+                BlockState blockState = floor.getLevel().getBlockState(blockPos);
+                if (blockState.hasProperty(MIMIC)) floor.getLevel().setBlock(blockPos, BuiltInRegistries.BLOCK.byId(floor.getLevel().getBlockState(blockPos).getValue(MIMIC)).defaultBlockState(), 2);
+            }
+            return false;
+        };
     }
 
     public void processRifts() {
@@ -396,6 +464,12 @@ public class DungeonRoom {
 
     public void onClear() {
         this.clear = true;
+        if (this.getDestructionRule() == DungeonRoomTemplate.DestructionRule.SHELL_CLEAR) {
+            CompletableFuture.runAsync(() -> {
+                this.removeProtectedShell(Blocks.AIR.defaultBlockState());
+            });
+        }
+
     }
 
     public void reset() {

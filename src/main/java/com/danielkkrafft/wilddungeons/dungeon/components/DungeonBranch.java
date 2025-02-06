@@ -325,6 +325,7 @@ public class DungeonBranch {
 
     public void onExit(WDPlayer player) {
         this.playerStatuses.get(player.getUUID()).inside = false;
+        this.playerStatuses.get(player.getUUID()).insideShell = false;
     }
 
     public void tick() {

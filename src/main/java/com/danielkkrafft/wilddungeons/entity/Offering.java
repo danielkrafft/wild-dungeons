@@ -3,6 +3,7 @@ package com.danielkkrafft.wilddungeons.entity;
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
+import com.danielkkrafft.wilddungeons.dungeon.components.room.LootRoom;
 import com.danielkkrafft.wilddungeons.dungeon.registries.DungeonPoolRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonPerkTemplate;
@@ -208,6 +209,10 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
 
                 if (player.getCurrentRoom() != null) {
                     player.getCurrentRoom().getOfferingUUIDs().remove(this.getStringUUID());
+                }
+
+                if (player.getCurrentRoom() instanceof LootRoom lootRoom) {
+                    lootRoom.discardByUUID(this.getStringUUID());
                 }
 
                 if (this.getOfferingType() == Type.ITEM) {
