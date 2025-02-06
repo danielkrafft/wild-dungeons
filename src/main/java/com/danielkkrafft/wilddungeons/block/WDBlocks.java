@@ -37,7 +37,7 @@ public class WDBlocks {
     public static final DeferredBlock<Block> WD_LIGHT = registerWithItem("wd_light", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).lightLevel(state -> 15).requiresCorrectToolForDrops().strength(0.3F).noOcclusion()));
     public static final DeferredBlock<Block> WD_HANGING_LIGHT = registerWithItem("wd_hanging_light", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).lightLevel(state -> 15).requiresCorrectToolForDrops().strength(0.3F).noOcclusion()));
     public static final DeferredBlock<Block> WD_SECRET = registerWithItem("wd_secret", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).requiresCorrectToolForDrops().strength(1.5F, 6.0F).noOcclusion()));
-
+    public static final DeferredBlock<Block> WD_BEDROCK = registerWithItem("wd_bedrock", () -> new WDBedrockBlock(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).requiresCorrectToolForDrops().strength(-1.0F, 3600000.0F).noOcclusion()));
 
     private static <T extends Block> DeferredBlock<T> registerWithItem(String name, Supplier<T> supplier, Item.@NotNull Properties properties) {
         DeferredBlock<T> block = BLOCKS.register(name, supplier);
@@ -54,6 +54,7 @@ public class WDBlocks {
             .title(Component.translatable("itemGroup." + WildDungeons.MODID))
             .icon(() -> new ItemStack(WDBlocks.CONNECTION_BLOCK.get()))
             .displayItems((params, output) -> {
+                output.accept(WDBlocks.WD_BEDROCK.get());
                 output.accept(WDBlocks.CONNECTION_BLOCK.get());
                 output.accept(WDBlocks.SPAWN_BLOCK.get());
                 output.accept(WDBlocks.ROTTEN_MOSS.get());

@@ -1,6 +1,5 @@
 package com.danielkkrafft.wilddungeons;
 
-import com.danielkkrafft.wilddungeons.block.MyGeometryLoader;
 import com.danielkkrafft.wilddungeons.block.WDBlocks;
 import com.danielkkrafft.wilddungeons.block.WDFluids;
 import com.danielkkrafft.wilddungeons.dungeon.components.Alignments;
@@ -17,6 +16,7 @@ import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.danielkkrafft.wilddungeons.registry.*;
 import com.danielkkrafft.wilddungeons.util.FileUtil;
 import com.danielkkrafft.wilddungeons.util.Serializer;
+import com.danielkkrafft.wilddungeons.util.debug.BedrockBlockstateHelper;
 import com.danielkkrafft.wilddungeons.world.dimension.EmptyGenerator;
 import com.danielkkrafft.wilddungeons.world.dimension.tools.UpdateDimensionsPacket;
 import com.mojang.logging.LogUtils;
@@ -51,6 +51,7 @@ public class WildDungeons {
 
     public WildDungeons(IEventBus modEventBus, ModContainer modContainer) {
         Serializer.setup();
+//        BedrockBlockstateHelper.generateBedrockBlockstate();
 
         WDEntities.ENTITIES.register(modEventBus);
         WDBlockEntities.BLOCK_ENTITY_TYPES.register(modEventBus);
@@ -146,10 +147,6 @@ public class WildDungeons {
 
     }
 
-    @SubscribeEvent
-    public static void registerGeometryLoaders(ModelEvent.RegisterGeometryLoaders event) {
-        event.register(MyGeometryLoader.ID, MyGeometryLoader.INSTANCE);
-    }
 
     @SubscribeEvent
     public static void entityAttributeEvent(EntityAttributeCreationEvent e)
