@@ -56,6 +56,7 @@ public class DungeonMaterial implements DungeonComponent {
 
         for (Property<?> property : input.getProperties()) {
             if (result.hasProperty(property)) {
+                if (property == BlockStateProperties.CHEST_TYPE) {continue;}
                 result = result.setValue((Property) property, input.getValue(property));
             }
         }
