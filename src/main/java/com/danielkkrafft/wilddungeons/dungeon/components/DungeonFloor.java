@@ -211,7 +211,6 @@ public class DungeonFloor {
         DungeonFloorTemplate template = this.getTemplate();
         for (DungeonBranch dungeonBranch : dungeonBranches) {
             for (DungeonRoom room : dungeonBranch.getRooms()) {
-                room.processConnectionPoints(this);
                 room.processShell();
             }
         }
