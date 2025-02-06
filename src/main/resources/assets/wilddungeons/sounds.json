@@ -70,6 +70,11 @@
       {"name": "wilddungeons:entity/mutant_bogged_growl"}
     ]
   },
+  "entity.rift_aura": {
+    "sounds": [
+      {"name": "wilddungeons:entity/rift_aura"}
+    ]
+  },
   "entity.mutant_bogged.hit": {
     "sounds": [
       {"name": "wilddungeons:entity/mutant_bogged_hit1"},

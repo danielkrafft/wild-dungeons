@@ -9,6 +9,7 @@ import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
@@ -97,7 +98,7 @@ public class DungeonRegistration {
         private final float deviance;
         private float renderScale;
         private int colorTint;
-        private String soundLoop = "none";
+        private int soundLoop;
 
         public OfferingTemplate(String name, Offering.Type type, int amount, String id, Offering.CostType costType, int costAmount, float costDeviance) {
             this.name = name;
@@ -111,7 +112,7 @@ public class DungeonRegistration {
 
         public OfferingTemplate setRenderScale(float renderScale) {this.renderScale = renderScale; return this;}
         public OfferingTemplate setColorTint(int colorTint) {this.colorTint = colorTint; return this;}
-        public OfferingTemplate setSoundLoop(String soundLoop) {this.soundLoop = soundLoop; return this;}
+        public OfferingTemplate setSoundLoop(SoundEvent soundLoop) {this.soundLoop = BuiltInRegistries.SOUND_EVENT.getId(soundLoop); return this;}
 
         public OfferingTemplate(String name, ItemTemplate itemTemplate, Offering.CostType costType, int costAmount, float costDeviance) {
              this(name, Offering.Type.ITEM, itemTemplate.getDeviatedCount(), String.valueOf(itemTemplate.itemID), costType, costAmount, costDeviance);
@@ -137,7 +138,7 @@ public class DungeonRegistration {
         public float deviance() {return deviance;}
         public float renderScale() {return renderScale;}
         public int colorTint() {return colorTint;}
-        public String soundLoop() {return soundLoop;}
+        public int soundLoop() {return soundLoop;}
     }
 
     public static class TargetTemplate implements DungeonComponent{

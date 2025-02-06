@@ -33,7 +33,8 @@ public class DebugItem extends Item {
         WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateClientWDPlayer(player.getStringUUID());
 
         //PacketDistributor.sendToPlayer((ServerPlayer) player, new ClientboundPostDungeonScreenPacket(new CompoundTag()));
-        logNonDungeonStuff(wdPlayer);
+        //logNonDungeonStuff(wdPlayer);
+        logDungeonStuff((ServerLevel) level, wdPlayer);
 
         return InteractionResultHolder.pass(player.getItemInHand(usedHand));
     }

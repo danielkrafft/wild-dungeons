@@ -11,8 +11,11 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonTemplat
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundLoadingScreenPacket;
+import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundPlayDynamicSoundPacket;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
+import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -23,7 +26,10 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerEntity;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -55,7 +61,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     private float bubbleTimer = BUBBLE_ANIMATION_TIME;
     private float renderScale = 1.0f;
     private int colorTint = 0xFFFFFFFF;
-    private String soundLoop = "none";
+    private int soundLoop = 0;
 
     public Offering(EntityType<Offering> entityType, Level level) {
         super(entityType, level);
@@ -75,8 +81,8 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     public void setRenderScale(float renderScale) {this.renderScale = renderScale;}
     public int getColorTint() {return this.colorTint;}
     public void setColorTint(int colorTint) {this.colorTint = colorTint;}
-    public String getSoundLoop() {return this.soundLoop;}
-    public void setSoundLoop(String soundLoop) {this.soundLoop = soundLoop;}
+    public int getSoundLoop() {return this.soundLoop;}
+    public void setSoundLoop(int soundEvent) {this.soundLoop = soundEvent;}
 
 
     public Offering(Level level) {super(WDEntities.OFFERING.get(), level);}
@@ -120,6 +126,23 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     }
 
     @Override
+    public void tick() {
+        if (this.getSoundLoop() != 0) {
+            if (this.level() instanceof ServerLevel serverLevel && this.tickCount % 25 == 0) {
+                CompoundTag payload = new CompoundTag();
+                payload.putInt("soundEvent", BuiltInRegistries.SOUND_EVENT.getId(WDSoundEvents.RIFT_AURA.value()));
+                payload.putString("soundSource", SoundSource.HOSTILE.toString());
+                payload.putInt("entityId", this.getId());
+                payload.putBoolean("loop", true);
+                payload.putFloat("volume", 1.0f);
+                payload.putFloat("pitch", 1.0f);
+                PacketDistributor.sendToPlayersNear(serverLevel, null, this.getX(), this.getY(), this.getZ(), 70.0, new ClientboundPlayDynamicSoundPacket(payload));
+            }
+        }
+        super.tick();
+    }
+
+    @Override
     protected double getDefaultGravity() {
         return 0.03;
     }
@@ -149,7 +172,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
         compound.putBoolean("purchased", this.purchased);
         compound.putFloat("renderScale", this.renderScale);
         compound.putInt("colorTint", this.colorTint);
-        compound.putString("soundLoop", this.soundLoop);
+        compound.putInt("soundLoop", this.soundLoop);
     }
 
     @Override
@@ -164,7 +187,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
             this.purchased = false;
             this.renderScale = 1.0f;
             this.colorTint = 0xFFFFFFFF;
-            this.soundLoop = "none";
+            this.soundLoop = 0;
         } else {
             this.type = compound.getString("type");
             this.costType = compound.getString("costType");
@@ -174,7 +197,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
             this.purchased = compound.getBoolean("purchased");
             this.renderScale = compound.getFloat("renderScale");
             this.colorTint = compound.getInt("colorTint");
-            this.soundLoop = compound.getString("soundLoop");
+            this.soundLoop = compound.getInt("soundLoop");
         }
     }
 
@@ -189,7 +212,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
         buffer.writeBoolean(this.purchased);
         buffer.writeFloat(this.renderScale);
         buffer.writeInt(this.colorTint);
-        buffer.writeUtf(this.soundLoop);
+        buffer.writeInt(this.soundLoop);
     }
 
     @Override
@@ -203,7 +226,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
         this.purchased = buffer.readBoolean();
         this.renderScale = buffer.readFloat();
         this.colorTint = buffer.readInt();
-        this.soundLoop = buffer.readUtf();
+        this.soundLoop = buffer.readInt();
     }
 
     @Override
