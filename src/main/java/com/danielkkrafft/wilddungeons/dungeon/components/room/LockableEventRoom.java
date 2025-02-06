@@ -110,11 +110,7 @@ public class LockableEventRoom extends DungeonRoom {
                         || point.getConnectedPoint().getBranchIndex() > this.getBranch().getIndex()) {
                     point.block(this.getBranch().getFloor().getLevel());
                 } else {
-                    switch (getTemplate().type()) {
-                        case COMBAT -> point.combatRoomUnblock(this.getBranch().getFloor().getLevel());
-                        case LOOT -> point.lootRoomUnblock(this.getBranch().getFloor().getLevel());
-                        case null, default -> point.unBlock(this.getBranch().getFloor().getLevel());
-                    }
+                    this.templateBasedUnblock(getBranch().getFloor(), point);
                 }
             }
         });

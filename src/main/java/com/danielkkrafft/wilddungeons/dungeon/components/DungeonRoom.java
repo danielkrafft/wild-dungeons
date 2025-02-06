@@ -277,17 +277,21 @@ public class DungeonRoom {
         for (ConnectionPoint point : connectionPoints) {
             point.setupBlockstates(getSettings(), getPosition(), this.getBranch().getFloor().getLevel());
             if (point.isConnected()) {
-                switch (getTemplate().type()){
-                    case COMBAT -> point.combatRoomUnblock(floor.getLevel());
-                    case LOOT -> point.lootRoomUnblock(floor.getLevel());
-                    case null, default -> point.unBlock(floor.getLevel());
-                }
+                templateBasedUnblock(floor, point);
                 point.getConnectedPoint().unBlock(floor.getLevel());
             }
             if (!point.isConnected()) point.block(floor.getLevel());
             point.complete();
         }
         WDProfiler.INSTANCE.logTimestamp("DungeonRoom::processConnectionPoints");
+    }
+
+    public void templateBasedUnblock(DungeonFloor floor, ConnectionPoint point) {
+        switch (getTemplate().type()){
+            case COMBAT -> point.combatRoomUnblock(floor.getLevel());
+            case LOOT -> point.lootRoomUnblock(floor.getLevel());
+            case null, default -> point.unBlock(floor.getLevel());
+        }
     }
 
     public BlockPos getSpawnPoint(ServerLevel level) {
