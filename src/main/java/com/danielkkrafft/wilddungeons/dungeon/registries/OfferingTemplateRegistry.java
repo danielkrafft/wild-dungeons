@@ -42,10 +42,9 @@ public class OfferingTemplateRegistry {
     public static final OfferingTemplate BOW_DAMAGE_NETHER = new OfferingTemplate("BOW_DAMAGE_NETHER", PERK, 1, "BOW_DAMAGE", NETHER_XP_LEVEL, 8, 1.5f);
     public static final OfferingTemplate BOW_DAMAGE_END = new OfferingTemplate("BOW_DAMAGE_END", PERK, 1, "BOW_DAMAGE", END_XP_LEVEL, 8, 1.5f);
 
-    public static final OfferingTemplate OVERWORLD_TEST_RIFT = new DungeonRegistration.OfferingTemplate("OVERWORLD_TEST_RIFT", RIFT, 1, "wd-overworld_basic", XP_LEVEL, 30, 1.5f);
+    public static final OfferingTemplate OVERWORLD_TEST_RIFT = new DungeonRegistration.OfferingTemplate("OVERWORLD_TEST_RIFT", RIFT, 1, "wd-mega_dungeon", XP_LEVEL, 30, 1.5f).setRenderScale(3.0f);
     public static final OfferingTemplate NETHER_TEST_RIFT = new OfferingTemplate("NETHER_TEST_RIFT", RIFT, 1, "wd-dungeon_1", NETHER_XP_LEVEL, 30, 1.5f);
     public static final OfferingTemplate END_TEST_RIFT = new OfferingTemplate("END_TEST_RIFT", RIFT, 1, "wd-dungeon_1", END_XP_LEVEL, 30, 1.5f);
-    
 
 
     public static void setupOfferings(){

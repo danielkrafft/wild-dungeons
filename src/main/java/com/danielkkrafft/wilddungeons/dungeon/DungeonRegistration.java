@@ -95,6 +95,9 @@ public class DungeonRegistration {
         private final Offering.CostType costType;
         private final int costAmount;
         private final float deviance;
+        private float renderScale;
+        private int colorTint;
+        private String soundLoop = "none";
 
         public OfferingTemplate(String name, Offering.Type type, int amount, String id, Offering.CostType costType, int costAmount, float costDeviance) {
             this.name = name;
@@ -106,6 +109,10 @@ public class DungeonRegistration {
             this.deviance = costDeviance;
         }
 
+        public OfferingTemplate setRenderScale(float renderScale) {this.renderScale = renderScale; return this;}
+        public OfferingTemplate setColorTint(int colorTint) {this.colorTint = colorTint; return this;}
+        public OfferingTemplate setSoundLoop(String soundLoop) {this.soundLoop = soundLoop; return this;}
+
         public OfferingTemplate(String name, ItemTemplate itemTemplate, Offering.CostType costType, int costAmount, float costDeviance) {
              this(name, Offering.Type.ITEM, itemTemplate.getDeviatedCount(), String.valueOf(itemTemplate.itemID), costType, costAmount, costDeviance);
         }
@@ -113,7 +120,11 @@ public class DungeonRegistration {
         public Offering asOffering(Level level) {
             int adjustedAmount = RandomUtil.randIntBetween((int) (amount / deviance), (int) (amount * deviance));
             int adjustedCost = RandomUtil.randIntBetween((int) (costAmount / deviance), (int) (costAmount * deviance));
-            return new Offering(level, type, adjustedAmount, id, costType, adjustedCost);
+            Offering offering = new Offering(level, type, adjustedAmount, id, costType, adjustedCost);
+            offering.setRenderScale(renderScale);
+            offering.setColorTint(colorTint);
+            offering.setSoundLoop(soundLoop);
+            return offering;
         }
 
         @Override
@@ -124,6 +135,9 @@ public class DungeonRegistration {
         public Offering.CostType costType() {return costType;}
         public int costAmount() {return costAmount;}
         public float deviance() {return deviance;}
+        public float renderScale() {return renderScale;}
+        public int colorTint() {return colorTint;}
+        public String soundLoop() {return soundLoop;}
     }
 
     public static class TargetTemplate implements DungeonComponent{

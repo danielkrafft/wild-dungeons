@@ -17,7 +17,7 @@ public class DungeonRegistry {
 
     public static DungeonTemplate TEST_DUNGEON = DungeonTemplate.create("test_dungeon");
 
-    public static DungeonTemplate OVERWORLD_BASIC_DUNGEON = DungeonTemplate.create("overworld_basic")
+    public static DungeonTemplate OVERWORLD_BASIC_DUNGEON = DungeonTemplate.create("mega_dungeon")
             .setFloorTemplates(new DungeonLayout<DungeonFloorTemplate>()
                     .add(OVERWORLD_FLOOR_POOL, 2))
             .setMaterials(OVERWORLD_MATERIAL_POOL_0)

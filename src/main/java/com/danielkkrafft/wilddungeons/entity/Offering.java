@@ -53,6 +53,9 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     private int costAmount;
     private boolean purchased = false;
     private float bubbleTimer = BUBBLE_ANIMATION_TIME;
+    private float renderScale = 1.0f;
+    private int colorTint = 0xFFFFFFFF;
+    private String soundLoop = "none";
 
     public Offering(EntityType<Offering> entityType, Level level) {
         super(entityType, level);
@@ -68,6 +71,14 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     public float getBubbleTimer() {return this.bubbleTimer;}
     public void setBubbleTimer(float time) {this.bubbleTimer = time;}
     public void overrideCost(int cost) {this.costAmount = cost;}
+    public float getRenderScale() {return this.renderScale;}
+    public void setRenderScale(float renderScale) {this.renderScale = renderScale;}
+    public int getColorTint() {return this.colorTint;}
+    public void setColorTint(int colorTint) {this.colorTint = colorTint;}
+    public String getSoundLoop() {return this.soundLoop;}
+    public void setSoundLoop(String soundLoop) {this.soundLoop = soundLoop;}
+
+
     public Offering(Level level) {super(WDEntities.OFFERING.get(), level);}
 
 
@@ -136,6 +147,9 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
         compound.putInt("amount", this.amount);
         compound.putInt("costAmount", this.costAmount);
         compound.putBoolean("purchased", this.purchased);
+        compound.putFloat("renderScale", this.renderScale);
+        compound.putInt("colorTint", this.colorTint);
+        compound.putString("soundLoop", this.soundLoop);
     }
 
     @Override
@@ -148,6 +162,9 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
             this.amount = 1;
             this.costAmount = 0;
             this.purchased = false;
+            this.renderScale = 1.0f;
+            this.colorTint = 0xFFFFFFFF;
+            this.soundLoop = "none";
         } else {
             this.type = compound.getString("type");
             this.costType = compound.getString("costType");
@@ -155,6 +172,9 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
             this.amount = compound.getInt("amount");
             this.costAmount = compound.getInt("costAmount");
             this.purchased = compound.getBoolean("purchased");
+            this.renderScale = compound.getFloat("renderScale");
+            this.colorTint = compound.getInt("colorTint");
+            this.soundLoop = compound.getString("soundLoop");
         }
     }
 
@@ -167,6 +187,9 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
         buffer.writeInt(this.amount);
         buffer.writeInt(this.costAmount);
         buffer.writeBoolean(this.purchased);
+        buffer.writeFloat(this.renderScale);
+        buffer.writeInt(this.colorTint);
+        buffer.writeUtf(this.soundLoop);
     }
 
     @Override
@@ -178,6 +201,9 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
         this.amount = buffer.readInt();
         this.costAmount = buffer.readInt();
         this.purchased = buffer.readBoolean();
+        this.renderScale = buffer.readFloat();
+        this.colorTint = buffer.readInt();
+        this.soundLoop = buffer.readUtf();
     }
 
     @Override

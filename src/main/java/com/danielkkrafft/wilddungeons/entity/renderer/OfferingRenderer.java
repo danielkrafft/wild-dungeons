@@ -74,6 +74,9 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
 
     public void render(Offering entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
 
+        poseStack.pushPose();
+        poseStack.scale(entity.getRenderScale(), entity.getRenderScale(), entity.getRenderScale());
+
         if (entity.getOfferingType() == Offering.Type.ITEM) {
             renderItemModel(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
         }
@@ -89,6 +92,8 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
         if (entity.getCostAmount() > 0) {
             renderBubble(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
         }
+
+        poseStack.popPose();
 
         super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
     }
