@@ -49,12 +49,19 @@ public class DungeonBranchRegistry {
                     .addSimple(OVERWORLD_START))
             .setMaterials(OVERWORLD_MATERIAL_POOL_0);
 
-    public static final DungeonBranchTemplate OVERWORLD_FREE_STUFF_BRANCH = create("OVERWORLD_FREE_STUFF_BRANCH")
+    public static final DungeonBranchTemplate OVERWORLD_FREE_STUFF_BRANCH_0 = create("OVERWORLD_FREE_STUFF_BRANCH_0")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .add(OVERWORLD_LOOT_ROOM_POOL, 1)
                     .add(OVERWORLD_SHOP_ROOM_POOL, 1)
                     .addSimple(OVERWORLD_TRANSITION_ROOM))
             .setMaterials(OVERWORLD_MATERIAL_POOL_0)
+            .setDifficultyScaling(1.0f);
+    public static final DungeonBranchTemplate OVERWORLD_FREE_STUFF_BRANCH_1 = create("OVERWORLD_FREE_STUFF_BRANCH_1")
+            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
+                    .add(OVERWORLD_LOOT_ROOM_POOL, 1)
+                    .add(OVERWORLD_SHOP_ROOM_POOL, 1)
+                    .addSimple(OVERWORLD_TRANSITION_ROOM))
+            .setMaterials(OVERWORLD_MATERIAL_POOL_1)
             .setDifficultyScaling(1.0f);
 
     public static final DungeonBranchTemplate OVERWORLD_SPRAWL_0 = create("OVERWORLD_SPRAWL_0")
@@ -69,10 +76,6 @@ public class DungeonBranchRegistry {
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .add(combine(of(OVERWORLD_SPRAWL_ROOM_POOL, 100)), 15))
             .setMaterials(OVERWORLD_MATERIAL_POOL_2);
-    public static final DungeonBranchTemplate OVERWORLD_SPRAWL_3 = create("OVERWORLD_SPRAWL_3")
-            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
-                    .add(combine(of(OVERWORLD_SPRAWL_ROOM_POOL, 100)), 20))
-            .setMaterials(OVERWORLD_MATERIAL_POOL_2);
     public static final DungeonBranchTemplate OVERWORLD_ENDING_BRANCH = create("OVERWORLD_ENDING_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .addSimple(OVERWORLD_EXIT_ROOM))
@@ -80,14 +83,14 @@ public class DungeonBranchRegistry {
 
     public static void setupBranches() {
         DUNGEON_BRANCH_REGISTRY.add(STARTER_BRANCH);
-        DUNGEON_BRANCH_REGISTRY.add(OVERWORLD_FREE_STUFF_BRANCH);
         DUNGEON_BRANCH_REGISTRY.add(TEST_BRANCH);
         DUNGEON_BRANCH_REGISTRY.add(ENDING_BRANCH);
         DUNGEON_BRANCH_REGISTRY.add(OVERWORLD_STARTER_BRANCH);
         DUNGEON_BRANCH_REGISTRY.add(OVERWORLD_SPRAWL_0);
         DUNGEON_BRANCH_REGISTRY.add(OVERWORLD_SPRAWL_1);
         DUNGEON_BRANCH_REGISTRY.add(OVERWORLD_SPRAWL_2);
-        DUNGEON_BRANCH_REGISTRY.add(OVERWORLD_SPRAWL_3);
         DUNGEON_BRANCH_REGISTRY.add(OVERWORLD_ENDING_BRANCH);
+        DUNGEON_BRANCH_REGISTRY.add(OVERWORLD_FREE_STUFF_BRANCH_0);
+        DUNGEON_BRANCH_REGISTRY.add(OVERWORLD_FREE_STUFF_BRANCH_1);
     }
 }

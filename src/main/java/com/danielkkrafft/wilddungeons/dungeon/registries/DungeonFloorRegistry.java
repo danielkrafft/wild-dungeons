@@ -23,10 +23,10 @@ public class DungeonFloorRegistry {
             .setBranchTemplates(new DungeonLayout<DungeonBranchTemplate>()
                     .addSimple(OVERWORLD_STARTER_BRANCH)
                     .addSimple(OVERWORLD_SPRAWL_0)
-                    .addSimple(OVERWORLD_SPRAWL_0)
-                    .addSimple(OVERWORLD_FREE_STUFF_BRANCH)
+                    .addSimple(OVERWORLD_FREE_STUFF_BRANCH_0)
+                    .addSimple(OVERWORLD_SPRAWL_1)
+                    .addSimple(OVERWORLD_FREE_STUFF_BRANCH_1)
                     .addSimple(OVERWORLD_SPRAWL_2)
-                    .addSimple(OVERWORLD_FREE_STUFF_BRANCH)
                     .addSimple(OVERWORLD_ENDING_BRANCH))
             .setOrigin(new BlockPos(0, 150, 0));
 

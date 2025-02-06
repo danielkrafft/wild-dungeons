@@ -151,44 +151,33 @@ public class DungeonBranch {
             ConnectionPoint entrancePoint = pointsToTry.remove(new Random().nextInt(pointsToTry.size()));
             List<ConnectionPoint> exitPoints = new ArrayList<>();
             if (this.branchRooms.isEmpty()){
-                exitPoints.addAll(floor.getBranches().get(this.getIndex()-1).getRooms().getLast().getValidExitPoints(TemplateHelper.EMPTY_DUNGEON_SETTINGS, TemplateHelper.EMPTY_BLOCK_POS, nextRoom, entrancePoint, false));
-//                DungeonBranch lastBranch = floor.getBranches().get(floor.getBranches().size() - 2);
-//                for (int i = 0; i < 3 ; i++) {//
-//                    int index = lastBranch.branchRooms.size() - (1 + i);
-//                    if (index < 0) break;
-//                    DungeonRoom room = lastBranch.branchRooms.get(index);
-//                    if (room!=null) {
-//                        exitPoints.addAll(room.getValidExitPoints(TemplateHelper.EMPTY_DUNGEON_SETTINGS, TemplateHelper.EMPTY_BLOCK_POS, nextRoom, entrancePoint, false));
-//                    }
-//                }
+                exitPoints = new ArrayList<>(floor.getBranches().get(this.getIndex() - 1).getRooms().getLast().getValidExitPoints(TemplateHelper.EMPTY_DUNGEON_SETTINGS, TemplateHelper.EMPTY_BLOCK_POS, nextRoom, entrancePoint, false));
+                /*DungeonBranch lastBranch = floor.getBranches().get(floor.getBranches().size() - 2);
+                for (int i = 0; i < 3 ; i++) {//
+                    int index = lastBranch.branchRooms.size() - (1 + i);
+                    if (index < 0) break;
+                    DungeonRoom room = lastBranch.branchRooms.get(index);
+                    if (room!=null) {
+                        exitPoints.addAll(room.getValidExitPoints(TemplateHelper.EMPTY_DUNGEON_SETTINGS, TemplateHelper.EMPTY_BLOCK_POS, nextRoom, entrancePoint, false));
+                    }
+                }*/
             } else exitPoints = getValidExitPoints(TemplateHelper.EMPTY_DUNGEON_SETTINGS, nextRoom, entrancePoint, false);
 
             List<Pair<ConnectionPoint, StructurePlaceSettings>> validPoints = new ArrayList<>();
             BlockPos.MutableBlockPos position = new BlockPos.MutableBlockPos();
 
-            for (int i = 0; i < 50; i++) {
-                if (exitPoints.isEmpty()) break;
-
-                ConnectionPoint exitPoint = exitPoints.remove(new Random().nextInt(exitPoints.size()));
-
-
+            while (!exitPoints.isEmpty()){
+                ConnectionPoint exitPoint = exitPoints.removeLast();
                 StructurePlaceSettings settings = TemplateHelper.handleRoomTransformation(entrancePoint, exitPoint);
-
-
                 ConnectionPoint proposedPoint = ConnectionPoint.copy(entrancePoint);
                 position.set(ConnectionPoint.getOffset(settings, TemplateHelper.EMPTY_BLOCK_POS, proposedPoint, exitPoint).offset(exitPoint.getDirection(exitPoint.getRoom().getSettings()).getNormal()));
-
-
                 if (validateNextPoint(exitPoint, settings, position, nextRoom)) {
                     validPoints.add(new Pair<>(exitPoint, settings));
                 }
                 if (validPoints.size() >= 3) {
                     break;
                 }
-
             }
-
-
             if (validPoints.isEmpty()) continue;
 
             Pair<ConnectionPoint, StructurePlaceSettings> exitPoint = ConnectionPoint.selectBestPoint(validPoints, this, Y_TARGET, 70.0, 200.0, 200.0, 30.0);
