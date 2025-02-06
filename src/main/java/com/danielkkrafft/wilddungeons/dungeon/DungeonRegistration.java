@@ -107,7 +107,7 @@ public class DungeonRegistration {
         }
 
         public OfferingTemplate(String name, ItemTemplate itemTemplate, Offering.CostType costType, int costAmount, float costDeviance) {
-            this(name, Offering.Type.ITEM, itemTemplate.getDeviatedCount(), itemTemplate.name, costType, costAmount, costDeviance);
+             this(name, Offering.Type.ITEM, itemTemplate.getDeviatedCount(), String.valueOf(itemTemplate.itemID), costType, costAmount, costDeviance);
         }
 
         public Offering asOffering(Level level) {

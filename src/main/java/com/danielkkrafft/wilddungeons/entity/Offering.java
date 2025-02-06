@@ -28,6 +28,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
@@ -84,7 +85,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     public ItemStack getItemStack() {
         if (this.itemStack == null) {
             WildDungeons.getLogger().info("Getting itemstack of ID: {}", this.offerID);
-            itemStack = new ItemStack(BuiltInRegistries.ITEM.get(ResourceKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.withDefaultNamespace(this.offerID))), this.amount);
+            itemStack = new ItemStack(Item.byId(Integer.parseInt(this.offerID)), this.amount);
         }
         return itemStack;
     }
