@@ -22,7 +22,7 @@ public class CombatRoom extends EnemyPurgeRoom {
     public int spawnTimer = 0;
     public int groupSize = 2;
 
-    public List<DungeonTarget> toSpawn = new ArrayList<>();
+    public int totalSpawns = 0;
 
     public CombatRoom(DungeonBranch branch, String templateKey, BlockPos position, StructurePlaceSettings settings, List<ConnectionPoint> allConnectionPoints) {
         super(branch, templateKey, position, settings, allConnectionPoints);
@@ -37,17 +37,22 @@ public class CombatRoom extends EnemyPurgeRoom {
         templates.forEach(template -> {
             DungeonTarget enemy = template.asEnemy();
             targets.add(enemy);
-            toSpawn.add(enemy);
+            totalSpawns += 1;
         });
         super.start();
     }
 
     public void spawnNext() {
+        WildDungeons.getLogger().info("SPAWNING A GROUP OF {}", Math.floor(groupSize * this.getDifficulty()));
         for (int i = 0; i < Math.floor(groupSize * this.getDifficulty()); i++) {
-            WildDungeons.getLogger().info("SPAWNING A GROUP OF {}", Math.floor(groupSize * this.getDifficulty()));
-            if (toSpawn.isEmpty()) return;
-            DungeonTarget enemy = toSpawn.removeFirst();
-            enemy.spawn(this);
+            if (totalSpawns <= 0) return;
+            Optional<DungeonTarget> target = targets.stream().filter(t -> !t.spawned).findFirst();
+            if (target.isPresent()) {
+                target.get().spawn(this);
+                totalSpawns--;
+            } else {
+                totalSpawns = 0;
+            }
         }
     }
 
@@ -55,7 +60,7 @@ public class CombatRoom extends EnemyPurgeRoom {
     public void tick() {
         super.tick();
         if (!this.started || this.isClear() || this.getActivePlayers().isEmpty()) return;
-        if (spawnTimer == 0 || toSpawn.size() == targets.size()) {spawnNext(); spawnTimer = SPAWN_INTERVAL;}
+        if (spawnTimer == 0 || totalSpawns == targets.size()) {spawnNext(); spawnTimer = SPAWN_INTERVAL;}
         spawnTimer -= 1;
     }
 }

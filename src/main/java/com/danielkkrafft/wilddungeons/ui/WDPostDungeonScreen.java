@@ -237,20 +237,26 @@ public class WDPostDungeonScreen extends Screen {
     public void drawTimeBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
     {
         float ratio = Math.min(this.targetTime / this.clearTicks, 1.0f);
-        guiGraphics.fill(step.minX() + xOffset, step.minY(), (int) (step.minX() + step.xSize() * ratio + xOffset), step.maxY(), 0x80FF0000);
-        guiGraphics.fill(step.minX() + xOffset, step.minY(), step.maxX() + xOffset, step.maxY(), 0x800d0f18);
+        int maxX1 = Mth.lerpInt(step.completion(), step.minX(), step.maxX());
+        int maxX2 = Mth.lerpInt(step.completion(), step.minX(), (int) (step.minX() + step.xSize() * ratio));
+        guiGraphics.fill(step.minX() + xOffset, step.minY(), maxX2 + xOffset, step.maxY(), 0x80FF0000);
+        guiGraphics.fill(step.minX() + xOffset, step.minY(), maxX1 + xOffset, step.maxY(), 0x800d0f18);
     }
 
     public final AnimationStep TIME = new AnimationStep(TIME_BACKGROUND.minXRatio, TIME_BACKGROUND.minYRatio, TIME_BACKGROUND.maxXRatio, TIME_BACKGROUND.maxYRatio, 500, 750, this::drawTime, this);
     public void drawTime(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
     {
+        int hours = (int) (clearHours * step.completion());
+        int minutes = (int) (clearMinutes * step.completion());
+        int seconds = (int) (clearSeconds * step.completion());
+
         String title = "Time: ";
-        if (clearHours < 10) title += "0";
-        title += clearHours + ":";
-        if (clearMinutes < 10) title += "0";
-        title += clearMinutes + ":";
-        if (clearSeconds < 10) title += "0";
-        title += clearSeconds;
+        if (hours < 10) title += "0";
+        title += hours + ":";
+        if (minutes < 10) title += "0";
+        title += minutes + ":";
+        if (seconds < 10) title += "0";
+        title += seconds;
 
         WDFont.drawCenteredString(guiGraphics, title, step.xCenter() + xOffset, step.yCenter(), step.ySize()/5, 0xFFFFFFFF);
     }
@@ -258,14 +264,16 @@ public class WDPostDungeonScreen extends Screen {
     public final AnimationStep PERFECT_TIME = new AnimationStep(TIME_BACKGROUND.minXRatio, TIME_BACKGROUND.minYRatio, TIME_BACKGROUND.maxXRatio, TIME_BACKGROUND.maxYRatio, 500, 750, this::drawPerfectTime, this);
     public void drawPerfectTime(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
     {
-        guiGraphics.fill(step.minX() + xOffset, step.minY(), step.maxX() + xOffset, step.maxY(), this.primaryColor);
+        guiGraphics.fill(step.minX() + xOffset, step.minY(), Mth.lerpInt(step.completion(), step.minX(), step.maxX()) + xOffset, step.maxY(), this.primaryColor);
         drawTime(guiGraphics, mouseX, mouseY, TIME);
     }
+
+    // BASIC ANIMATION UP TO THIS POINT
 
     public final AnimationStep DEATHS_BACKGROUND = new AnimationStep(TIME_BACKGROUND.minXRatio, 0.53f, TIME_BACKGROUND.maxXRatio, 0.67f, 500, 750, this::drawDeathsBackground, this);
     public void drawDeathsBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
     {
-        guiGraphics.fill(step.minX() + xOffset, step.minY(), step.maxX() + xOffset, step.maxY(), 0x800d0f18);
+        guiGraphics.fill(step.minX() + xOffset, step.minY(), (int) ((step.completion() * step.xSize()) + step.minX() + xOffset), step.maxY(), 0x800d0f18);
     }
 
     public final AnimationStep DEATHS = new AnimationStep(DEATHS_BACKGROUND.minXRatio, DEATHS_BACKGROUND.minYRatio, DEATHS_BACKGROUND.maxXRatio, DEATHS_BACKGROUND.maxYRatio, 500, 750, this::drawDeaths, this);
