@@ -5,6 +5,7 @@ import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.DungeonLayout;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonBranchTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonFloorTemplate;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
+import net.minecraft.core.BlockPos;
 
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonBranchRegistry.*;
 
@@ -22,10 +23,12 @@ public class DungeonFloorRegistry {
             .setBranchTemplates(new DungeonLayout<DungeonBranchTemplate>()
                     .addSimple(OVERWORLD_STARTER_BRANCH)
                     .addSimple(OVERWORLD_SPRAWL_0)
-                    .addSimple(OVERWORLD_SPRAWL_1)
+                    .addSimple(OVERWORLD_SPRAWL_0)
+                    .addSimple(OVERWORLD_FREE_STUFF_BRANCH)
                     .addSimple(OVERWORLD_SPRAWL_2)
-                    .addSimple(OVERWORLD_SPRAWL_3)
-                    .addSimple(OVERWORLD_ENDING_BRANCH));
+                    .addSimple(OVERWORLD_FREE_STUFF_BRANCH)
+                    .addSimple(OVERWORLD_ENDING_BRANCH))
+            .setOrigin(new BlockPos(0, 150, 0));
 
     public static void setupFloors() {
         DUNGEON_FLOOR_REGISTRY.add(TEST_FLOOR);

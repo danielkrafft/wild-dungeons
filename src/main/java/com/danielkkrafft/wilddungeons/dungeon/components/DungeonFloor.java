@@ -89,7 +89,7 @@ public class DungeonFloor {
 
         this.LEVEL_KEY = buildFloorLevelKey(this);
         InfiniverseAPI.get().getOrCreateLevel(DungeonSessionManager.getInstance().server, LEVEL_KEY, () -> WDDimensions.createLevel(WILDDUNGEON));
-        this.origin = origin;
+        this.origin = this.getTemplate().origin() == null ? origin : this.getTemplate().origin();
         WDProfiler.INSTANCE.logTimestamp("DungeonFloor::new");
     }
 

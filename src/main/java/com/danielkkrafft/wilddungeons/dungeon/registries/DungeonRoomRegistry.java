@@ -219,6 +219,12 @@ public class DungeonRoomRegistry {
             List.of(
                     of("overworld/exit", EMPTY_BLOCK_POS)
             ));
+    public static final DungeonRoomTemplate OVERWORLD_TRANSITION_ROOM = create(
+            "transition",
+            List.of(
+                    of("overworld/transition", EMPTY_BLOCK_POS),
+                    of("overworld/transition2", new BlockPos(7, -13, 3))
+            ));
 
     public static void setupDungeonRooms() {
         DUNGEON_ROOM_REGISTRY.add(SMALL_1);
@@ -258,5 +264,6 @@ public class DungeonRoomRegistry {
         DUNGEON_ROOM_REGISTRY.add(OVERWORLD_SHOP_ROOM);
         DUNGEON_ROOM_REGISTRY.add(OVERWORLD_FREE_PERK);
         DUNGEON_ROOM_REGISTRY.add(OVERWORLD_EXIT_ROOM);
+        DUNGEON_ROOM_REGISTRY.add(OVERWORLD_TRANSITION_ROOM);
     }
 }
