@@ -13,7 +13,7 @@ public class DungeonFloorPoolRegistry {
     public static void setupFloorPools(){
         TEST_FLOOR_POOL.add(TEST_FLOOR, 1);
         OVERWORLD_FLOOR_POOL
-                .add(OVERWORLD_BASIC_FLOOR, 1)
+                .add(OVERWORLD_BASIC_FLOOR, 4)
                 .add(OVERWORLD_SANDY_FLOOR, 1)
                 .add(OVERWORLD_RED_SANDY_FLOOR, 1);
     }

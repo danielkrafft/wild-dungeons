@@ -13,6 +13,7 @@ import com.danielkkrafft.wilddungeons.util.IgnoreSerialization;
 import com.danielkkrafft.wilddungeons.util.SaveSystem;
 import com.danielkkrafft.wilddungeons.util.Serializer;
 import com.danielkkrafft.wilddungeons.util.debug.WDProfiler;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
@@ -153,6 +154,7 @@ public class DungeonSession {
 
     public void fail() {
         for (WDPlayer wdPlayer : getPlayers()) {
+            wdPlayer.getServerPlayer().sendSystemMessage(Component.literal("DUNGEON FAILED - RESPAWNING"), true);
             this.onExit(wdPlayer);
         }
         WildDungeons.getLogger().info("SHUTTING DOWN DUE TO FAIL");

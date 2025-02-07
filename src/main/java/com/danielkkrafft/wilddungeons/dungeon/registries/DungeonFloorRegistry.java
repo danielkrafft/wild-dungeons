@@ -23,8 +23,6 @@ public class DungeonFloorRegistry {
             .setBranchTemplates(new DungeonLayout<DungeonBranchTemplate>()
                     .addSimple(OVERWORLD_STARTER_BRANCH)
                     .addSimple(OVERWORLD_SPRAWL_0)
-                    .add(new WeightedPool<DungeonBranchTemplate>()
-                            .add(TEST_BRANCH, 1), 10)
                     .addSimple(OVERWORLD_FREE_STUFF_BRANCH_0)
                     .addSimple(OVERWORLD_SPRAWL_1)
                     .addSimple(OVERWORLD_FREE_STUFF_BRANCH_1)
