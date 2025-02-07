@@ -4,21 +4,17 @@ import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonPerk;
-import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonPerkTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
-import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundPostDungeonScreenPacket;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.danielkkrafft.wilddungeons.util.IgnoreSerialization;
 import com.danielkkrafft.wilddungeons.util.SaveSystem;
 import com.danielkkrafft.wilddungeons.util.Serializer;
-import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.util.debug.WDProfiler;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
@@ -213,15 +209,17 @@ public class DungeonSession {
         WildDungeons.getLogger().info("SHUTTING DOWN DUE TO EXIT BEHAVIOR");
         switch (this.getTemplate().exitBehavior()) {
             case DESTROY -> {
-                this.shutdown();
-                Entity rift = this.getEntranceLevel().getEntity(UUID.fromString(this.getEntranceUUID()));
-                if (rift != null) rift.remove(Entity.RemovalReason.DISCARDED);
+                DungeonSessionManager.getInstance().server.execute(() -> {
+                    Entity entity = DungeonSessionManager.getInstance().server.getLevel(this.getEntranceLevel().dimension()).getEntity(UUID.fromString(this.getEntranceUUID()));
+                    if (entity != null) entity.discard();
+                });
+                this.shutdown(); //TODO this doesn't always delete the rift
             }
-            case RANDOMIZE -> {
-                this.shutdown();
-                Offering rift = (Offering) this.getEntranceLevel().getEntity(UUID.fromString(this.getEntranceUUID()));
-                if (rift != null) rift.setOfferingId("wd-"+this.getTemplate().nextDungeon().getRandom().name());
-            }
+//            case RANDOMIZE -> {
+//                this.shutdown();
+//                Offering rift = (Offering) this.getEntranceLevel().getEntity(UUID.fromString(this.getEntranceUUID()));
+//                if (rift != null) rift.setOfferingId("wd-"+this.getTemplate().nextDungeon().getRandom().name());
+//            }
             case RESET -> {
                 this.shutdown();
             }

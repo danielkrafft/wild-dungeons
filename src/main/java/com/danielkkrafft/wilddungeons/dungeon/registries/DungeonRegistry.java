@@ -27,7 +27,7 @@ public class DungeonRegistry {
             .setSecondaryColor(0xFFdde63e)
             .setTargetTime(12000)
             .setTargetDeaths(0)
-            .setTargetScore(100000)
+            .setTargetScore(15000)
             .setExitBehavior(DESTROY)
             .setNextDungeon(OVERWORLD_DUNGEON_POOL);
 

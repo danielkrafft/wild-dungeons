@@ -96,7 +96,7 @@ public class DungeonRegistration {
         private final Offering.CostType costType;
         private final int costAmount;
         private final float deviance;
-        private float renderScale;
+        private float renderScale = 1.0f;
         private int colorTint;
         private int soundLoop;
 

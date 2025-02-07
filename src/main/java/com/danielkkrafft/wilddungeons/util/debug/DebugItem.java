@@ -30,7 +30,8 @@ public class DebugItem extends Item {
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
         if (level.isClientSide) return InteractionResultHolder.pass(player.getItemInHand(usedHand));
-        WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateClientWDPlayer(player.getStringUUID());
+        if (!(player instanceof ServerPlayer serverPlayer)) return InteractionResultHolder.fail(player.getItemInHand(usedHand));
+        WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer.getStringUUID());
 
         //PacketDistributor.sendToPlayer((ServerPlayer) player, new ClientboundPostDungeonScreenPacket(new CompoundTag()));
         //logNonDungeonStuff(wdPlayer);

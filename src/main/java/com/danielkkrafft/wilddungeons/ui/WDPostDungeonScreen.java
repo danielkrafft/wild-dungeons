@@ -20,7 +20,9 @@ import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.joml.Matrix4f;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 public class WDPostDungeonScreen extends Screen {
 
@@ -29,6 +31,7 @@ public class WDPostDungeonScreen extends Screen {
     public String icon;
     public int primaryColor;
     public int secondaryColor;
+    public int progressColor;
     public int targetTime;
     public int targetDeaths;
     public int targetScore;
@@ -114,6 +117,9 @@ public class WDPostDungeonScreen extends Screen {
         this.icon = holder == null ? "1-4" : holder.icon;
         this.primaryColor = holder == null ? 0xFFFF0000 : holder.primaryColor;
         this.secondaryColor = holder == null ? 0xFFFF0000 : holder.secondaryColor;
+        int alpha = (primaryColor >> 24) & 0xFF;
+        alpha /= 2;
+        progressColor = (alpha << 24) | (primaryColor & 0x00FFFFFF);
         this.targetTime = holder == null ? 1200 : holder.targetTime;
         this.targetDeaths = holder == null ? 0 : holder.targetDeaths;
         this.targetScore = holder == null ? 1000 : holder.targetScore;
@@ -239,7 +245,7 @@ public class WDPostDungeonScreen extends Screen {
         float ratio = Math.min(this.targetTime / this.clearTicks, 1.0f);
         int maxX1 = Mth.lerpInt(step.completion(), step.minX(), step.maxX());
         int maxX2 = Mth.lerpInt(step.completion(), step.minX(), (int) (step.minX() + step.xSize() * ratio));
-        guiGraphics.fill(step.minX() + xOffset, step.minY(), maxX2 + xOffset, step.maxY(), 0x80FF0000);
+        guiGraphics.fill(step.minX() + xOffset, step.minY(), maxX2 + xOffset, step.maxY(), progressColor);
         guiGraphics.fill(step.minX() + xOffset, step.minY(), maxX1 + xOffset, step.maxY(), 0x800d0f18);
     }
 
@@ -294,8 +300,8 @@ public class WDPostDungeonScreen extends Screen {
         float ratio = Math.min((float) this.clearScore / this.targetScore, 1.0f);
         int maxX1 = Mth.lerpInt(step.completion(), step.minX(), step.maxX());
         int maxX2 = Mth.lerpInt(step.completion(), step.minX(), (int) (step.minX() + step.xSize() * ratio));
-        guiGraphics.fill(step.minX() + xOffset, step.minY(), maxX1 + xOffset, step.maxY(), 0x80FF0000);
-        guiGraphics.fill(step.minX() + xOffset, step.minY(), maxX2 + xOffset, step.maxY(), 0x800d0f18);
+        guiGraphics.fill(step.minX() + xOffset, step.minY(), maxX2 + xOffset, step.maxY(), progressColor);
+        guiGraphics.fill(step.minX() + xOffset, step.minY(), maxX1 + xOffset, step.maxY(), 0x800d0f18);
     }
 
     public final AnimationStep SCORE = new AnimationStep(SCORE_BACKGROUND.minXRatio, SCORE_BACKGROUND.minYRatio, SCORE_BACKGROUND.maxXRatio, SCORE_BACKGROUND.maxYRatio, 500, 750, this::drawScore, this);
