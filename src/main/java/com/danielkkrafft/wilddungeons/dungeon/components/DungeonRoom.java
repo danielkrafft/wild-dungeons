@@ -382,7 +382,7 @@ public class DungeonRoom {
         }
 
         chunkPosSet.forEach(pos -> {
-            branch.getFloor().getChunkMap().computeIfAbsent(pos, k -> new ArrayList<>()).add(new Vector2i(branch.getIndex(), this.index));
+            getBranch().getFloor().getChunkMap().computeIfAbsent(pos, k -> new ArrayList<>()).add(new Vector2i(branch.getIndex(), this.index));
         });
         WDProfiler.INSTANCE.logTimestamp("DungeonRoom::handleChunkMap");
     }
@@ -394,8 +394,8 @@ public class DungeonRoom {
             removeBlocks(this.getBranch().getFloor(), box);
         });
         unsetAttachedPoints();
-        branch.getFloor().getChunkMap().forEach((key, value) -> {
-            value.removeIf(v -> v.x == branch.getIndex() && v.y == this.index);
+        getBranch().getFloor().getChunkMap().forEach((key, value) -> {
+            value.removeIf(v -> v.x == getBranch().getIndex() && v.y == this.getIndex());
         });
         destroyEntities();
     }

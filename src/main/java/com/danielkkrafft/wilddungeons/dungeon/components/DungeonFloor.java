@@ -166,9 +166,13 @@ public class DungeonFloor {
         if (generationFutures == null) generationFutures = new ArrayList<>();
         CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
             int branchCount = this.dungeonBranches.size();
-            while (branchCount < branchTemplateCount) {
+            while (branchCount < branchTemplateCount && this.getLevel()!=null) {
                 WildDungeons.getLogger().info("Generating branch {} of {}", branchCount, branchTemplateCount-1);
-                generateSpecificBranch(branchCount);
+                try {
+                    generateSpecificBranch(branchCount);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 branchCount = this.dungeonBranches.size();
             }
         });
