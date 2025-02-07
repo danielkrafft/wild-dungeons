@@ -34,7 +34,6 @@ import org.joml.Vector2i;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonFloorRegistry.DUNGEON_FLOOR_REGISTRY;
 import static com.danielkkrafft.wilddungeons.registry.WDDimensions.WILDDUNGEON;
@@ -80,9 +79,9 @@ public class DungeonFloor {
     public HashMap<ChunkPos, List<Vector2i>> getChunkMap() {return this.chunkMap;}
     public List<BoundingBox> halfGeneratedRooms = new ArrayList<>();
     @IgnoreSerialization
-    public List<CompletableFuture<Void>> generationFutures = new ArrayList<CompletableFuture<Void>>();
+    public List<CompletableFuture<Void>> generationFutures = new ArrayList<>();
     List<WDPlayer> playersWaitingToEnter = new ArrayList<>();
-    public boolean generating = true;
+    public boolean unsafeForPlayer = true;
 
 
     public DungeonFloor(String templateKey, String sessionKey, BlockPos origin) {
@@ -98,48 +97,9 @@ public class DungeonFloor {
     }
 
 
-    public void shutdown() {
-        InfiniverseAPI.get().markDimensionForUnregistration(DungeonSessionManager.getInstance().server, this.LEVEL_KEY);
-        FileUtil.deleteDirectoryContents(FileUtil.getWorldPath().resolve("dimensions").resolve(WildDungeons.MODID).resolve(this.LEVEL_KEY.location().getPath()), true);
-    }
-
-    public static ResourceKey<Level> buildFloorLevelKey(DungeonFloor floor) {
-        return ResourceKey.create(Registries.DIMENSION, WildDungeons.rl(DungeonSessionManager.buildDungeonSessionKey(floor.getSession().getEntranceUUID()) + "___" + floor.getTemplate().name() + "___" + floor.index));
-    }
-
-    protected boolean isBoundingBoxValid(List<BoundingBox> proposedBoxes) {
-        for (BoundingBox proposedBox : proposedBoxes) {
-            if (proposedBox.minY() < EmptyGenerator.MIN_Y || proposedBox.maxY() > EmptyGenerator.MIN_Y + EmptyGenerator.GEN_DEPTH) {
-                WildDungeons.getLogger().info("OUT OF BOUNDS!");
-                return false;
-            }
-
-            ChunkPos min = new ChunkPos(new BlockPos(proposedBox.minX(), proposedBox.minY(), proposedBox.minZ()));
-            ChunkPos max = new ChunkPos(new BlockPos(proposedBox.maxX(), proposedBox.maxY(), proposedBox.maxZ()));
-
-            for (int x = min.x; x <= max.x; x++) {
-                for (int z = min.z; z <= max.z; z++) {
-                    ChunkPos newPos = new ChunkPos(x, z);
-                    HashMap<ChunkPos, List<Vector2i>> chunkMap = getChunkMap();
-                    boolean chunkExists = chunkMap.containsKey(newPos);
-                    List<DungeonRoom> roomsInChunk = chunkExists
-                            ? chunkMap.get(newPos).stream().map(v2 -> getBranches().get(v2.x).getRooms().get(v2.y)).toList()
-                            : new ArrayList<>();
-                    for (DungeonRoom room : roomsInChunk) {
-                        for (BoundingBox box : room.getBoundingBoxes()) {
-                            if (proposedBox.intersects(box)) {
-                                return false;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return true;
-    }
 
     public void attemptEnter(WDPlayer wdPlayer){
-        if (this.generating) {
+        if (this.unsafeForPlayer) {
             playersWaitingToEnter.add(wdPlayer);
             return;
         }
@@ -177,7 +137,7 @@ public class DungeonFloor {
         this.dungeonBranches.sort(Comparator.comparingInt(DungeonBranch::getIndex));
     }
 
-    public void validate() {
+    public void removedHalfGeneratedBranch() {
         if (!halfGeneratedRooms.isEmpty()) {
             halfGeneratedRooms.forEach(box -> {
                 DungeonSessionManager.getInstance().server.execute(() -> {
@@ -197,8 +157,6 @@ public class DungeonFloor {
             }
             halfGeneratedRooms.clear();
         }
-
-        generateBranches();
     }
 
     public void generateBranches() {
@@ -208,8 +166,13 @@ public class DungeonFloor {
         CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
             int branchCount = this.dungeonBranches.size();
             while (branchCount < branchTemplateCount) {
-                WildDungeons.getLogger().info("Generating branch {} of {}", branchCount + 1, branchTemplateCount);
-                generateSpecificBranch(branchCount);
+                WildDungeons.getLogger().info("Generating branch {} of {}", branchCount, branchTemplateCount-1);
+                try {
+                    generateSpecificBranch(branchCount);
+                } catch (Exception e) {
+                    WildDungeons.getLogger().warn("Failed to generate branch {} of {}", branchCount, branchTemplateCount-1);
+                    e.printStackTrace();
+                }
                 branchCount = this.dungeonBranches.size();
             }
         });
@@ -239,7 +202,7 @@ public class DungeonFloor {
                 onEnter(wdPlayer);
             }
             playersWaitingToEnter.clear();
-            generating = false;
+            unsafeForPlayer = false;
         });
     }
 
@@ -263,7 +226,47 @@ public class DungeonFloor {
     public void cancelGenerations() {
         if (generationFutures!=null)
             generationFutures.forEach(future -> {
-                if (!future.isDone()) future.cancel(true);
+                future.cancel(true);
             });
+    }
+    public void shutdown() {
+        InfiniverseAPI.get().markDimensionForUnregistration(DungeonSessionManager.getInstance().server, this.LEVEL_KEY);
+        FileUtil.deleteDirectoryContents(FileUtil.getWorldPath().resolve("dimensions").resolve(WildDungeons.MODID).resolve(this.LEVEL_KEY.location().getPath()), true);
+    }
+
+
+    public static ResourceKey<Level> buildFloorLevelKey(DungeonFloor floor) {
+        return ResourceKey.create(Registries.DIMENSION, WildDungeons.rl(DungeonSessionManager.buildDungeonSessionKey(floor.getSession().getEntranceUUID()) + "___" + floor.getTemplate().name() + "___" + floor.index));
+    }
+
+    protected boolean isBoundingBoxValid(List<BoundingBox> proposedBoxes) {
+        for (BoundingBox proposedBox : proposedBoxes) {
+            if (proposedBox.minY() < EmptyGenerator.MIN_Y || proposedBox.maxY() > EmptyGenerator.MIN_Y + EmptyGenerator.GEN_DEPTH) {
+                WildDungeons.getLogger().info("OUT OF BOUNDS!");
+                return false;
+            }
+
+            ChunkPos min = new ChunkPos(new BlockPos(proposedBox.minX(), proposedBox.minY(), proposedBox.minZ()));
+            ChunkPos max = new ChunkPos(new BlockPos(proposedBox.maxX(), proposedBox.maxY(), proposedBox.maxZ()));
+
+            for (int x = min.x; x <= max.x; x++) {
+                for (int z = min.z; z <= max.z; z++) {
+                    ChunkPos newPos = new ChunkPos(x, z);
+                    HashMap<ChunkPos, List<Vector2i>> chunkMap = getChunkMap();
+                    boolean chunkExists = chunkMap.containsKey(newPos);
+                    List<DungeonRoom> roomsInChunk = chunkExists
+                            ? chunkMap.get(newPos).stream().map(v2 -> getBranches().get(v2.x).getRooms().get(v2.y)).toList()
+                            : new ArrayList<>();
+                    for (DungeonRoom room : roomsInChunk) {
+                        for (BoundingBox box : room.getBoundingBoxes()) {
+                            if (proposedBox.intersects(box)) {
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return true;
     }
 }

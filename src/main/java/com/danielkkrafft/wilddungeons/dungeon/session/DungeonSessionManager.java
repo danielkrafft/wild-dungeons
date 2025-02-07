@@ -25,14 +25,7 @@ public class DungeonSessionManager {
 
     public static void ValidateSessions() {
 //        WildDungeons.getLogger().info("Validating Sessions");
-        INSTANCE.sessions.forEach((key, session) -> {
-            try {
-                session.validate();
-            } catch (Exception e) {
-                WildDungeons.getLogger().error("Error validating session: {}", key);
-                e.printStackTrace();
-            }
-        });
+        INSTANCE.sessions.forEach((key, session) -> session.validate());
     }
 
     public DungeonSession getDungeonSession(String key) {

@@ -180,7 +180,7 @@ public class DungeonSession {
     }
 
     public void tick() {
-        if (playerStatuses.values().stream().noneMatch(v -> v.inside) && !floors.isEmpty() && floors.stream().noneMatch(dungeonFloor -> dungeonFloor.generating)) {shutdownTimer -= 1;}
+        if (playerStatuses.values().stream().noneMatch(v -> v.inside) && !floors.isEmpty() && floors.stream().noneMatch(dungeonFloor -> dungeonFloor.unsafeForPlayer)) {shutdownTimer -= 1;}
         if (shutdownTimer == 0) {
             WildDungeons.getLogger().info("SHUTTING DOWN DUE TO TIMER");
             shutdown();return;}
@@ -210,7 +210,10 @@ public class DungeonSession {
     }
 
     public void validate() {
-        floors.forEach(DungeonFloor::validate);
+        floors.forEach(dungeonFloor -> {
+            dungeonFloor.removedHalfGeneratedBranch();
+            dungeonFloor.generateBranches();
+        });
     }
 
     public void cancelGenerations() {
