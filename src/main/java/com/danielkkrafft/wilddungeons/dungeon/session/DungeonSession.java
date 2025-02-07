@@ -6,7 +6,6 @@ import com.danielkkrafft.wilddungeons.dungeon.components.DungeonPerk;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonPerkTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
-import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundPostDungeonScreenPacket;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
@@ -164,15 +163,17 @@ public class DungeonSession {
         WildDungeons.getLogger().info("SHUTTING DOWN DUE TO EXIT BEHAVIOR");
         switch (this.getTemplate().exitBehavior()) {
             case DESTROY -> {
-                this.shutdown();
-                Entity rift = this.getEntranceLevel().getEntity(UUID.fromString(this.getEntranceUUID()));
-                if (rift != null) rift.remove(Entity.RemovalReason.DISCARDED);
+                DungeonSessionManager.getInstance().server.execute(() -> {
+                    Entity entity = DungeonSessionManager.getInstance().server.getLevel(this.getEntranceLevel().dimension()).getEntity(UUID.fromString(this.getEntranceUUID()));
+                    if (entity != null) entity.discard();
+                });
+                this.shutdown(); //TODO this doesn't always delete the rift
             }
-            case RANDOMIZE -> {
-                this.shutdown();
-                Offering rift = (Offering) this.getEntranceLevel().getEntity(UUID.fromString(this.getEntranceUUID()));
-                if (rift != null) rift.setOfferingId("wd-"+this.getTemplate().nextDungeon().getRandom().name());
-            }
+//            case RANDOMIZE -> {
+//                this.shutdown();
+//                Offering rift = (Offering) this.getEntranceLevel().getEntity(UUID.fromString(this.getEntranceUUID()));
+//                if (rift != null) rift.setOfferingId("wd-"+this.getTemplate().nextDungeon().getRandom().name());
+//            }
             case RESET -> {
                 this.shutdown();
             }

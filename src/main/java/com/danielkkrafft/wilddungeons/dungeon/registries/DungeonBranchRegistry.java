@@ -63,6 +63,13 @@ public class DungeonBranchRegistry {
                     .addSimple(OVERWORLD_TRANSITION_ROOM))
             .setMaterials(OVERWORLD_MATERIAL_POOL_1)
             .setDifficultyScaling(1.0f);
+    public static final DungeonBranchTemplate OVERWORLD_FREE_STUFF_BRANCH_2 = create("OVERWORLD_FREE_STUFF_BRANCH_2")
+            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
+                    .add(OVERWORLD_LOOT_ROOM_POOL, 1)
+                    .add(OVERWORLD_SHOP_ROOM_POOL, 1)
+                    .addSimple(OVERWORLD_TRANSITION_ROOM))
+            .setMaterials(OVERWORLD_MATERIAL_POOL_2)
+            .setDifficultyScaling(1.0f);
 
     public static final DungeonBranchTemplate OVERWORLD_SPRAWL_0 = create("OVERWORLD_SPRAWL_0")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
@@ -92,5 +99,6 @@ public class DungeonBranchRegistry {
         DUNGEON_BRANCH_REGISTRY.add(OVERWORLD_ENDING_BRANCH);
         DUNGEON_BRANCH_REGISTRY.add(OVERWORLD_FREE_STUFF_BRANCH_0);
         DUNGEON_BRANCH_REGISTRY.add(OVERWORLD_FREE_STUFF_BRANCH_1);
+        DUNGEON_BRANCH_REGISTRY.add(OVERWORLD_FREE_STUFF_BRANCH_2);
     }
 }

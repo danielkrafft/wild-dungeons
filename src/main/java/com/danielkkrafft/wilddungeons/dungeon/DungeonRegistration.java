@@ -96,7 +96,7 @@ public class DungeonRegistration {
         private final Offering.CostType costType;
         private final int costAmount;
         private final float deviance;
-        private float renderScale;
+        private float renderScale = 1.0f;
         private int colorTint;
         private int soundLoop;
 
@@ -123,7 +123,6 @@ public class DungeonRegistration {
             int adjustedCost = RandomUtil.randIntBetween((int) (costAmount / deviance), (int) (costAmount * deviance));
             Offering offering = new Offering(level, type, adjustedAmount, id, costType, adjustedCost);
             offering.setRenderScale(renderScale);
-            offering.setColorTint(colorTint);
             offering.setSoundLoop(soundLoop);
             return offering;
         }

@@ -5,7 +5,9 @@ import com.danielkkrafft.wilddungeons.dungeon.components.Alignments;
 import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
+import com.danielkkrafft.wilddungeons.render.RiftRenderType;
 import com.danielkkrafft.wilddungeons.util.ColorUtil;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -28,7 +30,9 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 import org.joml.Vector2i;
+import org.joml.Vector3f;
 
 import java.util.HexFormat;
 
@@ -117,6 +121,15 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
                 .setNormal(0.0F, 1.0F, 0.0F);
     }
 
+    private static void vertex(VertexConsumer consumer, PoseStack.Pose pose, float x, float y, float u, float v, int packedLight, float alpha, int color) {
+        consumer.addVertex(pose, x, y, 0.0F)
+                .setColor(color)
+                .setUv(u, v)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(packedLight)
+                .setNormal(0.0F, 1.0F, 0.0F);
+    }
+
     public static int getSeedForItemStack(ItemStack stack) {
         return stack.isEmpty() ? 187 : Item.getId(stack.getItem()) + stack.getDamageValue();
     }
@@ -178,7 +191,15 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
             if (Minecraft.getInstance().player == null) return;
             float extraScaleFactor = (float) (2.5f - Math.min(entity.position().distanceTo(Minecraft.getInstance().player.position()) / 15.0f, 2.5f));
             poseStack.scale(0.1F+extraScaleFactor, 0.1F+extraScaleFactor, 0.1F+extraScaleFactor);
-            VertexConsumer vertexconsumer = buffer.getBuffer(RenderType.endPortal());
+            if (WildDungeons.RIFT_SHADER == null) return;
+            RenderSystem.setShader(() -> WildDungeons.RIFT_SHADER);
+            VertexConsumer vertexconsumer = buffer.getBuffer(RiftRenderType.getRiftRenderType());
+            Vector3f pRGB = entity.getPrimaryColorRGB();
+            Vector3f sRGB = entity.getSecondaryColorRGB();
+            Vector3f bgRGB = entity.getBackgroundColorRGB();
+            WildDungeons.RIFT_SHADER.safeGetUniform("BGColor").set(bgRGB.x,bgRGB.y,bgRGB.z);
+            WildDungeons.RIFT_SHADER.safeGetUniform("PrimaryColor").set(pRGB.x,pRGB.y,pRGB.z);
+            WildDungeons.RIFT_SHADER.safeGetUniform("SecondaryColor").set(sRGB.x,sRGB.y,sRGB.z);
             PoseStack.Pose posestack$pose = poseStack.last();
             drawCircle(0.0f, 0.0f, 20, 0.5f, vertexconsumer, posestack$pose, packedLight);
             //renderPerkRing(poseStack, entity, partialTicks, buffer, 0.6f);

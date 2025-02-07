@@ -295,15 +295,15 @@ public class DungeonRoom {
     }
 
     public BlockPos getSpawnPoint(ServerLevel level) {
-        return this.spawnPoint == null ? this.sampleSpawnablePositions(level, 1).getFirst() : this.spawnPoint;
+        return this.spawnPoint == null ? this.sampleSpawnablePositions(level, 1, -1).getFirst() : this.spawnPoint;
     }
 
-    public List<BlockPos> sampleSpawnablePositions(ServerLevel level, int count) {
+    public List<BlockPos> sampleSpawnablePositions(ServerLevel level, int count, int inflation) {
         List<BlockPos> result = new ArrayList<>();
         int tries = count*10;
         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
         while (result.size() < count && tries > 0) {
-            BoundingBox innerShell = this.boundingBoxes.get(RandomUtil.randIntBetween(0, this.boundingBoxes.size()-1)).inflatedBy(-1);
+            BoundingBox innerShell = this.boundingBoxes.get(RandomUtil.randIntBetween(0, this.boundingBoxes.size()-1)).inflatedBy(inflation);
             int randX = RandomUtil.randIntBetween(innerShell.minX(), innerShell.maxX());
             int randZ = RandomUtil.randIntBetween(innerShell.minZ(), innerShell.maxZ());
 

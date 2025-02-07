@@ -6,6 +6,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -50,24 +51,9 @@ public class DungeonTarget {
 
     public void spawn(DungeonRoom room) {
 
-        List<BlockPos> validPoints = room.sampleSpawnablePositions(room.getBranch().getFloor().getLevel(), 3);
-        BlockPos finalPos = validPoints.stream().map(pos -> {
-            int score = 0;
-
-            for (WDPlayer wdPlayer : room.getActivePlayers()) {
-                ServerPlayer player = wdPlayer.getServerPlayer();
-                if (player!=null)
-                    score += pos.distManhattan( player.blockPosition());
-            }
-
-            return new Pair<>(pos, score);
-
-        }).max(Comparator.comparingInt(Pair::getSecond)).get().getFirst();
-
         if (type.equals(Type.ENTITY.toString()))
         {
             Entity entity = EntityType.byString(this.entityTypeKey).get().create(room.getBranch().getFloor().getLevel());
-            entity.setPos(Vec3.atCenterOf(finalPos));
             if (helmetItem != -1) entity.getSlot(100 + EquipmentSlot.HEAD.getIndex()).set(new ItemStack(Item.byId(helmetItem), 1));
             if (chestItem != -1) entity.getSlot(100 + EquipmentSlot.CHEST.getIndex()).set(new ItemStack(Item.byId(chestItem), 1));
             if (legsItem != -1) entity.getSlot(100 + EquipmentSlot.LEGS.getIndex()).set(new ItemStack(Item.byId(legsItem), 1));
@@ -78,6 +64,21 @@ public class DungeonTarget {
                 mobEffects.forEach(pair -> livingEntity.addEffect(new MobEffectInstance(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(BuiltInRegistries.MOB_EFFECT.byId(pair.getFirst())), Integer.MAX_VALUE, pair.getSecond())));
             }
 
+            List<BlockPos> validPoints = room.sampleSpawnablePositions(room.getBranch().getFloor().getLevel(), 3, -Mth.ceil(Math.max(entity.getBoundingBox().getXsize(), entity.getBoundingBox().getZsize())));
+            BlockPos finalPos = validPoints.stream().map(pos -> {
+                int score = 0;
+
+                for (WDPlayer wdPlayer : room.getActivePlayers()) {
+                    ServerPlayer player = wdPlayer.getServerPlayer();
+                    if (player!=null)
+                        score += pos.distManhattan( player.blockPosition());
+                }
+
+                return new Pair<>(pos, score);
+
+            }).max(Comparator.comparingInt(Pair::getSecond)).get().getFirst();
+
+            entity.setPos(Vec3.atCenterOf(finalPos));
             this.uuid = entity.getStringUUID();
             this.startPos = finalPos;
             this.spawned = true;
@@ -86,6 +87,20 @@ public class DungeonTarget {
 
         if (type.equals(Type.SPAWNER.toString()))
         {
+            List<BlockPos> validPoints = room.sampleSpawnablePositions(room.getBranch().getFloor().getLevel(), 3, -1);
+            BlockPos finalPos = validPoints.stream().map(pos -> {
+                int score = 0;
+
+                for (WDPlayer wdPlayer : room.getActivePlayers()) {
+                    ServerPlayer player = wdPlayer.getServerPlayer();
+                    if (player!=null)
+                        score += pos.distManhattan( player.blockPosition());
+                }
+
+                return new Pair<>(pos, score);
+
+            }).max(Comparator.comparingInt(Pair::getSecond)).get().getFirst();
+
             ServerLevel level = room.getBranch().getFloor().getLevel();
             level.setBlock(finalPos, Blocks.SPAWNER.defaultBlockState(), 2);
             BlockEntity blockEntity = level.getBlockEntity(finalPos);
