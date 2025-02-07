@@ -252,14 +252,12 @@ public class DungeonBranch {
     }
 
     private boolean validateNextPoint(ConnectionPoint exitPoint, StructurePlaceSettings settings, BlockPos position, DungeonRoomTemplate nextRoom) {
-
         List<BoundingBox> proposedBoxes = nextRoom.getBoundingBoxes(settings, position);
         boolean flag = true;
         if (!floor.isBoundingBoxValid(proposedBoxes)) {
             exitPoint.incrementFailures();
             flag = false;
         }
-
         WDProfiler.INSTANCE.logTimestamp("DungeonBranch::validateNextPoint");
         return flag;
     }

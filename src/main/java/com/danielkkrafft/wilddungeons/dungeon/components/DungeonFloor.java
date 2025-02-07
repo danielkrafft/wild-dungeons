@@ -189,9 +189,10 @@ public class DungeonFloor {
             if (branchGenAttempts > 10) {
                 WildDungeons.getLogger().info("Failed to generate branch {} after 10 attempts", branchIndex);
                 if (branchIndex > 0) {
-                    DungeonBranch previousBranch = this.dungeonBranches.getLast();
+                    DungeonBranch previousBranch = this.dungeonBranches.get(branchIndex - 1);
                     previousBranch.destroy();
                     this.dungeonBranches.remove(previousBranch);
+                    this.dungeonBranches.getLast().getRooms().forEach(DungeonRoom::processShell);
                 }
             }
             return;
