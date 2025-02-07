@@ -397,6 +397,20 @@ public class DungeonRoom {
         getBranch().getFloor().getChunkMap().forEach((key, value) -> {
             value.removeIf(v -> v.x == getBranch().getIndex() && v.y == this.getIndex());
         });
+
+        this.boundingBoxes.forEach(box -> {
+            BoundingBox inflatedBox = box.inflatedBy(2);
+            List<DungeonRoom> touchingRooms = new ArrayList<>();
+            this.getBranch().getFloor().getChunkMap().forEach((key, value) -> {
+                value.forEach(v -> {
+                    DungeonRoom room = this.getBranch().getFloor().getBranches().get(v.x).getRooms().get(v.y);
+                    if (room.boundingBoxes.stream().anyMatch(inflatedBox::intersects)) {
+                        touchingRooms.add(room);
+                    }
+                });
+            });
+            touchingRooms.forEach(DungeonRoom::processShell);
+        });
         destroyEntities();
     }
 
@@ -516,7 +530,7 @@ public class DungeonRoom {
 
     public void unsetConnectedPoints() {
         getConnectionPoints().forEach(connectionPoint -> {
-            if (connectionPoint.isConnected() && connectionPoint.getConnectedBranchIndex() == this.index) {
+            if (connectionPoint.isConnected() && connectionPoint.getConnectedBranchIndex() == this.getIndex()) {
                 connectionPoint.unSetConnectedPoint();
             }
         });
