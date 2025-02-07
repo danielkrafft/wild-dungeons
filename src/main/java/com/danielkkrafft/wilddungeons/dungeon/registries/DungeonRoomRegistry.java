@@ -144,26 +144,20 @@ public class DungeonRoomRegistry {
             List.of(
                     of("overworld/sprawl/basic_5", EMPTY_BLOCK_POS)
             ));
-    public static final DungeonRoomTemplate OVERWORLD_COMBAT_1 = create(
-            "overworld_combat_1",
-            List.of(
-                    of("overworld/sprawl/basic_3", EMPTY_BLOCK_POS)
-            ))
+    public static final DungeonRoomTemplate OVERWORLD_COMBAT_1 = copyOf(
+            OVERWORLD_BASIC_3,
+            "overworld_combat_1")
             .setDestructionRule(DestructionRule.SHELL_CLEAR)
             .setType(COMBAT);
-    public static final DungeonRoomTemplate OVERWORLD_COMBAT_2 = create(
-            "overworld_combat_2",
-            List.of(
-                    of("overworld/sprawl/basic_4", EMPTY_BLOCK_POS)
-            ))
+    public static final DungeonRoomTemplate OVERWORLD_COMBAT_2 = copyOf(
+            OVERWORLD_BASIC_4,
+            "overworld_combat_2")
             .setType(COMBAT)
             .setDestructionRule(DestructionRule.SHELL_CLEAR)
             .setDifficulty(0.5);
-    public static final DungeonRoomTemplate OVERWORLD_COMBAT_3 = create(
-            "overworld_combat_3",
-            List.of(
-                    of("overworld/sprawl/basic_5", EMPTY_BLOCK_POS)
-            ))
+    public static final DungeonRoomTemplate OVERWORLD_COMBAT_3 = copyOf(
+            OVERWORLD_BASIC_5,
+            "overworld_combat_3")
             .setType(COMBAT)
             .setDestructionRule(DestructionRule.SHELL_CLEAR)
             .setDifficulty(0.75);
@@ -227,43 +221,47 @@ public class DungeonRoomRegistry {
             ));
 
     public static void setupDungeonRooms() {
-        DUNGEON_ROOM_REGISTRY.add(SMALL_1);
-        DUNGEON_ROOM_REGISTRY.add(SMALL_2);
-        DUNGEON_ROOM_REGISTRY.add(SMALL_3);
-        DUNGEON_ROOM_REGISTRY.add(SMALL_4);
-        DUNGEON_ROOM_REGISTRY.add(SMALL_5);
-        DUNGEON_ROOM_REGISTRY.add(MEDIUM_1);
-        DUNGEON_ROOM_REGISTRY.add(MEDIUM_2);
-        DUNGEON_ROOM_REGISTRY.add(MEDIUM_3);
-        DUNGEON_ROOM_REGISTRY.add(MEDIUM_4);
-        DUNGEON_ROOM_REGISTRY.add(LARGE_1);
-        DUNGEON_ROOM_REGISTRY.add(START);
-        DUNGEON_ROOM_REGISTRY.add(BOSS);
-        DUNGEON_ROOM_REGISTRY.add(SECRET_1);
-        DUNGEON_ROOM_REGISTRY.add(SHOP_1);
-        DUNGEON_ROOM_REGISTRY.add(LOOT_1);
-        DUNGEON_ROOM_REGISTRY.add(REST);
+        add(SMALL_1);
+        add(SMALL_2);
+        add(SMALL_3);
+        add(SMALL_4);
+        add(SMALL_5);
+        add(MEDIUM_1);
+        add(MEDIUM_2);
+        add(MEDIUM_3);
+        add(MEDIUM_4);
+        add(LARGE_1);
+        add(START);
+        add(BOSS);
+        add(SECRET_1);
+        add(SHOP_1);
+        add(LOOT_1);
+        add(REST);
 
         //overworld
-        DUNGEON_ROOM_REGISTRY.add(OVERWORLD_START);
-        DUNGEON_ROOM_REGISTRY.add(OVERWORLD_BASIC_1);
-        DUNGEON_ROOM_REGISTRY.add(OVERWORLD_BASIC_2);
-        DUNGEON_ROOM_REGISTRY.add(OVERWORLD_BASIC_3);
-        DUNGEON_ROOM_REGISTRY.add(OVERWORLD_BASIC_4);
-        DUNGEON_ROOM_REGISTRY.add(OVERWORLD_BASIC_5);
-        DUNGEON_ROOM_REGISTRY.add(OVERWORLD_COMBAT_1);
-        DUNGEON_ROOM_REGISTRY.add(OVERWORLD_COMBAT_2);
-        DUNGEON_ROOM_REGISTRY.add(OVERWORLD_COMBAT_3);
-        DUNGEON_ROOM_REGISTRY.add(OVERWORLD_CHEST_ROOM);
-        DUNGEON_ROOM_REGISTRY.add(OVERWORLD_STAIRCASE);
-        DUNGEON_ROOM_REGISTRY.add(OVERWORLD_STAIRWAY_1);
-        DUNGEON_ROOM_REGISTRY.add(OVERWORLD_HALLWAY_1);
-        DUNGEON_ROOM_REGISTRY.add(OVERWORLD_HALLWAY_2);
-        DUNGEON_ROOM_REGISTRY.add(OVERWORLD_CRAFTING_ROOM);
-        DUNGEON_ROOM_REGISTRY.add(OVERWORLD_REST_ROOM);
-        DUNGEON_ROOM_REGISTRY.add(OVERWORLD_SHOP_ROOM);
-        DUNGEON_ROOM_REGISTRY.add(OVERWORLD_FREE_PERK);
-        DUNGEON_ROOM_REGISTRY.add(OVERWORLD_EXIT_ROOM);
-        DUNGEON_ROOM_REGISTRY.add(OVERWORLD_TRANSITION_ROOM);
+        add(OVERWORLD_START);
+        add(OVERWORLD_BASIC_1);
+        add(OVERWORLD_BASIC_2);
+        add(OVERWORLD_BASIC_3);
+        add(OVERWORLD_BASIC_4);
+        add(OVERWORLD_BASIC_5);
+        add(OVERWORLD_COMBAT_1);
+        add(OVERWORLD_COMBAT_2);
+        add(OVERWORLD_COMBAT_3);
+        add(OVERWORLD_CHEST_ROOM);
+        add(OVERWORLD_STAIRCASE);
+        add(OVERWORLD_STAIRWAY_1);
+        add(OVERWORLD_HALLWAY_1);
+        add(OVERWORLD_HALLWAY_2);
+        add(OVERWORLD_CRAFTING_ROOM);
+        add(OVERWORLD_REST_ROOM);
+        add(OVERWORLD_SHOP_ROOM);
+        add(OVERWORLD_FREE_PERK);
+        add(OVERWORLD_EXIT_ROOM);
+        add(OVERWORLD_TRANSITION_ROOM);
+    }
+
+    public static void add(DungeonRoomTemplate room) {
+        DUNGEON_ROOM_REGISTRY.add(room);
     }
 }

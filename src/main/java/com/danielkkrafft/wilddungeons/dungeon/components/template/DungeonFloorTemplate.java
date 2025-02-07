@@ -137,4 +137,17 @@ public final class DungeonFloorTemplate implements DungeonComponent {
         this.origin = origin;
         return this;
     }
+
+    public static DungeonFloorTemplate copyOf(DungeonFloorTemplate template, String newName) {
+        return new DungeonFloorTemplate()
+                .setName(newName)
+                .setBranchTemplates(template.branchTemplates)
+                .setMaterials(template.materials)
+                .setEnemyTable(template.enemyTable)
+                .setDifficulty(template.difficulty)
+                .setDifficultyScaling(template.difficultyScaling)
+                .setBedrockShell(template.hasBedrockShell)
+                .setDestructionRule(template.destructionRule)
+                .setOrigin(template.origin);
+    }
 }

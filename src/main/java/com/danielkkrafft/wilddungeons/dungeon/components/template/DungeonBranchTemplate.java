@@ -35,7 +35,7 @@ public final class DungeonBranchTemplate implements DungeonComponent {
     public DungeonBranch placeInWorld(DungeonFloor floor, BlockPos origin) {
         DungeonBranch newBranch = new DungeonBranch(this.name, floor, origin);
         int tries = 0;
-        while (tries < 50) {
+        while (tries < 5) {
             try {
                 if (newBranch.generateDungeonBranch()) {
                     return newBranch;
@@ -163,5 +163,18 @@ public final class DungeonBranchTemplate implements DungeonComponent {
     public DungeonBranchTemplate setDestructionRule(DungeonRoomTemplate.DestructionRule rule) {
         this.destructionRule = rule;
         return this;
+    }
+
+    public static DungeonBranchTemplate copyOf(DungeonBranchTemplate template, String newName) {
+        DungeonBranchTemplate newTemplate = new DungeonBranchTemplate()
+                .setName(newName)
+                .setRoomTemplates(template.roomTemplates)
+                .setMaterials(template.materials)
+                .setEnemyTable(template.enemyTable)
+                .setDifficulty(template.difficulty)
+                .setDifficultyScaling(template.difficultyScaling);
+        if (template.hasBedrockShell != null) newTemplate.setBedrockShell(template.hasBedrockShell);
+        if (template.destructionRule != null) newTemplate.setDestructionRule(template.destructionRule);
+        return newTemplate;
     }
 }

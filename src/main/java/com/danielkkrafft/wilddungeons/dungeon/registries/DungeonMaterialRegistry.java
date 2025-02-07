@@ -36,24 +36,6 @@ public class DungeonMaterialRegistry {
                     .add(CRACKED_STONE_BRICKS.defaultBlockState(), 1)),
             0.33f
     );
-    public static final DungeonMaterial SANDSTONE = new DungeonMaterial(
-            "SANDSTONE",
-            of(new WeightedPool<BlockState>().add(Blocks.SANDSTONE.defaultBlockState(), 1)
-                    .add(SMOOTH_SANDSTONE.defaultBlockState(), 1)),
-            of(new WeightedPool<BlockState>()
-                    .add(SANDSTONE_STAIRS.defaultBlockState(), 1)
-                    .add(SMOOTH_SANDSTONE_STAIRS.defaultBlockState(), 1)),
-            of(new WeightedPool<BlockState>()
-                    .add(SANDSTONE_SLAB.defaultBlockState(), 1)
-                    .add(SMOOTH_SANDSTONE_SLAB.defaultBlockState(), 1)),
-            of(new WeightedPool<BlockState>()
-                    .add(SANDSTONE_WALL.defaultBlockState(), 1)),
-            of(new WeightedPool<BlockState>()
-                    .add(SHROOMLIGHT.defaultBlockState(), 1)),
-            of(new WeightedPool<BlockState>()
-                    .add(SAND.defaultBlockState(), 1)),
-            0.33f
-    );
     public static final DungeonMaterial PRISMARINE =new DungeonMaterial(
             "PRISMARINE",
             of(new WeightedPool<BlockState>()
@@ -245,14 +227,61 @@ public class DungeonMaterialRegistry {
                     .add(COBBLED_DEEPSLATE.defaultBlockState(), 1)
             ),
             0.33f);
+    public static final DungeonMaterial SANDSTONEY = new DungeonMaterial(
+            "SANDSTONEY",
+            of(new WeightedPool<BlockState>()
+                    .add(SANDSTONE.defaultBlockState(), 1)
+                    .add(SMOOTH_SANDSTONE.defaultBlockState(), 1)),
+            of(new WeightedPool<BlockState>()
+                    .add(SANDSTONE_STAIRS.defaultBlockState(), 1)
+                    .add(SMOOTH_SANDSTONE_STAIRS.defaultBlockState(), 1)),
+            of(new WeightedPool<BlockState>()
+                    .add(SANDSTONE_SLAB.defaultBlockState(), 1)
+                    .add(SMOOTH_SANDSTONE_SLAB.defaultBlockState(), 1)),
+            of(new WeightedPool<BlockState>()
+                    .add(SANDSTONE_WALL.defaultBlockState(), 1)),
+            of(new WeightedPool<BlockState>()
+                    .add(LANTERN.defaultBlockState(), 1)),
+            of(new WeightedPool<BlockState>()
+                    .add(SAND.defaultBlockState(), 1)),
+            0.33f
+    );
+    public static final DungeonMaterial RED_SANDSTONEY = new DungeonMaterial(
+            "RED_SANDSTONEY",
+            of(new WeightedPool<BlockState>()
+                    .add(RED_SANDSTONE.defaultBlockState(), 1)
+                    .add(SMOOTH_RED_SANDSTONE.defaultBlockState(), 1)),
+            of(new WeightedPool<BlockState>()
+                    .add(RED_SANDSTONE_STAIRS.defaultBlockState(), 1)
+                    .add(SMOOTH_RED_SANDSTONE_STAIRS.defaultBlockState(), 1)),
+            of(new WeightedPool<BlockState>()
+                    .add(RED_SANDSTONE_SLAB.defaultBlockState(), 1)
+                    .add(SMOOTH_RED_SANDSTONE_SLAB.defaultBlockState(), 1)),
+            of(new WeightedPool<BlockState>()
+                    .add(RED_SANDSTONE_WALL.defaultBlockState(), 1)),
+            of(new WeightedPool<BlockState>()
+                    .add(LANTERN.defaultBlockState(), 1)),
+            of(new WeightedPool<BlockState>()
+                    .add(RED_SAND.defaultBlockState(), 1)),
+            0.33f
+    );
+
+
+
+
     public static void setupDungeonMaterials(){
-        DUNGEON_MATERIAL_REGISTRY.add(STONE_BRICK);
-        DUNGEON_MATERIAL_REGISTRY.add(SANDSTONE);
-        DUNGEON_MATERIAL_REGISTRY.add(PRISMARINE);
-        DUNGEON_MATERIAL_REGISTRY.add(END_STONE);
-        DUNGEON_MATERIAL_REGISTRY.add(OAK_WOOD);
-        DUNGEON_MATERIAL_REGISTRY.add(OVERWORLD_MATERIAL_0);
-        DUNGEON_MATERIAL_REGISTRY.add(OVERWORLD_MATERIAL_1);
-        DUNGEON_MATERIAL_REGISTRY.add(OVERWORLD_MATERIAL_2);
+        add(STONE_BRICK);
+        add(SANDSTONEY);
+        add(RED_SANDSTONEY);
+        add(PRISMARINE);
+        add(END_STONE);
+        add(OAK_WOOD);
+        add(OVERWORLD_MATERIAL_0);
+        add(OVERWORLD_MATERIAL_1);
+        add(OVERWORLD_MATERIAL_2);
+    }
+
+    public static void add(DungeonMaterial material){
+        DUNGEON_MATERIAL_REGISTRY.add(material);
     }
 }

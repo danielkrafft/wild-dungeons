@@ -8,7 +8,6 @@ import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.util.WeightedTable;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
@@ -260,5 +259,24 @@ public final class DungeonRoomTemplate implements DungeonComponent {
     public DungeonRoomTemplate setDestructionRule(DestructionRule rule) {
         this.destructionRule = rule;
         return this;
+    }
+
+    public static DungeonRoomTemplate copyOf(DungeonRoomTemplate template, String newName) {
+        DungeonRoomTemplate newTemplate = new DungeonRoomTemplate()
+                .setType(template.type)
+                .setName(newName)
+                .setTemplates(template.templates)
+                .setConnectionPoints(template.connectionPoints)
+                .setSpawnPoint(template.spawnPoint)
+                .setRifts(template.rifts)
+                .setOfferings(template.offerings)
+                .setMaterialBlocks(template.materialBlocks)
+                .setLootBlocks(template.lootBlocks)
+                .setMaterials(template.materials)
+                .setEnemyTable(template.enemyTable)
+                .setDifficulty(template.difficulty);
+        if (template.hasBedrockShell != null) newTemplate.setBedrockShell(template.hasBedrockShell);
+        if (template.destructionRule != null) newTemplate.setDestructionRule(template.destructionRule);
+        return newTemplate;
     }
 }

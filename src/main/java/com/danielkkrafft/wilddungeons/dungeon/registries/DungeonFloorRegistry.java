@@ -30,9 +30,38 @@ public class DungeonFloorRegistry {
                     .addSimple(OVERWORLD_FREE_STUFF_BRANCH_2)
                     .addSimple(OVERWORLD_ENDING_BRANCH))
             .setOrigin(new BlockPos(0, 150, 0));
+    public static final DungeonFloorTemplate OVERWORLD_SANDY_FLOOR = DungeonFloorTemplate.create("overworld_sandy_floor")
+            .setBranchTemplates(new DungeonLayout<DungeonBranchTemplate>()
+                    .addSimple(SANDY_STARTER_BRANCH)
+                    .addSimple(SANDY_SPRAWL_0)
+                    .addSimple(SANDY_FREE_STUFF_BRANCH_0)
+                    .addSimple(SANDY_SPRAWL_0)
+                    .addSimple(SANDY_FREE_STUFF_BRANCH_0)
+                    .addSimple(SANDY_SPRAWL_0)
+                    .addSimple(SANDY_FREE_STUFF_BRANCH_0)
+                    .addSimple(SANDY_ENDING_BRANCH))
+            .setOrigin(new BlockPos(0, 150, 0));
+public static final DungeonFloorTemplate OVERWORLD_RED_SANDY_FLOOR = DungeonFloorTemplate.create("overworld_red_sandy_floor")
+            .setBranchTemplates(new DungeonLayout<DungeonBranchTemplate>()
+                    .addSimple(RED_SANDY_STARTER_BRANCH)
+                    .addSimple(RED_SANDY_SPRAWL_0)
+                    .addSimple(RED_SANDY_FREE_STUFF_BRANCH_0)
+                    .addSimple(RED_SANDY_SPRAWL_0)
+                    .addSimple(RED_SANDY_FREE_STUFF_BRANCH_0)
+                    .addSimple(RED_SANDY_SPRAWL_0)
+                    .addSimple(RED_SANDY_FREE_STUFF_BRANCH_0)
+                    .addSimple(RED_SANDY_ENDING_BRANCH))
+            .setOrigin(new BlockPos(0, 150, 0));
+
 
     public static void setupFloors() {
-        DUNGEON_FLOOR_REGISTRY.add(TEST_FLOOR);
-        DUNGEON_FLOOR_REGISTRY.add(OVERWORLD_BASIC_FLOOR);
+        add(TEST_FLOOR);
+        add(OVERWORLD_BASIC_FLOOR);
+        add(OVERWORLD_SANDY_FLOOR);
+        add(OVERWORLD_RED_SANDY_FLOOR);
+    }
+
+    public static void add(DungeonFloorTemplate floor){
+        DUNGEON_FLOOR_REGISTRY.add(floor);
     }
 }
