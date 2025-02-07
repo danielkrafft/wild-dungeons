@@ -248,23 +248,29 @@ public class DungeonFloor {
     }
 
     protected boolean isBoundingBoxValid(List<BoundingBox> proposedBoxes) {
+        HashMap<ChunkPos, List<Vector2i>> chunkMap = getChunkMap();
+        BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
         for (BoundingBox proposedBox : proposedBoxes) {
             if (proposedBox.minY() < EmptyGenerator.MIN_Y || proposedBox.maxY() > EmptyGenerator.MIN_Y + EmptyGenerator.GEN_DEPTH) {
                 WildDungeons.getLogger().info("OUT OF BOUNDS!");
                 return false;
             }
-
-            ChunkPos min = new ChunkPos(new BlockPos(proposedBox.minX(), proposedBox.minY(), proposedBox.minZ()));
-            ChunkPos max = new ChunkPos(new BlockPos(proposedBox.maxX(), proposedBox.maxY(), proposedBox.maxZ()));
+            mutableBlockPos.set(proposedBox.minX(), proposedBox.minY(), proposedBox.minZ());
+            ChunkPos min = new ChunkPos(mutableBlockPos);
+            mutableBlockPos.set(proposedBox.maxX(), proposedBox.maxY(), proposedBox.maxZ());
+            ChunkPos max = new ChunkPos(mutableBlockPos);
 
             for (int x = min.x; x <= max.x; x++) {
                 for (int z = min.z; z <= max.z; z++) {
                     ChunkPos newPos = new ChunkPos(x, z);
-                    HashMap<ChunkPos, List<Vector2i>> chunkMap = getChunkMap();
                     boolean chunkExists = chunkMap.containsKey(newPos);
-                    List<DungeonRoom> roomsInChunk = chunkExists
-                            ? chunkMap.get(newPos).stream().map(v2 -> getBranches().get(v2.x).getRooms().get(v2.y)).toList()
-                            : new ArrayList<>();
+                    List<DungeonRoom> roomsInChunk = new ArrayList<>();
+                    if (chunkExists) {
+                        for (Vector2i v2 : chunkMap.get(newPos)) {
+                            DungeonRoom dungeonRoom = getBranches().get(v2.x).getRooms().get(v2.y);
+                            roomsInChunk.add(dungeonRoom);
+                        }
+                    }
                     for (DungeonRoom room : roomsInChunk) {
                         for (BoundingBox box : room.getBoundingBoxes()) {
                             if (proposedBox.intersects(box)) {
