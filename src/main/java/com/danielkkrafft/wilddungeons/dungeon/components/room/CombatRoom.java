@@ -63,4 +63,10 @@ public class CombatRoom extends EnemyPurgeRoom {
         if (spawnTimer == 0 || totalSpawns == targets.size()) {spawnNext(); spawnTimer = SPAWN_INTERVAL;}
         spawnTimer -= 1;
     }
+
+    @Override
+    public void reset() {
+        super.reset();
+        totalSpawns = 0;
+    }
 }

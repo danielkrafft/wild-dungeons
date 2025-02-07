@@ -41,6 +41,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import net.neoforged.neoforge.network.PacketDistributor;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
+
+import java.awt.*;
+import java.util.HexFormat;
 
 import static com.danielkkrafft.wilddungeons.dungeon.registries.PerkRegistry.DUNGEON_PERK_REGISTRY;
 
@@ -60,7 +65,8 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     private boolean purchased = false;
     private float bubbleTimer = BUBBLE_ANIMATION_TIME;
     private float renderScale = 1.0f;
-    private int colorTint = 0xFFFFFFFF;
+    private int primaryColor = 0xFFFFFFFF;
+    private int secondaryColor = 0xFFFFFFFF;
     private int soundLoop = 0;
 
     public Offering(EntityType<Offering> entityType, Level level) {
@@ -79,8 +85,10 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     public void overrideCost(int cost) {this.costAmount = cost;}
     public float getRenderScale() {return this.renderScale;}
     public void setRenderScale(float renderScale) {this.renderScale = renderScale;}
-    public int getColorTint() {return this.colorTint;}
-    public void setColorTint(int colorTint) {this.colorTint = colorTint;}
+    public int getPrimaryColor() {return this.primaryColor;}
+    public void setPrimaryColor(int primaryColor) {this.primaryColor = primaryColor;}
+    public int getSecondaryColor() {return this.secondaryColor;}
+    public void setSecondaryColor(int secondaryColor) {this.secondaryColor = secondaryColor;}
     public int getSoundLoop() {return this.soundLoop;}
     public void setSoundLoop(int soundEvent) {this.soundLoop = soundEvent;}
 
@@ -171,7 +179,8 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
         compound.putInt("costAmount", this.costAmount);
         compound.putBoolean("purchased", this.purchased);
         compound.putFloat("renderScale", this.renderScale);
-        compound.putInt("colorTint", this.colorTint);
+        compound.putInt("primaryColor", this.primaryColor);
+        compound.putInt("secondaryColor", this.secondaryColor);
         compound.putInt("soundLoop", this.soundLoop);
     }
 
@@ -186,7 +195,8 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
             this.costAmount = 0;
             this.purchased = false;
             this.renderScale = 1.0f;
-            this.colorTint = 0xFFFFFFFF;
+            this.primaryColor = 0xFFFFFFFF;
+            this.secondaryColor = 0xFFFFFFFF;
             this.soundLoop = 0;
         } else {
             this.type = compound.getString("type");
@@ -196,7 +206,8 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
             this.costAmount = compound.getInt("costAmount");
             this.purchased = compound.getBoolean("purchased");
             this.renderScale = compound.getFloat("renderScale");
-            this.colorTint = compound.getInt("colorTint");
+            this.primaryColor = compound.getInt("primaryColor");
+            this.secondaryColor = compound.getInt("secondaryColor");
             this.soundLoop = compound.getInt("soundLoop");
         }
     }
@@ -211,7 +222,8 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
         buffer.writeInt(this.costAmount);
         buffer.writeBoolean(this.purchased);
         buffer.writeFloat(this.renderScale);
-        buffer.writeInt(this.colorTint);
+        buffer.writeInt(this.primaryColor);
+        buffer.writeInt(this.secondaryColor);
         buffer.writeInt(this.soundLoop);
     }
 
@@ -225,8 +237,34 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
         this.costAmount = buffer.readInt();
         this.purchased = buffer.readBoolean();
         this.renderScale = buffer.readFloat();
-        this.colorTint = buffer.readInt();
+        this.primaryColor = buffer.readInt();
+        this.secondaryColor = buffer.readInt();
         this.soundLoop = buffer.readInt();
+    }
+
+    Vector3f primaryColorRGB = null;
+    Vector3f secondaryColorRGB = null;
+    Vector3f backgroundColorRGB = null;
+    public Vector3f getPrimaryColorRGB() {
+        if (primaryColorRGB == null) {
+            Color color = new Color(this.primaryColor, false);
+            primaryColorRGB = new Vector3f(color.getRed()/255f, color.getGreen()/255f, color.getBlue()/255f).mul(0.2f);
+        }
+        return primaryColorRGB;
+    }
+    public Vector3f getSecondaryColorRGB() {
+        if (secondaryColorRGB == null) {
+            Color color = new Color(this.secondaryColor, false);
+            secondaryColorRGB = new Vector3f(color.getRed()/255f, color.getGreen()/255f, color.getBlue()/255f).mul(0.2f);
+        }
+        return secondaryColorRGB;
+    }
+    public Vector3f getBackgroundColorRGB() {
+        if (backgroundColorRGB == null) {
+            Color color = new Color(this.primaryColor, false);
+            backgroundColorRGB = new Vector3f(color.getRed()/255f, color.getGreen()/255f, color.getBlue()/255f).mul(0.05f);
+        }
+        return backgroundColorRGB;
     }
 
     @Override
