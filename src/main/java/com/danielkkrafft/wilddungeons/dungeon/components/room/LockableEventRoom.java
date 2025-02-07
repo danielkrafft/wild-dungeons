@@ -93,11 +93,10 @@ public class LockableEventRoom extends DungeonRoom {
     }
 
     @Override
-    public void onBranchEnter(WDPlayer wdPlayer) {
-        super.onBranchEnter(wdPlayer);
-        if (this.generated) return;
-        setPreviewDoorways();
+    public void onBranchComplete() {
+        super.onBranchComplete();
         this.generated = true;
+        this.setPreviewDoorways();
     }
 
     private void setPreviewDoorways() {

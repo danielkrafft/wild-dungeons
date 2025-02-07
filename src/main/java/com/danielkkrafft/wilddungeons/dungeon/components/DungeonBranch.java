@@ -107,6 +107,7 @@ public class DungeonBranch {
         this.branchRooms.forEach(room -> {
             room.processConnectionPoints(floor);
             room.processShell();
+            room.onBranchComplete();
         });
 
         setupBoundingBox();

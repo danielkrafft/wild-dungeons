@@ -468,6 +468,12 @@ public class DungeonRoom {
     public void onEnterInner(WDPlayer player) {
     }
 
+    public void onFloorComplete(){
+    }
+
+    public void onBranchComplete(){
+    }
+
     public void onExit(WDPlayer player) {
         this.playerStatuses.get(player.getUUID()).inside = false;
         this.playerStatuses.get(player.getUUID()).insideShell = false;
