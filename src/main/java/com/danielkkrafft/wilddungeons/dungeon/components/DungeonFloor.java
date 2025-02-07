@@ -19,6 +19,7 @@ import com.danielkkrafft.wilddungeons.world.dimension.tools.InfiniverseAPI;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -187,12 +188,12 @@ public class DungeonFloor {
         if (newBranch == null) {
             branchGenAttempts++;
             if (branchGenAttempts > 10) {
-                WildDungeons.getLogger().info("Failed to generate branch {} after 10 attempts", branchIndex);
+                WildDungeons.getLogger().info("Failed to generate branch {} after 50 total attempts", branchIndex);
                 if (branchIndex > 0) {
                     DungeonBranch previousBranch = this.dungeonBranches.get(branchIndex - 1);
+                    checkForPlayersInBranch(branchIndex-1);
                     previousBranch.destroy();
                     this.dungeonBranches.remove(previousBranch);
-                    this.dungeonBranches.getLast().getRooms().forEach(DungeonRoom::processShell);
                 }
             }
             return;
@@ -224,17 +225,34 @@ public class DungeonFloor {
             WDPlayer player = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(k);
             if (player.getCurrentDungeon() == this.getSession() && player.getCurrentFloor() == this) {
                 if (player.getCurrentBranch() == null && player.getCurrentBranchIndex() == branchIndex) {
-                    //teleport the player to the previous branch
-                    BlockPos blockPos = this.dungeonBranches.get(branchIndex - 1).getSpawnPoint();
-                    Vec3 pos = new Vec3(blockPos.getX(), blockPos.getY(), blockPos.getZ());
-                    SavedTransform savedTransform = new SavedTransform(pos, 0, 0, this.getLevelKey());
-                    ServerPlayer serverPlayer = player.getServerPlayer();
-                    if (serverPlayer != null)
-                        CommandUtil.executeTeleportCommand(serverPlayer, savedTransform);
+                    TeleportPlayerToBranch(branchIndex-1, player);
                 }
             }
         });
     }
+
+    private void checkForPlayersInBranch(int branchIndex){
+        this.playerStatuses.forEach((k, v) -> {
+            WDPlayer player = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(k);
+            if (player.getCurrentDungeon() == this.getSession() && player.getCurrentFloor() == this) {
+                if (player.getCurrentBranchIndex() == branchIndex) {
+                    TeleportPlayerToBranch(branchIndex-1, player);
+                    //send a message to the players who got teleported
+                    player.getServerPlayer().sendSystemMessage(Component.literal("BRANCH FAILED - RESPAWNING"), true);
+                }
+            }
+        });
+    }
+
+    private void TeleportPlayerToBranch(int branchIndex, WDPlayer player) {
+        BlockPos blockPos = this.dungeonBranches.get(branchIndex).getSpawnPoint();
+        Vec3 pos = new Vec3(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+        SavedTransform savedTransform = new SavedTransform(pos, 0, 0, this.getLevelKey());
+        ServerPlayer serverPlayer = player.getServerPlayer();
+        if (serverPlayer != null)
+            CommandUtil.executeTeleportCommand(serverPlayer, savedTransform);
+    }
+
 
     public void cancelGenerations() {
         if (generationFutures!=null)
