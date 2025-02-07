@@ -459,6 +459,9 @@ public class DungeonRoom {
         this.playerStatuses.get(player.getUUID()).inside = true;
     }
 
+    public void onFloorEnter(WDPlayer player) {
+    }
+
     public void onBranchEnter(WDPlayer player) {
     }
 

@@ -1,7 +1,6 @@
 package com.danielkkrafft.wilddungeons.dungeon.components.template;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonMaterial;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
@@ -11,8 +10,6 @@ import com.danielkkrafft.wilddungeons.util.WeightedTable;
 import net.minecraft.core.BlockPos;
 
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 
 public final class DungeonFloorTemplate implements DungeonComponent {
     private String name;
@@ -30,10 +27,11 @@ public final class DungeonFloorTemplate implements DungeonComponent {
     }
 
 
-    public CompletableFuture<Void> placeInWorld(DungeonSession session, BlockPos position, Consumer<Void> onFirstBranchComplete, Consumer<DungeonBranch> onSequentialBranchComplete, Consumer<Void> onComplete) {
+    public DungeonFloor placeInWorld(DungeonSession session, BlockPos position) {
         WildDungeons.getLogger().info("PLACING FLOOR: {}", this.name());
         DungeonFloor newFloor = new DungeonFloor(this.name, session.getSessionKey(), position);
-        return newFloor.asyncGenerateBranches(onFirstBranchComplete, onSequentialBranchComplete, onComplete);
+        newFloor.generateBranches();
+        return newFloor;
     }
 
     @Override

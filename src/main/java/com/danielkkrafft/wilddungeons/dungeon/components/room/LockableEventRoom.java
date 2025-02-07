@@ -90,8 +90,6 @@ public class LockableEventRoom extends DungeonRoom {
         this.started = false;
         startCooldown = START_COOLDOWN;
         setPreviewDoorways();
-        this.generated = false;
-        this.onBranchEnter(null);
     }
 
     @Override

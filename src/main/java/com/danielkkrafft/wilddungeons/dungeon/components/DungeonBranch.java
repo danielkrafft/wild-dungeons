@@ -174,9 +174,9 @@ public class DungeonBranch {
                 if (validateNextPoint(exitPoint, settings, position, nextRoom)) {
                     validPoints.add(new Pair<>(exitPoint, settings));
                 }
-                if (validPoints.size() >= 3) {
+                /*if (validPoints.size() >= 3) {
                     break;
-                }
+                }*/
             }
             if (validPoints.isEmpty()) continue;
 

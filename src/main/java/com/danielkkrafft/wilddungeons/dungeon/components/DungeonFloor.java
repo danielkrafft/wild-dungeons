@@ -7,7 +7,6 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonFloorTe
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
-import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundNullScreenPacket;
 import com.danielkkrafft.wilddungeons.player.SavedTransform;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
@@ -80,6 +79,11 @@ public class DungeonFloor {
     public int getIndex() {return this.index;}
     public HashMap<ChunkPos, List<Vector2i>> getChunkMap() {return this.chunkMap;}
     public List<BoundingBox> halfGeneratedRooms = new ArrayList<>();
+    @IgnoreSerialization
+    public List<CompletableFuture<Void>> generationFutures = new ArrayList<CompletableFuture<Void>>();
+    List<WDPlayer> playersWaitingToEnter = new ArrayList<>();
+    public boolean generating = true;
+
 
     public DungeonFloor(String templateKey, String sessionKey, BlockPos origin) {
         this.sessionKey = sessionKey;
@@ -93,35 +97,6 @@ public class DungeonFloor {
         WDProfiler.INSTANCE.logTimestamp("DungeonFloor::new");
     }
 
-    //first future should generate just the first branch, then the second future should generate the second branch, and so on
-    //each future should complete before the next one starts
-    public CompletableFuture<Void> asyncGenerateBranches(Consumer<Void> onFirstBranchComplete, Consumer<DungeonBranch> onSequentialBranchComplete, Consumer<Void> onComplete) {
-        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
-            DungeonBranchTemplate nextBranch = getTemplate().branchTemplates().get(0).getRandom();
-            nextBranch.placeInWorld(this, origin);
-        }).thenAccept(result -> {
-            this.spawnPoint = this.dungeonBranches.getFirst().getSpawnPoint();
-            if (onFirstBranchComplete != null)
-                onFirstBranchComplete.accept(null);
-        });
-
-        for (int i = 1; i < getTemplate().branchTemplates().size(); i++) {
-            final int index = i;
-            future = future.thenCompose(result -> CompletableFuture.runAsync(() -> {
-                DungeonBranchTemplate nextBranch = getTemplate().branchTemplates().get(index).getRandom();
-                DungeonBranch branch = nextBranch.placeInWorld(this, origin);
-                onSequentialBranchComplete.accept(branch);
-            }));
-
-            if (i == getTemplate().branchTemplates().size() - 1) {
-                future = future.thenAccept(result -> {
-                    if (onComplete != null)
-                        onComplete.accept(null);
-                });
-            }
-        }
-        return future;
-    }
 
     public void shutdown() {
         InfiniverseAPI.get().markDimensionForUnregistration(DungeonSessionManager.getInstance().server, this.LEVEL_KEY);
@@ -163,6 +138,14 @@ public class DungeonFloor {
         return true;
     }
 
+    public void attemptEnter(WDPlayer wdPlayer){
+        if (this.generating) {
+            playersWaitingToEnter.add(wdPlayer);
+            return;
+        }
+        onEnter(wdPlayer);
+    }
+
     public void onEnter(WDPlayer wdPlayer) {
         playerStatuses.computeIfAbsent(wdPlayer.getUUID(), key -> {
             getSession().getStats(key).floorsFound += 1;
@@ -176,7 +159,9 @@ public class DungeonFloor {
         WDPlayerManager.syncAll(this.playerStatuses.keySet().stream().toList());
     }
 
-    public void onExit(WDPlayer wdPlayer) {this.playerStatuses.get(wdPlayer.getUUID()).inside = false;}
+    public void onExit(WDPlayer wdPlayer) {
+        this.playerStatuses.get(wdPlayer.getUUID()).inside = false;
+    }
 
     public void tick() {
         if (this.getLevel() == null) return;
@@ -187,62 +172,98 @@ public class DungeonFloor {
         if (this.dungeonBranches == null) this.dungeonBranches = new ArrayList<>();
         this.dungeonBranches.add(branch);
     }
+
     public void sortBranches() {
         this.dungeonBranches.sort(Comparator.comparingInt(DungeonBranch::getIndex));
     }
 
-    public void validate(Consumer<Void> onComplete) {
-        halfGeneratedRooms.forEach(box -> {
-            DungeonSessionManager.getInstance().server.execute(()->{
-                List<Entity> entities = getLevel().getEntitiesOfClass(Entity.class, AABB.of(box));
-                entities.removeIf(livingEntity -> livingEntity instanceof ServerPlayer);
-                entities.forEach(entity -> entity.remove(Entity.RemovalReason.DISCARDED));
+    public void validate() {
+        if (!halfGeneratedRooms.isEmpty()) {
+            halfGeneratedRooms.forEach(box -> {
+                DungeonSessionManager.getInstance().server.execute(() -> {
+                    List<Entity> entities = getLevel().getEntitiesOfClass(Entity.class, AABB.of(box));
+                    entities.removeIf(livingEntity -> livingEntity instanceof ServerPlayer);
+                    entities.forEach(entity -> entity.remove(Entity.RemovalReason.DISCARDED));
+                });
+
+                DungeonRoom.fillShellWith(this, null, this.getLevel(), box, Blocks.AIR.defaultBlockState(), 1, DungeonRoom.isSafeForBoundingBoxes());
+
+                DungeonRoom.removeBlocks(this, box);
             });
-
-            DungeonRoom.fillShellWith(this, null, this.getLevel(), box, Blocks.AIR.defaultBlockState(), 1, DungeonRoom.isSafeForBoundingBoxes());
-
-            DungeonRoom.removeBlocks(this,box);
-        });
-        halfGeneratedRooms.clear();
-        validateAndRegen(onComplete);
-    }
-
-    public void validateAndRegen(Consumer<Void> onComplete) {
-        DungeonFloorTemplate template = this.getTemplate();
-        for (DungeonBranch dungeonBranch : dungeonBranches) {
-            for (DungeonRoom room : dungeonBranch.getRooms()) {
-                room.processShell();
-            }
-        }
-        int branchCount = this.dungeonBranches.size();
-        int branchTemplateCount = template.branchTemplates().size();
-        if (branchCount < branchTemplateCount) {
-            for (int i = branchCount; i < branchTemplateCount; i++) {
-                regenerateSpecificBranch(i);
-                if (i == branchTemplateCount - 1) {
-                    onComplete.accept(null);
+            for (DungeonBranch dungeonBranch : dungeonBranches) {
+                for (DungeonRoom room : dungeonBranch.getRooms()) {
+                    room.processShell();
                 }
             }
+            halfGeneratedRooms.clear();
+        }
+
+        generateBranches();
+    }
+
+    public void generateBranches() {
+        DungeonFloorTemplate template = this.getTemplate();
+        int branchTemplateCount = template.branchTemplates().size();
+        if (generationFutures == null) generationFutures = new ArrayList<>();
+        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+            int branchCount = this.dungeonBranches.size();
+            while (branchCount < branchTemplateCount) {
+                WildDungeons.getLogger().info("Generating branch {} of {}", branchCount + 1, branchTemplateCount);
+                generateSpecificBranch(branchCount);
+                branchCount = this.dungeonBranches.size();
+            }
+        });
+        generationFutures.add(future);
+    }
+
+    private void generateSpecificBranch(int branchIndex) {
+        checkForInvalidPlayersInBranch(branchIndex);
+
+        DungeonBranchTemplate nextBranch = getTemplate().branchTemplates().get(branchIndex).getRandom();
+        DungeonBranch newBranch = nextBranch.placeInWorld(this, origin);
+        if (newBranch == null) return;
+        if (branchIndex==0)
+            this.spawnPoint = this.dungeonBranches.getFirst().getSpawnPoint();
+        onSequentialBranchGenerationComplete();
+    }
+
+    private void onSequentialBranchGenerationComplete() {
+        if (!playersWaitingToEnter.isEmpty() && getBranches().stream().mapToInt(b -> b.getRooms().size()).sum() > 10) {
+            spawnPlayers();
         }
     }
 
-    private void regenerateSpecificBranch(int branchIndex) {
+    private void spawnPlayers(){
+        DungeonSessionManager.getInstance().server.execute(() -> {
+            for (WDPlayer wdPlayer : playersWaitingToEnter) {
+                onEnter(wdPlayer);
+            }
+            playersWaitingToEnter.clear();
+            generating = false;
+        });
+    }
+
+    private void checkForInvalidPlayersInBranch(int branchIndex) {
         this.playerStatuses.forEach((k, v) -> {
             WDPlayer player = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(k);
-            if (player.getCurrentDungeon() == this.getSession() && player.getCurrentFloor() == this){
-                if (player.getCurrentBranch() == null && player.getCurrentBranchIndex()==branchIndex){
+            if (player.getCurrentDungeon() == this.getSession() && player.getCurrentFloor() == this) {
+                if (player.getCurrentBranch() == null && player.getCurrentBranchIndex() == branchIndex) {
                     //teleport the player to the previous branch
                     BlockPos blockPos = this.dungeonBranches.get(branchIndex - 1).getSpawnPoint();
                     Vec3 pos = new Vec3(blockPos.getX(), blockPos.getY(), blockPos.getZ());
-                    SavedTransform savedTransform = new SavedTransform(pos,0,0,this.getLevelKey());
+                    SavedTransform savedTransform = new SavedTransform(pos, 0, 0, this.getLevelKey());
                     ServerPlayer serverPlayer = player.getServerPlayer();
                     if (serverPlayer != null)
                         CommandUtil.executeTeleportCommand(serverPlayer, savedTransform);
                 }
             }
         });
+    }
 
-        DungeonBranchTemplate nextBranch = getTemplate().branchTemplates().get(branchIndex).getRandom();
-        nextBranch.placeInWorld(this, origin);
+    public void cancelGenerations() {
+        if (generationFutures!=null)
+            generationFutures.forEach(future -> {
+                if (!future.isDone()) future.cancel(true);
+            });
     }
 }

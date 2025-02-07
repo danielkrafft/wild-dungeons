@@ -1,10 +1,8 @@
 package com.danielkkrafft.wilddungeons.dungeon.session;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonPerk;
-import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonPerkTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
@@ -15,10 +13,8 @@ import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.danielkkrafft.wilddungeons.util.IgnoreSerialization;
 import com.danielkkrafft.wilddungeons.util.SaveSystem;
 import com.danielkkrafft.wilddungeons.util.Serializer;
-import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.util.debug.WDProfiler;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
@@ -28,8 +24,6 @@ import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRegistry.DUNGEON_REGISTRY;
 
@@ -49,8 +43,6 @@ public class DungeonSession {
     private int lives = 0;
     private boolean markedForShutdown = false;
     private final HashMap<String, DungeonPerk> perks = new HashMap<>();
-    @IgnoreSerialization
-    public List<CompletableFuture<Void>> generationFutures = new ArrayList<>();
 
     public ServerLevel getEntranceLevel() {return DungeonSessionManager.getInstance().server.getLevel(this.entranceLevelKey);}
     public String getEntranceUUID() {return this.entranceUUID;}
@@ -75,67 +67,26 @@ public class DungeonSession {
 
     public void generateFloor(int index) {
         WDProfiler.INSTANCE.start();
-        if (generationFutures == null) generationFutures = new ArrayList<>();
-        generationFutures.add(getTemplate().floorTemplates().get(index).getRandom().placeInWorld(this, TemplateHelper.EMPTY_BLOCK_POS, onFirstBranchComplete(), onSequentialBranchComplete(spawnPlayersCallback()), onCompleteCallback(index)));
+        getTemplate().floorTemplates().get(index).getRandom().placeInWorld(this, TemplateHelper.EMPTY_BLOCK_POS);
         WDProfiler.INSTANCE.logTimestamp("generateFloor");
         WDProfiler.INSTANCE.end();
     }
 
-    private Consumer<Void> onFirstBranchComplete() {
-        return (v) -> {
-            WildDungeons.getLogger().info("FIRST BRANCH COMPLETE");
-        };
-    }
-
-    private Consumer<DungeonBranch> onSequentialBranchComplete(Consumer<Integer> spawnPlayerCallback) {
-        return (branch) -> {
-            WildDungeons.getLogger().info("SEQUENTIAL BRANCH COMPLETE");
-            if (!playersWaitingToEnter.get(branch.getFloor().getIndex()).isEmpty() && branch.getFloor().getBranches().stream().mapToInt(b -> b.getRooms().size()).sum() > 10) {
-                spawnPlayerCallback.accept(branch.getFloor().getIndex());
-            }
-        };
-    }
-
-    private Consumer<Void> onCompleteCallback(int floorIndex){
-        return (v) -> {
-            WildDungeons.getLogger().info("FLOOR {} COMPLETE", floorIndex);
-        };
-    }
-
-    List<Set<WDPlayer>> playersWaitingToEnter = new ArrayList<>();
-    private Consumer<Integer> spawnPlayersCallback() {
-        return (i) -> {
-            DungeonSessionManager.getInstance().server.execute(() -> {
-                for (WDPlayer wdPlayer : playersWaitingToEnter.get(i)) {
-                    WildDungeons.getLogger().info("SPAWNING PLAYER IN DUNGEON");
-                    PlayerStatus status = this.playerStatuses.get(wdPlayer.getUUID());
-                    if (status == null) {
-                        playerStatuses.putIfAbsent(wdPlayer.getUUID(), new PlayerStatus());
-                        this.playerStatuses.get(wdPlayer.getUUID()).inside = true;
-                        playerStats.putIfAbsent(wdPlayer.getUUID(), new DungeonStats());
-                        this.addInitialLives(wdPlayer);
-                    }
-                    floors.get(i).onEnter(wdPlayer);
-                    playersWaitingToEnter.get(i).remove(wdPlayer);
-                    generating.set(i, false);
-                    shutdownTimer = SHUTDOWN_TIME;
-                }
-            });
-        };
-    }
-
-    List<Boolean> generating = new ArrayList<>();
-    public void onEnter(WDPlayer wdPlayer, int floorIndex) {
-        for (int i = this.getFloors().size(); i <= floorIndex; i++) {
-            generateFloor(i);
-            generating.add(true);
-            playersWaitingToEnter.add(new HashSet<>());
+    public DungeonFloor generateOrGetFloor(int index) {
+        while (floors.size() <= index) {
+            generateFloor(floors.size());
         }
+        return floors.get(index);
+    }
 
-        Set<WDPlayer> playersList = playersWaitingToEnter.get(floorIndex);
-        playersList.add(wdPlayer);
-
-        if (!generating.get(floorIndex)) spawnPlayersCallback().accept(floorIndex);
+    public void onEnter(WDPlayer wdPlayer, int floorIndex) {
+        DungeonFloor floor = generateOrGetFloor(floorIndex);
+        playerStatuses.putIfAbsent(wdPlayer.getUUID(), new DungeonSession.PlayerStatus());
+        playerStats.putIfAbsent(wdPlayer.getUUID(), new DungeonSession.DungeonStats());
+        this.playerStatuses.get(wdPlayer.getUUID()).inside = true;
+        addInitialLives(wdPlayer);
+        floor.attemptEnter(wdPlayer);
+        shutdownTimer = SHUTDOWN_TIME;
     }
 
     public void onExit(WDPlayer wdPlayer) {
@@ -229,7 +180,7 @@ public class DungeonSession {
     }
 
     public void tick() {
-        if (playerStatuses.values().stream().noneMatch(v -> v.inside) && !floors.isEmpty() && !generating.getFirst()) {shutdownTimer -= 1;}
+        if (playerStatuses.values().stream().noneMatch(v -> v.inside) && !floors.isEmpty() && floors.stream().noneMatch(dungeonFloor -> dungeonFloor.generating)) {shutdownTimer -= 1;}
         if (shutdownTimer == 0) {
             WildDungeons.getLogger().info("SHUTTING DOWN DUE TO TIMER");
             shutdown();return;}
@@ -259,14 +210,11 @@ public class DungeonSession {
     }
 
     public void validate() {
-        floors.forEach(dungeonFloor -> dungeonFloor.validate(this.onCompleteCallback(dungeonFloor.getIndex())));
+        floors.forEach(DungeonFloor::validate);
     }
 
     public void cancelGenerations() {
-        if (generationFutures!=null)
-            generationFutures.forEach(future -> {
-            if (!future.isDone()) future.cancel(true);
-        });
+        floors.forEach(DungeonFloor::cancelGenerations);
     }
 
     public static class DungeonStatsHolder {
