@@ -158,7 +158,8 @@ public class DungeonFloor {
             halfGeneratedRooms.clear();
         }
     }
-
+    @IgnoreSerialization
+    private int branchGenAttempts = 0;
     public void generateBranches() {
         DungeonFloorTemplate template = this.getTemplate();
         int branchTemplateCount = template.branchTemplates().size();
@@ -167,12 +168,7 @@ public class DungeonFloor {
             int branchCount = this.dungeonBranches.size();
             while (branchCount < branchTemplateCount) {
                 WildDungeons.getLogger().info("Generating branch {} of {}", branchCount, branchTemplateCount-1);
-                try {
-                    generateSpecificBranch(branchCount);
-                } catch (Exception e) {
-                    WildDungeons.getLogger().warn("Failed to generate branch {} of {}", branchCount, branchTemplateCount-1);
-                    e.printStackTrace();
-                }
+                generateSpecificBranch(branchCount);
                 branchCount = this.dungeonBranches.size();
             }
         });
@@ -184,7 +180,19 @@ public class DungeonFloor {
 
         DungeonBranchTemplate nextBranch = getTemplate().branchTemplates().get(branchIndex).getRandom();
         DungeonBranch newBranch = nextBranch.placeInWorld(this, origin);
-        if (newBranch == null) return;
+        if (newBranch == null) {
+            branchGenAttempts++;
+            if (branchGenAttempts > 10) {
+                WildDungeons.getLogger().info("Failed to generate branch {} after 10 attempts", branchIndex);
+                if (branchIndex > 0) {
+                    DungeonBranch previousBranch = this.dungeonBranches.getLast();
+                    previousBranch.destroy();
+                    this.dungeonBranches.remove(previousBranch);
+                }
+            }
+            return;
+        }
+        branchGenAttempts = 0;
         if (branchIndex==0)
             this.spawnPoint = this.dungeonBranches.getFirst().getSpawnPoint();
         onSequentialBranchGenerationComplete();

@@ -41,14 +41,13 @@ public final class DungeonBranchTemplate implements DungeonComponent {
                     return newBranch;
                 }
             } catch (Exception e) {
-                WildDungeons.getLogger().warn("Failed to generate branch {} on try {}", this.name, tries);
                 e.printStackTrace();
                 newBranch.destroy();
             }
             tries++;
         }
         WildDungeons.getLogger().warn("Failed to generate branch {} after 50 tries", this.name);
-        floor.getBranches().removeLast();
+        floor.getBranches().remove(newBranch);
         return null;
     }
 
