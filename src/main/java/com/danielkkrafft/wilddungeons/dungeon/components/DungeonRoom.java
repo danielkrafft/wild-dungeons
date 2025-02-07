@@ -79,7 +79,7 @@ public class DungeonRoom {
     public DungeonRoomTemplate.DestructionRule getDestructionRule() {return this.getTemplate().getDestructionRule() == null ? this.getBranch().getDestructionRule() : this.getTemplate().getDestructionRule();}
     public WeightedTable<DungeonRegistration.TargetTemplate> getEnemyTable() {return this.getTemplate().enemyTable() == null ? this.getBranch().getEnemyTable() : this.getTemplate().enemyTable();}
     public double getDifficulty() {return this.getBranch().getDifficulty() * this.getTemplate().difficulty();}
-    public boolean isRotated() {return rotation == Rotation.CLOCKWISE_90.getSerializedName() || rotation == Rotation.COUNTERCLOCKWISE_90.getSerializedName();}
+    public boolean isRotated() {return Objects.equals(rotation, Rotation.CLOCKWISE_90.getSerializedName()) || Objects.equals(rotation, Rotation.COUNTERCLOCKWISE_90.getSerializedName());}
     public StructurePlaceSettings getSettings() {return new StructurePlaceSettings().setMirror(Mirror.valueOf(this.mirror)).setRotation(Rotation.valueOf(this.rotation));}
     public List<ConnectionPoint> getConnectionPoints() {return this.connectionPoints;}
     public List<String> getRiftUUIDs() {return this.riftUUIDs;}
@@ -99,7 +99,7 @@ public class DungeonRoom {
     public DungeonRoom(DungeonBranch branch, String templateKey, BlockPos position, StructurePlaceSettings settings, List<ConnectionPoint> allConnectionPoints) {
         ServerLevel level = branch.getFloor().getLevel();
         this.branch = branch;
-        this.setIndex(this.branch.getRooms().size());
+        this.setIndex(this.getBranch().getRooms().size());
         this.branch.getRooms().add(this);
         this.templateKey = templateKey;
         WildDungeons.getLogger().info("ADDING ROOM: {} AT INDEX {}, {}", getTemplate().name(), this.getBranch().getIndex(), this.getIndex());
