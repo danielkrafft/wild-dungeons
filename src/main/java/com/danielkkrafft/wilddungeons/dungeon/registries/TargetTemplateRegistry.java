@@ -11,8 +11,8 @@ public class TargetTemplateRegistry {
     public static final DungeonComponentRegistry<TargetTemplate> TARGET_TEMPLATE_REGISTRY = new DungeonComponentRegistry<>();
 
     public static final TargetTemplate ZOMBIE_NORMAL = TargetTemplate.createMob("ZOMBIE_NORMAL", EntityType.ZOMBIE);
-    public static final TargetTemplate ZOMBIE_HAT = TargetTemplate.createMob("ZOMBIE_HAT", EntityType.ZOMBIE).setHelmet(Items.LEATHER_HELMET);
-    public static final TargetTemplate SKELETON_NORMAL = TargetTemplate.createMob("SKELETON_NORMAL", EntityType.SKELETON).setMainHandItem(Items.BOW);
+    public static final TargetTemplate ZOMBIE_LEATHER = TargetTemplate.createMob("ZOMBIE_LEATHER", EntityType.ZOMBIE).setHelmet(Items.LEATHER_HELMET).setChestplate(Items.LEATHER_CHESTPLATE).setLeggings(Items.LEATHER_LEGGINGS).setBoots(Items.LEATHER_BOOTS);
+    public static final TargetTemplate SKELETON_NORMAL = TargetTemplate.createMob("SKELETON_NORMAL", EntityType.SKELETON).setMainHandItem(Items.BOW,true);
     public static final TargetTemplate SPIDER = TargetTemplate.createMob("SPIDER", EntityType.SPIDER);
     public static final TargetTemplate CREEPER = TargetTemplate.createMob("CREEPER", EntityType.CREEPER);
     public static final TargetTemplate PILLAGER = TargetTemplate.createMob("PILLAGER", EntityType.PILLAGER);
@@ -22,11 +22,11 @@ public class TargetTemplateRegistry {
     public static final TargetTemplate HUSK = TargetTemplate.createMob("HUSK", EntityType.HUSK);
     public static final TargetTemplate STRAY = TargetTemplate.createMob("STRAY", EntityType.STRAY);
     public static final TargetTemplate VINDICATOR = TargetTemplate.createMob("VINDICATOR", EntityType.VINDICATOR);
-    public static final TargetTemplate WITHER_SKELETON = TargetTemplate.createMob("WITHER_SKELETON", EntityType.WITHER_SKELETON);
+    public static final TargetTemplate WITHER_SKELETON = TargetTemplate.createMob("WITHER_SKELETON", EntityType.WITHER_SKELETON).setMainHandItem(Items.STONE_SWORD,true);
 
     public static void setupTargetTemplateRegistry() {
         add(ZOMBIE_NORMAL);
-        add(ZOMBIE_HAT);
+        add(ZOMBIE_LEATHER);
         add(SKELETON_NORMAL);
         add(SPIDER);
         add(CREEPER);

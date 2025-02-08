@@ -141,16 +141,24 @@ public class DungeonRegistration {
     }
 
     public static class TargetTemplate implements DungeonComponent{
-        public String name;
-        public String type;
-        public String entityType;
-        public int helmetItem = -1;
-        public int chestItem =- 1;
-        public int legsItem = -1;
-        public int bootsItem = -1;
-        public int mainHandItem = -1;
-        public int offHandItem = -1;
-        public List<Pair<Integer, Integer>> mobEffects = new ArrayList<>();
+        private String name;
+        private String type;
+        private String entityType;
+        private int helmetItem = -1;
+        private boolean helmetAlwaysSpawn = false;
+        private int chestItem =- 1;
+        private boolean chestAlwaysSpawn = false;
+        private int legsItem = -1;
+        private boolean legsAlwaysSpawn = false;
+        private int bootsItem = -1;
+        private boolean bootsAlwaysSpawn = false;
+        private int mainHandItem = -1;
+        private boolean mainHandAlwaysSpawn = false;
+        private int offHandItem = -1;
+        private boolean offHandAlwaysSpawn = false;
+        private List<Pair<Integer, Integer>> mobEffects = new ArrayList<>();
+        private boolean allEffects = false;
+        private float randomChance = 0.5f;
 
         public TargetTemplate(String name, DungeonTarget.Type type) {
             this.name = name;
@@ -163,13 +171,20 @@ public class DungeonRegistration {
 
         public DungeonTarget asEnemy() {
             DungeonTarget enemy = new DungeonTarget(DungeonTarget.Type.valueOf(this.type), this.entityType);
-            enemy.helmetItem = helmetItem;
-            enemy.chestItem = chestItem;
-            enemy.legsItem = legsItem;
-            enemy.bootsItem = bootsItem;
-            enemy.mainHandItem = mainHandItem;
-            enemy.offHandItem = offHandItem;
-            enemy.mobEffects.addAll(this.mobEffects);
+            enemy.helmetItem = helmetAlwaysSpawn ? helmetItem : RandomUtil.randFloatBetween(0, 1) < randomChance ? helmetItem : -1;
+            enemy.chestItem = chestAlwaysSpawn ? chestItem : RandomUtil.randFloatBetween(0, 1) < randomChance ? chestItem : -1;
+            enemy.legsItem = legsAlwaysSpawn ? legsItem : RandomUtil.randFloatBetween(0, 1) < randomChance ? legsItem : -1;
+            enemy.bootsItem = bootsAlwaysSpawn ? bootsItem : RandomUtil.randFloatBetween(0, 1) < randomChance ? bootsItem : -1;
+            enemy.mainHandItem = mainHandAlwaysSpawn ? mainHandItem : RandomUtil.randFloatBetween(0, 1) < randomChance ? mainHandItem : -1;
+            enemy.offHandItem = offHandAlwaysSpawn ? offHandItem : RandomUtil.randFloatBetween(0, 1) < randomChance ? offHandItem : -1;
+            if (allEffects) {
+                enemy.mobEffects.addAll(mobEffects);
+            } else for (Pair<Integer, Integer> mobEffect : mobEffects) {
+                boolean applyEffect = RandomUtil.randFloatBetween(0, 1) < randomChance;
+                if (applyEffect) {
+                    enemy.mobEffects.add(mobEffect);
+                }
+            }
             return enemy;
         }
 
@@ -177,12 +192,19 @@ public class DungeonRegistration {
         public String name() {return this.name;}
         public TargetTemplate setEntityType(EntityType<?> entityType) {this.entityType = EntityType.getKey(entityType).toString(); return this;}
         public TargetTemplate setHelmet(Item item) {this.helmetItem = Item.getId(item); return this;}
+        public TargetTemplate setHelmet(Item item, boolean alwaysSpawn) {this.helmetItem = Item.getId(item);this.helmetAlwaysSpawn=alwaysSpawn; return this;}
         public TargetTemplate setChestplate(Item item) {this.chestItem = Item.getId(item); return this;}
+        public TargetTemplate setChestplate(Item item, boolean alwaysSpawn) {this.chestItem = Item.getId(item);this.chestAlwaysSpawn=alwaysSpawn; return this;}
         public TargetTemplate setLeggings(Item item) {this.legsItem = Item.getId(item); return this;}
+        public TargetTemplate setLeggings(Item item, boolean alwaysSpawn) {this.legsItem = Item.getId(item);this.legsAlwaysSpawn=alwaysSpawn; return this;}
         public TargetTemplate setBoots(Item item) {this.bootsItem = Item.getId(item); return this;}
+        public TargetTemplate setBoots(Item item, boolean alwaysSpawn) {this.bootsItem = Item.getId(item);this.bootsAlwaysSpawn=alwaysSpawn; return this;}
         public TargetTemplate setMainHandItem(Item item) {this.mainHandItem = Item.getId(item); return this;}
+        public TargetTemplate setMainHandItem(Item item, boolean alwaysSpawn) {this.mainHandItem = Item.getId(item);this.mainHandAlwaysSpawn=alwaysSpawn; return this;}
         public TargetTemplate setOffHandItem(Item item) {this.offHandItem = Item.getId(item); return this;}
+        public TargetTemplate setOffHandItem(Item item, boolean alwaysSpawn) {this.offHandItem = Item.getId(item);this.offHandAlwaysSpawn=alwaysSpawn; return this;}
         public TargetTemplate addMobEffect(Holder<MobEffect> effect, int amplifier) {this.mobEffects.add(Pair.of(BuiltInRegistries.MOB_EFFECT.getId(effect.value()), amplifier)); return this;}
+        public TargetTemplate setRandomChance(float randomChance) {this.randomChance = randomChance; return this;}
     }
 
     public static class ItemTemplate implements DungeonComponent {
