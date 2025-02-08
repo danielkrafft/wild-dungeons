@@ -67,6 +67,7 @@ public class DungeonRoom {
     private boolean clear = false;
     private final HashMap<String, DungeonSession.PlayerStatus> playerStatuses = new HashMap<>();
     private final Set<BlockPos> alwaysBreakable = new HashSet<>();
+    private boolean lootGenerated = false;
 
     @IgnoreSerialization
     protected DungeonBranch branch = null;
@@ -475,7 +476,10 @@ public class DungeonRoom {
     }
 
     public void onBranchEnter(WDPlayer player) {
-        DungeonSessionManager.getInstance().server.execute(this::processLootBlocks);
+        if (!lootGenerated){
+            DungeonSessionManager.getInstance().server.execute(this::processLootBlocks);
+            lootGenerated = true;
+        }
     }
 
     public void onEnterInner(WDPlayer player) {
