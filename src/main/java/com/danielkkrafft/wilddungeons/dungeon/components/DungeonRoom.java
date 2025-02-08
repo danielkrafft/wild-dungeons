@@ -336,8 +336,8 @@ public class DungeonRoom {
         if (lootBlockEntities.isEmpty()) return;
         //get a random number, between 1 and the number of loot blocks, but not more than 5
         int countedChests = RandomUtil.randIntBetween(1, Math.min(5, lootBlockEntities.size()));
-        //determine the amount of items, between 3 and 10 times the number of counted chests
-        int maxItems = RandomUtil.randIntBetween(3 * countedChests, 10 * countedChests);
+        //determine the amount of items, between 3 and 7 times the number of counted chests
+        int maxItems = RandomUtil.randIntBetween(3 * countedChests, 7 * countedChests);
         //get loot entries from the loot table registry
         List<DungeonRegistration.ItemTemplate> entries = LootTableRegistry.BASIC_LOOT_TABLE.randomResults(maxItems, (int) (5 * this.getDifficulty()), 2f);
         //for each entry, place it in a random chest

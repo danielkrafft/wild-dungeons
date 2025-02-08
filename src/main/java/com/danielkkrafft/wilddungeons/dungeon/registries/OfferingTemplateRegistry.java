@@ -16,6 +16,9 @@ public class OfferingTemplateRegistry {
     public static final OfferingTemplate STEAKS = new OfferingTemplate("STEAKS", ItemTemplateRegistry.COOKED_BEEF, XP_LEVEL, 4, 1.5f);
     public static final OfferingTemplate BAKED_POTATOES =new OfferingTemplate("BAKED_POTATOES", ItemTemplateRegistry.BAKED_POTATOES, XP_LEVEL, 4, 1.5f);
     public static final OfferingTemplate IRON_INGOTS = new OfferingTemplate("IRON_INGOTS", ItemTemplateRegistry.IRON_INGOTS, XP_LEVEL, 6, 1.5f);
+    public static final OfferingTemplate LEATHER = new OfferingTemplate("LEATHER", ItemTemplateRegistry.LEATHER, XP_LEVEL, 4, 1.5f);
+
+
 
     public static final OfferingTemplate EMERALDS = new OfferingTemplate("EMERALDS",ItemTemplateRegistry.EMERALD, XP_LEVEL, 8, 1.5f);
     public static final OfferingTemplate BLAZE_RODS = new OfferingTemplate("BLAZE_RODS", ItemTemplateRegistry.BLAZE_ROD, NETHER_XP_LEVEL, 4, 1.5f);

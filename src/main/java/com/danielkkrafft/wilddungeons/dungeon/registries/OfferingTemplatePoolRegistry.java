@@ -24,10 +24,12 @@ public class OfferingTemplatePoolRegistry {
         OFFERING_TEMPLATE_POOL_REGISTRY.add(FREE_PERK_POOL);
 
         CHEAP_BASIC_POOL
-                .add(ARROWS,1)
+                .add(ARROWS,2)
                 .add(STEAKS,1)
-                .add(BAKED_POTATOES,1)
-                .add(IRON_INGOTS,1);
+                .add(BAKED_POTATOES,2)
+                .add(IRON_INGOTS,1)
+                .add(LEATHER,2)
+        ;
         OFFERING_TEMPLATE_POOL_REGISTRY.add(CHEAP_BASIC_POOL);
 
         MEDIUM_BASIC_POOL

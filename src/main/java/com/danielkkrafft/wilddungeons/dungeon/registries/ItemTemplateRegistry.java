@@ -21,6 +21,7 @@ public class ItemTemplateRegistry {
     public static ItemTemplate STONE_SHOVEL = new ItemTemplate("stone_shovel", Items.STONE_SHOVEL, 1);
     public static ItemTemplate STONE_AXE = new ItemTemplate("stone_axe", Items.STONE_AXE, 1);
     public static ItemTemplate STONE_PICKAXE = new ItemTemplate("stone_pickaxe", Items.STONE_PICKAXE, 1);
+    public static ItemTemplate STONE_SWORD = new ItemTemplate("stone_sword", Items.STONE_SWORD, 1);
     public static ItemTemplate INK_SACS = new ItemTemplate("ink_sacs_8", Items.INK_SAC, 8).setDeviance(1.5f);
     public static ItemTemplate IRON_INGOTS = new ItemTemplate("iron_ingots_8", Items.IRON_INGOT, 8).setDeviance(1.5f);
     public static ItemTemplate LAPIS_LAZULI = new ItemTemplate("lapis_lazuli_10", Items.LAPIS_LAZULI, 10).setDeviance(1.5f);
@@ -46,6 +47,7 @@ public class ItemTemplateRegistry {
         add(STONE_SHOVEL);
         add(STONE_AXE);
         add(STONE_PICKAXE);
+        add(STONE_SWORD);
         add(INK_SACS);
         add(IRON_INGOTS);
         add(LAPIS_LAZULI);
