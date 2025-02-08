@@ -131,8 +131,6 @@ public class DungeonRoom {
 
         if (!(this instanceof EnemyPurgeRoom)) this.processOfferings();
 
-        DungeonSessionManager.getInstance().server.execute(this::processLootBlocks);
-
         if (getTemplate().spawnPoint() != null) {
             this.spawnPoint = TemplateHelper.transform(getTemplate().spawnPoint(), this);
             level.setBlock(spawnPoint, Blocks.AIR.defaultBlockState(), 2);
@@ -477,6 +475,7 @@ public class DungeonRoom {
     }
 
     public void onBranchEnter(WDPlayer player) {
+        DungeonSessionManager.getInstance().server.execute(this::processLootBlocks);
     }
 
     public void onEnterInner(WDPlayer player) {
