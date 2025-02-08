@@ -5,6 +5,8 @@ import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.ItemTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potions;
 
+import java.util.Arrays;
+
 public class ItemTemplateRegistry {
     public static final DungeonRegistration.DungeonComponentRegistry<ItemTemplate> LOOT_ENTRY_REGISTRY = new DungeonRegistration.DungeonComponentRegistry<>();
 
@@ -57,55 +59,8 @@ public class ItemTemplateRegistry {
     public static ItemTemplate RABBIT_FOOT = new ItemTemplate("rabbit_foot_2", Items.RABBIT_FOOT, 2);
 
 
-
-
     public static void setupLootEntries(){
-        add(ARROWS);
-        add(COOKED_BEEF);
-        add(SEEDS);
-        add(MELONS);
-        add(LEATHER);
-        add(COAL);
-        add(CHARCOAL);
-        add(OAK_LOGS);
-        add(GUNPOWDER);
-        add(STONE_SHOVEL);
-        add(STONE_AXE);
-        add(STONE_PICKAXE);
-        add(STONE_SWORD);
-        add(INK_SACS);
-        add(IRON_INGOTS);
-        add(GOLD_INGOTS);
-        add(LAPIS_LAZULI);
-        add(BOTTLES_O_ENCHANTING);
-        add(DIAMOND);
-        add(EMERALD);
-        add(BLAZE_ROD);
-        add(ENDER_PEARL);
-        add(IRON_RAW);
-        add(GOLD_RAW);
-        add(REDSTONE);
-        add(GLOWSTONE_DUST);
-        add(QUARTZ);
-        add(NETHER_WART);
-        add(GHAST_TEAR);
-        add(BLAZE_POWDER);
-        add(MAGMA_CREAM);
-        add(SLIME_BALL);
-        add(SPIDER_EYE);
-        add(RABBIT_FOOT);
-        add(HEALTH_POTION);
-        add(INVISIBILITY_POTION);
-        add(NIGHT_VISION_POTION);
-        add(SWIFTNESS_POTION);
-        add(WATER_BREATHING_POTION);
-        add(FIRE_RESISTANCE_POTION);
-        add(LEAPING_POTION);
-        add(STRENGTH_POTION);
-        add(HARMING_POTION_SPLASH);
-        add(POISON_POTION_SPLASH);
-        add(REGENERATION_POTION_SPLASH);
-
+        Arrays.asList(ARROWS, COOKED_BEEF, SEEDS, MELONS, LEATHER, COAL, CHARCOAL, OAK_LOGS, GUNPOWDER, STONE_SHOVEL, STONE_AXE, STONE_PICKAXE, STONE_SWORD, INK_SACS, IRON_INGOTS, GOLD_INGOTS, LAPIS_LAZULI, BOTTLES_O_ENCHANTING, DIAMOND, EMERALD, BLAZE_ROD, ENDER_PEARL, IRON_RAW, GOLD_RAW, REDSTONE, GLOWSTONE_DUST, QUARTZ, NETHER_WART, GHAST_TEAR, BLAZE_POWDER, MAGMA_CREAM, SLIME_BALL, SPIDER_EYE, RABBIT_FOOT, HEALTH_POTION, INVISIBILITY_POTION, NIGHT_VISION_POTION, SWIFTNESS_POTION, WATER_BREATHING_POTION, FIRE_RESISTANCE_POTION, LEAPING_POTION, STRENGTH_POTION, HARMING_POTION_SPLASH, POISON_POTION_SPLASH, REGENERATION_POTION_SPLASH).forEach(ItemTemplateRegistry::add);
     }
 
 

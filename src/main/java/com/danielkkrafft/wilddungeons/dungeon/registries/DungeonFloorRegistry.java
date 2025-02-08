@@ -7,6 +7,8 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonFloorTe
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import net.minecraft.core.BlockPos;
 
+import java.util.Arrays;
+
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonBranchRegistry.*;
 
 public class DungeonFloorRegistry {
@@ -55,13 +57,7 @@ public static final DungeonFloorTemplate OVERWORLD_RED_SANDY_FLOOR = DungeonFloo
 
 
     public static void setupFloors() {
-        add(TEST_FLOOR);
-        add(OVERWORLD_BASIC_FLOOR);
-        add(OVERWORLD_SANDY_FLOOR);
-        add(OVERWORLD_RED_SANDY_FLOOR);
+        Arrays.asList(TEST_FLOOR, OVERWORLD_BASIC_FLOOR, OVERWORLD_SANDY_FLOOR, OVERWORLD_RED_SANDY_FLOOR).forEach(DUNGEON_FLOOR_REGISTRY::add);
     }
 
-    public static void add(DungeonFloorTemplate floor){
-        DUNGEON_FLOOR_REGISTRY.add(floor);
-    }
 }

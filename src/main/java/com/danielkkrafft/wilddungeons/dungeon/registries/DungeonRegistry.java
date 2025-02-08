@@ -5,6 +5,8 @@ import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.DungeonLayout;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonFloorTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonTemplate;
 
+import java.util.Arrays;
+
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonFloorPoolRegistry.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialPoolRegistry.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonPoolRegistry.*;
@@ -32,7 +34,6 @@ public class DungeonRegistry {
             .setNextDungeon(OVERWORLD_DUNGEON_POOL);
 
     public static void setupDungeons() {
-        DUNGEON_REGISTRY.add(TEST_DUNGEON);
-        DUNGEON_REGISTRY.add(OVERWORLD_BASIC_DUNGEON);
+        Arrays.asList(TEST_DUNGEON, OVERWORLD_BASIC_DUNGEON).forEach(DUNGEON_REGISTRY::add);
     }
 }

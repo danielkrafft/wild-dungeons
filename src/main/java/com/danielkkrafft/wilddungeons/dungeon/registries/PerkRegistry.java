@@ -4,6 +4,8 @@ import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonPerkTemplate;
 import org.joml.Vector2i;
 
+import java.util.Arrays;
+
 public class PerkRegistry {
     public static final DungeonRegistration.DungeonComponentRegistry<DungeonPerkTemplate> DUNGEON_PERK_REGISTRY = new DungeonRegistration.DungeonComponentRegistry<>();
 
@@ -13,9 +15,6 @@ public class PerkRegistry {
     public static final DungeonPerkTemplate EXTRA_LIFE = new DungeonPerkTemplate("EXTRA_LIFE", new Vector2i(3,0));
 
     public static void setupPerks(){
-        DUNGEON_PERK_REGISTRY.add(SWORD_DAMAGE);
-        DUNGEON_PERK_REGISTRY.add(AXE_DAMAGE);
-        DUNGEON_PERK_REGISTRY.add(BOW_DAMAGE);
-        DUNGEON_PERK_REGISTRY.add(EXTRA_LIFE);
+        Arrays.asList(SWORD_DAMAGE, AXE_DAMAGE, BOW_DAMAGE, EXTRA_LIFE).forEach(DUNGEON_PERK_REGISTRY::add);
     }
 }

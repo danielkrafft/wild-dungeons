@@ -7,6 +7,8 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Items;
 
+import java.util.Arrays;
+
 public class TargetTemplateRegistry {
     public static final DungeonComponentRegistry<TargetTemplate> TARGET_TEMPLATE_REGISTRY = new DungeonComponentRegistry<>();
 
@@ -26,23 +28,6 @@ public class TargetTemplateRegistry {
     public static final TargetTemplate WITHER_SKELETON = TargetTemplate.createMob("WITHER_SKELETON", EntityType.WITHER_SKELETON).setMainHandItem(Items.STONE_SWORD,true);
 
     public static void setupTargetTemplateRegistry() {
-        add(ZOMBIE_NORMAL);
-        add(ZOMBIE_LEATHER);
-        add(SKELETON_NORMAL);
-        add(SKELETON_CHAIN);
-        add(SPIDER);
-        add(CREEPER);
-        add(PILLAGER);
-        add(BLAZE);
-        add(CAVE_SPIDER);
-        add(ENDERMAN);
-        add(HUSK);
-        add(STRAY);
-        add(VINDICATOR);
-        add(WITHER_SKELETON);
-    }
-
-    public static void add(TargetTemplate targetTemplate) {
-        TARGET_TEMPLATE_REGISTRY.add(targetTemplate);
+        Arrays.asList(ZOMBIE_NORMAL, ZOMBIE_LEATHER, SKELETON_NORMAL, SKELETON_CHAIN, SPIDER, CREEPER, PILLAGER, BLAZE, CAVE_SPIDER, ENDERMAN, HUSK, STRAY, VINDICATOR, WITHER_SKELETON).forEach(TARGET_TEMPLATE_REGISTRY::add);
     }
 }

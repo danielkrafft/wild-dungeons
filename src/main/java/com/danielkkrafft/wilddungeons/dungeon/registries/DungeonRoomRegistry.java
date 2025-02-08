@@ -6,6 +6,7 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate.*;
@@ -221,47 +222,7 @@ public class DungeonRoomRegistry {
             ));
 
     public static void setupDungeonRooms() {
-        add(SMALL_1);
-        add(SMALL_2);
-        add(SMALL_3);
-        add(SMALL_4);
-        add(SMALL_5);
-        add(MEDIUM_1);
-        add(MEDIUM_2);
-        add(MEDIUM_3);
-        add(MEDIUM_4);
-        add(LARGE_1);
-        add(START);
-        add(BOSS);
-        add(SECRET_1);
-        add(SHOP_1);
-        add(LOOT_1);
-        add(REST);
-
-        //overworld
-        add(OVERWORLD_START);
-        add(OVERWORLD_BASIC_1);
-        add(OVERWORLD_BASIC_2);
-        add(OVERWORLD_BASIC_3);
-        add(OVERWORLD_BASIC_4);
-        add(OVERWORLD_BASIC_5);
-        add(OVERWORLD_COMBAT_1);
-        add(OVERWORLD_COMBAT_2);
-        add(OVERWORLD_COMBAT_3);
-        add(OVERWORLD_CHEST_ROOM);
-        add(OVERWORLD_STAIRCASE);
-        add(OVERWORLD_STAIRWAY_1);
-        add(OVERWORLD_HALLWAY_1);
-        add(OVERWORLD_HALLWAY_2);
-        add(OVERWORLD_CRAFTING_ROOM);
-        add(OVERWORLD_REST_ROOM);
-        add(OVERWORLD_SHOP_ROOM);
-        add(OVERWORLD_FREE_PERK);
-        add(OVERWORLD_EXIT_ROOM);
-        add(OVERWORLD_TRANSITION_ROOM);
+        Arrays.asList(SMALL_1, SMALL_2, SMALL_3, SMALL_4, SMALL_5, MEDIUM_1, MEDIUM_2, MEDIUM_3, MEDIUM_4, LARGE_1, START, BOSS, SECRET_1, SHOP_1, LOOT_1, REST, OVERWORLD_START, OVERWORLD_BASIC_1, OVERWORLD_BASIC_2, OVERWORLD_BASIC_3, OVERWORLD_BASIC_4, OVERWORLD_BASIC_5, OVERWORLD_COMBAT_1, OVERWORLD_COMBAT_2, OVERWORLD_COMBAT_3, OVERWORLD_CHEST_ROOM, OVERWORLD_STAIRCASE, OVERWORLD_STAIRWAY_1, OVERWORLD_HALLWAY_1, OVERWORLD_HALLWAY_2, OVERWORLD_CRAFTING_ROOM, OVERWORLD_REST_ROOM, OVERWORLD_SHOP_ROOM, OVERWORLD_FREE_PERK, OVERWORLD_EXIT_ROOM, OVERWORLD_TRANSITION_ROOM).forEach(DUNGEON_ROOM_REGISTRY::add);
     }
 
-    public static void add(DungeonRoomTemplate room) {
-        DUNGEON_ROOM_REGISTRY.add(room);
-    }
 }

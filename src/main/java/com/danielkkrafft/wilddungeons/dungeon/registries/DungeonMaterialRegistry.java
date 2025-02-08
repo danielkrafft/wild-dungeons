@@ -6,6 +6,7 @@ import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static java.util.List.*;
@@ -270,18 +271,7 @@ public class DungeonMaterialRegistry {
 
 
     public static void setupDungeonMaterials(){
-        add(STONE_BRICK);
-        add(SANDSTONEY);
-        add(RED_SANDSTONEY);
-        add(PRISMARINE);
-        add(END_STONE);
-        add(OAK_WOOD);
-        add(OVERWORLD_MATERIAL_0);
-        add(OVERWORLD_MATERIAL_1);
-        add(OVERWORLD_MATERIAL_2);
+        Arrays.asList(STONE_BRICK, SANDSTONEY, RED_SANDSTONEY, PRISMARINE, END_STONE, OAK_WOOD, OVERWORLD_MATERIAL_0, OVERWORLD_MATERIAL_1, OVERWORLD_MATERIAL_2).forEach(DUNGEON_MATERIAL_REGISTRY::add);
     }
 
-    public static void add(DungeonMaterial material){
-        DUNGEON_MATERIAL_REGISTRY.add(material);
-    }
 }

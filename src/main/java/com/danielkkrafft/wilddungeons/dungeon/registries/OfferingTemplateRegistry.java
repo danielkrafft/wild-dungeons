@@ -6,6 +6,8 @@ import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.OfferingTempla
 import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
 
+import java.util.Arrays;
+
 import static com.danielkkrafft.wilddungeons.entity.Offering.CostType.*;
 import static com.danielkkrafft.wilddungeons.entity.Offering.Type.*;
 
@@ -52,46 +54,7 @@ public class OfferingTemplateRegistry {
 
     //it turns out we *never* use this registry. But it's a good idea to have it, just in case we decide to use it later.
     public static void setupOfferings(){
-        add(ARROWS);
-        add(STEAKS);
-        add(BAKED_POTATOES);
-        add(IRON_INGOTS);
-        add(LEATHER);
-        add(HEALTH_POTION);
-        add(REGENERATION_POTION);
-
-
-        add(EMERALDS);
-        add(BLAZE_RODS);
-        add(ENDER_PEARLS);
-        add(COAL);
-
-        add(FREE_SWORD_DAMAGE);
-        add(FREE_AXE_DAMAGE);
-        add(FREE_BOW_DAMAGE);
-        add(FREE_EXTRA_LIFE);
-
-        add(EXTRA_LIFE_NORMAL);
-        add(EXTRA_LIFE_NETHER);
-        add(EXTRA_LIFE_END);
-
-        add(SWORD_DAMAGE_NORMAL);
-        add(SWORD_DAMAGE_NETHER);
-        add(SWORD_DAMAGE_END);
-
-        add(AXE_DAMAGE_NORMAL);
-        add(AXE_DAMAGE_NETHER);
-        add(AXE_DAMAGE_END);
-
-        add(BOW_DAMAGE_NORMAL);
-        add(BOW_DAMAGE_NETHER);
-        add(BOW_DAMAGE_END);
-
-        add(NETHER_TEST_RIFT);
-        add(END_TEST_RIFT);
-    }
-    public static void add(OfferingTemplate offeringTemplate){
-        OFFERING_TEMPLATE_REGISTRY.add(offeringTemplate);
+        Arrays.asList(ARROWS, STEAKS, BAKED_POTATOES, IRON_INGOTS, LEATHER, HEALTH_POTION, REGENERATION_POTION, EMERALDS, BLAZE_RODS, ENDER_PEARLS, COAL, FREE_SWORD_DAMAGE, FREE_AXE_DAMAGE, FREE_BOW_DAMAGE, FREE_EXTRA_LIFE, EXTRA_LIFE_NORMAL, EXTRA_LIFE_NETHER, EXTRA_LIFE_END, SWORD_DAMAGE_NORMAL, SWORD_DAMAGE_NETHER, SWORD_DAMAGE_END, AXE_DAMAGE_NORMAL, AXE_DAMAGE_NETHER, AXE_DAMAGE_END, BOW_DAMAGE_NORMAL, BOW_DAMAGE_NETHER, BOW_DAMAGE_END, NETHER_TEST_RIFT, END_TEST_RIFT).forEach(OFFERING_TEMPLATE_REGISTRY::add);
     }
 }
 
