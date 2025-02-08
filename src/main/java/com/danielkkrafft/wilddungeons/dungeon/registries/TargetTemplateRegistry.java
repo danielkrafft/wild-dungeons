@@ -13,6 +13,7 @@ public class TargetTemplateRegistry {
     public static final TargetTemplate ZOMBIE_NORMAL = TargetTemplate.createMob("ZOMBIE_NORMAL", EntityType.ZOMBIE);
     public static final TargetTemplate ZOMBIE_LEATHER = TargetTemplate.createMob("ZOMBIE_LEATHER", EntityType.ZOMBIE).setHelmet(Items.LEATHER_HELMET).setChestplate(Items.LEATHER_CHESTPLATE).setLeggings(Items.LEATHER_LEGGINGS).setBoots(Items.LEATHER_BOOTS);
     public static final TargetTemplate SKELETON_NORMAL = TargetTemplate.createMob("SKELETON_NORMAL", EntityType.SKELETON).setMainHandItem(Items.BOW,true);
+    public static final TargetTemplate SKELETON_CHAIN = TargetTemplate.createMob("SKELETON_CHAIN", EntityType.SKELETON).setMainHandItem(Items.BOW,true).setHelmet(Items.CHAINMAIL_HELMET).setChestplate(Items.CHAINMAIL_CHESTPLATE,true).setLeggings(Items.CHAINMAIL_LEGGINGS).setBoots(Items.CHAINMAIL_BOOTS).setRandomChance(0.2f);
     public static final TargetTemplate SPIDER = TargetTemplate.createMob("SPIDER", EntityType.SPIDER);
     public static final TargetTemplate CREEPER = TargetTemplate.createMob("CREEPER", EntityType.CREEPER);
     public static final TargetTemplate PILLAGER = TargetTemplate.createMob("PILLAGER", EntityType.PILLAGER);
@@ -28,6 +29,7 @@ public class TargetTemplateRegistry {
         add(ZOMBIE_NORMAL);
         add(ZOMBIE_LEATHER);
         add(SKELETON_NORMAL);
+        add(SKELETON_CHAIN);
         add(SPIDER);
         add(CREEPER);
         add(PILLAGER);

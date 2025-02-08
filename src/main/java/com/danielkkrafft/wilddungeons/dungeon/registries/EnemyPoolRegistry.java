@@ -16,13 +16,14 @@ public class EnemyPoolRegistry {
                 .add(ZOMBIE_NORMAL, 10)
                 .add(ZOMBIE_LEATHER, 7)
                 .add(SKELETON_NORMAL, 7)
-                .add(SPIDER, 3)
-                .add(CREEPER, 1);
+                .add(SKELETON_CHAIN, 4)
+                .add(SPIDER, 5)
+                .add(CREEPER, 2);
         ENEMY_POOL_REGISTRY.add(EASY_ENEMY_POOL);
 
         MEDIUM_ENEMY_POOL
                 .add(BLAZE, 3)
-                .add(CAVE_SPIDER, 1)
+                .add(CAVE_SPIDER, 3)
                 .add(PILLAGER, 1)
                 .add(ENDERMAN, 1);
         ENEMY_POOL_REGISTRY.add(MEDIUM_ENEMY_POOL);
