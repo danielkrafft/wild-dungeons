@@ -24,20 +24,25 @@ public class OfferingTemplatePoolRegistry {
         OFFERING_TEMPLATE_POOL_REGISTRY.add(FREE_PERK_POOL);
 
         CHEAP_BASIC_POOL
-                .add(ARROWS,2)
-                .add(STEAKS,1)
-                .add(BAKED_POTATOES,2)
-                .add(IRON_INGOTS,1)
-                .add(LEATHER,2)
+                .add(ARROWS,5)
+                .add(STEAKS,5)
+                .add(BAKED_POTATOES,5)
+                .add(IRON_INGOTS,5)
+                .add(LEATHER,4)
+                .add(HEALTH_POTION,1)
+                .add(REGENERATION_POTION,1)
+                .add(COAL,1)
         ;
         OFFERING_TEMPLATE_POOL_REGISTRY.add(CHEAP_BASIC_POOL);
 
         MEDIUM_BASIC_POOL
-                .add(EMERALDS,1)
-                .add(BLAZE_RODS,1)
-                .add(ENDER_PEARLS,1)
-                .add(EXTRA_LIFE_NORMAL,1)
-                .add(COAL,1);
+                .add(EMERALDS,5)
+                .add(BLAZE_RODS,5)
+                .add(ENDER_PEARLS,5)
+                .add(EXTRA_LIFE_NORMAL,5)
+                .add(HEALTH_POTION,5)
+                .add(REGENERATION_POTION,5)
+        ;
         OFFERING_TEMPLATE_POOL_REGISTRY.add(MEDIUM_BASIC_POOL);
 
         EXPENSIVE_BASIC_POOL

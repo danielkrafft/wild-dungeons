@@ -213,8 +213,7 @@ public class DungeonRegistration {
         public int itemID;
         public int count = 1;
         public float deviance = 1;
-        public int potionType = -1;
-
+        public int potionIndex = -1;
         public ItemTemplate(String name, Item item, int count) {
             this.name = name;
             this.itemID = Item.getId(item);
@@ -223,7 +222,7 @@ public class DungeonRegistration {
         public ItemTemplate(String name, Holder<Potion> potion) {
             this.name = name;
             this.itemID = Item.getId(Items.POTION);
-            this.potionType = BuiltInRegistries.POTION.getId(potion.value());
+            this.potionIndex = BuiltInRegistries.POTION.getId(potion.value());
         }
 
         public int getDeviatedCount() {
@@ -231,8 +230,8 @@ public class DungeonRegistration {
         }
 
         public ItemStack asItemStack() {
-            if (potionType != -1) {
-                return PotionContents.createItemStack(Items.POTION, BuiltInRegistries.POTION.getHolder(potionType).get());
+            if (potionIndex != -1) {
+                return PotionContents.createItemStack(Items.POTION, BuiltInRegistries.POTION.getHolder(potionIndex).get());
             }
             return new ItemStack(Item.byId(itemID), getDeviatedCount());
         }
@@ -241,5 +240,7 @@ public class DungeonRegistration {
         public String name() {return this.name;}
         public ItemTemplate setCount(int count) {this.count = count; return this;}
         public ItemTemplate setDeviance(float deviance) {this.deviance = deviance; return this;}
+        public ItemTemplate setSplashPotion() {this.itemID=Item.getId(Items.SPLASH_POTION); return this;}
+        public ItemTemplate setLingeringPotion() {this.itemID=Item.getId(Items.LINGERING_POTION); return this;}
     }
 }

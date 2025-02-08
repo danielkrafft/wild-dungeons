@@ -24,6 +24,7 @@ public class ItemTemplateRegistry {
     public static ItemTemplate STONE_SWORD = new ItemTemplate("stone_sword", Items.STONE_SWORD, 1);
     public static ItemTemplate INK_SACS = new ItemTemplate("ink_sacs_8", Items.INK_SAC, 8).setDeviance(1.5f);
     public static ItemTemplate IRON_INGOTS = new ItemTemplate("iron_ingots_8", Items.IRON_INGOT, 8).setDeviance(1.5f);
+    public static ItemTemplate GOLD_INGOTS = new ItemTemplate("gold_ingots_6", Items.GOLD_INGOT, 6).setDeviance(1.5f);
     public static ItemTemplate LAPIS_LAZULI = new ItemTemplate("lapis_lazuli_10", Items.LAPIS_LAZULI, 10).setDeviance(1.5f);
     public static ItemTemplate BOTTLES_O_ENCHANTING = new ItemTemplate("experience_bottles_5", Items.EXPERIENCE_BOTTLE, 5).setDeviance(1.5f);
     public static ItemTemplate DIAMOND = new ItemTemplate("diamonds_1", Items.DIAMOND, 1);
@@ -31,6 +32,30 @@ public class ItemTemplateRegistry {
     public static ItemTemplate BLAZE_ROD = new ItemTemplate("blaze_rod_8", Items.BLAZE_ROD, 8);
     public static ItemTemplate ENDER_PEARL = new ItemTemplate("ender_pearl_8", Items.ENDER_PEARL, 8);
     public static ItemTemplate HEALTH_POTION = new ItemTemplate("health_potion", Potions.HEALING);
+    public static ItemTemplate INVISIBILITY_POTION = new ItemTemplate("invisibility_potion", Potions.INVISIBILITY);
+    public static ItemTemplate NIGHT_VISION_POTION = new ItemTemplate("night_vision_potion", Potions.NIGHT_VISION);
+    public static ItemTemplate SWIFTNESS_POTION = new ItemTemplate("swiftness_potion", Potions.SWIFTNESS);
+    public static ItemTemplate WATER_BREATHING_POTION = new ItemTemplate("water_breathing_potion", Potions.WATER_BREATHING);
+    public static ItemTemplate FIRE_RESISTANCE_POTION = new ItemTemplate("fire_resistance_potion", Potions.FIRE_RESISTANCE);
+    public static ItemTemplate LEAPING_POTION = new ItemTemplate("leaping_potion", Potions.LEAPING);
+    public static ItemTemplate STRENGTH_POTION = new ItemTemplate("strength_potion", Potions.STRENGTH);
+    public static ItemTemplate HARMING_POTION_SPLASH = new ItemTemplate("harming_potion_splash", Potions.HARMING).setSplashPotion();
+    public static ItemTemplate POISON_POTION_SPLASH = new ItemTemplate("poison_potion_splash", Potions.POISON).setSplashPotion();
+    public static ItemTemplate REGENERATION_POTION_SPLASH = new ItemTemplate("regeneration_potion_splash", Potions.REGENERATION).setSplashPotion();
+
+    public static ItemTemplate IRON_RAW = new ItemTemplate("iron_ore_8", Items.RAW_IRON, 8).setDeviance(1.5f);
+    public static ItemTemplate GOLD_RAW = new ItemTemplate("gold_ore_8", Items.RAW_GOLD, 8).setDeviance(1.5f);
+    public static ItemTemplate REDSTONE = new ItemTemplate("redstone_8", Items.REDSTONE, 8).setDeviance(1.5f);
+    public static ItemTemplate GLOWSTONE_DUST = new ItemTemplate("glowstone_dust_8", Items.GLOWSTONE_DUST, 8).setDeviance(1.5f);
+    public static ItemTemplate QUARTZ = new ItemTemplate("quartz_8", Items.QUARTZ, 8).setDeviance(1.5f);
+    public static ItemTemplate NETHER_WART = new ItemTemplate("nether_wart_8", Items.NETHER_WART, 8).setDeviance(1.5f);
+    public static ItemTemplate GHAST_TEAR = new ItemTemplate("ghast_tear_3", Items.GHAST_TEAR, 3);
+    public static ItemTemplate BLAZE_POWDER = new ItemTemplate("blaze_powder_8", Items.BLAZE_POWDER, 8).setDeviance(1.5f);
+    public static ItemTemplate MAGMA_CREAM = new ItemTemplate("magma_cream_8", Items.MAGMA_CREAM, 8).setDeviance(1.5f);
+    public static ItemTemplate SLIME_BALL = new ItemTemplate("slime_ball_8", Items.SLIME_BALL, 8).setDeviance(1.5f);
+    public static ItemTemplate SPIDER_EYE = new ItemTemplate("spider_eye_8", Items.SPIDER_EYE, 8).setDeviance(1.5f);
+    public static ItemTemplate RABBIT_FOOT = new ItemTemplate("rabbit_foot_2", Items.RABBIT_FOOT, 2);
+
 
 
 
@@ -50,13 +75,37 @@ public class ItemTemplateRegistry {
         add(STONE_SWORD);
         add(INK_SACS);
         add(IRON_INGOTS);
+        add(GOLD_INGOTS);
         add(LAPIS_LAZULI);
         add(BOTTLES_O_ENCHANTING);
         add(DIAMOND);
         add(EMERALD);
         add(BLAZE_ROD);
         add(ENDER_PEARL);
+        add(IRON_RAW);
+        add(GOLD_RAW);
+        add(REDSTONE);
+        add(GLOWSTONE_DUST);
+        add(QUARTZ);
+        add(NETHER_WART);
+        add(GHAST_TEAR);
+        add(BLAZE_POWDER);
+        add(MAGMA_CREAM);
+        add(SLIME_BALL);
+        add(SPIDER_EYE);
+        add(RABBIT_FOOT);
         add(HEALTH_POTION);
+        add(INVISIBILITY_POTION);
+        add(NIGHT_VISION_POTION);
+        add(SWIFTNESS_POTION);
+        add(WATER_BREATHING_POTION);
+        add(FIRE_RESISTANCE_POTION);
+        add(LEAPING_POTION);
+        add(STRENGTH_POTION);
+        add(HARMING_POTION_SPLASH);
+        add(POISON_POTION_SPLASH);
+        add(REGENERATION_POTION_SPLASH);
+
     }
 
 

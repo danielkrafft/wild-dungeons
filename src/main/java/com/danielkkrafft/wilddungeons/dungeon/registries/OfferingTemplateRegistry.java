@@ -17,8 +17,8 @@ public class OfferingTemplateRegistry {
     public static final OfferingTemplate BAKED_POTATOES =new OfferingTemplate("BAKED_POTATOES", ItemTemplateRegistry.BAKED_POTATOES, XP_LEVEL, 4, 1.5f);
     public static final OfferingTemplate IRON_INGOTS = new OfferingTemplate("IRON_INGOTS", ItemTemplateRegistry.IRON_INGOTS, XP_LEVEL, 6, 1.5f);
     public static final OfferingTemplate LEATHER = new OfferingTemplate("LEATHER", ItemTemplateRegistry.LEATHER, XP_LEVEL, 4, 1.5f);
-
-
+    public static final OfferingTemplate HEALTH_POTION = new OfferingTemplate("HEALTH_POTION", ItemTemplateRegistry.HEALTH_POTION, XP_LEVEL, 8, 1.5f);
+    public static final OfferingTemplate REGENERATION_POTION = new OfferingTemplate("REGENERATION_POTION", ItemTemplateRegistry.REGENERATION_POTION_SPLASH, XP_LEVEL, 8, 1.5f);
 
     public static final OfferingTemplate EMERALDS = new OfferingTemplate("EMERALDS",ItemTemplateRegistry.EMERALD, XP_LEVEL, 8, 1.5f);
     public static final OfferingTemplate BLAZE_RODS = new OfferingTemplate("BLAZE_RODS", ItemTemplateRegistry.BLAZE_ROD, NETHER_XP_LEVEL, 4, 1.5f);
@@ -50,40 +50,49 @@ public class OfferingTemplateRegistry {
     public static final OfferingTemplate NETHER_TEST_RIFT = new OfferingTemplate("NETHER_TEST_RIFT", RIFT, 1, "wd-dungeon_1", NETHER_XP_LEVEL, 30, 1.5f);
     public static final OfferingTemplate END_TEST_RIFT = new OfferingTemplate("END_TEST_RIFT", RIFT, 1, "wd-dungeon_1", END_XP_LEVEL, 30, 1.5f);
 
-
+    //it turns out we *never* use this registry. But it's a good idea to have it, just in case we decide to use it later.
     public static void setupOfferings(){
-        OFFERING_TEMPLATE_REGISTRY.add(ARROWS);
-        OFFERING_TEMPLATE_REGISTRY.add(STEAKS);
-        OFFERING_TEMPLATE_REGISTRY.add(BAKED_POTATOES);
-        OFFERING_TEMPLATE_REGISTRY.add(IRON_INGOTS);
+        add(ARROWS);
+        add(STEAKS);
+        add(BAKED_POTATOES);
+        add(IRON_INGOTS);
+        add(LEATHER);
+        add(HEALTH_POTION);
+        add(REGENERATION_POTION);
 
-        OFFERING_TEMPLATE_REGISTRY.add(EMERALDS);
-        OFFERING_TEMPLATE_REGISTRY.add(BLAZE_RODS);
-        OFFERING_TEMPLATE_REGISTRY.add(ENDER_PEARLS);
-        OFFERING_TEMPLATE_REGISTRY.add(COAL);
 
-        OFFERING_TEMPLATE_REGISTRY.add(FREE_SWORD_DAMAGE);
-        OFFERING_TEMPLATE_REGISTRY.add(FREE_AXE_DAMAGE);
-        OFFERING_TEMPLATE_REGISTRY.add(FREE_BOW_DAMAGE);
-        OFFERING_TEMPLATE_REGISTRY.add(FREE_EXTRA_LIFE);
+        add(EMERALDS);
+        add(BLAZE_RODS);
+        add(ENDER_PEARLS);
+        add(COAL);
 
-        OFFERING_TEMPLATE_REGISTRY.add(EXTRA_LIFE_NORMAL);
-        OFFERING_TEMPLATE_REGISTRY.add(EXTRA_LIFE_NETHER);
-        OFFERING_TEMPLATE_REGISTRY.add(EXTRA_LIFE_END);
+        add(FREE_SWORD_DAMAGE);
+        add(FREE_AXE_DAMAGE);
+        add(FREE_BOW_DAMAGE);
+        add(FREE_EXTRA_LIFE);
 
-        OFFERING_TEMPLATE_REGISTRY.add(SWORD_DAMAGE_NORMAL);
-        OFFERING_TEMPLATE_REGISTRY.add(SWORD_DAMAGE_NETHER);
-        OFFERING_TEMPLATE_REGISTRY.add(SWORD_DAMAGE_END);
+        add(EXTRA_LIFE_NORMAL);
+        add(EXTRA_LIFE_NETHER);
+        add(EXTRA_LIFE_END);
 
-        OFFERING_TEMPLATE_REGISTRY.add(AXE_DAMAGE_NORMAL);
-        OFFERING_TEMPLATE_REGISTRY.add(AXE_DAMAGE_NETHER);
-        OFFERING_TEMPLATE_REGISTRY.add(AXE_DAMAGE_END);
+        add(SWORD_DAMAGE_NORMAL);
+        add(SWORD_DAMAGE_NETHER);
+        add(SWORD_DAMAGE_END);
 
-        OFFERING_TEMPLATE_REGISTRY.add(BOW_DAMAGE_NORMAL);
-        OFFERING_TEMPLATE_REGISTRY.add(BOW_DAMAGE_NETHER);
-        OFFERING_TEMPLATE_REGISTRY.add(BOW_DAMAGE_END);
+        add(AXE_DAMAGE_NORMAL);
+        add(AXE_DAMAGE_NETHER);
+        add(AXE_DAMAGE_END);
 
-        OFFERING_TEMPLATE_REGISTRY.add(NETHER_TEST_RIFT);
-        OFFERING_TEMPLATE_REGISTRY.add(END_TEST_RIFT);
+        add(BOW_DAMAGE_NORMAL);
+        add(BOW_DAMAGE_NETHER);
+        add(BOW_DAMAGE_END);
+
+        add(NETHER_TEST_RIFT);
+        add(END_TEST_RIFT);
+    }
+    public static void add(OfferingTemplate offeringTemplate){
+        OFFERING_TEMPLATE_REGISTRY.add(offeringTemplate);
     }
 }
+
+

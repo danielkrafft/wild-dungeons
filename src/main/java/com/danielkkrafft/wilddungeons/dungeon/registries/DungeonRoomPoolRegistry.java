@@ -52,13 +52,13 @@ public class DungeonRoomPoolRegistry {
                 .add(OVERWORLD_BASIC_3,1)
                 .add(OVERWORLD_BASIC_4,2)
                 .add(OVERWORLD_BASIC_5,2)
-                .add(OVERWORLD_COMBAT_1,1)
-                .add(OVERWORLD_COMBAT_2,1)
-                .add(OVERWORLD_COMBAT_3,1)
+                .add(OVERWORLD_COMBAT_1,2)
+                .add(OVERWORLD_COMBAT_2,2)
+                .add(OVERWORLD_COMBAT_3,2)
                 .add(OVERWORLD_CHEST_ROOM,2)
                 .add(OVERWORLD_STAIRCASE,1)
                 .add(OVERWORLD_STAIRWAY_1,1)
-                .add(OVERWORLD_HALLWAY_1,1)
+                .add(OVERWORLD_HALLWAY_1,2)
                 .add(OVERWORLD_HALLWAY_2,1)
                 .add(OVERWORLD_CRAFTING_ROOM,1);
         OVERWORLD_SPACER_ROOM_POOL
