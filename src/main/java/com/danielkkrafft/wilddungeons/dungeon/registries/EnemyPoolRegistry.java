@@ -13,8 +13,9 @@ public class EnemyPoolRegistry {
 
     public static void setupEnemyPools(){
         EASY_ENEMY_POOL
-                .add(ZOMBIE, 10)
-                .add(SKELETON, 7)
+                .add(ZOMBIE_NORMAL, 10)
+                .add(ZOMBIE_HAT, 7)
+                .add(SKELETON_NORMAL, 7)
                 .add(SPIDER, 3)
                 .add(CREEPER, 1);
         ENEMY_POOL_REGISTRY.add(EASY_ENEMY_POOL);

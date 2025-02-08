@@ -157,6 +157,10 @@ public class DungeonRegistration {
             this.type = type.toString();
         }
 
+        public static TargetTemplate createMob(String name, EntityType<?> entityType) {
+            return new TargetTemplate(name, DungeonTarget.Type.ENTITY).setEntityType(entityType);
+        }
+
         public DungeonTarget asEnemy() {
             DungeonTarget enemy = new DungeonTarget(DungeonTarget.Type.valueOf(this.type), this.entityType);
             enemy.helmetItem = helmetItem;

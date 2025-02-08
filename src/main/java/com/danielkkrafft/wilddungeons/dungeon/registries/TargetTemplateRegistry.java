@@ -10,35 +10,37 @@ import net.minecraft.world.item.Items;
 public class TargetTemplateRegistry {
     public static final DungeonComponentRegistry<TargetTemplate> TARGET_TEMPLATE_REGISTRY = new DungeonComponentRegistry<>();
 
-    public static final TargetTemplate ZOMBIE = new TargetTemplate("ZOMBIE", Type.ENTITY).setEntityType(EntityType.ZOMBIE).setHelmet(Items.LEATHER_HELMET).addMobEffect(MobEffects.GLOWING, 0);
-    public static final TargetTemplate SKELETON = new TargetTemplate("SKELETON", Type.ENTITY).setEntityType(EntityType.SKELETON).setMainHandItem(Items.BOW);
-    public static final TargetTemplate SPIDER = new TargetTemplate("SPIDER", Type.ENTITY).setEntityType(EntityType.SPIDER);
-    public static final TargetTemplate CREEPER = new TargetTemplate("CREEPER", Type.ENTITY).setEntityType(EntityType.CREEPER);
-    public static final TargetTemplate PILLAGER = new TargetTemplate("PILLAGER", Type.ENTITY).setEntityType(EntityType.PILLAGER);
+    public static final TargetTemplate ZOMBIE_NORMAL = TargetTemplate.createMob("ZOMBIE_NORMAL", EntityType.ZOMBIE);
+    public static final TargetTemplate ZOMBIE_HAT = TargetTemplate.createMob("ZOMBIE_HAT", EntityType.ZOMBIE).setHelmet(Items.LEATHER_HELMET);
+    public static final TargetTemplate SKELETON_NORMAL = TargetTemplate.createMob("SKELETON_NORMAL", EntityType.SKELETON).setMainHandItem(Items.BOW);
+    public static final TargetTemplate SPIDER = TargetTemplate.createMob("SPIDER", EntityType.SPIDER);
+    public static final TargetTemplate CREEPER = TargetTemplate.createMob("CREEPER", EntityType.CREEPER);
+    public static final TargetTemplate PILLAGER = TargetTemplate.createMob("PILLAGER", EntityType.PILLAGER);
+    public static final TargetTemplate BLAZE = TargetTemplate.createMob("BLAZE", EntityType.BLAZE);
+    public static final TargetTemplate CAVE_SPIDER = TargetTemplate.createMob("CAVE_SPIDER", EntityType.CAVE_SPIDER);
+    public static final TargetTemplate ENDERMAN = TargetTemplate.createMob("ENDERMAN", EntityType.ENDERMAN);
+    public static final TargetTemplate HUSK = TargetTemplate.createMob("HUSK", EntityType.HUSK);
+    public static final TargetTemplate STRAY = TargetTemplate.createMob("STRAY", EntityType.STRAY);
+    public static final TargetTemplate VINDICATOR = TargetTemplate.createMob("VINDICATOR", EntityType.VINDICATOR);
+    public static final TargetTemplate WITHER_SKELETON = TargetTemplate.createMob("WITHER_SKELETON", EntityType.WITHER_SKELETON);
 
-    public static final TargetTemplate BLAZE = new TargetTemplate("BLAZE", Type.ENTITY).setEntityType(EntityType.BLAZE);
-    public static final TargetTemplate CAVE_SPIDER = new TargetTemplate("CAVE_SPIDER", Type.ENTITY).setEntityType(EntityType.CAVE_SPIDER);
-    public static final TargetTemplate ENDERMAN = new TargetTemplate("ENDERMAN", Type.ENTITY).setEntityType(EntityType.ENDERMAN);
-    public static final TargetTemplate HUSK = new TargetTemplate("HUSK", Type.ENTITY).setEntityType(EntityType.HUSK);
-    public static final TargetTemplate STRAY = new TargetTemplate("STRAY", Type.ENTITY).setEntityType(EntityType.STRAY);
+    public static void setupTargetTemplateRegistry() {
+        add(ZOMBIE_NORMAL);
+        add(ZOMBIE_HAT);
+        add(SKELETON_NORMAL);
+        add(SPIDER);
+        add(CREEPER);
+        add(PILLAGER);
+        add(BLAZE);
+        add(CAVE_SPIDER);
+        add(ENDERMAN);
+        add(HUSK);
+        add(STRAY);
+        add(VINDICATOR);
+        add(WITHER_SKELETON);
+    }
 
-    public static final TargetTemplate VINDICATOR = new TargetTemplate("VINDICATOR", Type.ENTITY).setEntityType(EntityType.VINDICATOR);
-    public static final TargetTemplate WITHER_SKELETON = new TargetTemplate("WITHER_SKELETON", Type.ENTITY).setEntityType(EntityType.WITHER_SKELETON);
-
-    public static void setupTargetTemplateRegistry(){
-
-        TARGET_TEMPLATE_REGISTRY.add(ZOMBIE);
-        TARGET_TEMPLATE_REGISTRY.add(SKELETON);
-        TARGET_TEMPLATE_REGISTRY.add(SPIDER);
-        TARGET_TEMPLATE_REGISTRY.add(CREEPER);
-        TARGET_TEMPLATE_REGISTRY.add(PILLAGER);
-        TARGET_TEMPLATE_REGISTRY.add(BLAZE);
-        TARGET_TEMPLATE_REGISTRY.add(CAVE_SPIDER);
-        TARGET_TEMPLATE_REGISTRY.add(ENDERMAN);
-        TARGET_TEMPLATE_REGISTRY.add(HUSK);
-        TARGET_TEMPLATE_REGISTRY.add(STRAY);
-        TARGET_TEMPLATE_REGISTRY.add(VINDICATOR);
-        TARGET_TEMPLATE_REGISTRY.add(WITHER_SKELETON);
-
+    public static void add(TargetTemplate targetTemplate) {
+        TARGET_TEMPLATE_REGISTRY.add(targetTemplate);
     }
 }
