@@ -140,6 +140,7 @@ public class DungeonFloor {
 
     public void removedHalfGeneratedBranch() {
         if (!halfGeneratedRooms.isEmpty()) {
+            WildDungeons.getLogger().info("Removing half generated rooms {}", halfGeneratedRooms.size());
             halfGeneratedRooms.forEach(box -> {
                 DungeonSessionManager.getInstance().server.execute(() -> {
                     List<Entity> entities = getLevel().getEntitiesOfClass(Entity.class, AABB.of(box));
@@ -148,14 +149,9 @@ public class DungeonFloor {
                 });
 
                 DungeonRoom.fillShellWith(this, null, this.getLevel(), box, Blocks.AIR.defaultBlockState(), 1, DungeonRoom.isSafeForBoundingBoxes());
-
                 DungeonRoom.removeBlocks(this, box);
+                DungeonRoom.fixContactedShells(this, box);
             });
-            for (DungeonBranch dungeonBranch : dungeonBranches) {
-                for (DungeonRoom room : dungeonBranch.getRooms()) {
-                    room.processShell();
-                }
-            }
             halfGeneratedRooms.clear();
         }
     }
