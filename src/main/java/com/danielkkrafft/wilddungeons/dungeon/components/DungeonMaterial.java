@@ -11,31 +11,32 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.Property;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DungeonMaterial implements DungeonComponent {
     public String name;
 
-    public List<WeightedPool<BlockState>> basicBlockStates;
-    public List<WeightedPool<BlockState>> stairBlockStates;
-    public List<WeightedPool<BlockState>> slabBlockStates;
-    public List<WeightedPool<BlockState>> wallBlockStates;
-    public List<WeightedPool<BlockState>> lightBlockStates;
-    public List<WeightedPool<BlockState>> hangingLightBlockStates;
-    public List<WeightedPool<BlockState>> hiddenBlockStates;
+    public ArrayList<WeightedPool<BlockState>> basicBlockStates;
+    public ArrayList<WeightedPool<BlockState>> stairBlockStates;
+    public ArrayList<WeightedPool<BlockState>> slabBlockStates;
+    public ArrayList<WeightedPool<BlockState>> wallBlockStates;
+    public ArrayList<WeightedPool<BlockState>> lightBlockStates;
+    public ArrayList<WeightedPool<BlockState>> hangingLightBlockStates;
+    public ArrayList<WeightedPool<BlockState>> hiddenBlockStates;
     public float chestChance = .33f;
 
     public DungeonMaterial(String name, WeightedPool<BlockState> defaultBasicBlocks, WeightedPool<BlockState> defaultStairBlocks, WeightedPool<BlockState> defaultSlabBlocks, WeightedPool<BlockState> defaultWallBlocks, WeightedPool<BlockState> defaultLightBlocks, WeightedPool<BlockState> defaultHiddenBlocks) {
         this.name = name;
-        this.basicBlockStates = List.of(defaultBasicBlocks);
-        this.stairBlockStates = List.of(defaultStairBlocks);
-        this.slabBlockStates = List.of(defaultSlabBlocks);
-        this.wallBlockStates = List.of(defaultWallBlocks);
-        this.lightBlockStates = List.of(defaultLightBlocks);
-        this.hiddenBlockStates = List.of(defaultHiddenBlocks);
+        this.basicBlockStates = new ArrayList<>(List.of(defaultBasicBlocks));
+        this.stairBlockStates = new ArrayList<>(List.of(defaultStairBlocks));
+        this.slabBlockStates = new ArrayList<>(List.of(defaultSlabBlocks));
+        this.wallBlockStates = new ArrayList<>(List.of(defaultWallBlocks));
+        this.lightBlockStates = new ArrayList<>(List.of(defaultLightBlocks));
+        this.hiddenBlockStates = new ArrayList<>(List.of(defaultHiddenBlocks));
     }
 
-    public DungeonMaterial setHangingLights(WeightedPool<BlockState> hangingLightBlockStates) {this.hangingLightBlockStates = List.of(hangingLightBlockStates); return this;}
+    public DungeonMaterial setHangingLights(WeightedPool<BlockState> hangingLightBlockStates) {this.hangingLightBlockStates = new ArrayList<>(List.of(hangingLightBlockStates)); return this;}
     public DungeonMaterial setChestChance(float chestChance) {this.chestChance = chestChance; return this;}
     public DungeonMaterial addBasicBlockSet(WeightedPool<BlockState> blockStates) {this.basicBlockStates.add(blockStates); return this;}
     public DungeonMaterial addStairBlockSet(WeightedPool<BlockState> blockStates) {this.stairBlockStates.add(blockStates); return this;}
