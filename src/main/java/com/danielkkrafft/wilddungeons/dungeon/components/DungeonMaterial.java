@@ -23,20 +23,27 @@ public class DungeonMaterial implements DungeonComponent {
     public List<WeightedPool<BlockState>> lightBlockStates;
     public List<WeightedPool<BlockState>> hangingLightBlockStates;
     public List<WeightedPool<BlockState>> hiddenBlockStates;
-    public float chestChance;
+    public float chestChance = .33f;
 
-    public DungeonMaterial (String name, List<WeightedPool<BlockState>> basicBlockStates, List<WeightedPool<BlockState>> stairBlockStates, List<WeightedPool<BlockState>> slabBlockStates, List<WeightedPool<BlockState>> wallBlockStates, List<WeightedPool<BlockState>> lightBlockStates, List<WeightedPool<BlockState>> hiddenBlockStates, float chestChance) {
+    public DungeonMaterial(String name, WeightedPool<BlockState> defaultBasicBlocks, WeightedPool<BlockState> defaultStairBlocks, WeightedPool<BlockState> defaultSlabBlocks, WeightedPool<BlockState> defaultWallBlocks, WeightedPool<BlockState> defaultLightBlocks, WeightedPool<BlockState> defaultHiddenBlocks) {
         this.name = name;
-        this.basicBlockStates = basicBlockStates;
-        this.stairBlockStates = stairBlockStates;
-        this.slabBlockStates = slabBlockStates;
-        this.wallBlockStates = wallBlockStates;
-        this.lightBlockStates = lightBlockStates;
-        this.hiddenBlockStates = hiddenBlockStates;
-        this.chestChance = chestChance;
+        this.basicBlockStates = List.of(defaultBasicBlocks);
+        this.stairBlockStates = List.of(defaultStairBlocks);
+        this.slabBlockStates = List.of(defaultSlabBlocks);
+        this.wallBlockStates = List.of(defaultWallBlocks);
+        this.lightBlockStates = List.of(defaultLightBlocks);
+        this.hiddenBlockStates = List.of(defaultHiddenBlocks);
     }
 
-    public DungeonMaterial setHangingLights(List<WeightedPool<BlockState>> hangingLightBlockStates) {this.hangingLightBlockStates = hangingLightBlockStates; return this;}
+    public DungeonMaterial setHangingLights(WeightedPool<BlockState> hangingLightBlockStates) {this.hangingLightBlockStates = List.of(hangingLightBlockStates); return this;}
+    public DungeonMaterial setChestChance(float chestChance) {this.chestChance = chestChance; return this;}
+    public DungeonMaterial addBasicBlockSet(WeightedPool<BlockState> blockStates) {this.basicBlockStates.add(blockStates); return this;}
+    public DungeonMaterial addStairBlockSet(WeightedPool<BlockState> blockStates) {this.stairBlockStates.add(blockStates); return this;}
+    public DungeonMaterial addSlabBlockSet(WeightedPool<BlockState> blockStates) {this.slabBlockStates.add(blockStates); return this;}
+    public DungeonMaterial addWallBlockSet(WeightedPool<BlockState> blockStates) {this.wallBlockStates.add(blockStates); return this;}
+    public DungeonMaterial addLightBlockSet(WeightedPool<BlockState> blockStates) {this.lightBlockStates.add(blockStates); return this;}
+    public DungeonMaterial addHiddenBlockSet(WeightedPool<BlockState> blockStates) {this.hiddenBlockStates.add(blockStates); return this;}
+    public DungeonMaterial addHangingLightBlockSet(WeightedPool<BlockState> blockStates) {this.hangingLightBlockStates.add(blockStates); return this;}
 
     public BlockState getBasic(int index) {return index > basicBlockStates.size()-1 ? basicBlockStates.getFirst().getRandom() : basicBlockStates.get(index).getRandom();}
     public BlockState getStair(int index) {return index > stairBlockStates.size()-1 ? stairBlockStates.getFirst().getRandom() : stairBlockStates.get(index).getRandom();}
