@@ -26,6 +26,7 @@ public class LockableEventRoom extends DungeonRoom {
     public static final int START_COOLDOWN = 100;
     public int startCooldown = START_COOLDOWN;
 
+    public boolean clear = false;
     public boolean started = false;
     public boolean generated = false;
 
@@ -74,6 +75,7 @@ public class LockableEventRoom extends DungeonRoom {
     @Override
     public void onClear() {
         super.onClear();
+        clear = true;
         WildDungeons.getLogger().info("LOCKABLE ROOM CLEARING");
         this.getBranch().getFloor().getLevel().playSound(null, this.getPosition(), SoundEvents.IRON_DOOR_OPEN, SoundSource.BLOCKS, .5f, 1f);
         this.getConnectionPoints().forEach(point -> {
@@ -99,12 +101,19 @@ public class LockableEventRoom extends DungeonRoom {
         this.setPreviewDoorways();
     }
 
+    @Override
+    public void onBranchEnter(WDPlayer player) {
+        super.onBranchEnter(player);
+        setPreviewDoorways();
+    }
+
     private void setPreviewDoorways() {
+        if (clear) return;
         this.getConnectionPoints().forEach(point -> {
             if (point.isConnected()) {
-                if (((point.getConnectedPoint().getRoom().getIndex() > this.getIndex()
-                        && point.getConnectedPoint().getBranchIndex() == this.getBranch().getIndex()))
-                        || point.getConnectedPoint().getBranchIndex() > this.getBranch().getIndex()) {
+                //this code only works when the *next* branch is generated too
+                if (point.getConnectedPoint().getBranchIndex() > this.getBranch().getIndex() ||
+                        (point.getConnectedPoint().getRoom().getIndex() > this.getIndex() && point.getConnectedPoint().getBranchIndex() == this.getBranch().getIndex())) {
                     point.block(this.getBranch().getFloor().getLevel());
                 } else {
                     this.templateBasedUnblock(getBranch().getFloor(), point);
