@@ -274,30 +274,28 @@ public class TemplateHelper {
                 int l = Integer.MIN_VALUE;
                 int i1 = Integer.MIN_VALUE;
                 int j1 = Integer.MIN_VALUE;
-                BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
                 for(StructureTemplate.StructureBlockInfo structuretemplate$structureblockinfo : StructureTemplate.processBlockInfos(serverLevel, offset, pos, settings, list, template)) {
-                    blockpos$mutableblockpos.set(structuretemplate$structureblockinfo.pos());
-                    if (boundingbox == null || boundingbox.isInside(blockpos$mutableblockpos)) {
-                        FluidState fluidstate = settings.shouldApplyWaterlogging() ? serverLevel.getFluidState(blockpos$mutableblockpos) : null;
+                    if (boundingbox == null || boundingbox.isInside(structuretemplate$structureblockinfo.pos())) {
+                        FluidState fluidstate = settings.shouldApplyWaterlogging() ? serverLevel.getFluidState(structuretemplate$structureblockinfo.pos()) : null;
                         //BlockState blockstate = structuretemplate$structureblockinfo.state().mirror(settings.getMirror()).rotate(settings.getRotation());
                         //BlockState blockstate = TemplateHelper.fixBlockStateProperties(material.replace(structuretemplate$structureblockinfo.state().mirror(settings.getMirror()).rotate(settings.getRotation())), settings);
                         BlockState blockstate = material.replace(structuretemplate$structureblockinfo.state().mirror(settings.getMirror()).rotate(settings.getRotation()));
                         if (structuretemplate$structureblockinfo.nbt() != null) {
-                            BlockEntity blockentity = serverLevel.getBlockEntity(blockpos$mutableblockpos);
+                            BlockEntity blockentity = serverLevel.getBlockEntity(structuretemplate$structureblockinfo.pos());
                             Clearable.tryClear(blockentity);
-                            serverLevel.setBlock(blockpos$mutableblockpos, Blocks.BARRIER.defaultBlockState(), 20);
+                            serverLevel.setBlock(structuretemplate$structureblockinfo.pos(), Blocks.BARRIER.defaultBlockState(), 20);
                         }
 
-                        if (serverLevel.setBlock(blockpos$mutableblockpos, blockstate, flags)) {
-                            i = Math.min(i, blockpos$mutableblockpos.getX());
-                            j = Math.min(j, blockpos$mutableblockpos.getY());
-                            k = Math.min(k, blockpos$mutableblockpos.getZ());
-                            l = Math.max(l, blockpos$mutableblockpos.getX());
-                            i1 = Math.max(i1, blockpos$mutableblockpos.getY());
-                            j1 = Math.max(j1, blockpos$mutableblockpos.getZ());
-                            list3.add(Pair.of(blockpos$mutableblockpos, structuretemplate$structureblockinfo.nbt()));
+                        if (serverLevel.setBlock(structuretemplate$structureblockinfo.pos(), blockstate, flags)) {
+                            i = Math.min(i, structuretemplate$structureblockinfo.pos().getX());
+                            j = Math.min(j, structuretemplate$structureblockinfo.pos().getY());
+                            k = Math.min(k, structuretemplate$structureblockinfo.pos().getZ());
+                            l = Math.max(l, structuretemplate$structureblockinfo.pos().getX());
+                            i1 = Math.max(i1, structuretemplate$structureblockinfo.pos().getY());
+                            j1 = Math.max(j1, structuretemplate$structureblockinfo.pos().getZ());
+                            list3.add(Pair.of(structuretemplate$structureblockinfo.pos(), structuretemplate$structureblockinfo.nbt()));
                             if (structuretemplate$structureblockinfo.nbt() != null) {
-                                BlockEntity blockentity1 = serverLevel.getBlockEntity(blockpos$mutableblockpos);
+                                BlockEntity blockentity1 = serverLevel.getBlockEntity(structuretemplate$structureblockinfo.pos());
                                 if (blockentity1 != null) {
 //                                    if (blockentity1 instanceof RandomizableContainer) {
 //                                        structuretemplate$structureblockinfo.nbt().putLong("LootTableSeed", random.nextLong());
@@ -309,11 +307,11 @@ public class TemplateHelper {
 
                             if (fluidstate != null) {
                                 if (blockstate.getFluidState().isSource()) {
-                                    list2.add(blockpos$mutableblockpos);
+                                    list2.add(structuretemplate$structureblockinfo.pos());
                                 } else if (blockstate.getBlock() instanceof LiquidBlockContainer) {
-                                    ((LiquidBlockContainer)blockstate.getBlock()).placeLiquid(serverLevel, blockpos$mutableblockpos, blockstate, fluidstate);
+                                    ((LiquidBlockContainer)blockstate.getBlock()).placeLiquid(serverLevel, structuretemplate$structureblockinfo.pos(), blockstate, fluidstate);
                                     if (!fluidstate.isSource()) {
-                                        list1.add(blockpos$mutableblockpos);
+                                        list1.add(structuretemplate$structureblockinfo.pos());
                                     }
                                 }
                             }
