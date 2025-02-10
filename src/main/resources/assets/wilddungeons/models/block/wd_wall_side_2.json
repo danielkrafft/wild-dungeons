@@ -1,0 +1,6 @@
+﻿{
+  "parent": "minecraft:block/template_wall_side",
+  "textures": {
+    "wall": "wilddungeons:block/wd_basic_2"
+  }
+}

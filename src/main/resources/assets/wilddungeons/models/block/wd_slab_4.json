@@ -1,0 +1,8 @@
+﻿{
+  "parent": "minecraft:block/slab",
+  "textures": {
+    "bottom": "wilddungeons:block/wd_basic_4",
+    "side": "wilddungeons:block/wd_basic_4",
+    "top": "wilddungeons:block/wd_basic_4"
+  }
+}

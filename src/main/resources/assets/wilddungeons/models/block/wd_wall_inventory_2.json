@@ -1,0 +1,6 @@
+﻿{
+  "parent": "minecraft:block/wall_inventory",
+  "textures": {
+    "wall": "wilddungeons:block/wd_basic_2"
+  }
+}

@@ -1,6 +1,9 @@
 ﻿{
   "values": [
-    "wilddungeons:wd_wall"
+    "wilddungeons:wd_wall",
+    "wilddungeons:wd_wall_2",
+    "wilddungeons:wd_wall_3",
+    "wilddungeons:wd_wall_4"
   ],
   "replace": false
 }
