@@ -144,7 +144,13 @@ public class DungeonMaterialRegistry {
                     .add(ANDESITE.defaultBlockState(), 1)
                     .add(DIORITE.defaultBlockState(), 1)
             ),
-            0.33f);
+            0.33f)
+            .setHangingLights(
+                    of(new WeightedPool<BlockState>()
+                            .add(LANTERN.defaultBlockState(), 50)
+                            .add(SOUL_LANTERN.defaultBlockState(), 1)
+                    )
+            );
     public static final DungeonMaterial OVERWORLD_MATERIAL_1 = new DungeonMaterial(
             "OVERWORLD_MATERIAL_1",
             of(new WeightedPool<BlockState>()
@@ -190,7 +196,13 @@ public class DungeonMaterialRegistry {
                     .add(ANDESITE.defaultBlockState(), 1)
                     .add(DIORITE.defaultBlockState(), 1)
             ),
-            0.33f);
+            0.33f)
+            .setHangingLights(
+                    of(new WeightedPool<BlockState>()
+                            .add(LANTERN.defaultBlockState(), 45)
+                            .add(SOUL_LANTERN.defaultBlockState(), 5)
+                    )
+            );
     public static final DungeonMaterial OVERWORLD_MATERIAL_2 = new DungeonMaterial(
             "OVERWORLD_MATERIAL_2",
             of(new WeightedPool<BlockState>()
@@ -227,7 +239,13 @@ public class DungeonMaterialRegistry {
                     .add(TUFF.defaultBlockState(), 1)
                     .add(COBBLED_DEEPSLATE.defaultBlockState(), 1)
             ),
-            0.33f);
+            0.33f)
+            .setHangingLights(
+                    of(new WeightedPool<BlockState>()
+                            .add(LANTERN.defaultBlockState(), 40)
+                            .add(SOUL_LANTERN.defaultBlockState(), 10)
+                    )
+            );
     public static final DungeonMaterial SANDSTONEY = new DungeonMaterial(
             "SANDSTONEY",
             of(new WeightedPool<BlockState>()
@@ -245,8 +263,12 @@ public class DungeonMaterialRegistry {
                     .add(LANTERN.defaultBlockState(), 1)),
             of(new WeightedPool<BlockState>()
                     .add(SAND.defaultBlockState(), 1)),
-            0.33f
-    );
+            0.33f)
+            .setHangingLights(
+                    of(new WeightedPool<BlockState>()
+                            .add(LANTERN.defaultBlockState(), 1)
+                    )
+            );
     public static final DungeonMaterial RED_SANDSTONEY = new DungeonMaterial(
             "RED_SANDSTONEY",
             of(new WeightedPool<BlockState>()
@@ -265,7 +287,12 @@ public class DungeonMaterialRegistry {
             of(new WeightedPool<BlockState>()
                     .add(RED_SAND.defaultBlockState(), 1)),
             0.33f
-    );
+    )
+            .setHangingLights(
+                    of(new WeightedPool<BlockState>()
+                            .add(LANTERN.defaultBlockState(), 1)
+                    )
+            );;
 
 
 

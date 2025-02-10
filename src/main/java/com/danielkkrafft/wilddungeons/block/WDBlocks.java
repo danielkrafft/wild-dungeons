@@ -33,11 +33,35 @@ public class WDBlocks {
     public static final DeferredBlock<Block> HEAVY_RUNE = registerWithItem("heavy_rune", HeavyRuneBlock::new);
 
     public static final DeferredBlock<Block> WD_BASIC = registerWithItem("wd_basic", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops().strength(1.5F, 6.0F)));
+    public static final DeferredBlock<Block> WD_BASIC_2 = registerWithItem("wd_basic_2", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops().strength(1.5F, 6.0F)));
+    public static final DeferredBlock<Block> WD_BASIC_3 = registerWithItem("wd_basic_3", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops().strength(1.5F, 6.0F)));
+    public static final DeferredBlock<Block> WD_BASIC_4 = registerWithItem("wd_basic_4", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops().strength(1.5F, 6.0F)));
+
     public static final DeferredBlock<Block> WD_STAIRS = registerWithItem("wd_stairs", () -> new StairBlock(WD_BASIC.get().defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(WD_BASIC.get())));
+    public static final DeferredBlock<Block> WD_STAIRS_2 = registerWithItem("wd_stairs_2", () -> new StairBlock(WD_BASIC.get().defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(WD_BASIC.get())));
+    public static final DeferredBlock<Block> WD_STAIRS_3 = registerWithItem("wd_stairs_3", () -> new StairBlock(WD_BASIC.get().defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(WD_BASIC.get())));
+    public static final DeferredBlock<Block> WD_STAIRS_4 = registerWithItem("wd_stairs_4", () -> new StairBlock(WD_BASIC.get().defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(WD_BASIC.get())));
+
     public static final DeferredBlock<Block> WD_SLAB = registerWithItem("wd_slab", () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(WD_BASIC.get())));
+    public static final DeferredBlock<Block> WD_SLAB_2 = registerWithItem("wd_slab_2", () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(WD_BASIC.get())));
+    public static final DeferredBlock<Block> WD_SLAB_3 = registerWithItem("wd_slab_3", () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(WD_BASIC.get())));
+    public static final DeferredBlock<Block> WD_SLAB_4 = registerWithItem("wd_slab_4", () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(WD_BASIC.get())));
+
     public static final DeferredBlock<Block> WD_WALL = registerWithItem("wd_wall", () -> new WallBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.STONE_BRICK_WALL).forceSolidOn()));
+    public static final DeferredBlock<Block> WD_WALL_2 = registerWithItem("wd_wall_2", () -> new WallBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.STONE_BRICK_WALL).forceSolidOn()));
+    public static final DeferredBlock<Block> WD_WALL_3 = registerWithItem("wd_wall_3", () -> new WallBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.STONE_BRICK_WALL).forceSolidOn()));
+    public static final DeferredBlock<Block> WD_WALL_4 = registerWithItem("wd_wall_4", () -> new WallBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.STONE_BRICK_WALL).forceSolidOn()));
+
     public static final DeferredBlock<Block> WD_LIGHT = registerWithItem("wd_light", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).lightLevel(state -> 15).requiresCorrectToolForDrops().strength(0.3F)));
+    public static final DeferredBlock<Block> WD_LIGHT_2 = registerWithItem("wd_light_2", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).lightLevel(state -> 15).requiresCorrectToolForDrops().strength(0.3F)));
+    public static final DeferredBlock<Block> WD_LIGHT_3 = registerWithItem("wd_light_3", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).lightLevel(state -> 15).requiresCorrectToolForDrops().strength(0.3F)));
+    public static final DeferredBlock<Block> WD_LIGHT_4 = registerWithItem("wd_light_4", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).lightLevel(state -> 15).requiresCorrectToolForDrops().strength(0.3F)));
+
     public static final DeferredBlock<Block> WD_HANGING_LIGHT = registerWithItem("wd_hanging_light", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).lightLevel(state -> 15).requiresCorrectToolForDrops().strength(0.3F)));
+    public static final DeferredBlock<Block> WD_HANGING_LIGHT_2 = registerWithItem("wd_hanging_light_2", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).lightLevel(state -> 15).requiresCorrectToolForDrops().strength(0.3F)));
+    public static final DeferredBlock<Block> WD_HANGING_LIGHT_3 = registerWithItem("wd_hanging_light_3", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).lightLevel(state -> 15).requiresCorrectToolForDrops().strength(0.3F)));
+    public static final DeferredBlock<Block> WD_HANGING_LIGHT_4 = registerWithItem("wd_hanging_light_4", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).lightLevel(state -> 15).requiresCorrectToolForDrops().strength(0.3F)));
+
     public static final DeferredBlock<Block> WD_SECRET = registerWithItem("wd_secret", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).requiresCorrectToolForDrops().strength(1.5F, 6.0F).noOcclusion()));
     public static final DeferredBlock<Block> WD_BEDROCK = registerWithItem("wd_bedrock", () -> new WDBedrockBlock(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).requiresCorrectToolForDrops().strength(-1.0F, 3600000.0F)));
     public static final DeferredBlock<Block> WD_DOORWAY = registerWithItem("wd_doorway", () -> new DoorwayBlock(BlockBehaviour.Properties.of().noCollission()));
@@ -62,12 +86,37 @@ public class WDBlocks {
                 output.accept(WDBlocks.SPAWN_BLOCK.get());
                 output.accept(WDBlocks.ROTTEN_MOSS.get());
                 output.accept(WDBlocks.HEAVY_RUNE.get());
+
                 output.accept(WDBlocks.WD_BASIC.get());
+                output.accept(WDBlocks.WD_BASIC_2.get());
+                output.accept(WDBlocks.WD_BASIC_3.get());
+                output.accept(WDBlocks.WD_BASIC_4.get());
+
                 output.accept(WDBlocks.WD_STAIRS.get());
+                output.accept(WDBlocks.WD_STAIRS_2.get());
+                output.accept(WDBlocks.WD_STAIRS_3.get());
+                output.accept(WDBlocks.WD_STAIRS_4.get());
+
                 output.accept(WDBlocks.WD_SLAB.get());
+                output.accept(WDBlocks.WD_SLAB_2.get());
+                output.accept(WDBlocks.WD_SLAB_3.get());
+                output.accept(WDBlocks.WD_SLAB_4.get());
+
                 output.accept(WDBlocks.WD_WALL.get());
+                output.accept(WDBlocks.WD_WALL_2.get());
+                output.accept(WDBlocks.WD_WALL_3.get());
+                output.accept(WDBlocks.WD_WALL_4.get());
+
                 output.accept(WDBlocks.WD_LIGHT.get());
+                output.accept(WDBlocks.WD_LIGHT_2.get());
+                output.accept(WDBlocks.WD_LIGHT_3.get());
+                output.accept(WDBlocks.WD_LIGHT_4.get());
+
                 output.accept(WDBlocks.WD_HANGING_LIGHT.get());
+                output.accept(WDBlocks.WD_HANGING_LIGHT_2.get());
+                output.accept(WDBlocks.WD_HANGING_LIGHT_3.get());
+                output.accept(WDBlocks.WD_HANGING_LIGHT_4.get());
+
                 output.accept(WDBlocks.WD_SECRET.get());
                 output.accept(WDBlocks.WD_DOORWAY.get());
 
