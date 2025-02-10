@@ -1,7 +1,7 @@
 ﻿{
   "variants": {
     "": {
-      "model": "wilddungeons:block/wd_basic"
+      "model": "wilddungeons:block/wd_basic_2"
     }
   }
 }

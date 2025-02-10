@@ -2,7 +2,7 @@
   "multipart": [
     {
       "apply": {
-        "model": "wilddungeons:block/wd_wall_post"
+        "model": "wilddungeons:block/wd_wall_post_3"
       },
       "when": {
         "up": "true"
@@ -10,7 +10,7 @@
     },
     {
       "apply": {
-        "model": "wilddungeons:block/wd_wall_side",
+        "model": "wilddungeons:block/wd_wall_side_3",
         "uvlock": true
       },
       "when": {
@@ -19,7 +19,7 @@
     },
     {
       "apply": {
-        "model": "wilddungeons:block/wd_wall_side",
+        "model": "wilddungeons:block/wd_wall_side_3",
         "uvlock": true,
         "y": 90
       },
@@ -29,7 +29,7 @@
     },
     {
       "apply": {
-        "model": "wilddungeons:block/wd_wall_side",
+        "model": "wilddungeons:block/wd_wall_side_3",
         "uvlock": true,
         "y": 180
       },
@@ -39,7 +39,7 @@
     },
     {
       "apply": {
-        "model": "wilddungeons:block/wd_wall_side",
+        "model": "wilddungeons:block/wd_wall_side_3",
         "uvlock": true,
         "y": 270
       },
@@ -49,7 +49,7 @@
     },
     {
       "apply": {
-        "model": "wilddungeons:block/wd_wall_side_tall",
+        "model": "wilddungeons:block/wd_wall_side_tall_3",
         "uvlock": true
       },
       "when": {
@@ -58,7 +58,7 @@
     },
     {
       "apply": {
-        "model": "wilddungeons:block/wd_wall_side_tall",
+        "model": "wilddungeons:block/wd_wall_side_tall_3",
         "uvlock": true,
         "y": 90
       },
@@ -68,7 +68,7 @@
     },
     {
       "apply": {
-        "model": "wilddungeons:block/wd_wall_side_tall",
+        "model": "wilddungeons:block/wd_wall_side_tall_3",
         "uvlock": true,
         "y": 180
       },
@@ -78,7 +78,7 @@
     },
     {
       "apply": {
-        "model": "wilddungeons:block/wd_wall_side_tall",
+        "model": "wilddungeons:block/wd_wall_side_tall_3",
         "uvlock": true,
         "y": 270
       },
