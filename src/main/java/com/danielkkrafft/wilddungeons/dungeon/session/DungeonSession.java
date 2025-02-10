@@ -214,6 +214,7 @@ public class DungeonSession {
 
     public void validate() {
         floors.forEach(dungeonFloor -> {
+            WildDungeons.getLogger().info("VALIDATING FLOOR: {}", dungeonFloor.getIndex());
             dungeonFloor.removedHalfGeneratedBranch();
             dungeonFloor.generateBranches();
         });

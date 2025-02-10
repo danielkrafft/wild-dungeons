@@ -1,6 +1,7 @@
 package com.danielkkrafft.wilddungeons.dungeon.components;
 
 
+import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.block.WDBlocks;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonComponent;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
@@ -56,6 +57,9 @@ public class DungeonMaterial implements DungeonComponent {
 
         for (Property<?> property : input.getProperties()) {
             if (result.hasProperty(property)) {
+//                if (property==BlockStateProperties.STAIRS_SHAPE) {
+//                    WildDungeons.getLogger().info("Placing stairs with shape: {} && and half: {}", input.getValue(property), input.getValue(BlockStateProperties.HALF));
+//                }
                 if (property == BlockStateProperties.CHEST_TYPE) {continue;}
                 result = result.setValue((Property) property, input.getValue(property));
             }

@@ -64,6 +64,7 @@ public class SaveSystem {
             while (floors.iterator().hasNext()) {
                 DungeonFloor floor = floors.pop();
                 if (floor == null) continue;
+                floor.halfGeneratedRooms = new ArrayList<>();
                 DungeonFloorFile floorFile = new DungeonFloorFile(floor);
                 Stack<DungeonBranch> branches = new Stack<>();
                 floor.getBranches().forEach(branches::push);

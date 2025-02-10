@@ -206,10 +206,7 @@ public class DungeonRoom {
             floor.getChunkMap().getOrDefault(new ChunkPos(blockPos), new ArrayList<>()).forEach(vector2i -> {
                 potentialConflicts.addAll(floor.getBranches().get(vector2i.x).getRooms().get(vector2i.y).getBoundingBoxes());
             });
-            if (potentialConflicts.stream().noneMatch(potentialConflict -> potentialConflict.isInside(blockPos))) {
-                return true;
-            }
-            return false;
+            return potentialConflicts.stream().noneMatch(potentialConflict -> potentialConflict.isInside(blockPos));
         };
     }
 
@@ -398,19 +395,23 @@ public class DungeonRoom {
         });
 
         this.boundingBoxes.forEach(box -> {
-            BoundingBox inflatedBox = box.inflatedBy(2);
-            List<DungeonRoom> touchingRooms = new ArrayList<>();
-            this.getBranch().getFloor().getChunkMap().forEach((key, value) -> {
-                value.forEach(v -> {
-                    DungeonRoom room = this.getBranch().getFloor().getBranches().get(v.x).getRooms().get(v.y);
-                    if (room.boundingBoxes.stream().anyMatch(inflatedBox::intersects)) {
-                        touchingRooms.add(room);
-                    }
-                });
-            });
-            touchingRooms.forEach(DungeonRoom::processShell);
+            fixContactedShells(getBranch().getFloor(), box);
         });
         destroyEntities();
+    }
+
+    public static void fixContactedShells(DungeonFloor floor, BoundingBox box) {
+        BoundingBox inflatedBox = box.inflatedBy(2);
+        List<DungeonRoom> touchingRooms = new ArrayList<>();
+        floor.getChunkMap().forEach((key, value) -> {
+            value.forEach(v -> {
+                DungeonRoom room = floor.getBranches().get(v.x).getRooms().get(v.y);
+                if (room.boundingBoxes.stream().anyMatch(inflatedBox::intersects)) {
+                    touchingRooms.add(room);
+                }
+            });
+        });
+        touchingRooms.forEach(DungeonRoom::processShell);
     }
 
     public static void removeBlocks(DungeonFloor floor, BoundingBox box) {
