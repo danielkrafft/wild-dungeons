@@ -90,6 +90,12 @@ public class DungeonBranchRegistry {
     public static final DungeonBranchTemplate RED_SANDY_ENDING_BRANCH = copyOf(OVERWORLD_ENDING_BRANCH, "RED_SANDY_ENDING_BRANCH")
             .setMaterials(RED_SANDY_MATERIAL_POOL);
 
+    public static final DungeonBranchTemplate VILLAGE_PATH_BRANCH = create("VILLAGE_PATH_BRANCH")
+            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
+                    .add(VILLAGE_PATH_POOL, 10))
+            .setMaterials(VILLAGE_MATERIAL_POOL)
+            .setLimitedRooms(List.of(of(VILLAGE_CENTER,1),of(VILLAGE_FORGE,1)))
+            ;
     public static final DungeonBranchTemplate PIGLIN_FACTORY_START_BRANCH = create("PIGLIN_FACTORY_START_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .addSimple(NETHER_CAVE_ENTRANCE_ROOM));
@@ -102,12 +108,9 @@ public class DungeonBranchRegistry {
                     .add(PIGLIN_FACTORY_CAVE_SPRAWL_ROOM_POOL, 5)
                     .addSimple(NETHER_CAVE_END_ROOM));
 
-    public static final DungeonBranchTemplate VILLAGE_PATH_BRANCH = create("VILLAGE_PATH_BRANCH")
+    public static final DungeonBranchTemplate PIGLIN_FACTORY_PIPEWORKS_OPENING_BRANCH = create("PIGLIN_FACTORY_PIPEWORKS_OPENING_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
-                    .add(VILLAGE_PATH_POOL, 10))
-            .setMaterials(VILLAGE_MATERIAL_POOL)
-            .setLimitedRooms(List.of(of(VILLAGE_CENTER,1),of(VILLAGE_FORGE,1)))
-            ;
+                    .add(PIGLIN_FACTORY_PIPEWORKS_ROOM_POOL, 15));
 
 
     public static DungeonBranchTemplate create(String name) {

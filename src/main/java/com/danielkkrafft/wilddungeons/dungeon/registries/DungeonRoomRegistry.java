@@ -221,6 +221,49 @@ public class DungeonRoomRegistry {
                     of("overworld/transition", EMPTY_BLOCK_POS),
                     of("overworld/transition2", new BlockPos(7, -13, 3))
             ));
+
+    public static final DungeonRoomTemplate VILLAGE_1 = create(
+            "village_1",
+            List.of(
+                    of("village/village_1", EMPTY_BLOCK_POS)
+            ));
+    public static final DungeonRoomTemplate VILLAGE_FORGE = create(
+            "village_forge",
+            List.of(
+                    of("village/village_forge", EMPTY_BLOCK_POS)
+            ));
+    public static final DungeonRoomTemplate VILLAGE_PATH_1 = create(
+            "village_path_1",
+            List.of(
+                    of("village/village_path_1", EMPTY_BLOCK_POS)
+            ));
+    public static final DungeonRoomTemplate VILLAGE_PATH_CROSSING = create(
+            "village_path_crossing",
+            List.of(
+                    of("village/village_path_crossing", EMPTY_BLOCK_POS)
+            ));
+    public static final DungeonRoomTemplate VILLAGE_PATH_FARM = create(
+            "village_path_farm",
+            List.of(
+                    of("village/village_path_farm", EMPTY_BLOCK_POS)
+            ));
+    public static final DungeonRoomTemplate VILLAGE_CENTER = create(
+            "village_center",
+            List.of(
+                    of("village/village_center", EMPTY_BLOCK_POS)
+            ));
+    public static final DungeonRoomTemplate VILLAGE_SINGLE_HUT = create(
+            "village_single_hut",
+            List.of(
+                    of("village/village_single_hut", EMPTY_BLOCK_POS)
+            ));
+    public static final DungeonRoomTemplate VILLAGE_FENCED_HORSES = create(
+            "village_fenced_horses",
+            List.of(
+                    of("village/village_fenced_horses", EMPTY_BLOCK_POS)
+            ));
+
+
     public static final DungeonRoomTemplate NETHER_CAVE_ENTRANCE_ROOM = create(
             "nether_cave_entrance",
             List.of(
@@ -301,48 +344,42 @@ public class DungeonRoomRegistry {
                     of("nether/cave/end_2", new BlockPos(48, 0, 0))
             ));
 
-
-    public static final DungeonRoomTemplate VILLAGE_1 = create(
-            "village_1",
+    public static final DungeonRoomTemplate NETHER_PIPEWORKS_BREAKOUT_ROOM = create(
+            "nether/pipeworks_breakout",
             List.of(
-                    of("village/village_1", EMPTY_BLOCK_POS)
-            ));
-    public static final DungeonRoomTemplate VILLAGE_FORGE = create(
-            "village_forge",
+                    of("nether/pipeworks/breakout", EMPTY_BLOCK_POS)
+            ))
+            .setBlockingMaterialIndex(1);
+    public static final DungeonRoomTemplate NETHER_PIPEWORKS_0 = create(
+            "nether_pipeworks_0",
             List.of(
-                    of("village/village_forge", EMPTY_BLOCK_POS)
-            ));
-    public static final DungeonRoomTemplate VILLAGE_PATH_1 = create(
-            "village_path_1",
+                    of("nether/pipeworks/0", EMPTY_BLOCK_POS)
+            ))
+            .setBlockingMaterialIndex(1);
+    public static final DungeonRoomTemplate NETHER_PIPEWORKS_1 = create(
+            "nether_pipeworks_1",
             List.of(
-                    of("village/village_path_1", EMPTY_BLOCK_POS)
-            ));
-    public static final DungeonRoomTemplate VILLAGE_PATH_CROSSING = create(
-            "village_path_crossing",
+                    of("nether/pipeworks/1", EMPTY_BLOCK_POS)
+            ))
+            .setBlockingMaterialIndex(1);
+    public static final DungeonRoomTemplate NETHER_PIPEWORKS_2 = create(
+            "nether_pipeworks_2",
             List.of(
-                    of("village/village_path_crossing", EMPTY_BLOCK_POS)
-            ));
-    public static final DungeonRoomTemplate VILLAGE_PATH_FARM = create(
-            "village_path_farm",
+                    of("nether/pipeworks/2", EMPTY_BLOCK_POS)
+            ))
+            .setBlockingMaterialIndex(1);
+    public static final DungeonRoomTemplate NETHER_PIPEWORKS_3 = create(
+            "nether_pipeworks_3",
             List.of(
-                    of("village/village_path_farm", EMPTY_BLOCK_POS)
-            ));
-    public static final DungeonRoomTemplate VILLAGE_CENTER = create(
-            "village_center",
+                    of("nether/pipeworks/3", EMPTY_BLOCK_POS)
+            ))
+            .setBlockingMaterialIndex(1);
+    public static final DungeonRoomTemplate NETHER_PIPEWORKS_LAVAFALLS = create(
+            "nether_pipewalk_lava_falls",
             List.of(
-                    of("village/village_center", EMPTY_BLOCK_POS)
-            ));
-    public static final DungeonRoomTemplate VILLAGE_SINGLE_HUT = create(
-            "village_single_hut",
-            List.of(
-                    of("village/village_single_hut", EMPTY_BLOCK_POS)
-            ));
-    public static final DungeonRoomTemplate VILLAGE_FENCED_HORSES = create(
-            "village_fenced_horses",
-            List.of(
-                    of("village/village_fenced_horses", EMPTY_BLOCK_POS)
-            ));
-
+                    of("nether/pipeworks/lava_falls", EMPTY_BLOCK_POS)
+            ))
+            .setBlockingMaterialIndex(1);
 
     public static DungeonRoomTemplate create(String name, List<Pair<String, BlockPos>> roomTemplates) {
         DungeonRoomTemplate room = DungeonRoomTemplate.create(name, roomTemplates);

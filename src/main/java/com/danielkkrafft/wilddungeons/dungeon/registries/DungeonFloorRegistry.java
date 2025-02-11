@@ -60,9 +60,8 @@ public class DungeonFloorRegistry {
             .setBranchTemplates(new DungeonLayout<DungeonBranchTemplate>()
                     .addSimple(PIGLIN_FACTORY_START_BRANCH)
                     .addSimple(PIGLIN_FACTORY_CAVE_BRANCH)
-                    .addSimple(PIGLIN_FACTORY_CAVE_BRANCH)
-                    .addSimple(PIGLIN_FACTORY_CAVE_BRANCH)
                     .addSimple(PIGLIN_FACTORY_CAVE_END_BRANCH)
+                    .addSimple(PIGLIN_FACTORY_PIPEWORKS_OPENING_BRANCH)
             )
             .setOrigin(new BlockPos(0, 100, 0));
 

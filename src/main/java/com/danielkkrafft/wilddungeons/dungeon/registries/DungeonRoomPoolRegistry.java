@@ -24,6 +24,7 @@ public class DungeonRoomPoolRegistry {
     public static final WeightedPool<DungeonRoomTemplate> VILLAGE_PATH_POOL = new WeightedPool<>();
 
     public static final WeightedPool<DungeonRoomTemplate> PIGLIN_FACTORY_CAVE_SPRAWL_ROOM_POOL = new WeightedPool<>();
+    public static final WeightedPool<DungeonRoomTemplate> PIGLIN_FACTORY_PIPEWORKS_ROOM_POOL = new WeightedPool<>();
 
     public static void setupRoomPools(){
         SMALL_ROOM_POOL
@@ -76,6 +77,16 @@ public class DungeonRoomPoolRegistry {
         OVERWORLD_LOOT_ROOM_POOL
                 .add(OVERWORLD_FREE_PERK,1);
 
+        VILLAGE_PATH_POOL
+                .add(VILLAGE_1,1)
+                .add(VILLAGE_PATH_1,1)
+                .add(VILLAGE_PATH_CROSSING,1)
+                .add(VILLAGE_PATH_FARM,1)
+                .add(VILLAGE_FORGE,1)
+                .add(VILLAGE_CENTER,1)
+                .add(VILLAGE_SINGLE_HUT,1)
+                .add(VILLAGE_FENCED_HORSES,1);
+
         PIGLIN_FACTORY_CAVE_SPRAWL_ROOM_POOL
                 .add(NETHER_CAVE_SPRAWL_1, 1)
                 .add(NETHER_CAVE_SPRAWL_2, 1)
@@ -90,16 +101,14 @@ public class DungeonRoomPoolRegistry {
                 .add(NETHER_CAVE_SPRAWL_11, 1)
                 .add(NETHER_CAVE_SPRAWL_12, 1)
                 .add(NETHER_CAVE_SPRAWL_13, 1);
-        VILLAGE_PATH_POOL
-                .add(VILLAGE_1,1)
-                .add(VILLAGE_PATH_1,1)
-                .add(VILLAGE_PATH_CROSSING,1)
-                .add(VILLAGE_PATH_FARM,1)
-                .add(VILLAGE_FORGE,1)
-                .add(VILLAGE_CENTER,1)
-                .add(VILLAGE_SINGLE_HUT,1)
-                .add(VILLAGE_FENCED_HORSES,1)
-        ;
 
+        PIGLIN_FACTORY_PIPEWORKS_ROOM_POOL
+                .add(NETHER_PIPEWORKS_0, 1)
+                .add(NETHER_PIPEWORKS_1, 1)
+                .add(NETHER_PIPEWORKS_2, 1)
+                .add(NETHER_PIPEWORKS_3, 1)
+                .add(NETHER_PIPEWORKS_LAVAFALLS, 1)
+                .add(NETHER_PIPEWORKS_BREAKOUT_ROOM, 1)
+                ;
     }
 }

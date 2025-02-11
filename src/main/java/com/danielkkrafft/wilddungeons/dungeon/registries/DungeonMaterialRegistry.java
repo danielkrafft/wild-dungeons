@@ -305,6 +305,21 @@ public class DungeonMaterialRegistry {
                     new WeightedPool<BlockState>()
                             .add(LANTERN.defaultBlockState(), 1));
 
+    public static final DungeonMaterial VILLAGE_MATERIAL = create(
+            "VILLAGE_MATERIAL",
+            new WeightedPool<BlockState>()
+                    .add(OAK_PLANKS.defaultBlockState(),1),
+            new WeightedPool<BlockState>()
+                    .add(OAK_STAIRS.defaultBlockState(),1),
+            new WeightedPool<BlockState>()
+                    .add(OAK_SLAB.defaultBlockState(),1),
+            new WeightedPool<BlockState>()
+                    .add(OAK_FENCE.defaultBlockState(),1),
+            new WeightedPool<BlockState>()
+                    .add(TORCH.defaultBlockState(),1),
+            new WeightedPool<BlockState>()
+                    .add(AIR.defaultBlockState(),1)
+    );
     public static final DungeonMaterial PIGLIN_FACTORY_MATERIAL = create(
             "PIGLIN_FACTORY_MATERIAL",
             new WeightedPool<BlockState>()
@@ -337,21 +352,6 @@ public class DungeonMaterialRegistry {
                             .add(SOUL_LANTERN.defaultBlockState(), 1)
             );
 
-    public static final DungeonMaterial VILLAGE_MATERIAL = create(
-            "VILLAGE_MATERIAL",
-            new WeightedPool<BlockState>()
-                    .add(OAK_PLANKS.defaultBlockState(),1),
-            new WeightedPool<BlockState>()
-                    .add(OAK_STAIRS.defaultBlockState(),1),
-            new WeightedPool<BlockState>()
-                    .add(OAK_SLAB.defaultBlockState(),1),
-            new WeightedPool<BlockState>()
-                    .add(OAK_FENCE.defaultBlockState(),1),
-            new WeightedPool<BlockState>()
-                    .add(TORCH.defaultBlockState(),1),
-            new WeightedPool<BlockState>()
-                    .add(AIR.defaultBlockState(),1)
-    );
 
 
     public static DungeonMaterial create(String name, WeightedPool<BlockState> defaultBasicBlocks, WeightedPool<BlockState> defaultStairBlocks, WeightedPool<BlockState> defaultSlabBlocks, WeightedPool<BlockState> defaultWallBlocks, WeightedPool<BlockState> defaultLightBlocks, WeightedPool<BlockState> defaultHiddenBlocks) {
