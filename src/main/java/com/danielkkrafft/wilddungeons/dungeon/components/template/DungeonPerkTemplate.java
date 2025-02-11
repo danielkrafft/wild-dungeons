@@ -1,7 +1,6 @@
 package com.danielkkrafft.wilddungeons.dungeon.components.template;
 
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
-import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import org.joml.Vector2i;
 
 public class DungeonPerkTemplate implements DungeonComponent {

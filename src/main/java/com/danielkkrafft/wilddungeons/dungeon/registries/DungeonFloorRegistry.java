@@ -8,7 +8,6 @@ import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import net.minecraft.core.BlockPos;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonBranchRegistry.*;
 

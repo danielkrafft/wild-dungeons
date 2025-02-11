@@ -9,7 +9,8 @@ import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
 import java.util.ArrayList;
 
 import static com.danielkkrafft.wilddungeons.entity.Offering.CostType.*;
-import static com.danielkkrafft.wilddungeons.entity.Offering.Type.*;
+import static com.danielkkrafft.wilddungeons.entity.Offering.Type.PERK;
+import static com.danielkkrafft.wilddungeons.entity.Offering.Type.RIFT;
 
 public class OfferingTemplateRegistry {
     public static final DungeonComponentRegistry<OfferingTemplate> OFFERING_TEMPLATE_REGISTRY = new DungeonComponentRegistry<>();

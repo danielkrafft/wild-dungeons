@@ -3,7 +3,7 @@ package com.danielkkrafft.wilddungeons.dungeon.registries;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 
-import static com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.*;
+import static com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.ItemTemplate;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.ItemTemplateRegistry.*;
 
 public class LootPoolRegistry {

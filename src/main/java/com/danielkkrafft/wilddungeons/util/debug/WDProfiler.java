@@ -3,7 +3,6 @@ package com.danielkkrafft.wilddungeons.util.debug;
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.mojang.datafixers.util.Pair;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;

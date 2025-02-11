@@ -1,8 +1,8 @@
 package com.danielkkrafft.wilddungeons.dungeon;
 
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonTarget;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonComponent;
 import com.danielkkrafft.wilddungeons.dungeon.registries.*;
-import com.danielkkrafft.wilddungeons.dungeon.components.template.*;
 import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;

@@ -2,13 +2,10 @@ package com.danielkkrafft.wilddungeons.dungeon.registries;
 
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.DungeonComponentRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.TargetTemplate;
-import com.danielkkrafft.wilddungeons.dungeon.components.DungeonTarget.Type;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Items;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class TargetTemplateRegistry {
     public static final DungeonComponentRegistry<TargetTemplate> TARGET_TEMPLATE_REGISTRY = new DungeonComponentRegistry<>();

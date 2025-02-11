@@ -1,7 +1,6 @@
 package com.danielkkrafft.wilddungeons.item;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.entity.Offering;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -10,7 +9,6 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.phys.Vec3;
 
 import static com.danielkkrafft.wilddungeons.dungeon.registries.RiftPoolRegistry.NETHER_RIFT_POOL;
-import static com.danielkkrafft.wilddungeons.dungeon.registries.RiftPoolRegistry.OVERWORLD_RIFT_POOL;
 
 public class RiftItem extends Item {
 

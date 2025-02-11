@@ -1,9 +1,5 @@
 package com.danielkkrafft.wilddungeons.world.dimension.tools;
 
-import java.util.List;
-import java.util.Set;
-import java.util.function.Consumer;
-
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
@@ -15,6 +11,10 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
+
+import java.util.List;
+import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * @param keys Keys to add or remove in the client's dimension list

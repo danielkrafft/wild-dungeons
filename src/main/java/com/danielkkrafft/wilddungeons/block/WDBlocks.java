@@ -18,8 +18,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Supplier;
 
-import static com.danielkkrafft.wilddungeons.block.DoorwayBlock.DOOR_TYPE;
-
 public class WDBlocks {
 
 

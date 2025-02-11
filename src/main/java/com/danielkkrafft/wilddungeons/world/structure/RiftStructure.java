@@ -5,7 +5,6 @@ import com.danielkkrafft.wilddungeons.registry.WDStructureTypes;
 import com.danielkkrafft.wilddungeons.world.structure.piece.RiftStructurePiece;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.LevelHeightAccessor;
 import net.minecraft.world.level.NoiseColumn;
 import net.minecraft.world.level.block.state.BlockState;

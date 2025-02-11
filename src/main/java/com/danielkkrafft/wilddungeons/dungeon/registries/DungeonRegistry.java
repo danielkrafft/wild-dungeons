@@ -8,16 +8,15 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonTemplat
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
-import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonFloorPoolRegistry.*;
+import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonFloorPoolRegistry.OVERWORLD_FLOOR_POOL;
+import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonFloorPoolRegistry.VILLAGE_FLOOR_POOL;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonFloorRegistry.PIGLIN_FACTORY_FLOOR;
-import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialPoolRegistry.*;
+import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialPoolRegistry.OVERWORLD_MATERIAL_POOL_0;
+import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialPoolRegistry.VILLAGE_MATERIAL_POOL;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialRegistry.PIGLIN_FACTORY_MATERIAL;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonPoolRegistry.*;
-import static com.danielkkrafft.wilddungeons.dungeon.registries.EnemyTableRegistry.*;
-import static com.danielkkrafft.wilddungeons.dungeon.session.DungeonOpenBehavior.*;
-import static com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession.DungeonExitBehavior.*;
+import static com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession.DungeonExitBehavior.DESTROY;
 
 public class DungeonRegistry {
     public static final DungeonRegistration.DungeonComponentRegistry<DungeonTemplate> DUNGEON_REGISTRY = new DungeonRegistration.DungeonComponentRegistry<>();

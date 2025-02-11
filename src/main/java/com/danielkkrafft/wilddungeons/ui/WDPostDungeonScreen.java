@@ -20,9 +20,7 @@ import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.joml.Matrix4f;
 
-import java.awt.*;
 import java.util.*;
-import java.util.List;
 
 public class WDPostDungeonScreen extends Screen {
 

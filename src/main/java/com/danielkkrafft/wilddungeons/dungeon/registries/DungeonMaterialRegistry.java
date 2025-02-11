@@ -1,16 +1,13 @@
 package com.danielkkrafft.wilddungeons.dungeon.registries;
 
-import com.danielkkrafft.wilddungeons.dungeon.components.DungeonMaterial;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonMaterial;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
-import static java.util.List.*;
 import static net.minecraft.world.level.block.Blocks.*;
 
 public class DungeonMaterialRegistry {

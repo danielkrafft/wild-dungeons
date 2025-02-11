@@ -7,7 +7,9 @@ import com.danielkkrafft.wilddungeons.dungeon.components.DungeonTarget;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class EnemyPurgeRoom extends LockableEventRoom {
 

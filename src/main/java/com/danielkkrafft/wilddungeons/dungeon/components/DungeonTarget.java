@@ -19,7 +19,10 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.UUID;
 
 public class DungeonTarget {
     public enum Type {BLOCK, ENTITY, SPAWNER} //TODO implement blocks //TODO implement custom spawners (light level issue, max entity issue)

@@ -1,21 +1,19 @@
 package com.danielkkrafft.wilddungeons.dungeon.components.template;
 
+import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.DungeonLayout;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonMaterial;
-import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonOpenBehavior;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession.DungeonExitBehavior;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.util.WeightedTable;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.EntityType;
 
 import java.util.Objects;
 
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonFloorPoolRegistry.TEST_FLOOR_POOL;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialPoolRegistry.ALL_MATERIAL_POOL;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.EnemyTableRegistry.BASIC_ENEMY_TABLE;
-import static com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession.DungeonExitBehavior.*;
+import static com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession.DungeonExitBehavior.DESTROY;
 
 public final class DungeonTemplate implements DungeonComponent {
     private String name;

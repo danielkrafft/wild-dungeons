@@ -2,7 +2,6 @@ package com.danielkkrafft.wilddungeons.entity.model;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.entity.boss.BreezeGolem;
-import net.minecraft.resources.ResourceLocation;
 
 public class BreezeGolemModel extends ClientModel<BreezeGolem>
 {

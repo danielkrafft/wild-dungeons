@@ -8,10 +8,11 @@ import net.minecraft.core.BlockPos;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate.*;
+import static com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate.DestructionRule;
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate.Type.*;
-import static com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper.*;
-import static com.mojang.datafixers.util.Pair.*;
+import static com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate.copyOf;
+import static com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper.EMPTY_BLOCK_POS;
+import static com.mojang.datafixers.util.Pair.of;
 
 public class DungeonRoomRegistry {
     public static final DungeonRegistration.DungeonComponentRegistry<DungeonRoomTemplate> DUNGEON_ROOM_REGISTRY = new DungeonRegistration.DungeonComponentRegistry<>();

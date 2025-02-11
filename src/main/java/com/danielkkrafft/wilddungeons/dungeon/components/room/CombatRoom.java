@@ -10,7 +10,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 public class CombatRoom extends EnemyPurgeRoom {
 

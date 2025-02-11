@@ -4,18 +4,16 @@ import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.DungeonLayout;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonBranchTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
-import com.danielkkrafft.wilddungeons.util.WeightedPool;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import static com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonBranchTemplate.*;
+import static com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonBranchTemplate.copyOf;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialPoolRegistry.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomPoolRegistry.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomRegistry.*;
-import static com.danielkkrafft.wilddungeons.util.WeightedPool.*;
-import static com.mojang.datafixers.util.Pair.*;
+import static com.danielkkrafft.wilddungeons.util.WeightedPool.combine;
+import static com.mojang.datafixers.util.Pair.of;
 
 public class DungeonBranchRegistry {
     public static final DungeonRegistration.DungeonComponentRegistry<DungeonBranchTemplate> DUNGEON_BRANCH_REGISTRY = new DungeonRegistration.DungeonComponentRegistry<>();

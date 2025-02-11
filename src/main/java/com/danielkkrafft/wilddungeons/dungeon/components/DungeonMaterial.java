@@ -1,7 +1,6 @@
 package com.danielkkrafft.wilddungeons.dungeon.components;
 
 
-import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.block.WDBlocks;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonComponent;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
