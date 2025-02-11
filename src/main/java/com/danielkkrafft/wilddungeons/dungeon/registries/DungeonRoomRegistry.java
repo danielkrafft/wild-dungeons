@@ -1,6 +1,7 @@
 package com.danielkkrafft.wilddungeons.dungeon.registries;
 
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
@@ -380,6 +381,12 @@ public class DungeonRoomRegistry {
                     of("nether/pipeworks/lava_falls", EMPTY_BLOCK_POS)
             ))
             .setBlockingMaterialIndex(1);
+
+    public static DungeonRoomTemplate copyOf(DungeonRoomTemplate template, String name) {
+        DungeonRoomTemplate room = DungeonRoomTemplate.copyOf(template, name);
+        dungeonRooms.add(room);
+        return room;
+    }
 
     public static DungeonRoomTemplate create(String name, List<Pair<String, BlockPos>> roomTemplates) {
         DungeonRoomTemplate room = DungeonRoomTemplate.create(name, roomTemplates);
