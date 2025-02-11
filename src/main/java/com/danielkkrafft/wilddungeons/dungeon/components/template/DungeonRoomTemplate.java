@@ -39,6 +39,8 @@ public final class DungeonRoomTemplate implements DungeonComponent {
     private double difficulty = 1.0;
     private Boolean hasBedrockShell = null;
     private DestructionRule destructionRule = null;
+    private int blockingMaterialIndex = -1;
+
 
     public enum Type {
         NONE, SECRET, COMBAT, SHOP, LOOT
@@ -156,6 +158,10 @@ public final class DungeonRoomTemplate implements DungeonComponent {
 
     public DestructionRule getDestructionRule() {return this.destructionRule;}
 
+    public int blockingMaterialIndex() {
+        return blockingMaterialIndex;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == this) return true;
@@ -266,6 +272,10 @@ public final class DungeonRoomTemplate implements DungeonComponent {
         return this;
     }
 
+    public DungeonRoomTemplate setBlockingMaterialIndex(int blockingMaterialIndex) {
+        this.blockingMaterialIndex = blockingMaterialIndex;
+        return this;
+    }
     public static DungeonRoomTemplate copyOf(DungeonRoomTemplate template, String newName) {
         DungeonRoomTemplate newTemplate = new DungeonRoomTemplate()
                 .setType(template.type)
@@ -279,7 +289,8 @@ public final class DungeonRoomTemplate implements DungeonComponent {
                 .setLootBlocks(template.lootBlocks)
                 .setMaterials(template.materials)
                 .setEnemyTable(template.enemyTable)
-                .setDifficulty(template.difficulty);
+                .setDifficulty(template.difficulty)
+                .setBlockingMaterialIndex(template.blockingMaterialIndex);
         if (template.hasBedrockShell != null) newTemplate.setBedrockShell(template.hasBedrockShell);
         if (template.destructionRule != null) newTemplate.setDestructionRule(template.destructionRule);
         return newTemplate;

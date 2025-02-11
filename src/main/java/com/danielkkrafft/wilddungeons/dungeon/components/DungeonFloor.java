@@ -83,6 +83,7 @@ public class DungeonFloor {
     public List<CompletableFuture<Void>> generationFutures = new ArrayList<>();
     List<WDPlayer> playersWaitingToEnter = new ArrayList<>();
     public boolean unsafeForPlayer = true;
+    public int blockingMaterialIndex() {return this.getTemplate().blockingMaterialIndex();}
 
 
     public DungeonFloor(String templateKey, String sessionKey, BlockPos origin) {

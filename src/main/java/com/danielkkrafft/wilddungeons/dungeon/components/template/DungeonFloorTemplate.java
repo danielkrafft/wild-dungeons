@@ -21,6 +21,7 @@ public final class DungeonFloorTemplate implements DungeonComponent {
     private Boolean hasBedrockShell = null;
     private DungeonRoomTemplate.DestructionRule destructionRule = null;
     private BlockPos origin = null;
+    private int blockingMaterialIndex = 0;
 
     public static DungeonFloorTemplate create(String name) {
         return new DungeonFloorTemplate().setName(name);
@@ -148,6 +149,16 @@ public final class DungeonFloorTemplate implements DungeonComponent {
                 .setDifficultyScaling(template.difficultyScaling)
                 .setBedrockShell(template.hasBedrockShell)
                 .setDestructionRule(template.destructionRule)
-                .setOrigin(template.origin);
+                .setOrigin(template.origin)
+                .setBlockingMaterialIndex(template.blockingMaterialIndex);
+    }
+
+    public int blockingMaterialIndex() {
+        return blockingMaterialIndex;
+    }
+
+    public DungeonFloorTemplate setBlockingMaterialIndex(int blockingMaterialIndex) {
+        this.blockingMaterialIndex = blockingMaterialIndex;
+        return this;
     }
 }

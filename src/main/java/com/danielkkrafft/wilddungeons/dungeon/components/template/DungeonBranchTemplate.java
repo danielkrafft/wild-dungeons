@@ -26,6 +26,7 @@ public final class DungeonBranchTemplate implements DungeonComponent {
     private double difficultyScaling = -1;
     private Boolean hasBedrockShell = null;
     private DungeonRoomTemplate.DestructionRule destructionRule = null;
+    private int blockingMaterialIndex = -1;
 
     public static DungeonBranchTemplate create(String name) {
         return new DungeonBranchTemplate().setName(name);
@@ -176,5 +177,14 @@ public final class DungeonBranchTemplate implements DungeonComponent {
         if (template.hasBedrockShell != null) newTemplate.setBedrockShell(template.hasBedrockShell);
         if (template.destructionRule != null) newTemplate.setDestructionRule(template.destructionRule);
         return newTemplate;
+    }
+
+    public int blockingMaterialIndex() {
+        return blockingMaterialIndex;
+    }
+
+    public DungeonBranchTemplate setBlockingMaterialIndex(int blockingMaterialIndex) {
+        this.blockingMaterialIndex = blockingMaterialIndex;
+        return this;
     }
 }

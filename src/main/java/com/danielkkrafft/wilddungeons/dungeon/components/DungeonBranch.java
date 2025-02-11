@@ -73,6 +73,7 @@ public class DungeonBranch {
     public void setIndex(int index) {this.index = index;}
     public boolean isFullyGenerated() {return this.fullyGenerated;}
     public boolean hasPlayerVisited(String uuid) {return this.playerStatuses.containsKey(uuid);}
+    public int blockingMaterialIndex() {return this.getTemplate().blockingMaterialIndex() == -1 ? this.getFloor().blockingMaterialIndex() : this.getTemplate().blockingMaterialIndex();}
 
     public DungeonBranch(String templateKey, DungeonFloor floor, BlockPos origin) {
         this.floor = floor;
