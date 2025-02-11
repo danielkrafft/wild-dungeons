@@ -74,7 +74,11 @@ public class DungeonFloorRegistry {
                             .addSimple(ENDING_BRANCH)
             );
 
-
+    public static DungeonFloorTemplate copyOf(DungeonFloorTemplate floor, String name) {
+        DungeonFloorTemplate copy = DungeonFloorTemplate.copyOf(floor, name);
+        dungeonFloors.add(copy);
+        return copy;
+    }
 
     public static DungeonFloorTemplate create(String name) {
         DungeonFloorTemplate floor = DungeonFloorTemplate.create(name);
