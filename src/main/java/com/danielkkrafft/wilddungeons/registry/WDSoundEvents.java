@@ -10,15 +10,18 @@ public class WDSoundEvents {
 
     public static final DeferredRegister<SoundEvent> SOUND_EVENTS = DeferredRegister.create(BuiltInRegistries.SOUND_EVENT, WildDungeons.MODID);
 
-    public static final Holder<SoundEvent> BREEZE_GOLEM_WALK = SOUND_EVENTS.register("entity.breeze_golem.walk", SoundEvent::createVariableRangeEvent);
     public static final Holder<SoundEvent> HAMMER_SMASH_LIGHT = SOUND_EVENTS.register("item.hammer.smash.light", SoundEvent::createVariableRangeEvent);
+
+    public static final Holder<SoundEvent> BREEZE_GOLEM_WALK = SOUND_EVENTS.register("entity.breeze_golem.walk", SoundEvent::createVariableRangeEvent);
     public static final Holder<SoundEvent> BREEZE_GOLEM_CANNON_SHOOT = SOUND_EVENTS.register("entity.breeze_golem.cannon.shoot", SoundEvent::createVariableRangeEvent);
     public static final Holder<SoundEvent> BREEZE_GOLEM_CANNON_CHARGE = SOUND_EVENTS.register("entity.breeze_golem.cannon.charge", SoundEvent::createVariableRangeEvent);
     public static final Holder<SoundEvent> BREEZE_GOLEM_CORE = SOUND_EVENTS.register("entity.breeze_golem.core", SoundEvent::createVariableRangeEvent);
     public static final Holder<SoundEvent> BREEZE_GOLEM_CANNON_START = SOUND_EVENTS.register("entity.breeze_golem.cannon.start", SoundEvent::createVariableRangeEvent);
     public static final Holder<SoundEvent> BREEZE_GOLEM_AMBIENT = SOUND_EVENTS.register("entity.breeze_golem.ambient", SoundEvent::createVariableRangeEvent);
     public static final Holder<SoundEvent> BREEZE_GOLEM_DEATH = SOUND_EVENTS.register("entity.breeze_golem.death", SoundEvent::createVariableRangeEvent);
+
     public static final Holder<SoundEvent> WIND_CHARGE_IMPACT = SOUND_EVENTS.register("entity.wind_charge.impact", SoundEvent::createVariableRangeEvent);
+
     public static final Holder<SoundEvent> MUTANT_BOGGED_DIG = SOUND_EVENTS.register("entity.mutant_bogged.dig", SoundEvent::createVariableRangeEvent);
     public static final Holder<SoundEvent> MUTANT_BOGGED_AMBIENT = SOUND_EVENTS.register("entity.mutant_bogged.ambient", SoundEvent::createVariableRangeEvent);
     public static final Holder<SoundEvent> MUTANT_BOGGED_HIT = SOUND_EVENTS.register("entity.mutant_bogged.hit", SoundEvent::createVariableRangeEvent);
@@ -29,4 +32,15 @@ public class WDSoundEvents {
     public static final Holder<SoundEvent> MUTANT_BOGGED_GROWL = SOUND_EVENTS.register("entity.mutant_bogged.growl", SoundEvent::createVariableRangeEvent);
 
     public static final Holder<SoundEvent> RIFT_AURA = SOUND_EVENTS.register("entity.rift_aura", SoundEvent::createVariableRangeEvent);
+
+    public static final Holder<SoundEvent> MEATHOOK_HIT = SOUND_EVENTS.register("entity.meathook.hit", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> MEATHOOK_REEL = SOUND_EVENTS.register("entity.meathook.reel", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> MEATHOOK_CHARGE_1 = SOUND_EVENTS.register("item.meathook.charge1", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> MEATHOOK_CHARGE_2 = SOUND_EVENTS.register("item.meathook.charge2", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> MEATHOOK_CHARGE_3 = SOUND_EVENTS.register("item.meathook.charge3", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> MEATHOOK_CHARGE_4 = SOUND_EVENTS.register("item.meathook.charge4", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> MEATHOOK_CHARGE_5 = SOUND_EVENTS.register("item.meathook.charge5", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> MEATHOOK_LOAD = SOUND_EVENTS.register("item.meathook.loaded", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> MEATHOOK_FIRE = SOUND_EVENTS.register("item.meathook.fire", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> MEATHOOK_RETRACT = SOUND_EVENTS.register("item.meathook.retract", SoundEvent::createVariableRangeEvent);
 }

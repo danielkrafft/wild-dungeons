@@ -97,5 +97,55 @@
       {"name": "wilddungeons:entity/wind_charge2"},
       {"name": "wilddungeons:entity/wind_charge3"}
     ]
+  },
+  "entity.meathook.hit": {
+    "sounds": [
+      {"name": "wilddungeons:entity/grapplehook/meathook_entity_hit"}
+    ]
+  },
+  "entity.meathook.reel": {
+    "sounds": [
+      {"name": "wilddungeons:entity/grapplehook/meathook_entity_reel"}
+    ]
+  },
+  "item.meathook.charge1": {
+    "sounds": [
+      {"name": "wilddungeons:item/meathook/meathook_charge1"}
+    ]
+  },
+  "item.meathook.charge2": {
+    "sounds": [
+      {"name": "wilddungeons:item/meathook/meathook_charge2"}
+    ]
+  },
+  "item.meathook.charge3": {
+    "sounds": [
+      {"name": "wilddungeons:item/meathook/meathook_charge3"}
+    ]
+  },
+  "item.meathook.charge4": {
+    "sounds": [
+      {"name": "wilddungeons:item/meathook/meathook_charge4"}
+    ]
+  },
+  "item.meathook.charge5": {
+    "sounds": [
+      {"name": "wilddungeons:item/meathook/meathook_charge5"}
+    ]
+  },
+  "item.meathook.loaded": {
+    "sounds": [
+      {"name": "wilddungeons:item/meathook/meathook_load"}
+    ]
+  },
+  "item.meathook.fire": {
+    "sounds": [
+      {"name": "wilddungeons:item/meathook/meathook_fire"}
+    ]
+  },
+  "item.meathook.retract": {
+    "sounds": [
+      {"name": "wilddungeons:item/meathook/meathook_retract"}
+    ]
   }
 }

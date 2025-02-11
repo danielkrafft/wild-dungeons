@@ -31,6 +31,11 @@ public class WDEntities {
             .sized(0.3125f, 0.3125f)
             .build("custom_wind_charge"));
 
+    public static final DeferredHolder<EntityType<?>, EntityType<GrapplingHook>> GRAPPLING_HOOK = ENTITIES.register("grappling_hook", () -> EntityType.Builder
+            .<GrapplingHook>of(GrapplingHook::new, MobCategory.MISC)
+            .sized(0.4f, 0.4f)
+            .build(WildDungeons.rl("grappling_hook").toString()));
+
     public static final DeferredHolder<EntityType<?>, EntityType<PiercingArrow>> PIERCING_ARROW = ENTITIES.register("piercing_arrow", () -> EntityType.Builder
             .<PiercingArrow>of(PiercingArrow::new, MobCategory.MISC)
             .sized(0.5f, 0.5f)

@@ -3,6 +3,7 @@
   "item.wilddungeons.life_liquid_bucket": "Life Liquid Bucket",
   "item.wilddungeons.breeze_golem_spawn_egg": "Breeze Golem Spawn Egg",
   "item.wilddungeons.mutant_bogged_spawn_egg": "Mutant Bogged Spawn Egg",
+  "item.wilddungeons.meathook": "Grappling Hook",
 
   "block.wilddungeons.connection_block": "Connection Block",
   "block.wilddungeons.rift_block": "Rift Block",
@@ -35,7 +36,6 @@
   "block.wilddungeons.wd_secret": "Wild Dungeon Secret Block",
   "block.wilddungeons.wd_bedrock": "Dungeon Bedrock",
   "block.wilddungeons.wd_doorway": "Doorway",
-
 
   "entity.wilddungeons.essence_orb": "Essence Orb",
   "entity.wilddungeons.offering": "Offering",
