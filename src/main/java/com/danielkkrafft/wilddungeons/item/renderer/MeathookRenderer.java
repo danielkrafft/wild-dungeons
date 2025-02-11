@@ -18,7 +18,8 @@ import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 public class MeathookRenderer extends GeoItemRenderer<Meathook>
 {
-    public static final ResourceLocation MEATHOOK_ANIM = WildDungeons.rl("animations/meathook.animation.json"),
+    public static final ResourceLocation
+            MEATHOOK_ANIM = WildDungeons.rl("animations/meathook.animation.json"),
             MEATHOOK_MODEL = WildDungeons.rl("geo/meathook.geo.json"),
             MEATHOOK_FIRED_MODEL = WildDungeons.rl("geo/meathook_fired.geo.json"),
             MEATHOOK_TEXTURE = WildDungeons.rl("textures/item/meathook_texture.png");

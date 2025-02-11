@@ -36,6 +36,11 @@ public class WDEntities {
             .sized(0.4f, 0.4f)
             .build(WildDungeons.rl("grappling_hook").toString()));
 
+    public static final DeferredHolder<EntityType<?>, EntityType<Laserbeam>> LASER_BEAM = ENTITIES.register("laserbeam", () -> EntityType.Builder
+            .<Laserbeam>of(Laserbeam::new, MobCategory.MISC)
+            .sized(0.1f, 0.1f)
+            .build(WildDungeons.rl("laserbeam").toString()));
+
     public static final DeferredHolder<EntityType<?>, EntityType<PiercingArrow>> PIERCING_ARROW = ENTITIES.register("piercing_arrow", () -> EntityType.Builder
             .<PiercingArrow>of(PiercingArrow::new, MobCategory.MISC)
             .sized(0.5f, 0.5f)
