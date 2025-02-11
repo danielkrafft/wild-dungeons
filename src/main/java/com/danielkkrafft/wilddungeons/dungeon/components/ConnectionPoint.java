@@ -248,7 +248,7 @@ public class ConnectionPoint {
     }
 
     public void loadingBlock(ServerLevel level) {
-        unBlockedBlockStates.forEach((pos, blockState) -> level.setBlock(pos, Blocks.REDSTONE_BLOCK.defaultBlockState(), 2));
+        unBlockedBlockStates.forEach((pos, blockState) -> level.setBlock(pos, WDBedrockBlock.of(Blocks.REDSTONE_BLOCK), 2));
     }
 
     public void combatRoomUnblock(ServerLevel level) {
