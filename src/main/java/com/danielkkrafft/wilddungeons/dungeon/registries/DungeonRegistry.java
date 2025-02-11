@@ -51,8 +51,23 @@ public class DungeonRegistry {
             .setExitBehavior(DESTROY)
             .setNextDungeon(NETHER_DUNGEON_POOL);
 
+    public static DungeonTemplate VILLAGE_DUNGEON = DungeonTemplate.create("village_dungeon")
+            .setFloorTemplates(new DungeonLayout<DungeonFloorTemplate>()
+                    .add(VILLAGE_FLOOR_POOL, 1))
+            .setMaterials(VILLAGE_MATERIAL_POOL)
+            .setBedrockShell(false)
+            .setDisplayName("VILLAGE DUNGEON")
+            .setIcon("1-1")
+            .setPrimaryColor(0xFF44cc00)
+            .setSecondaryColor(0xFFdde63e)
+            .setTargetTime(12000)
+            .setTargetDeaths(0)
+            .setTargetScore(15000)
+            .setExitBehavior(DESTROY)
+            .setNextDungeon(VILLAGE_DUNGEON_POOL);
+
     public static void setupDungeons() {
         Arrays.asList(PIGLIN_FACTORY_DUNGEON).forEach(DUNGEON_REGISTRY::add);
-        Arrays.asList(TEST_DUNGEON, OVERWORLD_BASIC_DUNGEON).forEach(DUNGEON_REGISTRY::add);
+        Arrays.asList(VILLAGE_DUNGEON,TEST_DUNGEON, OVERWORLD_BASIC_DUNGEON).forEach(DUNGEON_REGISTRY::add);
     }
 }

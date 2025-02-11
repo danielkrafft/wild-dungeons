@@ -6,7 +6,9 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonBranchT
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonBranchTemplate.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialPoolRegistry.*;
@@ -37,15 +39,7 @@ public class DungeonBranchRegistry {
 
     public static final DungeonBranchTemplate ENDING_BRANCH = create("ENDING_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
-                    .add(combine(
-                                    of(SMALL_ROOM_POOL, 15),
-                                    of(MEDIUM_ROOM_POOL, 15),
-                                    of(SECRET_POOL, 2),
-                                    of(COMBAT_ROOM_POOL, 5),
-                                    of(PARKOUR_POOL, 5),
-                                    of(LOOT_POOL, 5),
-                                    of(REST_POOL, 5)),
-                            10));
+                    .addSimple(BOSS));
 
     public static final DungeonBranchTemplate OVERWORLD_STARTER_BRANCH = create("OVERWORLD_STARTER_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
@@ -109,8 +103,23 @@ public class DungeonBranchRegistry {
                     .add(PIGLIN_FACTORY_CAVE_SPRAWL_ROOM_POOL, 5)
                     .addSimple(NETHER_CAVE_END_ROOM));
 
+    public static final DungeonBranchTemplate VILLAGE_PATH_BRANCH = create("VILLAGE_PATH_BRANCH")
+            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
+                    .add(VILLAGE_PATH_POOL, 10))
+            .setMaterials(VILLAGE_MATERIAL_POOL)
+            .setLimitedRooms(List.of(of(VILLAGE_CENTER,1),of(VILLAGE_FORGE,1)))
+            ;
+
+    public static ArrayList<DungeonBranchTemplate> dungeonBranches = new ArrayList<>();
+
+    public static DungeonBranchTemplate create(String name) {
+        DungeonBranchTemplate branch = DungeonBranchTemplate.create(name);
+        dungeonBranches.add(branch);
+        return branch;
+    }
+
     public static void setupBranches() {
-        Arrays.asList(PIGLIN_FACTORY_CAVE_END_BRANCH, PIGLIN_FACTORY_START_BRANCH, PIGLIN_FACTORY_CAVE_BRANCH, STARTER_BRANCH, TEST_BRANCH, ENDING_BRANCH, OVERWORLD_STARTER_BRANCH, OVERWORLD_SPRAWL_0, OVERWORLD_SPRAWL_1, OVERWORLD_SPRAWL_2, OVERWORLD_ENDING_BRANCH, OVERWORLD_FREE_STUFF_BRANCH_0, OVERWORLD_FREE_STUFF_BRANCH_1, OVERWORLD_FREE_STUFF_BRANCH_2, SANDY_STARTER_BRANCH, SANDY_FREE_STUFF_BRANCH_0, SANDY_SPRAWL_0, SANDY_ENDING_BRANCH, RED_SANDY_STARTER_BRANCH, RED_SANDY_FREE_STUFF_BRANCH_0, RED_SANDY_SPRAWL_0, RED_SANDY_ENDING_BRANCH).forEach(DUNGEON_BRANCH_REGISTRY::add);
+        dungeonBranches.forEach(DUNGEON_BRANCH_REGISTRY::add);
     }
 
 }

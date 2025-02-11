@@ -2,11 +2,10 @@ package com.danielkkrafft.wilddungeons.dungeon.registries;
 
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
-import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate.*;
@@ -301,9 +300,57 @@ public class DungeonRoomRegistry {
             ));
 
 
+    public static final DungeonRoomTemplate VILLAGE_1 = create(
+            "village_1",
+            List.of(
+                    of("village/village_1", EMPTY_BLOCK_POS)
+            ));
+    public static final DungeonRoomTemplate VILLAGE_FORGE = create(
+            "village_forge",
+            List.of(
+                    of("village/village_forge", EMPTY_BLOCK_POS)
+            ));
+    public static final DungeonRoomTemplate VILLAGE_PATH_1 = create(
+            "village_path_1",
+            List.of(
+                    of("village/village_path_1", EMPTY_BLOCK_POS)
+            ));
+    public static final DungeonRoomTemplate VILLAGE_PATH_CROSSING = create(
+            "village_path_crossing",
+            List.of(
+                    of("village/village_path_crossing", EMPTY_BLOCK_POS)
+            ));
+    public static final DungeonRoomTemplate VILLAGE_PATH_FARM = create(
+            "village_path_farm",
+            List.of(
+                    of("village/village_path_farm", EMPTY_BLOCK_POS)
+            ));
+    public static final DungeonRoomTemplate VILLAGE_CENTER = create(
+            "village_center",
+            List.of(
+                    of("village/village_center", EMPTY_BLOCK_POS)
+            ));
+    public static final DungeonRoomTemplate VILLAGE_SINGLE_HUT = create(
+            "village_single_hut",
+            List.of(
+                    of("village/village_single_hut", EMPTY_BLOCK_POS)
+            ));
+    public static final DungeonRoomTemplate VILLAGE_FENCED_HORSES = create(
+            "village_fenced_horses",
+            List.of(
+                    of("village/village_fenced_horses", EMPTY_BLOCK_POS)
+            ));
+
+    public static ArrayList<DungeonRoomTemplate> dungeonRooms = new ArrayList<>();
+
+    public static DungeonRoomTemplate create(String name, List<Pair<String, BlockPos>> roomTemplates) {
+        DungeonRoomTemplate room = DungeonRoomTemplate.create(name, roomTemplates);
+        dungeonRooms.add(room);
+        return room;
+    }
+
     public static void setupDungeonRooms() {
-        Arrays.asList(NETHER_CAVE_ENTRANCE_ROOM, NETHER_CAVE_SPRAWL_1, NETHER_CAVE_SPRAWL_2, NETHER_CAVE_SPRAWL_3, NETHER_CAVE_SPRAWL_4, NETHER_CAVE_SPRAWL_5, NETHER_CAVE_SPRAWL_6, NETHER_CAVE_SPRAWL_7, NETHER_CAVE_SPRAWL_8, NETHER_CAVE_SPRAWL_9, NETHER_CAVE_SPRAWL_10, NETHER_CAVE_SPRAWL_11, NETHER_CAVE_SPRAWL_12, NETHER_CAVE_SPRAWL_13, NETHER_CAVE_END_ROOM).forEach(DUNGEON_ROOM_REGISTRY::add);
-        Arrays.asList(SMALL_1, SMALL_2, SMALL_3, SMALL_4, SMALL_5, MEDIUM_1, MEDIUM_2, MEDIUM_3, MEDIUM_4, LARGE_1, START, BOSS, SECRET_1, SHOP_1, LOOT_1, REST, OVERWORLD_START, OVERWORLD_BASIC_1, OVERWORLD_BASIC_2, OVERWORLD_BASIC_3, OVERWORLD_BASIC_4, OVERWORLD_BASIC_5, OVERWORLD_COMBAT_1, OVERWORLD_COMBAT_2, OVERWORLD_COMBAT_3, OVERWORLD_CHEST_ROOM, OVERWORLD_STAIRCASE, OVERWORLD_STAIRWAY_1, OVERWORLD_HALLWAY_1, OVERWORLD_HALLWAY_2, OVERWORLD_CRAFTING_ROOM, OVERWORLD_REST_ROOM, OVERWORLD_SHOP_ROOM, OVERWORLD_FREE_PERK, OVERWORLD_EXIT_ROOM, OVERWORLD_TRANSITION_ROOM).forEach(DUNGEON_ROOM_REGISTRY::add);
+        dungeonRooms.forEach(DUNGEON_ROOM_REGISTRY::add);
     }
 
 }

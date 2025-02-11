@@ -8,6 +8,7 @@ import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonFloorRegi
 public class DungeonFloorPoolRegistry {
     public static final WeightedPool<DungeonFloorTemplate> TEST_FLOOR_POOL = new WeightedPool<>();
     public static final WeightedPool<DungeonFloorTemplate> OVERWORLD_FLOOR_POOL = new WeightedPool<>();
+    public static final WeightedPool<DungeonFloorTemplate> VILLAGE_FLOOR_POOL = new WeightedPool<>();
 
 
     public static void setupFloorPools(){
@@ -16,5 +17,7 @@ public class DungeonFloorPoolRegistry {
                 .add(OVERWORLD_BASIC_FLOOR, 15);
 //                .add(OVERWORLD_SANDY_FLOOR, 4)
 //                .add(OVERWORLD_RED_SANDY_FLOOR, 1);
+        VILLAGE_FLOOR_POOL
+                .add(VILLAGE_FLOOR, 1);
     }
 }

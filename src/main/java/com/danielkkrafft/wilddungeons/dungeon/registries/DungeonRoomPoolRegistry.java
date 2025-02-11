@@ -21,6 +21,8 @@ public class DungeonRoomPoolRegistry {
     public static final WeightedPool<DungeonRoomTemplate> OVERWORLD_LOOT_ROOM_POOL = new WeightedPool<>();
     public static final WeightedPool<DungeonRoomTemplate> OVERWORLD_SHOP_ROOM_POOL = new WeightedPool<>();
 
+    public static final WeightedPool<DungeonRoomTemplate> VILLAGE_PATH_POOL = new WeightedPool<>();
+
     public static final WeightedPool<DungeonRoomTemplate> PIGLIN_FACTORY_CAVE_SPRAWL_ROOM_POOL = new WeightedPool<>();
 
     public static void setupRoomPools(){
@@ -88,6 +90,16 @@ public class DungeonRoomPoolRegistry {
                 .add(NETHER_CAVE_SPRAWL_11, 1)
                 .add(NETHER_CAVE_SPRAWL_12, 1)
                 .add(NETHER_CAVE_SPRAWL_13, 1);
+        VILLAGE_PATH_POOL
+                .add(VILLAGE_1,1)
+                .add(VILLAGE_PATH_1,1)
+                .add(VILLAGE_PATH_CROSSING,1)
+                .add(VILLAGE_PATH_FARM,1)
+                .add(VILLAGE_FORGE,1)
+                .add(VILLAGE_CENTER,1)
+                .add(VILLAGE_SINGLE_HUT,1)
+                .add(VILLAGE_FENCED_HORSES,1)
+        ;
 
     }
 }
