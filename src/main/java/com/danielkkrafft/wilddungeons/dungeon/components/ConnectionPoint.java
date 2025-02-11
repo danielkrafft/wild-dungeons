@@ -226,9 +226,9 @@ public class ConnectionPoint {
         });
         getPositions(this.getRoom().getSettings(), this.getRoom().getPosition()).forEach((pos) -> {
             if (this.getRoom().getDestructionRule().equals(DungeonRoomTemplate.DestructionRule.SHELL) || (this.getRoom().getDestructionRule().equals(DungeonRoomTemplate.DestructionRule.SHELL_CLEAR) && !this.getRoom().isClear())) {
-                level.setBlock(pos, WDBedrockBlock.of(this.getRoom().getMaterial().getBasic(0).getBlock()), 2);
+                level.setBlock(pos, WDBedrockBlock.of(this.getRoom().getMaterial().getBasic(0).getBlock()), 2);//todo this always uses the basic material pool no matter what
             } else {
-                level.setBlock(pos, this.getRoom().getMaterial().getBasic(0), 2);
+                level.setBlock(pos, this.getRoom().getMaterial().getBasic(0), 2);//todo this always gets the basic material pool no matter what
             }
         });
         WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::block");
