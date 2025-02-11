@@ -7,6 +7,7 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonFloorTe
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonTemplate;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonFloorPoolRegistry.*;
@@ -23,7 +24,7 @@ public class DungeonRegistry {
 
     public static DungeonTemplate TEST_DUNGEON = DungeonTemplate.create("test_dungeon");
 
-    public static DungeonTemplate OVERWORLD_BASIC_DUNGEON = DungeonTemplate.create("mega_dungeon")
+    public static DungeonTemplate OVERWORLD_BASIC_DUNGEON = create("mega_dungeon")
             .setFloorTemplates(new DungeonLayout<DungeonFloorTemplate>()
                     .add(OVERWORLD_FLOOR_POOL, 2))
             .setMaterials(OVERWORLD_MATERIAL_POOL_0)
@@ -37,7 +38,7 @@ public class DungeonRegistry {
             .setExitBehavior(DESTROY)
             .setNextDungeon(OVERWORLD_DUNGEON_POOL);
 
-    public static DungeonTemplate PIGLIN_FACTORY_DUNGEON = DungeonTemplate.create("piglin_factory")
+    public static DungeonTemplate PIGLIN_FACTORY_DUNGEON = create("piglin_factory")
             .setFloorTemplates(new DungeonLayout<DungeonFloorTemplate>()
                     .add(new WeightedPool<DungeonFloorTemplate>().add(PIGLIN_FACTORY_FLOOR, 1), 1))
             .setMaterials(new WeightedPool<DungeonMaterial>().add(PIGLIN_FACTORY_MATERIAL, 1))
@@ -51,7 +52,7 @@ public class DungeonRegistry {
             .setExitBehavior(DESTROY)
             .setNextDungeon(NETHER_DUNGEON_POOL);
 
-    public static DungeonTemplate VILLAGE_DUNGEON = DungeonTemplate.create("village_dungeon")
+    public static DungeonTemplate VILLAGE_DUNGEON = create("village_dungeon")
             .setFloorTemplates(new DungeonLayout<DungeonFloorTemplate>()
                     .add(VILLAGE_FLOOR_POOL, 1))
             .setMaterials(VILLAGE_MATERIAL_POOL)
@@ -66,8 +67,15 @@ public class DungeonRegistry {
             .setExitBehavior(DESTROY)
             .setNextDungeon(VILLAGE_DUNGEON_POOL);
 
+    public static ArrayList<DungeonTemplate> dungeons = new ArrayList<>();
+
+    public static DungeonTemplate create(String name){
+        DungeonTemplate dungeon = DungeonTemplate.create(name);
+        dungeons.add(dungeon);
+        return dungeon;
+    }
+
     public static void setupDungeons() {
-        Arrays.asList(PIGLIN_FACTORY_DUNGEON).forEach(DUNGEON_REGISTRY::add);
-        Arrays.asList(VILLAGE_DUNGEON,TEST_DUNGEON, OVERWORLD_BASIC_DUNGEON).forEach(DUNGEON_REGISTRY::add);
+        dungeons.forEach(DUNGEON_REGISTRY::add);
     }
 }
