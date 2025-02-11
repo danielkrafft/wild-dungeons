@@ -220,8 +220,89 @@ public class DungeonRoomRegistry {
                     of("overworld/transition", EMPTY_BLOCK_POS),
                     of("overworld/transition2", new BlockPos(7, -13, 3))
             ));
+    public static final DungeonRoomTemplate NETHER_CAVE_ENTRANCE_ROOM = create(
+            "nether_cave_entrance",
+            List.of(
+                    of("nether/cave/entrance", EMPTY_BLOCK_POS)
+            ));
+    public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_1 = create(
+            "nether_cave_sprawl_1",
+            List.of(
+                    of("nether/cave/sprawl_1", EMPTY_BLOCK_POS)
+            ));
+    public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_2 = create(
+            "nether_cave_sprawl_2",
+            List.of(
+                    of("nether/cave/sprawl_2", EMPTY_BLOCK_POS)
+            ));
+    public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_3 = create(
+            "nether_cave_sprawl_3",
+            List.of(
+                    of("nether/cave/sprawl_3", EMPTY_BLOCK_POS)
+            ));
+    public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_4 = create(
+            "nether_cave_sprawl_4",
+            List.of(
+                    of("nether/cave/sprawl_4", EMPTY_BLOCK_POS)
+            ));
+    public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_5 = create(
+            "nether_cave_sprawl_5",
+            List.of(
+                    of("nether/cave/sprawl_5", EMPTY_BLOCK_POS)
+            ));
+    public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_6 = create(
+            "nether_cave_sprawl_6",
+            List.of(
+                    of("nether/cave/sprawl_6", EMPTY_BLOCK_POS)
+            ));
+    public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_7 = create(
+            "nether_cave_sprawl_7",
+            List.of(
+                    of("nether/cave/sprawl_7", EMPTY_BLOCK_POS)
+            ));
+    public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_8 = create(
+            "nether_cave_sprawl_8",
+            List.of(
+                    of("nether/cave/sprawl_8_1", EMPTY_BLOCK_POS),
+                    of("nether/cave/sprawl_8_2", new BlockPos(23, 0, -8)),
+                    of("nether/cave/sprawl_8_3", new BlockPos(23, 3, 22))
+            ));
+    public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_9 = create(
+            "nether_cave_sprawl_9",
+            List.of(
+                    of("nether/cave/sprawl_9", EMPTY_BLOCK_POS)
+            ));
+    public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_10 = create(
+            "nether_cave_sprawl_10",
+            List.of(
+                    of("nether/cave/sprawl_10_1", EMPTY_BLOCK_POS),
+                    of("nether/cave/sprawl_10_2", new BlockPos(7, 0, 0))
+            ));
+    public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_11 = create(
+            "nether_cave_sprawl_11",
+            List.of(
+                    of("nether/cave/sprawl_11", EMPTY_BLOCK_POS)
+            ));
+    public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_12 = create(
+            "nether_cave_sprawl_12",
+            List.of(
+                    of("nether/cave/sprawl_12", EMPTY_BLOCK_POS)
+            ));
+    public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_13 = create(
+            "nether_cave_sprawl_13",
+            List.of(
+                    of("nether/cave/sprawl_13", EMPTY_BLOCK_POS)
+            ));
+    public static final DungeonRoomTemplate NETHER_CAVE_END_ROOM = create(
+            "nether_cave_end",
+            List.of(
+                    of("nether/cave/end_1", EMPTY_BLOCK_POS),
+                    of("nether/cave/end_2", new BlockPos(48, 0, 0))
+            ));
+
 
     public static void setupDungeonRooms() {
+        Arrays.asList(NETHER_CAVE_ENTRANCE_ROOM, NETHER_CAVE_SPRAWL_1, NETHER_CAVE_SPRAWL_2, NETHER_CAVE_SPRAWL_3, NETHER_CAVE_SPRAWL_4, NETHER_CAVE_SPRAWL_5, NETHER_CAVE_SPRAWL_6, NETHER_CAVE_SPRAWL_7, NETHER_CAVE_SPRAWL_8, NETHER_CAVE_SPRAWL_9, NETHER_CAVE_SPRAWL_10, NETHER_CAVE_SPRAWL_11, NETHER_CAVE_SPRAWL_12, NETHER_CAVE_SPRAWL_13, NETHER_CAVE_END_ROOM).forEach(DUNGEON_ROOM_REGISTRY::add);
         Arrays.asList(SMALL_1, SMALL_2, SMALL_3, SMALL_4, SMALL_5, MEDIUM_1, MEDIUM_2, MEDIUM_3, MEDIUM_4, LARGE_1, START, BOSS, SECRET_1, SHOP_1, LOOT_1, REST, OVERWORLD_START, OVERWORLD_BASIC_1, OVERWORLD_BASIC_2, OVERWORLD_BASIC_3, OVERWORLD_BASIC_4, OVERWORLD_BASIC_5, OVERWORLD_COMBAT_1, OVERWORLD_COMBAT_2, OVERWORLD_COMBAT_3, OVERWORLD_CHEST_ROOM, OVERWORLD_STAIRCASE, OVERWORLD_STAIRWAY_1, OVERWORLD_HALLWAY_1, OVERWORLD_HALLWAY_2, OVERWORLD_CRAFTING_ROOM, OVERWORLD_REST_ROOM, OVERWORLD_SHOP_ROOM, OVERWORLD_FREE_PERK, OVERWORLD_EXIT_ROOM, OVERWORLD_TRANSITION_ROOM).forEach(DUNGEON_ROOM_REGISTRY::add);
     }
 

@@ -306,8 +306,40 @@ public class DungeonMaterialRegistry {
                     new WeightedPool<BlockState>()
                             .add(LANTERN.defaultBlockState(), 1));
 
+    public static final DungeonMaterial PIGLIN_FACTORY_MATERIAL = new DungeonMaterial(
+            "PIGLIN_FACTORY_MATERIAL",
+            new WeightedPool<BlockState>()
+                    .add(NETHERRACK.defaultBlockState(), 10)
+                    .add(NETHER_QUARTZ_ORE.defaultBlockState(), 1)
+                    .add(NETHER_GOLD_ORE.defaultBlockState(), 1)
+                    .add(SOUL_SAND.defaultBlockState(), 1)
+                    .add(NETHER_WART_BLOCK.defaultBlockState(), 1)
+                    .add(MAGMA_BLOCK.defaultBlockState(), 1),
+            new WeightedPool<BlockState>()
+                    .add(CRIMSON_STAIRS.defaultBlockState(), 1),
+            new WeightedPool<BlockState>()
+                    .add(CRIMSON_SLAB.defaultBlockState(), 1),
+            new WeightedPool<BlockState>()
+                    .add(CRIMSON_FENCE.defaultBlockState(), 1),
+            new WeightedPool<BlockState>()
+                    .add(GLOWSTONE.defaultBlockState(), 1),
+            new WeightedPool<BlockState>()
+                    .add(NETHER_WART_BLOCK.defaultBlockState(), 1))
+            .addBasicBlockSet(
+                    new WeightedPool<BlockState>()
+                            .add(BLACKSTONE.defaultBlockState(), 5)
+                            .add(GILDED_BLACKSTONE.defaultBlockState(), 1)
+                            .add(POLISHED_BLACKSTONE.defaultBlockState(), 1)
+                            .add(POLISHED_BLACKSTONE_BRICKS.defaultBlockState(), 1)
+                            .add(CHISELED_POLISHED_BLACKSTONE.defaultBlockState(), 1)
+            )
+            .setHangingLights(
+                    new WeightedPool<BlockState>()
+                            .add(SOUL_LANTERN.defaultBlockState(), 1)
+            );
+
 
     public static void setupDungeonMaterials() {
-        Arrays.asList(STONE_BRICK, SANDSTONEY, RED_SANDSTONEY, PRISMARINE, END_STONE, OAK_WOOD, OVERWORLD_MATERIAL_0, OVERWORLD_MATERIAL_1, OVERWORLD_MATERIAL_2).forEach(DUNGEON_MATERIAL_REGISTRY::add);
+        Arrays.asList(PIGLIN_FACTORY_MATERIAL, STONE_BRICK, SANDSTONEY, RED_SANDSTONEY, PRISMARINE, END_STONE, OAK_WOOD, OVERWORLD_MATERIAL_0, OVERWORLD_MATERIAL_1, OVERWORLD_MATERIAL_2).forEach(DUNGEON_MATERIAL_REGISTRY::add);
     }
 }

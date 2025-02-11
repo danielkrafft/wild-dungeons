@@ -4,6 +4,7 @@ import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.DungeonLayout;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonBranchTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
+import com.danielkkrafft.wilddungeons.util.WeightedPool;
 
 import java.util.Arrays;
 
@@ -96,8 +97,20 @@ public class DungeonBranchRegistry {
     public static final DungeonBranchTemplate RED_SANDY_ENDING_BRANCH = copyOf(OVERWORLD_ENDING_BRANCH, "RED_SANDY_ENDING_BRANCH")
             .setMaterials(RED_SANDY_MATERIAL_POOL);
 
+    public static final DungeonBranchTemplate PIGLIN_FACTORY_START_BRANCH = create("PIGLIN_FACTORY_START_BRANCH")
+            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
+                    .addSimple(NETHER_CAVE_ENTRANCE_ROOM));
+
+    public static final DungeonBranchTemplate PIGLIN_FACTORY_CAVE_BRANCH = create("PIGLIN_FACTORY_CAVE_BRANCH")
+            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
+                    .add(PIGLIN_FACTORY_CAVE_SPRAWL_ROOM_POOL, 15));
+    public static final DungeonBranchTemplate PIGLIN_FACTORY_CAVE_END_BRANCH = create("PIGLIN_FACTORY_CAVE_END_BRANCH")
+            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
+                    .add(PIGLIN_FACTORY_CAVE_SPRAWL_ROOM_POOL, 5)
+                    .addSimple(NETHER_CAVE_END_ROOM));
+
     public static void setupBranches() {
-        Arrays.asList(STARTER_BRANCH, TEST_BRANCH, ENDING_BRANCH, OVERWORLD_STARTER_BRANCH, OVERWORLD_SPRAWL_0, OVERWORLD_SPRAWL_1, OVERWORLD_SPRAWL_2, OVERWORLD_ENDING_BRANCH, OVERWORLD_FREE_STUFF_BRANCH_0, OVERWORLD_FREE_STUFF_BRANCH_1, OVERWORLD_FREE_STUFF_BRANCH_2, SANDY_STARTER_BRANCH, SANDY_FREE_STUFF_BRANCH_0, SANDY_SPRAWL_0, SANDY_ENDING_BRANCH, RED_SANDY_STARTER_BRANCH, RED_SANDY_FREE_STUFF_BRANCH_0, RED_SANDY_SPRAWL_0, RED_SANDY_ENDING_BRANCH).forEach(DUNGEON_BRANCH_REGISTRY::add);
+        Arrays.asList(PIGLIN_FACTORY_CAVE_END_BRANCH, PIGLIN_FACTORY_START_BRANCH, PIGLIN_FACTORY_CAVE_BRANCH, STARTER_BRANCH, TEST_BRANCH, ENDING_BRANCH, OVERWORLD_STARTER_BRANCH, OVERWORLD_SPRAWL_0, OVERWORLD_SPRAWL_1, OVERWORLD_SPRAWL_2, OVERWORLD_ENDING_BRANCH, OVERWORLD_FREE_STUFF_BRANCH_0, OVERWORLD_FREE_STUFF_BRANCH_1, OVERWORLD_FREE_STUFF_BRANCH_2, SANDY_STARTER_BRANCH, SANDY_FREE_STUFF_BRANCH_0, SANDY_SPRAWL_0, SANDY_ENDING_BRANCH, RED_SANDY_STARTER_BRANCH, RED_SANDY_FREE_STUFF_BRANCH_0, RED_SANDY_SPRAWL_0, RED_SANDY_ENDING_BRANCH).forEach(DUNGEON_BRANCH_REGISTRY::add);
     }
 
 }

@@ -9,6 +9,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.phys.Vec3;
 
+import static com.danielkkrafft.wilddungeons.dungeon.registries.RiftPoolRegistry.NETHER_RIFT_POOL;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.RiftPoolRegistry.OVERWORLD_RIFT_POOL;
 
 public class RiftItem extends Item {
@@ -22,7 +23,7 @@ public class RiftItem extends Item {
         if (context.getLevel().isClientSide) return InteractionResultHolder.pass(context.getPlayer().getItemInHand(context.getHand())).getResult();
         int cost = context.getPlayer().isCreative() ? 0 : 2;
 //        Offering offering = new Offering(context.getLevel(), Offering.Type.RIFT, 1, "random", Offering.CostType.XP_LEVEL, cost);
-        Offering offering = OVERWORLD_RIFT_POOL.getRandom().asOffering(context.getLevel());
+        Offering offering = NETHER_RIFT_POOL.getRandom().asOffering(context.getLevel());
         offering.overrideCost(cost);
         Vec3 clickLocation = context.getClickLocation().add(0.0,0.5,0.0);
         offering.setPos(new Vec3(Math.round(clickLocation.x*2.0)/2.0, Math.round(clickLocation.y*2.0)/2.0, Math.round(clickLocation.z*2.0)/2.0));

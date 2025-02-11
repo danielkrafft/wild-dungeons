@@ -21,6 +21,8 @@ public class DungeonRoomPoolRegistry {
     public static final WeightedPool<DungeonRoomTemplate> OVERWORLD_LOOT_ROOM_POOL = new WeightedPool<>();
     public static final WeightedPool<DungeonRoomTemplate> OVERWORLD_SHOP_ROOM_POOL = new WeightedPool<>();
 
+    public static final WeightedPool<DungeonRoomTemplate> PIGLIN_FACTORY_CAVE_SPRAWL_ROOM_POOL = new WeightedPool<>();
+
     public static void setupRoomPools(){
         SMALL_ROOM_POOL
                 .add(SMALL_1,1)
@@ -72,7 +74,20 @@ public class DungeonRoomPoolRegistry {
         OVERWORLD_LOOT_ROOM_POOL
                 .add(OVERWORLD_FREE_PERK,1);
 
-
+        PIGLIN_FACTORY_CAVE_SPRAWL_ROOM_POOL
+                .add(NETHER_CAVE_SPRAWL_1, 1)
+                .add(NETHER_CAVE_SPRAWL_2, 1)
+                .add(NETHER_CAVE_SPRAWL_3, 1)
+                .add(NETHER_CAVE_SPRAWL_4, 1)
+                .add(NETHER_CAVE_SPRAWL_5, 1)
+                .add(NETHER_CAVE_SPRAWL_6, 1)
+                .add(NETHER_CAVE_SPRAWL_7, 1)
+                .add(NETHER_CAVE_SPRAWL_8, 1)
+                .add(NETHER_CAVE_SPRAWL_9, 1)
+                .add(NETHER_CAVE_SPRAWL_10, 1)
+                .add(NETHER_CAVE_SPRAWL_11, 1)
+                .add(NETHER_CAVE_SPRAWL_12, 1)
+                .add(NETHER_CAVE_SPRAWL_13, 1);
 
     }
 }
