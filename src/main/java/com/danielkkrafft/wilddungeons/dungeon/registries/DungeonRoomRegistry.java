@@ -15,6 +15,7 @@ import static com.mojang.datafixers.util.Pair.*;
 
 public class DungeonRoomRegistry {
     public static final DungeonRegistration.DungeonComponentRegistry<DungeonRoomTemplate> DUNGEON_ROOM_REGISTRY = new DungeonRegistration.DungeonComponentRegistry<>();
+    public static ArrayList<DungeonRoomTemplate> dungeonRooms = new ArrayList<>();
 
     public static final DungeonRoomTemplate SMALL_1 = create(
             "stone/small_1",
@@ -341,7 +342,6 @@ public class DungeonRoomRegistry {
                     of("village/village_fenced_horses", EMPTY_BLOCK_POS)
             ));
 
-    public static ArrayList<DungeonRoomTemplate> dungeonRooms = new ArrayList<>();
 
     public static DungeonRoomTemplate create(String name, List<Pair<String, BlockPos>> roomTemplates) {
         DungeonRoomTemplate room = DungeonRoomTemplate.create(name, roomTemplates);

@@ -13,6 +13,7 @@ import static com.danielkkrafft.wilddungeons.entity.Offering.Type.*;
 
 public class OfferingTemplateRegistry {
     public static final DungeonComponentRegistry<OfferingTemplate> OFFERING_TEMPLATE_REGISTRY = new DungeonComponentRegistry<>();
+    public static ArrayList<OfferingTemplate> offerings = new ArrayList<>();
 
     public static final OfferingTemplate ARROWS = create("ARROWS", ItemTemplateRegistry.ARROWS, XP_LEVEL, 4, 1.5f);
     public static final OfferingTemplate STEAKS = create("STEAKS", ItemTemplateRegistry.COOKED_BEEF, XP_LEVEL, 4, 1.5f);
@@ -52,7 +53,6 @@ public class OfferingTemplateRegistry {
     public static final OfferingTemplate NETHER_TEST_RIFT = create("NETHER_TEST_RIFT", RIFT, 1, "wd-piglin_factory", NETHER_XP_LEVEL, 30, 1.5f);
     public static final OfferingTemplate END_TEST_RIFT = create("END_TEST_RIFT", RIFT, 1, "wd-dungeon_1", END_XP_LEVEL, 30, 1.5f);
 
-    public static ArrayList<OfferingTemplate> offerings = new ArrayList<>();
 
     public static OfferingTemplate create(String name, Offering.Type type, int cost, String perk, Offering.CostType costType, int xpLevel, float rarity){
         OfferingTemplate offering = new OfferingTemplate(name, type, cost, perk, costType, xpLevel, rarity);

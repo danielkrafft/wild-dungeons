@@ -14,6 +14,7 @@ import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonBranchReg
 
 public class DungeonFloorRegistry {
     public static final DungeonRegistration.DungeonComponentRegistry<DungeonFloorTemplate> DUNGEON_FLOOR_REGISTRY = new DungeonRegistration.DungeonComponentRegistry<>();
+    public static ArrayList<DungeonFloorTemplate> dungeonFloors = new ArrayList<>();
 
     public static final DungeonFloorTemplate TEST_FLOOR = create("test_floor")//must be lowercase or the game will crash
             .setBranchTemplates(new DungeonLayout<DungeonBranchTemplate>()
@@ -76,7 +77,6 @@ public class DungeonFloorRegistry {
             );
 
 
-    public static ArrayList<DungeonFloorTemplate> dungeonFloors = new ArrayList<>();
 
     public static DungeonFloorTemplate create(String name) {
         DungeonFloorTemplate floor = DungeonFloorTemplate.create(name);

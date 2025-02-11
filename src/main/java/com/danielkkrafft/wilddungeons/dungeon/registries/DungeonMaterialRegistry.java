@@ -15,6 +15,7 @@ import static net.minecraft.world.level.block.Blocks.*;
 
 public class DungeonMaterialRegistry {
     public static final DungeonRegistration.DungeonComponentRegistry<DungeonMaterial> DUNGEON_MATERIAL_REGISTRY = new DungeonRegistration.DungeonComponentRegistry<>();
+    public static ArrayList<DungeonMaterial> dungeonMaterials = new ArrayList<>();
 
     public static final DungeonMaterial STONE_BRICK = create(
             "STONE_BRICK",
@@ -355,7 +356,6 @@ public class DungeonMaterialRegistry {
                     .add(AIR.defaultBlockState(),1)
     );
 
-    public static ArrayList<DungeonMaterial> dungeonMaterials = new ArrayList<>();
 
     public static DungeonMaterial create(String name, WeightedPool<BlockState> defaultBasicBlocks, WeightedPool<BlockState> defaultStairBlocks, WeightedPool<BlockState> defaultSlabBlocks, WeightedPool<BlockState> defaultWallBlocks, WeightedPool<BlockState> defaultLightBlocks, WeightedPool<BlockState> defaultHiddenBlocks) {
         DungeonMaterial material = new DungeonMaterial(name, defaultBasicBlocks, defaultStairBlocks, defaultSlabBlocks, defaultWallBlocks, defaultLightBlocks, defaultHiddenBlocks);

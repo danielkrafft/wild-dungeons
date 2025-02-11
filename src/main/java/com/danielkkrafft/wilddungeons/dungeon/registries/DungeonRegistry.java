@@ -21,6 +21,7 @@ import static com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession.Dung
 
 public class DungeonRegistry {
     public static final DungeonRegistration.DungeonComponentRegistry<DungeonTemplate> DUNGEON_REGISTRY = new DungeonRegistration.DungeonComponentRegistry<>();
+    public static ArrayList<DungeonTemplate> dungeons = new ArrayList<>();
 
     public static DungeonTemplate TEST_DUNGEON = DungeonTemplate.create("test_dungeon");
 
@@ -67,7 +68,6 @@ public class DungeonRegistry {
             .setExitBehavior(DESTROY)
             .setNextDungeon(VILLAGE_DUNGEON_POOL);
 
-    public static ArrayList<DungeonTemplate> dungeons = new ArrayList<>();
 
     public static DungeonTemplate create(String name){
         DungeonTemplate dungeon = DungeonTemplate.create(name);

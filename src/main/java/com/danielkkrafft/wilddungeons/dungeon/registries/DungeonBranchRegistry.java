@@ -19,6 +19,7 @@ import static com.mojang.datafixers.util.Pair.*;
 
 public class DungeonBranchRegistry {
     public static final DungeonRegistration.DungeonComponentRegistry<DungeonBranchTemplate> DUNGEON_BRANCH_REGISTRY = new DungeonRegistration.DungeonComponentRegistry<>();
+    public static ArrayList<DungeonBranchTemplate> dungeonBranches = new ArrayList<>();
 
     public static final DungeonBranchTemplate STARTER_BRANCH = create("STARTER_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
@@ -110,7 +111,6 @@ public class DungeonBranchRegistry {
             .setLimitedRooms(List.of(of(VILLAGE_CENTER,1),of(VILLAGE_FORGE,1)))
             ;
 
-    public static ArrayList<DungeonBranchTemplate> dungeonBranches = new ArrayList<>();
 
     public static DungeonBranchTemplate create(String name) {
         DungeonBranchTemplate branch = DungeonBranchTemplate.create(name);

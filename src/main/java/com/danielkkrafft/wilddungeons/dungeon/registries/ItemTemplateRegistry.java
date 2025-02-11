@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 public class ItemTemplateRegistry {
     public static final DungeonRegistration.DungeonComponentRegistry<ItemTemplate> LOOT_ENTRY_REGISTRY = new DungeonRegistration.DungeonComponentRegistry<>();
+    public static ArrayList<ItemTemplate> lootEntries = new ArrayList<>();
 
     public static ItemTemplate ARROWS = create("arrows_8", Items.ARROW, 8).setDeviance(1.5f);
     public static ItemTemplate COOKED_BEEF = create("beef_8", Items.COOKED_BEEF, 8).setDeviance(1.5f);
@@ -60,7 +61,6 @@ public class ItemTemplateRegistry {
     public static ItemTemplate SPIDER_EYE = create("spider_eye_8", Items.SPIDER_EYE, 8).setDeviance(1.5f);
     public static ItemTemplate RABBIT_FOOT = create("rabbit_foot_2", Items.RABBIT_FOOT, 2);
 
-    public static ArrayList<ItemTemplate> lootEntries = new ArrayList<>();
 
     public static ItemTemplate create(String name, Item item, int count) {
         ItemTemplate itemTemplate = new ItemTemplate(name, item, count);
