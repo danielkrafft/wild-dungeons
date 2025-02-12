@@ -320,7 +320,7 @@ public class DungeonRoom {
         if (this.getTemplate().dataMarkers().isEmpty()) return;
         this.getTemplate().dataMarkers().forEach(marker -> {
             BlockPos pos = TemplateHelper.transform(marker.pos(), this);
-            assert marker.nbt() != null;
+            assert marker.nbt() != null;//we null check when we register the template
             handleDataMarker(pos, marker.nbt().getString("metadata"));
         });
     }
