@@ -153,8 +153,17 @@ public class DungeonBranch {
             ConnectionPoint entrancePoint = pointsToTry.remove(new Random().nextInt(pointsToTry.size()));
             List<ConnectionPoint> exitPoints = new ArrayList<>();
             if (this.getRooms().isEmpty()){
-                exitPoints = new ArrayList<>(getFloor().getBranches().get(this.getIndex() - 1).getRooms().getLast().getValidExitPoints(TemplateHelper.EMPTY_DUNGEON_SETTINGS, TemplateHelper.EMPTY_BLOCK_POS, nextRoom, entrancePoint, false));
-                /*DungeonBranch lastBranch = floor.getBranches().get(floor.getBranches().size() - 2);
+                int branchIndex = this.getTemplate().startingBranchIndex() == -1 ? this.getFloor().getBranches().size() - 2 : this.getTemplate().startingBranchIndex();
+                DungeonBranch lastBranch = getFloor().getBranches().get(branchIndex);
+                int roomIndex = lastBranch.getRooms().size() - 1;
+                exitPoints = new ArrayList<>(lastBranch.getRooms().get(roomIndex).getValidExitPoints(TemplateHelper.EMPTY_DUNGEON_SETTINGS, TemplateHelper.EMPTY_BLOCK_POS, nextRoom, entrancePoint, false));
+                while (exitPoints.isEmpty()) {
+                    //if we can't find a valid exit point, try the next room in the branch
+                    roomIndex--;
+                    if (roomIndex < 0) break;
+                    exitPoints = new ArrayList<>(lastBranch.getRooms().get(roomIndex).getValidExitPoints(TemplateHelper.EMPTY_DUNGEON_SETTINGS, TemplateHelper.EMPTY_BLOCK_POS, nextRoom, entrancePoint, false));
+                }
+                /*
                 for (int i = 0; i < 3 ; i++) {//
                     int index = lastBranch.branchRooms.size() - (1 + i);
                     if (index < 0) break;
@@ -162,7 +171,8 @@ public class DungeonBranch {
                     if (room!=null) {
                         exitPoints.addAll(room.getValidExitPoints(TemplateHelper.EMPTY_DUNGEON_SETTINGS, TemplateHelper.EMPTY_BLOCK_POS, nextRoom, entrancePoint, false));
                     }
-                }*/
+                }
+                */
             } else exitPoints = getValidExitPoints(TemplateHelper.EMPTY_DUNGEON_SETTINGS, nextRoom, entrancePoint, false);
 
             List<Pair<ConnectionPoint, StructurePlaceSettings>> validPoints = new ArrayList<>();
