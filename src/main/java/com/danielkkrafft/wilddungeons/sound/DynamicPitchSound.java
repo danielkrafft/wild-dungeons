@@ -29,13 +29,13 @@ public class DynamicPitchSound extends AbstractTickableSoundInstance {
     public float getVolume() {
         this.distance = (float) Math.sqrt(Minecraft.getInstance().player.distanceToSqr(x + 0.5, y + 0.5, z + 0.5));
         float ratio =  Math.min(this.distance / 35.0f, 1.0f);
-        return super.getVolume() * Mth.lerp(ratio, 3.0f, 0.0f);
+        return super.getVolume() * Mth.lerp(ratio, 3.0f, -3.0f);
     }
 
     @Override
     public float getPitch() {
-        float ratio = Math.min(this.distance / 10.0f, 1.0f);
-        return super.getPitch() * Mth.lerp(ratio, 1.0f, 0.5f);
+        float ratio = Math.min(this.distance / 25.0f, 1.0f);
+        return super.getPitch() * Mth.lerp(ratio, 1.2f, 0.7f);
     }
 
     @Override public void tick() {

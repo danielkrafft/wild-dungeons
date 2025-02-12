@@ -129,7 +129,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
         if (this.getSoundLoop() != 0) {
             if (this.level() instanceof ServerLevel serverLevel && this.tickCount % 25 == 0) {
                 CompoundTag payload = new CompoundTag();
-                payload.putInt("soundEvent", BuiltInRegistries.SOUND_EVENT.getId(WDSoundEvents.RIFT_AURA.value()));
+                payload.putInt("soundEvent", this.getSoundLoop());
                 payload.putString("soundSource", SoundSource.HOSTILE.toString());
                 payload.putInt("entityId", this.getId());
                 payload.putBoolean("loop", true);

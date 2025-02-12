@@ -37,6 +37,7 @@ public class WDSoundEvents {
     public static final Holder<SoundEvent> AMOGUS_STEP = SOUND_EVENTS.register("entity.amogus.step", SoundEvent::createVariableRangeEvent);
 
     public static final Holder<SoundEvent> RIFT_AURA = SOUND_EVENTS.register("entity.rift_aura", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> WHISPERS = SOUND_EVENTS.register("entity.whispers", SoundEvent::createVariableRangeEvent);
 
     public static final Holder<SoundEvent> UI_BEEP = SOUND_EVENTS.register("ui.misc.beep", SoundEvent::createVariableRangeEvent);
 
