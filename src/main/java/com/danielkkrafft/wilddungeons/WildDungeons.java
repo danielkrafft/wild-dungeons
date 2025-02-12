@@ -62,7 +62,7 @@ public class WildDungeons {
         WDFluids.FLUID_TYPES.register(modEventBus);
         WDFluids.FLUIDS.register(modEventBus);
         WDBlocks.BLOCKS.register(modEventBus);
-        WDBlocks.CREATIVE_MODE_TABS.register(modEventBus);
+        WDCreativeTabs.CREATIVE_MODE_TABS.register(modEventBus);
         WDStructureTypes.STRUCTURE_TYPES.register(modEventBus);
         WDStructurePieceTypes.STRUCTURE_PIECE_TYPES.register(modEventBus);
         WDSoundEvents.SOUND_EVENTS.register(modEventBus);

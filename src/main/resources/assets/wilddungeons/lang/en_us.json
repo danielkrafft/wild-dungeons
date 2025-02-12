@@ -6,6 +6,7 @@
   "item.wilddungeons.meathook": "Grappling Hook",
   "item.wilddungeons.laser_sword": "Laser Sword",
   "item.wilddungeons.firework_gun": "Firework Gun",
+  "item.wilddungeons.wd_dungeon_key": "Dungeon Key",
 
   "block.wilddungeons.connection_block": "Connection Block",
   "block.wilddungeons.rift_block": "Rift Block",
@@ -38,6 +39,7 @@
   "block.wilddungeons.wd_secret": "Wild Dungeon Secret Block",
   "block.wilddungeons.wd_bedrock": "Dungeon Bedrock",
   "block.wilddungeons.wd_doorway": "Doorway",
+  "block.wilddungeons.wd_lockable": "Dungeon Lock",
 
   "entity.wilddungeons.essence_orb": "Essence Orb",
   "entity.wilddungeons.offering": "Offering",

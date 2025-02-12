@@ -1,0 +1,34 @@
+﻿{
+  "variants": {
+    "facing=south,locked=true": {
+      "model": "wilddungeons:block/wd_lockable_locked"
+    },
+    "facing=south,locked=false": {
+      "model": "wilddungeons:block/wd_lockable_unlocked"
+    },
+    "facing=east,locked=true": {
+      "model": "wilddungeons:block/wd_lockable_locked",
+      "y": 270
+    },
+    "facing=east,locked=false": {
+      "model": "wilddungeons:block/wd_lockable_unlocked",
+        "y": 270
+    },
+    "facing=north,locked=true": {
+      "model": "wilddungeons:block/wd_lockable_locked",
+      "y": 180
+    },
+    "facing=north,locked=false": {
+      "model": "wilddungeons:block/wd_lockable_unlocked",
+      "y": 180
+    },
+    "facing=west,locked=true": {
+      "model": "wilddungeons:block/wd_lockable_locked",
+      "y": 90
+    },
+    "facing=west,locked=false": {
+      "model": "wilddungeons:block/wd_lockable_unlocked",
+      "y": 90
+    }
+  }
+}

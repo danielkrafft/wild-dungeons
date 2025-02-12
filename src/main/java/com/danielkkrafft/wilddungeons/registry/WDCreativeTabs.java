@@ -60,6 +60,7 @@ public class WDCreativeTabs {
 
                 output.accept(OFFERING_ITEM.get());
                 output.accept(RIFT_ITEM.get());
+                output.accept(WD_DUNGEON_KEY.get());
             })
             .build()
     );

@@ -18,6 +18,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Supplier;
 
+import static com.danielkkrafft.wilddungeons.registry.WDItems.*;
+
 public class WDBlocks {
 
 
@@ -63,10 +65,11 @@ public class WDBlocks {
     public static final DeferredBlock<Block> WD_SECRET = registerWithItem("wd_secret", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).requiresCorrectToolForDrops().strength(1.5F, 6.0F).noOcclusion()));
     public static final DeferredBlock<Block> WD_BEDROCK = registerWithItem("wd_bedrock", () -> new WDBedrockBlock(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).requiresCorrectToolForDrops().strength(-1.0F, 3600000.0F)));
     public static final DeferredBlock<Block> WD_DOORWAY = registerWithItem("wd_doorway", () -> new DoorwayBlock(BlockBehaviour.Properties.of().noCollission()));
+    public static final DeferredBlock<Block> WD_LOCKABLE = registerWithItem("wd_lockable", () -> new LockableBlock(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).requiresCorrectToolForDrops().strength(-1.0F, 3600000.0F).noOcclusion().noLootTable()));
 
     private static <T extends Block> DeferredBlock<T> registerWithItem(String name, Supplier<T> supplier, Item.@NotNull Properties properties) {
         DeferredBlock<T> block = BLOCKS.register(name, supplier);
-        WDItems.ITEMS.register(name, () -> new BlockItem(block.get(), properties));
+        ITEMS.register(name, () -> new BlockItem(block.get(), properties));
         return block;
     }
 
