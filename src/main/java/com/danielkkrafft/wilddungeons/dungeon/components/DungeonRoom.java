@@ -4,7 +4,7 @@ import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.block.WDBedrockBlock;
 import com.danielkkrafft.wilddungeons.block.WDBlocks;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
-import com.danielkkrafft.wilddungeons.dungeon.components.room.EnemyPurgeRoom;
+import com.danielkkrafft.wilddungeons.dungeon.components.room.TargetPurgeRoom;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
 import com.danielkkrafft.wilddungeons.dungeon.registries.LootTableRegistry;
@@ -127,7 +127,7 @@ public class DungeonRoom {
 
         this.processRifts();
 
-        if (!(this instanceof EnemyPurgeRoom)) this.processOfferings();
+        if (!(this instanceof TargetPurgeRoom)) this.processOfferings();
 
         if (getTemplate().spawnPoint() != null) {
             this.spawnPoint = TemplateHelper.transform(getTemplate().spawnPoint(), this);

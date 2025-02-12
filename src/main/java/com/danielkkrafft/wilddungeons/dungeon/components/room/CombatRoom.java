@@ -13,7 +13,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlac
 import java.util.List;
 import java.util.Optional;
 
-public class CombatRoom extends EnemyPurgeRoom {
+public class CombatRoom extends TargetPurgeRoom {
 
     public static final int SPAWN_INTERVAL = 200;
     public static final int BASE_QUANTITY = 10;

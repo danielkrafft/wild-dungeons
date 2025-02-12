@@ -4,7 +4,7 @@ import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
-import com.danielkkrafft.wilddungeons.dungeon.components.room.EnemyPurgeRoom;
+import com.danielkkrafft.wilddungeons.dungeon.components.room.TargetPurgeRoom;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundUpdateWDPlayerPacket;
@@ -97,7 +97,7 @@ public class WDPlayerManager {
             event.setCanceled(isProtectedBlock(serverPlayer, event.getPos(), serverLevel));
             wdPlayer.getCurrentDungeon().getStats(wdPlayer).blocksBroken += 1;
 
-            if (wdPlayer.getCurrentRoom() instanceof EnemyPurgeRoom enemyPurgeRoom) {
+            if (wdPlayer.getCurrentRoom() instanceof TargetPurgeRoom enemyPurgeRoom) {
                 if (event.getLevel().getBlockState(event.getPos()).is(Blocks.SPAWNER)) {
                     enemyPurgeRoom.discardByBlockPos(event.getPos());
                 }
@@ -216,7 +216,7 @@ public class WDPlayerManager {
 
             if (wdPlayer.getCurrentDungeon() == null) return;
             wdPlayer.getCurrentDungeon().getStats(wdPlayer).mobsKilled += 1;
-            if (wdPlayer.getCurrentRoom() instanceof EnemyPurgeRoom room) room.discardByUUID(event.getEntity().getStringUUID());
+            if (wdPlayer.getCurrentRoom() instanceof TargetPurgeRoom room) room.discardByUUID(event.getEntity().getStringUUID());
         }
     }
 

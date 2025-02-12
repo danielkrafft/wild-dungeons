@@ -11,14 +11,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class EnemyPurgeRoom extends LockableEventRoom {
+public class TargetPurgeRoom extends LockableEventRoom {
 
     public static final int SET_PURGE_INTERVAL = 20;
 
     public List<DungeonTarget> targets = new ArrayList<>();
     public int checkTimer = SET_PURGE_INTERVAL;
 
-    public EnemyPurgeRoom(DungeonBranch branch, String templateKey, BlockPos position, StructurePlaceSettings settings, List<ConnectionPoint> allConnectionPoints) {
+    public TargetPurgeRoom(DungeonBranch branch, String templateKey, BlockPos position, StructurePlaceSettings settings, List<ConnectionPoint> allConnectionPoints) {
         super(branch, templateKey, position, settings, allConnectionPoints);
         this.processOfferings();
     }

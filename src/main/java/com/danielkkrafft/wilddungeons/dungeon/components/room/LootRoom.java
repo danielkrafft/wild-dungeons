@@ -14,7 +14,7 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 
-public class LootRoom extends EnemyPurgeRoom {
+public class LootRoom extends TargetPurgeRoom {
 
     public LootRoom(DungeonBranch branch, String templateKey, BlockPos position, StructurePlaceSettings settings, List<ConnectionPoint> allConnectionPoints) {
         super(branch, templateKey, position, settings, allConnectionPoints);
