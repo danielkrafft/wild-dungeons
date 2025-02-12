@@ -8,6 +8,7 @@ import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession.DungeonExit
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.util.WeightedTable;
 
+import java.awt.*;
 import java.util.Objects;
 
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonFloorPoolRegistry.TEST_FLOOR_POOL;
@@ -185,11 +186,28 @@ public final class DungeonTemplate implements DungeonComponent {
         return this;
     }
 
+    public DungeonTemplate setPrimaryColor(Color primaryColor) {
+        this.primaryColor = primaryColor.getRGB();
+        return this;
+    }
+
+    public DungeonTemplate setSecondaryColor(Color secondaryColor) {
+        this.secondaryColor = secondaryColor.getRGB();
+        return this;
+    }
+    /**
+     * @deprecated Use {@link #setPrimaryColor(Color)} instead
+     */
+    @Deprecated
     public DungeonTemplate setPrimaryColor(int primaryColor) {
         this.primaryColor = primaryColor;
         return this;
     }
 
+    /**
+     * @deprecated Use {@link #setSecondaryColor(Color)} instead
+     */
+    @Deprecated
     public DungeonTemplate setSecondaryColor(int secondaryColor) {
         this.secondaryColor = secondaryColor;
         return this;
