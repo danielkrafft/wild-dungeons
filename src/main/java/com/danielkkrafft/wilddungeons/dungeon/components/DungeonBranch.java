@@ -153,7 +153,7 @@ public class DungeonBranch {
             ConnectionPoint entrancePoint = pointsToTry.remove(new Random().nextInt(pointsToTry.size()));
             List<ConnectionPoint> exitPoints = new ArrayList<>();
             if (this.getRooms().isEmpty()){
-                int branchIndex = this.getTemplate().startingBranchIndex() == -1 ? this.getFloor().getBranches().size() - 2 : this.getTemplate().startingBranchIndex();
+                int branchIndex = this.getTemplate().rootOriginBranchIndex() == -1 ? this.getFloor().getBranches().size() - 2 : this.getTemplate().rootOriginBranchIndex();
                 DungeonBranch lastBranch = getFloor().getBranches().get(branchIndex);
                 int roomIndex = lastBranch.getRooms().size() - 1;
                 exitPoints = new ArrayList<>(lastBranch.getRooms().get(roomIndex).getValidExitPoints(TemplateHelper.EMPTY_DUNGEON_SETTINGS, TemplateHelper.EMPTY_BLOCK_POS, nextRoom, entrancePoint, false));

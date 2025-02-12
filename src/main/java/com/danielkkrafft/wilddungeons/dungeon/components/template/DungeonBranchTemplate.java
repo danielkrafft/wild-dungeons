@@ -27,6 +27,7 @@ public final class DungeonBranchTemplate implements DungeonComponent {
     private Boolean hasBedrockShell = null;
     private DungeonRoomTemplate.DestructionRule destructionRule = null;
     private int blockingMaterialIndex = -1;
+    private int rootOriginBranchIndex = -1;
 
     public static DungeonBranchTemplate create(String name) {
         return new DungeonBranchTemplate().setName(name);
@@ -173,7 +174,12 @@ public final class DungeonBranchTemplate implements DungeonComponent {
                 .setMaterials(template.materials)
                 .setEnemyTable(template.enemyTable)
                 .setDifficulty(template.difficulty)
-                .setDifficultyScaling(template.difficultyScaling);
+                .setDifficultyScaling(template.difficultyScaling)
+                .setMandatoryRooms(template.mandatoryRooms)
+                .setLimitedRooms(template.limitedRooms)
+                .setBlockingMaterialIndex(template.blockingMaterialIndex)
+                .setRootOriginBranchIndex(template.rootOriginBranchIndex);
+                ;
         if (template.hasBedrockShell != null) newTemplate.setBedrockShell(template.hasBedrockShell);
         if (template.destructionRule != null) newTemplate.setDestructionRule(template.destructionRule);
         return newTemplate;
@@ -185,6 +191,15 @@ public final class DungeonBranchTemplate implements DungeonComponent {
 
     public DungeonBranchTemplate setBlockingMaterialIndex(int blockingMaterialIndex) {
         this.blockingMaterialIndex = blockingMaterialIndex;
+        return this;
+    }
+
+    public int rootOriginBranchIndex() {
+        return rootOriginBranchIndex;
+    }
+
+    public DungeonBranchTemplate setRootOriginBranchIndex(int rootOriginBranchIndex) {
+        this.rootOriginBranchIndex = rootOriginBranchIndex;
         return this;
     }
 }
