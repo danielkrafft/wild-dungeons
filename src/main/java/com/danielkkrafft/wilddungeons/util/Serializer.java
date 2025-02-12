@@ -97,6 +97,7 @@ public class Serializer
     {
         try
         {
+            //noinspection unchecked
             return (T) deserialize("INTERNAL_ROOT", tag);
         }
         catch (NoSuchMethodException | NoSuchFieldException | InvocationTargetException | InstantiationException | IllegalAccessException e)
@@ -166,7 +167,7 @@ public class Serializer
             entry.putString("type", "arrayList");
             CompoundTag nestedTag = new CompoundTag();
             int index = 0;
-            for (Object object : arrayListValue.stream().toArray()) {
+            for (Object object : arrayListValue.toArray()) {
                 serializeAndAdd(""+index++, object, nestedTag);
             }
             entry.put("value", nestedTag);
@@ -177,7 +178,7 @@ public class Serializer
             entry.putString("type", "list");
             CompoundTag nestedTag = new CompoundTag();
             int index = 0;
-            for (Object object : listValue.stream().toArray()) {
+            for (Object object : listValue.toArray()) {
                 serializeAndAdd(""+index++, object, nestedTag);
             }
             entry.put("value", nestedTag);
@@ -243,127 +244,103 @@ public class Serializer
         CompoundTag entry = tag.getCompound(key);
         String type = entry.getString("type");
 
-        if (type.equals("int"))
-        {
-            return entry.getInt("value");
-        }
-
-        else if (type.equals("string"))
-        {
-            return entry.getString("value");
-        }
-
-        else if (type.equals("double"))
-        {
-            return entry.getDouble("value");
-        }
-
-        else if (type.equals("float"))
-        {
-            return entry.getFloat("value");
-        }
-
-        else if (type.equals("long"))
-        {
-            return entry.getLong("value");
-        }
-
-        else if (type.equals("boolean"))
-        {
-            return entry.getBoolean("value");
-        }
-
-        else if (type.equals("hashmap"))
-        {
-            CompoundTag nestedTag = entry.getCompound("value");
-
-            HashMap<Object, Object> hashMapValue = new HashMap<>();
-            for (String hashMapEntryIndex : nestedTag.getAllKeys()) {
-                CompoundTag keyValueTag = nestedTag.getCompound(hashMapEntryIndex);
-                hashMapValue.put(deserialize("k", keyValueTag), deserialize("v", keyValueTag));
+        switch (type) {
+            case "int" -> {
+                return entry.getInt("value");
             }
-
-            return hashMapValue;
-        }
-
-        else if (type.equals("hashSet"))
-        {
-            CompoundTag nestedTag = entry.getCompound("value");
-
-            HashSet<Object> hashSetValue = new HashSet<>();
-            for (String hashSetEntryValue : nestedTag.getAllKeys()) {
-                hashSetValue.add(deserialize(hashSetEntryValue, nestedTag));
+            case "string" -> {
+                return entry.getString("value");
             }
-
-            return hashSetValue;
-        }
-
-        else if (type.equals("arrayList"))
-        {
-            CompoundTag nestedTag = entry.getCompound("value");
-
-            ArrayList<Object> arrayListValue = new ArrayList<>();
-            for (int i = 0; i < nestedTag.getAllKeys().size(); i++) {
-                arrayListValue.add(deserialize(String.valueOf(i), nestedTag));
+            case "double" -> {
+                return entry.getDouble("value");
             }
-
-            return arrayListValue;
-        }
-
-        else if (type.equals("list"))
-        {
-            CompoundTag nestedTag = entry.getCompound("value");
-
-            List<Object> listValue = new ArrayList<>();
-            for (int i = 0; i < nestedTag.getAllKeys().size(); i++) {
-                listValue.add(deserialize(String.valueOf(i), nestedTag));
+            case "float" -> {
+                return entry.getFloat("value");
             }
-
-            return listValue;
-        }
-
-        else if (type.equals("enum"))
-        {
-            Class<?> enumClass = ACCEPTABLE_CLASS_REFERENCES.get(entry.getString("class"));
-            if (enumClass == null) {
-                WildDungeons.getLogger().info("THE CLASS: {} WAS NOT SETUP FOR SERIALIZATION", entry.getString("class"));
-                return null;
+            case "long" -> {
+                return entry.getLong("value");
             }
-
-            return Enum.valueOf((Class<Enum>) enumClass, entry.getString("value"));
-        }
-
-        else if (type.equals("resourceKey"))
-        {
-            CompoundTag nestedTag = entry.getCompound("value");
-            ResourceLocation registry = ResourceLocation.parse(nestedTag.getString("registry"));
-            ResourceLocation location = ResourceLocation.parse(nestedTag.getString("location"));
-
-            ResourceKey<?> resourceKey = ResourceKey.create(registry, location);
-            return resourceKey;
-        }
-
-        else if (type.equals("custom"))
-        {
-            CompoundTag nestedTag = entry.getCompound("value");
-
-            Class<?> clazz = ACCEPTABLE_CLASS_REFERENCES.get(entry.getString("class"));
-            if (clazz == null) {
-                WildDungeons.getLogger().info("THE CLASS: {} WAS NOT SETUP FOR SERIALIZATION", entry.getString("class"));
-                return null;
+            case "boolean" -> {
+                return entry.getBoolean("value");
             }
+            case "hashmap" -> {
+                CompoundTag nestedTag = entry.getCompound("value");
 
-            ReflectionFactory rf = ReflectionFactory.getReflectionFactory();
-            Object instance = clazz.cast(rf.newConstructorForSerialization(clazz, Object.class.getDeclaredConstructor()).newInstance());
-            while (clazz != null) {
-                for (Field field : CLASS_FIELDS.get(clazz.getName()))
-                {
-                    field.set(instance, deserialize(field.getName(), nestedTag));
+                HashMap<Object, Object> hashMapValue = new HashMap<>();
+                for (String hashMapEntryIndex : nestedTag.getAllKeys()) {
+                    CompoundTag keyValueTag = nestedTag.getCompound(hashMapEntryIndex);
+                    hashMapValue.put(deserialize("k", keyValueTag), deserialize("v", keyValueTag));
                 }
-                clazz = clazz.getSuperclass();
-            }
 
-            return instance;
+                return hashMapValue;
+            }
+            case "hashSet" -> {
+                CompoundTag nestedTag = entry.getCompound("value");
+
+                HashSet<Object> hashSetValue = new HashSet<>();
+                for (String hashSetEntryValue : nestedTag.getAllKeys()) {
+                    hashSetValue.add(deserialize(hashSetEntryValue, nestedTag));
+                }
+
+                return hashSetValue;
+            }
+            case "arrayList" -> {
+                CompoundTag nestedTag = entry.getCompound("value");
+
+                ArrayList<Object> arrayListValue = new ArrayList<>();
+                for (int i = 0; i < nestedTag.getAllKeys().size(); i++) {
+                    arrayListValue.add(deserialize(String.valueOf(i), nestedTag));
+                }
+
+                return arrayListValue;
+            }
+            case "list" -> {
+                CompoundTag nestedTag = entry.getCompound("value");
+
+                List<Object> listValue = new ArrayList<>();
+                for (int i = 0; i < nestedTag.getAllKeys().size(); i++) {
+                    listValue.add(deserialize(String.valueOf(i), nestedTag));
+                }
+
+                return listValue;
+            }
+            case "enum" -> {
+                Class<?> enumClass = ACCEPTABLE_CLASS_REFERENCES.get(entry.getString("class"));
+                if (enumClass == null) {
+                    WildDungeons.getLogger().info("THE CLASS: {} WAS NOT SETUP FOR SERIALIZATION", entry.getString("class"));
+                    return null;
+                }
+
+                return Enum.valueOf((Class<Enum>) enumClass, entry.getString("value"));
+            }
+            case "resourceKey" -> {
+                CompoundTag nestedTag = entry.getCompound("value");
+                ResourceLocation registry = ResourceLocation.parse(nestedTag.getString("registry"));
+                ResourceLocation location = ResourceLocation.parse(nestedTag.getString("location"));
+
+                ResourceKey<?> resourceKey = ResourceKey.create(registry, location);
+                return resourceKey;
+            }
+            case "custom" -> {
+                CompoundTag nestedTag = entry.getCompound("value");
+
+                Class<?> clazz = ACCEPTABLE_CLASS_REFERENCES.get(entry.getString("class"));
+                if (clazz == null) {
+                    WildDungeons.getLogger().info("THE CLASS: {} WAS NOT SETUP FOR SERIALIZATION", entry.getString("class"));
+                    return null;
+                }
+
+                ReflectionFactory rf = ReflectionFactory.getReflectionFactory();
+                Object instance = clazz.cast(rf.newConstructorForSerialization(clazz, Object.class.getDeclaredConstructor()).newInstance());
+                while (clazz != null) {
+                    for (Field field : CLASS_FIELDS.get(clazz.getName())) {
+                        field.set(instance, deserialize(field.getName(), nestedTag));
+                    }
+                    clazz = clazz.getSuperclass();
+                }
+
+                return instance;
+            }
         }
 
         return null;
