@@ -91,7 +91,7 @@ public class DungeonRoom {
     public boolean isClear() {return this.clear;}
     public Set<BlockPos> getAlwaysBreakable() {return this.alwaysBreakable;}
     public BlockPos getPosition() {return this.position;}
-    public int blockingMaterialIndex() {return this.getTemplate().blockingMaterialIndex() ==-1 ? this.getBranch().blockingMaterialIndex() : this.getTemplate().blockingMaterialIndex();}
+    public int blockingMaterialIndex() {return this.getTemplate().blockingMaterialIndex() == -1 ? this.getBranch().blockingMaterialIndex() : this.getTemplate().blockingMaterialIndex();}
 
 
     public DungeonRoom(DungeonBranch branch, String templateKey, BlockPos position, StructurePlaceSettings settings, List<ConnectionPoint> allConnectionPoints) {

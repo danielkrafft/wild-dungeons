@@ -375,13 +375,36 @@ public class DungeonRoomRegistry {
                     of("nether/pipeworks/3", EMPTY_BLOCK_POS)
             ))
             .setBlockingMaterialIndex(1);
+    public static final DungeonRoomTemplate NETHER_PIPEWORKS_4 = create(
+            "nether_pipeworks_4",
+            List.of(
+                    of("nether/pipeworks/4", EMPTY_BLOCK_POS)
+            ))
+            .setBlockingMaterialIndex(1);
+    public static final DungeonRoomTemplate NETHER_PIPEWORKS_5 = create(
+            "nether_pipeworks_5",
+            List.of(
+                    of("nether/pipeworks/5", EMPTY_BLOCK_POS)
+            ))
+            .setBlockingMaterialIndex(1);
+    public static final DungeonRoomTemplate NETHER_PIPEWORKS_6 = create(
+            "nether_pipeworks_6",
+            List.of(
+                    of("nether/pipeworks/6", EMPTY_BLOCK_POS)
+            ))
+            .setBlockingMaterialIndex(1);
     public static final DungeonRoomTemplate NETHER_PIPEWORKS_LAVAFALLS = create(
             "nether_pipewalk_lava_falls",
             List.of(
                     of("nether/pipeworks/lava_falls", EMPTY_BLOCK_POS)
             ))
             .setBlockingMaterialIndex(1);
-
+    public static final DungeonRoomTemplate NETHER_PIPEWORKS_TO_FACTORY = create(
+            "nether_pipeworks_to_factory",
+            List.of(
+                    of("nether/pipeworks/pipe_to_factory", EMPTY_BLOCK_POS)
+            ))
+            .setBlockingMaterialIndex(1);
     public static DungeonRoomTemplate copyOf(DungeonRoomTemplate template, String name) {
         DungeonRoomTemplate room = DungeonRoomTemplate.copyOf(template, name);
         dungeonRooms.add(room);

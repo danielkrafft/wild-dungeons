@@ -2,14 +2,12 @@ package com.danielkkrafft.wilddungeons.dungeon.registries;
 
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.DungeonLayout;
-import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonBranchTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonBranchTemplate.copyOf;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialPoolRegistry.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomPoolRegistry.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomRegistry.*;
@@ -109,9 +107,12 @@ public class DungeonBranchRegistry {
                     .add(PIGLIN_FACTORY_CAVE_SPRAWL_ROOM_POOL, 5)
                     .addSimple(NETHER_CAVE_END_ROOM));
 
-    public static final DungeonBranchTemplate PIGLIN_FACTORY_PIPEWORKS_OPENING_BRANCH = create("PIGLIN_FACTORY_PIPEWORKS_OPENING_BRANCH")
+    public static final DungeonBranchTemplate PIGLIN_FACTORY_PIPEWORKS_BRANCH = create("PIGLIN_FACTORY_PIPEWORKS_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
-                    .add(PIGLIN_FACTORY_PIPEWORKS_ROOM_POOL, 25));
+                    .add(PIGLIN_FACTORY_PIPEWORKS_ROOM_POOL, 7)
+                    .addSimple(NETHER_PIPEWORKS_5)
+                    .add(PIGLIN_FACTORY_PIPEWORKS_ROOM_POOL, 8)
+                    .addSimple(NETHER_PIPEWORKS_TO_FACTORY));
 
     public static DungeonBranchTemplate copyOf(DungeonBranchTemplate branch, String name) {
         DungeonBranchTemplate copy = DungeonBranchTemplate.copyOf(branch, name);

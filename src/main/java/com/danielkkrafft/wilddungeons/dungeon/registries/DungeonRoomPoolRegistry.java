@@ -107,6 +107,9 @@ public class DungeonRoomPoolRegistry {
                 .add(NETHER_PIPEWORKS_1, 1)
                 .add(NETHER_PIPEWORKS_2, 1)
                 .add(NETHER_PIPEWORKS_3, 1)
+                .add(NETHER_PIPEWORKS_4, 1)
+                .add(NETHER_PIPEWORKS_5, 1)
+                .add(NETHER_PIPEWORKS_6, 1)
                 .add(NETHER_PIPEWORKS_LAVAFALLS, 1)
                 .add(NETHER_PIPEWORKS_BREAKOUT_ROOM, 1)
                 ;
