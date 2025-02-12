@@ -66,6 +66,7 @@ public class WildDungeons {
         WDStructureTypes.STRUCTURE_TYPES.register(modEventBus);
         WDStructurePieceTypes.STRUCTURE_PIECE_TYPES.register(modEventBus);
         WDSoundEvents.SOUND_EVENTS.register(modEventBus);
+        WDDataComponents.DATA_COMPONENT_TYPES.register(modEventBus);
 
         PerkRegistry.setupPerks();
 
@@ -113,6 +114,9 @@ public class WildDungeons {
         event.registerEntityRenderer(WDEntities.MUTANT_BOGGED.get(), MutantBoggedRenderer::new);
         event.registerEntityRenderer(WDEntities.PIERCING_ARROW.get(), PiercingArrowRenderer::new);
         event.registerEntityRenderer(WDEntities.WIND_CHARGE_PROJECTILE.get(), WindChargeProjectileRenderer::new);
+        event.registerEntityRenderer(WDEntities.WIND_CHARGE_PROJECTILE.get(), WindChargeProjectileRenderer::new);
+        event.registerEntityRenderer(WDEntities.GRAPPLING_HOOK.get(), GrapplingHookRenderer::new);
+        event.registerEntityRenderer(WDEntities.LASER_BEAM.get(), LaserbeamRenderer::new);
     }
 
     @SubscribeEvent
