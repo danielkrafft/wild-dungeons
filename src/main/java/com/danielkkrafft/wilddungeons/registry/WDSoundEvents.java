@@ -33,6 +33,8 @@ public class WDSoundEvents {
 
     public static final Holder<SoundEvent> RIFT_AURA = SOUND_EVENTS.register("entity.rift_aura", SoundEvent::createVariableRangeEvent);
 
+    public static final Holder<SoundEvent> UI_BEEP = SOUND_EVENTS.register("ui.misc.beep", SoundEvent::createVariableRangeEvent);
+
     public static final Holder<SoundEvent> MEATHOOK_HIT = SOUND_EVENTS.register("entity.meathook.hit", SoundEvent::createVariableRangeEvent);
     public static final Holder<SoundEvent> MEATHOOK_REEL = SOUND_EVENTS.register("entity.meathook.reel", SoundEvent::createVariableRangeEvent);
     public static final Holder<SoundEvent> MEATHOOK_CHARGE_1 = SOUND_EVENTS.register("item.meathook.charge1", SoundEvent::createVariableRangeEvent);

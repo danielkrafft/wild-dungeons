@@ -147,5 +147,15 @@
     "sounds": [
       {"name": "wilddungeons:item/meathook/meathook_retract"}
     ]
+  },
+  "ui.misc.beep": {
+    "sounds": [
+      {"name": "wilddungeons:ui/beep1"},
+      {"name": "wilddungeons:ui/beep2"},
+      {"name": "wilddungeons:ui/beep3"},
+      {"name": "wilddungeons:ui/beep4"},
+      {"name": "wilddungeons:ui/beep5"},
+      {"name": "wilddungeons:ui/beep6"}
+    ]
   }
 }

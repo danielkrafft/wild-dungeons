@@ -3,6 +3,7 @@ package com.danielkkrafft.wilddungeons.ui;
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.network.serverbound.ServerboundRestorePlayerGamemodePacket;
+import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
 import com.danielkkrafft.wilddungeons.util.Serializer;
 import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -13,6 +14,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -213,10 +215,13 @@ public class WDPostDungeonScreen extends Screen {
     }
 
     public final AnimationStep TITLE = new AnimationStep(TITLE_BACKGROUND.minXRatio, TITLE_BACKGROUND.minYRatio, TITLE_BACKGROUND.maxXRatio, TITLE_BACKGROUND.maxYRatio, 500, 750, this::drawTitle, this);
+    public String tempTitle = "";
     public void drawTitle(GuiGraphics guiGraphics, int mouseX, int mouseY, AnimationStep step)
     {
         String finalTitle = this.title;
         String title = finalTitle.substring(0, Mth.lerpInt(step.completion(), 0, finalTitle.length()));
+        if (!title.equals(tempTitle)) Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(WDSoundEvents.UI_BEEP.value(), 1.0f, 0.3f));
+        tempTitle = title;
 
         if (step.drawMs < step.animMs) title = title + WDFont.getRandomGlitch() + WDFont.getRandomGlitch();
         WDFont.drawCenteredString(guiGraphics, title, step.xCenter(), step.yCenter(), step.ySize()/2, 0xFFFFFFFF);
