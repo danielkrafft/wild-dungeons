@@ -55,4 +55,9 @@ public class WDEntities {
             .of(MutantBogged::new, MobCategory.MONSTER)
             .sized(1f, 3.6f)
             .build("mutant_bogged"));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<AmogusEntity>> AMOGUS = ENTITIES.register("amogus", () -> EntityType.Builder
+            .of(AmogusEntity::new, MobCategory.CREATURE)
+            .sized(1f, 1.0f)
+            .build(WildDungeons.rl("amogus").toString()));
 }

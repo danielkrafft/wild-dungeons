@@ -157,5 +157,25 @@
       {"name": "wilddungeons:ui/beep5"},
       {"name": "wilddungeons:ui/beep6"}
     ]
+  },
+  "entity.amogus.step": {
+    "sounds": [
+      {"name": "wilddungeons:entity/amogus/amogus_step1"},
+      {"name": "wilddungeons:entity/amogus/amogus_step2"},
+      {"name": "wilddungeons:entity/amogus/amogus_step3"},
+      {"name": "wilddungeons:entity/amogus/amogus_step4"},
+      {"name": "wilddungeons:entity/amogus/amogus_step5"},
+      {"name": "wilddungeons:entity/amogus/amogus_step6"}
+    ]
+  },
+  "entity.amogus.kill": {
+    "sounds": [
+      {"name": "wilddungeons:entity/amogus/amogus_kill"}
+    ]
+  },
+  "entity.amogus.ambient": {
+    "sounds": [
+      {"name": "wilddungeons:entity/amogus/amogus1"}
+    ]
   }
 }
