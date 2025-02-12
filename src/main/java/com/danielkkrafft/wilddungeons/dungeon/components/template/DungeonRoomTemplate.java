@@ -32,8 +32,8 @@ public final class DungeonRoomTemplate implements DungeonComponent {
     private BlockPos spawnPoint;
     private List<Vec3> rifts;
     private List<Vec3> offerings;
-    private List<StructureTemplate.StructureBlockInfo> materialBlocks;
     private List<StructureTemplate.StructureBlockInfo> lootBlocks;
+    private List<StructureTemplate.StructureBlockInfo> dataMarkers;
     private WeightedPool<DungeonMaterial> materials;
     private WeightedTable<DungeonRegistration.TargetTemplate> enemyTable;
     private double difficulty = 1.0;
@@ -63,8 +63,8 @@ public final class DungeonRoomTemplate implements DungeonComponent {
         List<Vec3> rifts = TemplateHelper.locateRifts(templates);
         BlockPos spawnPoint = TemplateHelper.locateSpawnPoint(templates);
         List<Vec3> offerings = TemplateHelper.locateOfferings(templates);
-        List<StructureTemplate.StructureBlockInfo> materialBlocks = TemplateHelper.locateMaterialBlocks(templates);
         List<StructureTemplate.StructureBlockInfo> lootBlocks = TemplateHelper.locateLootTargets(templates);
+        List<StructureTemplate.StructureBlockInfo> locatedDataMarkers = TemplateHelper.locateDataMarkers(templates);
         return new DungeonRoomTemplate()
                 .setName(name)
                 .setTemplates(templates)
@@ -72,8 +72,8 @@ public final class DungeonRoomTemplate implements DungeonComponent {
                 .setSpawnPoint(spawnPoint)
                 .setRifts(rifts)
                 .setOfferings(offerings)
-                .setMaterialBlocks(materialBlocks)
-                .setLootBlocks(lootBlocks);
+                .setLootBlocks(lootBlocks)
+                .setDataMarkers(locatedDataMarkers);
     }
 
     public List<BoundingBox> getBoundingBoxes(StructurePlaceSettings settings, BlockPos position) {
@@ -134,12 +134,13 @@ public final class DungeonRoomTemplate implements DungeonComponent {
         return offerings;
     }
 
-    public List<StructureTemplate.StructureBlockInfo> materialBlocks() {
-        return materialBlocks;
-    }
 
     public List<StructureTemplate.StructureBlockInfo> lootBlocks() {
         return lootBlocks;
+    }
+
+    public List<StructureTemplate.StructureBlockInfo> dataMarkers() {
+        return dataMarkers;
     }
 
     public WeightedPool<DungeonMaterial> materials() {
@@ -174,7 +175,6 @@ public final class DungeonRoomTemplate implements DungeonComponent {
                 Objects.equals(this.spawnPoint, that.spawnPoint) &&
                 Objects.equals(this.rifts, that.rifts) &&
                 Objects.equals(this.offerings, that.offerings) &&
-                Objects.equals(this.materialBlocks, that.materialBlocks) &&
                 Objects.equals(this.lootBlocks, that.lootBlocks) &&
                 Objects.equals(this.materials, that.materials) &&
                 Objects.equals(this.enemyTable, that.enemyTable) &&
@@ -183,7 +183,7 @@ public final class DungeonRoomTemplate implements DungeonComponent {
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, name, templates, connectionPoints, spawnPoint, rifts, offerings, materialBlocks, lootBlocks, materials, enemyTable, difficulty);
+        return Objects.hash(type, name, templates, connectionPoints, spawnPoint, rifts, offerings, lootBlocks, materials, enemyTable, difficulty);
     }
 
     @Override
@@ -196,7 +196,6 @@ public final class DungeonRoomTemplate implements DungeonComponent {
                 "spawnPoint=" + spawnPoint + ", " +
                 "rifts=" + rifts + ", " +
                 "offerings=" + offerings + ", " +
-                "materialBlocks=" + materialBlocks + ", " +
                 "lootBlocks=" + lootBlocks + ", " +
                 "materials=" + materials + ", " +
                 "enemyTable=" + enemyTable + ", " +
@@ -237,10 +236,6 @@ public final class DungeonRoomTemplate implements DungeonComponent {
         return this;
     }
 
-    private DungeonRoomTemplate setMaterialBlocks(List<StructureTemplate.StructureBlockInfo> materialBlocks) {
-        this.materialBlocks = materialBlocks;
-        return this;
-    }
 
     private DungeonRoomTemplate setLootBlocks(List<StructureTemplate.StructureBlockInfo> lootBlocks) {
         this.lootBlocks = lootBlocks;
@@ -276,6 +271,12 @@ public final class DungeonRoomTemplate implements DungeonComponent {
         this.blockingMaterialIndex = blockingMaterialIndex;
         return this;
     }
+
+    public DungeonRoomTemplate setDataMarkers(List<StructureTemplate.StructureBlockInfo> dataMarkers) {
+        this.dataMarkers = dataMarkers;
+        return this;
+    }
+
     public static DungeonRoomTemplate copyOf(DungeonRoomTemplate template, String newName) {
         DungeonRoomTemplate newTemplate = new DungeonRoomTemplate()
                 .setType(template.type)
@@ -285,12 +286,12 @@ public final class DungeonRoomTemplate implements DungeonComponent {
                 .setSpawnPoint(template.spawnPoint)
                 .setRifts(template.rifts)
                 .setOfferings(template.offerings)
-                .setMaterialBlocks(template.materialBlocks)
                 .setLootBlocks(template.lootBlocks)
                 .setMaterials(template.materials)
                 .setEnemyTable(template.enemyTable)
                 .setDifficulty(template.difficulty)
-                .setBlockingMaterialIndex(template.blockingMaterialIndex);
+                .setBlockingMaterialIndex(template.blockingMaterialIndex)
+                .setDataMarkers(template.dataMarkers);
         if (template.hasBedrockShell != null) newTemplate.setBedrockShell(template.hasBedrockShell);
         if (template.destructionRule != null) newTemplate.setDestructionRule(template.destructionRule);
         return newTemplate;

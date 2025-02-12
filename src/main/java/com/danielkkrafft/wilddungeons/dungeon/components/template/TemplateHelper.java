@@ -26,6 +26,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.StairsShape;
+import net.minecraft.world.level.block.state.properties.StructureMode;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
@@ -35,6 +36,8 @@ import net.minecraft.world.phys.shapes.BitSetDiscreteVoxelShape;
 import net.minecraft.world.phys.shapes.DiscreteVoxelShape;
 
 import java.util.*;
+
+import static net.minecraft.world.level.block.state.properties.StructureMode.DATA;
 
 public class TemplateHelper {
     public static final BlockPos EMPTY_BLOCK_POS = new BlockPos(0, 0, 0);
@@ -86,6 +89,20 @@ public class TemplateHelper {
         });
 
         return connectionPoints;
+    }
+
+    public static List<StructureTemplate.StructureBlockInfo> locateDataMarkers(List<Pair<StructureTemplate, BlockPos>> templates) {
+        List<StructureTemplate.StructureBlockInfo> result = new ArrayList<>();
+        templates.forEach(template -> {
+            result.addAll(template.getFirst().filterBlocks(template.getSecond(), new StructurePlaceSettings(), Blocks.STRUCTURE_BLOCK));
+            result.removeIf(block -> {
+                if (block.state().getValue(StructureBlock.MODE) != StructureMode.DATA) return true;
+                CompoundTag nbt = block.nbt();
+                if (nbt == null) return true;
+                return !nbt.contains("metadata");
+            });
+        });
+        return result;
     }
 
     public static Direction mirrorDirection(Direction direction, Mirror mirror) {
@@ -184,17 +201,6 @@ public class TemplateHelper {
         return result;
     }
 
-    public static List<StructureTemplate.StructureBlockInfo> locateMaterialBlocks(List<Pair<StructureTemplate, BlockPos>> templates) {
-        List<StructureTemplate.StructureBlockInfo> result = new ArrayList<>();
-        templates.forEach(template -> {
-            result.addAll(template.getFirst().filterBlocks(template.getSecond(), new StructurePlaceSettings(), Blocks.STONE_BRICKS));
-            result.addAll(template.getFirst().filterBlocks(template.getSecond(), new StructurePlaceSettings(), Blocks.STONE_BRICK_STAIRS));
-            result.addAll(template.getFirst().filterBlocks(template.getSecond(), new StructurePlaceSettings(), Blocks.STONE_BRICK_SLAB));
-            result.addAll(template.getFirst().filterBlocks(template.getSecond(), new StructurePlaceSettings(), Blocks.STONE_BRICK_WALL));
-            result.addAll(template.getFirst().filterBlocks(template.getSecond(), new StructurePlaceSettings(), Blocks.SEA_LANTERN));
-        });
-        return result;
-    }
 
     public static BlockState fixBlockStateProperties(BlockState input, StructurePlaceSettings settings) {
         boolean rotated = settings.getRotation() == Rotation.CLOCKWISE_90 || settings.getRotation() == Rotation.COUNTERCLOCKWISE_90;
