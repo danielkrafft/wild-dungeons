@@ -79,7 +79,8 @@ public final class DungeonRoomTemplate implements DungeonComponent {
 
     public DungeonRoom placeInWorld(DungeonBranch branch, ServerLevel level, BlockPos position, StructurePlaceSettings settings, List<ConnectionPoint> connectionPoints) {
         try {
-            return (DungeonRoom) this.clazz.getConstructor(DungeonBranch.class, String.class, BlockPos.class, StructurePlaceSettings.class, List.class)
+            WildDungeons.getLogger().info("Creating instance of class: {} for {}", this.getClazz().getName(), this.name);
+            return (DungeonRoom) this.getClazz().getDeclaredConstructor(DungeonBranch.class, String.class, BlockPos.class, StructurePlaceSettings.class, List.class)
                     .newInstance(branch, this.name, position, settings, connectionPoints);
         } catch (Exception e) {
             WildDungeons.getLogger().error("Failed to create instance of DungeonRoom class for room template: {}", this.name);
@@ -191,6 +192,6 @@ public final class DungeonRoomTemplate implements DungeonComponent {
                 .setLootBlocks(template.lootBlocks)
                 .setDataMarkers(template.dataMarkers)
                 .setRoomClearOffering(template.roomClearOffering)
-                .setProperties(template.PROPERTIES);
+                .setProperties(new HashMap<>(template.PROPERTIES));
     }
 }

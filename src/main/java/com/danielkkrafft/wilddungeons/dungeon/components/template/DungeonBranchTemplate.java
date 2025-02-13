@@ -16,7 +16,6 @@ public final class DungeonBranchTemplate implements DungeonComponent {
     private DungeonLayout<DungeonRoomTemplate> roomTemplates;
     private List<Pair<DungeonRoomTemplate, Integer>> mandatoryRooms = new ArrayList<>();
     private List<Pair<DungeonRoomTemplate, Integer>> limitedRooms = new ArrayList<>();
-    private int blockingMaterialIndex = -1;
     private int rootOriginBranchIndex = -1;
 
     public HashMap<HierarchicalProperty<?>, Object> PROPERTIES = new HashMap<>();
@@ -89,18 +88,8 @@ public final class DungeonBranchTemplate implements DungeonComponent {
                 .setRoomTemplates(template.roomTemplates)
                 .setMandatoryRooms(template.mandatoryRooms)
                 .setLimitedRooms(template.limitedRooms)
-                .setBlockingMaterialIndex(template.blockingMaterialIndex)
                 .setRootOriginBranchIndex(template.rootOriginBranchIndex)
-                .setProperties(template.PROPERTIES);
-    }
-
-    public int blockingMaterialIndex() {
-        return blockingMaterialIndex;
-    }
-
-    public DungeonBranchTemplate setBlockingMaterialIndex(int blockingMaterialIndex) {
-        this.blockingMaterialIndex = blockingMaterialIndex;
-        return this;
+                .setProperties(new HashMap<>(template.PROPERTIES));
     }
 
     public int rootOriginBranchIndex() {

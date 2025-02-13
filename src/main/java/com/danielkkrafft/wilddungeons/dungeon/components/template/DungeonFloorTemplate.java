@@ -58,6 +58,6 @@ public final class DungeonFloorTemplate implements DungeonComponent {
                 .setName(newName)
                 .setBranchTemplates(template.branchTemplates)
                 .setOrigin(template.origin)
-                .setProperties(template.PROPERTIES);
+                .setProperties(new HashMap<>(template.PROPERTIES));
     }
 }
