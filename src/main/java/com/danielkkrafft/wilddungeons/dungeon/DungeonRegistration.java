@@ -35,7 +35,6 @@ public class DungeonRegistration {
         EnemyTableRegistry.setupEnemyTables();
 
         DungeonMaterialRegistry.setupDungeonMaterials();
-        DungeonMaterialPoolRegistry.setupMaterialPools();
 
         DungeonRoomRegistry.setupDungeonRooms();
         DungeonRoomPoolRegistry.setupRoomPools();
