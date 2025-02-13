@@ -41,7 +41,7 @@ public class CombatRoom extends TargetPurgeRoom {
     public void start() {
         if (this.started) return;
         WildDungeons.getLogger().info("SPAWNING MOBS");
-        List<DungeonRegistration.TargetTemplate> templates = this.getProperty(HierarchicalProperty.ENEMY_TABLE).randomResults(Mth.ceil(RandomUtil.randFloatBetween(BASE_QUANTITY / QUANTITY_VARIANCE, BASE_QUANTITY * QUANTITY_VARIANCE)), (int) (BASE_DIFFICULTY * this.getDifficulty()), 2);
+        List<DungeonRegistration.TargetTemplate> templates = getTargetTemplates();
 
         templates.forEach(template -> {
             DungeonTarget enemy = template.asEnemy();
@@ -49,6 +49,10 @@ public class CombatRoom extends TargetPurgeRoom {
             totalSpawns += 1;
         });
         super.start();
+    }
+
+    public List<DungeonRegistration.TargetTemplate> getTargetTemplates() {
+        return this.getProperty(HierarchicalProperty.ENEMY_TABLE).randomResults(Mth.ceil(RandomUtil.randFloatBetween(BASE_QUANTITY / QUANTITY_VARIANCE, BASE_QUANTITY * QUANTITY_VARIANCE)), (int) (BASE_DIFFICULTY * this.getDifficulty()), 2);
     }
 
     public void spawnNext() {
