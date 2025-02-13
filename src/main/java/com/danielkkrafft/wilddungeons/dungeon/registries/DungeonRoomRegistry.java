@@ -13,10 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate.DestructionRule;
-import static com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate.Type.*;
+import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.*;
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper.EMPTY_BLOCK_POS;
 import static com.mojang.datafixers.util.Pair.of;
-import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.*;
 
 
 public class DungeonRoomRegistry {

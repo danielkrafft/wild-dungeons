@@ -37,8 +37,6 @@ import net.minecraft.world.phys.shapes.DiscreteVoxelShape;
 
 import java.util.*;
 
-import static net.minecraft.world.level.block.state.properties.StructureMode.DATA;
-
 public class TemplateHelper {
     public static final BlockPos EMPTY_BLOCK_POS = new BlockPos(0, 0, 0);
     public static final StructurePlaceSettings EMPTY_DUNGEON_SETTINGS = new StructurePlaceSettings();

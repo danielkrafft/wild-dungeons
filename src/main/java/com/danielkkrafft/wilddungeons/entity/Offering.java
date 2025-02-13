@@ -11,8 +11,6 @@ import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundLoadingScre
 import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundPlayDynamicSoundPacket;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
-import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;

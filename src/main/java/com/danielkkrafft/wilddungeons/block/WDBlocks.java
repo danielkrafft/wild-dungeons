@@ -1,15 +1,8 @@
 package com.danielkkrafft.wilddungeons.block;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.entity.EssenceOrb;
-import com.danielkkrafft.wilddungeons.item.EssenceBottleItem;
-import com.danielkkrafft.wilddungeons.registry.WDItems;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
@@ -20,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Supplier;
 
-import static com.danielkkrafft.wilddungeons.registry.WDItems.*;
+import static com.danielkkrafft.wilddungeons.registry.WDItems.ITEMS;
 
 public class WDBlocks {
 

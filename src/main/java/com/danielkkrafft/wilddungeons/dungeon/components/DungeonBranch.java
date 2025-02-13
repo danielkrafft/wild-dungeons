@@ -1,15 +1,16 @@
 package com.danielkkrafft.wilddungeons.dungeon.components;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
-import com.danielkkrafft.wilddungeons.dungeon.components.template.*;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonBranchTemplate;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.danielkkrafft.wilddungeons.util.IgnoreSerialization;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
-import com.danielkkrafft.wilddungeons.util.WeightedTable;
 import com.danielkkrafft.wilddungeons.util.debug.WDProfiler;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
@@ -146,22 +147,13 @@ public class DungeonBranch {
                 DungeonBranch lastBranch = getFloor().getBranches().get(branchIndex);
                 int roomIndex = lastBranch.getRooms().size() - 1;
                 exitPoints = new ArrayList<>(lastBranch.getRooms().get(roomIndex).getValidExitPoints(TemplateHelper.EMPTY_DUNGEON_SETTINGS, TemplateHelper.EMPTY_BLOCK_POS, nextRoom, entrancePoint, false));
-                while (exitPoints.isEmpty()) {
+                //commented this out because we don't have time to fix it, but this is related to Issue #117 where rooms don't generate in the proper order
+                /*while (exitPoints.isEmpty()) {
                     //if we can't find a valid exit point, try the next room in the branch
                     roomIndex--;
                     if (roomIndex < 0) break;
                     exitPoints = new ArrayList<>(lastBranch.getRooms().get(roomIndex).getValidExitPoints(TemplateHelper.EMPTY_DUNGEON_SETTINGS, TemplateHelper.EMPTY_BLOCK_POS, nextRoom, entrancePoint, false));
-                }
-                /*
-                for (int i = 0; i < 3 ; i++) {//
-                    int index = lastBranch.branchRooms.size() - (1 + i);
-                    if (index < 0) break;
-                    DungeonRoom room = lastBranch.branchRooms.get(index);
-                    if (room!=null) {
-                        exitPoints.addAll(room.getValidExitPoints(TemplateHelper.EMPTY_DUNGEON_SETTINGS, TemplateHelper.EMPTY_BLOCK_POS, nextRoom, entrancePoint, false));
-                    }
-                }
-                */
+                }*/
             } else exitPoints = getValidExitPoints(TemplateHelper.EMPTY_DUNGEON_SETTINGS, nextRoom, entrancePoint, false);
 
             List<Pair<ConnectionPoint, StructurePlaceSettings>> validPoints = new ArrayList<>();

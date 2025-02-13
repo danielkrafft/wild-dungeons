@@ -10,7 +10,6 @@ import net.minecraft.core.BlockPos;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 public final class DungeonBranchTemplate implements DungeonComponent {
     private String name;

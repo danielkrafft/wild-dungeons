@@ -8,12 +8,13 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTem
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.DIFFICULTY_SCALING;
+import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.MATERIAL;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialPoolRegistry.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomPoolRegistry.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomRegistry.*;
 import static com.danielkkrafft.wilddungeons.util.WeightedPool.combine;
 import static com.mojang.datafixers.util.Pair.of;
-import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.*;
 
 public class DungeonBranchRegistry {
     public static final DungeonRegistration.DungeonComponentRegistry<DungeonBranchTemplate> DUNGEON_BRANCH_REGISTRY = new DungeonRegistration.DungeonComponentRegistry<>();
