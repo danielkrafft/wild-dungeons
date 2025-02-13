@@ -410,6 +410,21 @@ public class DungeonRoomRegistry {
             ))
             .setClazz(KeyRequiredRoom.class)
             .set(BLOCKING_MATERIAL_INDEX, 1);
+
+    public static final DungeonRoomTemplate NETHER_FACTORY_TOWER = create(
+            "nether_factory_tower",
+            List.of(
+                    of("nether/factory/nether_dragon_arena_tower", EMPTY_BLOCK_POS)
+            ));
+
+    public static final DungeonRoomTemplate NETHER_FACTORY_BOSS = create(
+            "nether_factory_boss",
+            List.of(
+                    of("nether/factory/nether_dragon_arena_0", EMPTY_BLOCK_POS),
+                    of("nether/factory/nether_dragon_arena_1", new BlockPos(-48, 0, 0)),
+                    of("nether/factory/nether_dragon_arena_2", new BlockPos(0, 0, 48)),
+                    of("nether/factory/nether_dragon_arena_3", new BlockPos(-48,0,48))
+            )).set(HAS_BEDROCK_SHELL,false);
     public static DungeonRoomTemplate copyOf(DungeonRoomTemplate template, String name) {
         DungeonRoomTemplate room = DungeonRoomTemplate.copyOf(template, name);
         dungeonRooms.add(room);

@@ -113,7 +113,11 @@ public class DungeonBranchRegistry {
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .addSimple(NETHER_PIPEWORKS_3)
                     .add(PIGLIN_FACTORY_PIPEWORKS_ROOM_POOL, 10)
-                    .addSimple(NETHER_PIPEWORKS_TO_FACTORY));
+                    .addSimple(NETHER_PIPEWORKS_3)
+                    .addSimple(NETHER_PIPEWORKS_TO_FACTORY)
+                    .addSimple(NETHER_FACTORY_TOWER)
+                    .addSimple(NETHER_FACTORY_BOSS)
+            );
     public static final DungeonBranchTemplate PIGLIN_FACTORY_PIPEWORKS_SIDE_BRANCH = create("PIGLIN_FACTORY_PIPEWORKS_SIDE_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
 //                    .addSimple(NETHER_PIPEWORKS_3)

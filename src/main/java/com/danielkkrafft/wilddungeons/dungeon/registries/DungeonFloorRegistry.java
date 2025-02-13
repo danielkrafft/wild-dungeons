@@ -64,7 +64,7 @@ public class DungeonFloorRegistry {
                     .addSimple(PIGLIN_FACTORY_PIPEWORKS_BRANCH)
                     .addSimple(PIGLIN_FACTORY_PIPEWORKS_SIDE_BRANCH)
             )
-            .setOrigin(new BlockPos(0, 100, 0));
+            .setOrigin(new BlockPos(0, 0, 0));
 
     public static final DungeonFloorTemplate VILLAGE_FLOOR = create("village")
             .setBranchTemplates(
