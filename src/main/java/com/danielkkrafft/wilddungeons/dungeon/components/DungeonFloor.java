@@ -127,7 +127,8 @@ public class DungeonFloor {
     }
 
     public void sortBranches() {
-        this.dungeonBranches.sort(Comparator.comparingInt(DungeonBranch::getIndex));
+        if (this.dungeonBranches != null)
+            this.dungeonBranches.sort(Comparator.comparingInt(DungeonBranch::getIndex));
     }
 
     public void removedHalfGeneratedBranch() {

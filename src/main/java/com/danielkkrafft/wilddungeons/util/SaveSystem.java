@@ -39,6 +39,13 @@ public class SaveSystem {
         INSTANCE.deleteSession(dungeonSession);
     }
 
+    public static void failLoading() {
+        DungeonSessionManager.getInstance().setSessions(new HashMap<>());
+        WDPlayerManager.getInstance().setServerPlayers(new HashMap<>());
+        INSTANCE.loaded = true;
+        INSTANCE.loading = false;
+    }
+
     private void deleteSession(DungeonSession dungeonSession) {
         Path path = FileUtil.getWorldPath().resolve("data").resolve("dungeons");
         FileUtil.deletePath(path.resolve(dungeonSession.getSessionKey()+".nbt"));

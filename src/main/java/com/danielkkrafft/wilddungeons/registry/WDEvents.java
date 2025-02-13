@@ -78,6 +78,7 @@ public class WDEvents {
             WildDungeons.getLogger().info("DUNGEON FILE LOADING COMPLETE!");
         }).exceptionally(throwable -> {
             WildDungeons.getLogger().error("DUNGEON FILE LOADING FAILED!");
+            SaveSystem.failLoading();
             throwable.printStackTrace();
             return null;
         });

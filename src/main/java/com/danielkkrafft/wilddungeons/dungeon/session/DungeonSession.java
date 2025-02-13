@@ -208,7 +208,8 @@ public class DungeonSession {
         this.floors.add(floor);
     }
     public void sortFloors() {
-        this.floors.sort(Comparator.comparingInt(DungeonFloor::getIndex));
+        if (this.floors != null)
+            this.floors.sort(Comparator.comparingInt(DungeonFloor::getIndex));
     }
 
     public void validate() {

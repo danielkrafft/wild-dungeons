@@ -316,6 +316,7 @@ public class DungeonBranch {
         this.branchRooms.add(room);
     }
     public void sortRooms() {
-        this.branchRooms.sort(Comparator.comparingInt(DungeonRoom::getIndex));
+        if (this.branchRooms != null)
+            this.branchRooms.sort(Comparator.comparingInt(DungeonRoom::getIndex));
     }
 }
