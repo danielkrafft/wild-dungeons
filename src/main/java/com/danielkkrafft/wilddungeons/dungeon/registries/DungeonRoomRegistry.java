@@ -425,6 +425,7 @@ public class DungeonRoomRegistry {
             .setClazz(BossRoom.class)
             .set(ENEMY_TABLE, EnemyTableRegistry.NETHER_DRAGON_ARENA)
             .set(HAS_BEDROCK_SHELL,false);
+
     public static DungeonRoomTemplate copyOf(DungeonRoomTemplate template, String name) {
         DungeonRoomTemplate room = DungeonRoomTemplate.copyOf(template, name);
         dungeonRooms.add(room);

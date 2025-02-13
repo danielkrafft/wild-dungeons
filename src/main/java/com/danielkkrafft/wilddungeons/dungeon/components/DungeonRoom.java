@@ -546,14 +546,17 @@ public class DungeonRoom {
         });
     }
 
-    public BlockPos calculateFurthestPoint(List<BlockPos> validPoints) {
+    public BlockPos calculateFurthestPoint(List<BlockPos> validPoints, int maxDistance) {
         return validPoints.stream().map(pos -> {
             int score = 0;
 
             for (WDPlayer wdPlayer : getActivePlayers()) {
                 ServerPlayer player = wdPlayer.getServerPlayer();
-                if (player!=null)
-                    score += pos.distManhattan( player.blockPosition());
+                if (player!=null) {
+                    int dist = pos.distManhattan(player.blockPosition());
+                    score += dist;
+                    if (dist > maxDistance) score -= 1000;
+                }
             }
 
             return new Pair<>(pos, score);
