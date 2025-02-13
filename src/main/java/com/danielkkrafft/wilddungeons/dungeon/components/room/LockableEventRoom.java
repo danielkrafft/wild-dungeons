@@ -102,7 +102,7 @@ public class LockableEventRoom extends DungeonRoom {
         setPreviewDoorways();
     }
 
-    private void setPreviewDoorways() {
+    public void setPreviewDoorways() {
         if (isClear()) return;
         this.getConnectionPoints().forEach(point -> {
             if (point.isConnected()) {

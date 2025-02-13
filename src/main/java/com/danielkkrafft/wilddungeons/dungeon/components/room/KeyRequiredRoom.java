@@ -11,7 +11,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlac
 import java.util.ArrayList;
 import java.util.List;
 
-public class KeyRequiredRoom extends TargetPurgeRoom{
+public class KeyRequiredRoom extends TargetPurgeRoom {
     public ArrayList<BlockPos> lockableBlocks = new ArrayList<>();
 
     public KeyRequiredRoom(DungeonBranch branch, String templateKey, BlockPos position, StructurePlaceSettings settings, List<ConnectionPoint> allConnectionPoints) {
@@ -54,8 +54,22 @@ public class KeyRequiredRoom extends TargetPurgeRoom{
     public void onClear() {
         super.onClear();
         lockableBlocks.forEach(pos -> {
-            getBranch().getFloor().getLevel().setBlock(pos, Blocks.AIR.defaultBlockState(),3);
+            getBranch().getFloor().getLevel().setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
         });
         lockableBlocks.clear();
+    }
+
+    @Override
+    public void setPreviewDoorways() {
+        if (isClear()) return;
+        this.getConnectionPoints().forEach(point -> {
+            if (point.isConnected()) {
+                //this code only works when the *next* branch is generated too
+                if (point.getConnectedPoint().getBranchIndex() <= this.getBranch().getIndex() &&
+                        (point.getConnectedPoint().getRoom().getIndex() <= this.getIndex() || point.getConnectedPoint().getBranchIndex() != this.getBranch().getIndex())) {
+                    this.templateBasedUnblock(getBranch().getFloor(), point);
+                }
+            }
+        });
     }
 }
