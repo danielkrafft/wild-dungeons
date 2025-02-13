@@ -12,6 +12,7 @@ import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundUpdateWDPla
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.danielkkrafft.wilddungeons.util.FileUtil;
+import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import com.danielkkrafft.wilddungeons.util.SaveSystem;
 import com.danielkkrafft.wilddungeons.util.Serializer;
 import net.minecraft.core.BlockPos;
@@ -20,9 +21,14 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.monster.Blaze;
-import net.minecraft.world.entity.monster.Bogged;
-import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.animal.Chicken;
+import net.minecraft.world.entity.animal.Pig;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.entity.boss.wither.WitherBoss;
+import net.minecraft.world.entity.monster.*;
+import net.minecraft.world.entity.monster.hoglin.Hoglin;
+import net.minecraft.world.entity.monster.piglin.Piglin;
+import net.minecraft.world.entity.monster.piglin.PiglinBrute;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -52,7 +58,7 @@ public class WDEvents {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
             if (!(event.getOrb() instanceof EssenceOrb)) {
                 WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer);
-                wdPlayer.setRecentEssence("essence:overworld");
+                wdPlayer.setRecentEssence(EssenceOrb.Type.OVERWORLD);
                 WDPlayerManager.syncAll(List.of(wdPlayer.getUUID()));
             }
         }
@@ -114,13 +120,42 @@ public class WDEvents {
     public static void onLivingDropExperience(LivingExperienceDropEvent event) {
         if (event.getEntity().level().isClientSide) {return;}
 
-        if (event.getEntity() instanceof Blaze) {
-            EssenceOrb.award((ServerLevel) event.getEntity().level(), event.getEntity().position(), "nether", 5);
-        }
+        // NETHER
 
-        if (event.getEntity() instanceof EnderMan) {
-            EssenceOrb.award((ServerLevel) event.getEntity().level(), event.getEntity().position(), "end", 5);
-        }
+        int netherAmount = 0;
+
+        if (event.getEntity() instanceof Blaze) netherAmount = RandomUtil.randIntBetween(3, 7);
+        else if (event.getEntity() instanceof Chicken) netherAmount = RandomUtil.sample(0.9) ? RandomUtil.randIntBetween(1, 2) : 0;
+        else if (event.getEntity() instanceof EnderMan) netherAmount = RandomUtil.sample(0.8) ? RandomUtil.randIntBetween(2, 4) : 0;
+        else if (event.getEntity() instanceof Ghast) netherAmount = RandomUtil.randIntBetween(8, 15);
+        else if (event.getEntity() instanceof Hoglin) netherAmount = RandomUtil.randIntBetween(4, 8);
+        else if (event.getEntity() instanceof MagmaCube) netherAmount = RandomUtil.randIntBetween(1, 5);
+        else if (event.getEntity() instanceof Piglin) netherAmount = RandomUtil.randIntBetween(2, 5);
+        else if (event.getEntity() instanceof PiglinBrute) netherAmount = RandomUtil.randIntBetween(4, 10);
+        else if (event.getEntity() instanceof Skeleton) netherAmount = RandomUtil.sample(0.9) ? RandomUtil.randIntBetween(1, 3) : 0;
+        else if (event.getEntity() instanceof Pig) netherAmount = RandomUtil.sample(0.95) ? RandomUtil.randIntBetween(1, 10) : 0;
+        else if (event.getEntity() instanceof Strider) netherAmount = RandomUtil.randIntBetween(3, 7);
+        else if (event.getEntity() instanceof WitherSkeleton) netherAmount = RandomUtil.randIntBetween(4, 7);
+        else if (event.getEntity() instanceof ZombifiedPiglin) netherAmount = RandomUtil.randIntBetween(4, 7);
+        else if (event.getEntity() instanceof WitherBoss) netherAmount = RandomUtil.randIntBetween(100, 200);
+
+        if (netherAmount > 0) EssenceOrb.award((ServerLevel) event.getEntity().level(), event.getEntity().position(), EssenceOrb.Type.NETHER, netherAmount);
+
+        // END
+
+        int endAmount = 0;
+
+        if (event.getEntity() instanceof EnderMan) endAmount = RandomUtil.randIntBetween(3, 7);
+        else if (event.getEntity() instanceof Endermite) endAmount = RandomUtil.randIntBetween(2, 4);
+        else if (event.getEntity() instanceof EnderDragon) endAmount = RandomUtil.randIntBetween(300, 2000);
+        else if (event.getEntity() instanceof Shulker) endAmount = RandomUtil.randIntBetween(3, 7);
+        else if (event.getEntity() instanceof WitherBoss) endAmount = RandomUtil.randIntBetween(10, 40);
+        else if (event.getEntity() instanceof Phantom) endAmount = RandomUtil.sample(0.6) ? RandomUtil.randIntBetween(1, 7) : 0;
+        else if (event.getEntity() instanceof Silverfish) endAmount = RandomUtil.sample(0.9) ? RandomUtil.randIntBetween(1, 2) : 0;
+        else if (event.getEntity() instanceof Silverfish) endAmount = RandomUtil.sample(0.9) ? RandomUtil.randIntBetween(1, 2) : 0;
+
+        if (endAmount > 0) EssenceOrb.award((ServerLevel) event.getEntity().level(), event.getEntity().position(), EssenceOrb.Type.END, endAmount);
+
     }
 
     @SubscribeEvent

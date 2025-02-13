@@ -147,5 +147,40 @@
     "sounds": [
       {"name": "wilddungeons:item/meathook/meathook_retract"}
     ]
+  },
+  "ui.misc.beep": {
+    "sounds": [
+      {"name": "wilddungeons:ui/beep1"},
+      {"name": "wilddungeons:ui/beep2"},
+      {"name": "wilddungeons:ui/beep3"},
+      {"name": "wilddungeons:ui/beep4"},
+      {"name": "wilddungeons:ui/beep5"},
+      {"name": "wilddungeons:ui/beep6"}
+    ]
+  },
+  "entity.amogus.step": {
+    "sounds": [
+      {"name": "wilddungeons:entity/amogus/amogus_step1"},
+      {"name": "wilddungeons:entity/amogus/amogus_step2"},
+      {"name": "wilddungeons:entity/amogus/amogus_step3"},
+      {"name": "wilddungeons:entity/amogus/amogus_step4"},
+      {"name": "wilddungeons:entity/amogus/amogus_step5"},
+      {"name": "wilddungeons:entity/amogus/amogus_step6"}
+    ]
+  },
+  "entity.amogus.kill": {
+    "sounds": [
+      {"name": "wilddungeons:entity/amogus/amogus_kill"}
+    ]
+  },
+  "entity.amogus.ambient": {
+    "sounds": [
+      {"name": "wilddungeons:entity/amogus/amogus1"}
+    ]
+  },
+  "entity.whispers": {
+    "sounds": [
+      {"name": "wilddungeons:entity/whispers"}
+    ]
   }
 }

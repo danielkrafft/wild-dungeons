@@ -1,17 +1,10 @@
 package com.danielkkrafft.wilddungeons.item;
 
 import com.danielkkrafft.wilddungeons.entity.GrapplingHook;
-import com.danielkkrafft.wilddungeons.item.renderer.MeathookRenderer;
 import com.danielkkrafft.wilddungeons.registry.WDDataComponents;
 import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
 import com.danielkkrafft.wilddungeons.util.MathUtil;
-import com.mojang.serialization.Codec;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
-import net.minecraft.core.UUIDUtil;
-import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -21,67 +14,26 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ProjectileWeaponItem;
-import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import software.bernie.geckolib.animatable.GeoAnimatable;
-import software.bernie.geckolib.animatable.GeoItem;
-import software.bernie.geckolib.animatable.SingletonGeoAnimatable;
-import software.bernie.geckolib.animatable.client.GeoRenderProvider;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.AnimatableManager;
-import software.bernie.geckolib.animation.AnimationController;
-import software.bernie.geckolib.animation.PlayState;
-import software.bernie.geckolib.animation.RawAnimation;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.UUID;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 
-/**
- * @author Wejna
- * <p>The meathook item class, which extends {@link ProjectileWeaponItem}</p>
- * <p>Based off of the crossbow as well as the fishing rod for the projectile</p>
- * <p>Damages a target hit by <i>2.5 dmg</i> (5 hearts)</p>
- *
- * Ported by DK, from Forge 1.18 to Neo 1.21 wish me luck
- */
-public class Meathook extends ProjectileWeaponItem implements GeoAnimatable, GeoItem
-{
-    private static final String CONTROLLER = "meathook_controller";
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+public class Meathook extends WDWeapon {
+
+    public static final String NAME = "meathook";
+    public enum AnimationList { idle, charge, hold, fire }
 
     private static final int CHARGE_DURATION = 20;
 
-    private static final RawAnimation IDLE_ANIM = RawAnimation.begin().thenLoop(MeathookRenderer.idleAnim);
-    private static final RawAnimation CHARGE_ANIM = RawAnimation.begin().thenPlay(MeathookRenderer.chargeAnim);
-    private static final RawAnimation CHARGE_HOLD_ANIM = RawAnimation.begin().thenLoop(MeathookRenderer.chargeHoldAnim);
-    private static final RawAnimation FIRE_ANIM = RawAnimation.begin().thenPlay(MeathookRenderer.fireAnim);
-
-    public Meathook()
-    {
-        super(new Item.Properties()
-                .rarity(Rarity.RARE)
-                .durability(2000)
-        );
-        SingletonGeoAnimatable.registerSyncedAnimatable(this);
-    }
-
-    @Override
-    public void createGeoRenderer(Consumer<GeoRenderProvider> consumer) {
-        consumer.accept(new GeoRenderProvider() {
-            private final BlockEntityWithoutLevelRenderer renderer = new MeathookRenderer();
-            @Override
-            public BlockEntityWithoutLevelRenderer getGeoItemRenderer() { return this.renderer; }
-        });
+    public Meathook() {
+        super(NAME);
+        this.addLoopingAnimation(AnimationList.idle.toString());
+        this.addAnimation(AnimationList.charge.toString());
+        this.addLoopingAnimation(AnimationList.hold.toString());
+        this.addAnimation(AnimationList.fire.toString());
     }
 
     @Override
@@ -93,11 +45,11 @@ public class Meathook extends ProjectileWeaponItem implements GeoAnimatable, Geo
             {
                 if(!inMainHand&&!p.getItemInHand(InteractionHand.OFF_HAND).equals(itemStack))
                 {
-                    if(Meathook.isCharged(itemStack))Meathook.setCharged(itemStack,false);
-                    if(Meathook.isCharging(itemStack))Meathook.setCharging(itemStack,false);
-                    setAnimation(MeathookRenderer.idleAnim, itemStack, p, p.level());
+                    if(Meathook.isCharged(itemStack)) Meathook.setCharged(itemStack,false);
+                    if(Meathook.isCharging(itemStack)) Meathook.setCharging(itemStack,false);
+                    setAnimation(AnimationList.idle.toString(), itemStack, p, p.level());
                 }
-                else if(!Meathook.isCharging(itemStack)&&!Meathook.isCharged(itemStack))setAnimation(MeathookRenderer.idleAnim, itemStack, p, p.level());
+                else if(!Meathook.isCharging(itemStack)&&!Meathook.isCharged(itemStack))setAnimation(AnimationList.idle.toString(), itemStack, p, p.level());
             }
             else
             {
@@ -109,7 +61,7 @@ public class Meathook extends ProjectileWeaponItem implements GeoAnimatable, Geo
                         for(ServerLevel l:server.getAllLevels())
                         {
                             Entity enn=l.getEntity(Meathook.getHookUUID(itemStack));
-                            if(enn!=null&&!enn.level().equals(world))Meathook.resetHook(p,itemStack);
+                            if(enn!=null&&!enn.level().equals(world)) Meathook.resetHook(p,itemStack);
                         }
                     }
                 }
@@ -123,7 +75,7 @@ public class Meathook extends ProjectileWeaponItem implements GeoAnimatable, Geo
         if(!p.level().isClientSide)
         {
             resetHook(p,it);
-            setAnimation(MeathookRenderer.idleAnim, it, p, p.level());
+            setAnimation(AnimationList.idle.toString(), it, p, p.level());
             return super.onDroppedByPlayer(it,p);
         }
         return false;
@@ -138,7 +90,7 @@ public class Meathook extends ProjectileWeaponItem implements GeoAnimatable, Geo
             setCharging(it,false);
             if(getHookUUID(it)!=null)
             {
-                p.level().playSound(null,p.blockPosition(),retractMeathook(),SoundSource.PLAYERS,1f,1f);setHook(it,null);
+                p.level().playSound(null,p.blockPosition(),retractMeathook(), SoundSource.PLAYERS,1f,1f);setHook(it,null);
                 if(!p.isCreative())it.setDamageValue(it.getDamageValue()+1);
             }
             p.getCooldowns().addCooldown(it.getItem(),20);
@@ -162,7 +114,7 @@ public class Meathook extends ProjectileWeaponItem implements GeoAnimatable, Geo
             if(i==CHARGE_DURATION)
             {
                 level.playSound(null,livingEntity.blockPosition(),loadMeathook(),SoundSource.PLAYERS,1f,1f);
-                if(livingEntity instanceof Player)setAnimation(MeathookRenderer.chargeHoldAnim, itemStack, (Player)livingEntity, level);
+                if(livingEntity instanceof Player)setAnimation(AnimationList.charge.toString(), itemStack, (Player)livingEntity, level);
             }
             setCharged(itemStack,true);
         }
@@ -172,7 +124,7 @@ public class Meathook extends ProjectileWeaponItem implements GeoAnimatable, Geo
             if(i%8==0)level.playSound(null,livingEntity.blockPosition(),chargeMeathook(i),SoundSource.PLAYERS,1f,1f);
             if(i==0)
             {
-                if(livingEntity instanceof Player)setAnimation(MeathookRenderer.chargeAnim, itemStack, (Player)livingEntity, level);
+                if(livingEntity instanceof Player)setAnimation(AnimationList.charge.toString(), itemStack, (Player)livingEntity, level);
             }
         }
     }
@@ -187,9 +139,9 @@ public class Meathook extends ProjectileWeaponItem implements GeoAnimatable, Geo
                 setCharging(it,false);
                 setCharged(it,false);
                 shoot(world,p2,it,p.getYRot(),p.getXRot());
-                setAnimation(MeathookRenderer.fireAnim, it, p2, world);
+                setAnimation(AnimationList.fire.toString(), it, p2, world);
             }
-            else setAnimation(MeathookRenderer.idleAnim, it, p2, world);
+            else setAnimation(AnimationList.idle.toString(), it, p2, world);
         }
     }
 
@@ -237,37 +189,5 @@ public class Meathook extends ProjectileWeaponItem implements GeoAnimatable, Geo
         if (it == null) return;
         if (hook != null) {it.set(WDDataComponents.HOOK_UUID.get(), hook.getUUID());}
         else if(it.getComponents().has(WDDataComponents.HOOK_UUID.get())) {it.remove(WDDataComponents.HOOK_UUID.get());}
-    }
-
-    @Override
-    public int getUseDuration(ItemStack stack, LivingEntity entity) {
-        return 100000;
-    }
-
-    @Override public UseAnim getUseAnimation(ItemStack it){return UseAnim.BOW;}
-
-    @Override public Predicate<ItemStack> getAllSupportedProjectiles() {return ARROW_ONLY;}
-    @Override public int getDefaultProjectileRange(){return 8;}
-    @Override protected void shootProjectile(LivingEntity livingEntity, Projectile projectile, int i, float v, float v1, float v2, @Nullable LivingEntity livingEntity1) {}
-
-    private void setAnimation(String anim, ItemStack stack, Player player, Level level) {
-        if(level instanceof ServerLevel serverLevel) {
-            triggerAnim(player, GeoItem.getOrAssignId(stack, serverLevel), CONTROLLER, anim);
-        }
-    }
-
-    @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(new AnimationController<GeoAnimatable>(this, CONTROLLER,1, state -> PlayState.CONTINUE)
-                .triggerableAnim(MeathookRenderer.idleAnim, IDLE_ANIM)
-                .triggerableAnim(MeathookRenderer.chargeAnim, CHARGE_ANIM)
-                .triggerableAnim(MeathookRenderer.chargeHoldAnim, CHARGE_HOLD_ANIM)
-                .triggerableAnim(MeathookRenderer.fireAnim, FIRE_ANIM)
-        );
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return cache;
     }
 }

@@ -129,13 +129,13 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
         if (this.getSoundLoop() != 0) {
             if (this.level() instanceof ServerLevel serverLevel && this.tickCount % 25 == 0) {
                 CompoundTag payload = new CompoundTag();
-                payload.putInt("soundEvent", BuiltInRegistries.SOUND_EVENT.getId(WDSoundEvents.RIFT_AURA.value()));
+                payload.putInt("soundEvent", this.getSoundLoop());
                 payload.putString("soundSource", SoundSource.HOSTILE.toString());
                 payload.putInt("entityId", this.getId());
                 payload.putBoolean("loop", true);
                 payload.putFloat("volume", 1.0f);
                 payload.putFloat("pitch", 1.0f);
-                PacketDistributor.sendToPlayersNear(serverLevel, null, this.getX(), this.getY(), this.getZ(), 70.0, new ClientboundPlayDynamicSoundPacket(payload));
+                PacketDistributor.sendToPlayersNear(serverLevel, null, this.getX(), this.getY(), this.getZ(), 100.0, new ClientboundPlayDynamicSoundPacket(payload));
             }
         }
         super.tick();
@@ -271,8 +271,8 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
         if (!purchased) {
             int levels = switch (this.getOfferingCostType()) {
                 case XP_LEVEL -> player.getServerPlayer().experienceLevel;
-                case NETHER_XP_LEVEL -> Mth.floor(player.getEssenceLevel("essence:nether"));
-                case END_XP_LEVEL -> Mth.floor(player.getEssenceLevel("essence:end"));
+                case NETHER_XP_LEVEL -> Mth.floor(player.getEssenceLevel(EssenceOrb.Type.NETHER));
+                case END_XP_LEVEL -> Mth.floor(player.getEssenceLevel(EssenceOrb.Type.END));
             };
 
             if (this.costAmount == 0 || this.costAmount <= levels) {
@@ -280,8 +280,8 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
 
                 switch (this.getOfferingCostType()) {
                     case XP_LEVEL -> player.getServerPlayer().giveExperienceLevels(-this.costAmount);
-                    case NETHER_XP_LEVEL -> player.giveEssenceLevels(-this.costAmount, "essence:nether");
-                    case END_XP_LEVEL -> player.giveEssenceLevels(-this.costAmount, "essence:end");
+                    case NETHER_XP_LEVEL -> player.giveEssenceLevels(-this.costAmount, EssenceOrb.Type.NETHER);
+                    case END_XP_LEVEL -> player.giveEssenceLevels(-this.costAmount, EssenceOrb.Type.END);
                 }
 
                 this.costAmount = 0;

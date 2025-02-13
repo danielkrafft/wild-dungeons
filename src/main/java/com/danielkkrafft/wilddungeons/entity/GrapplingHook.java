@@ -227,7 +227,7 @@ public class GrapplingHook extends ThrowableProjectile
         for(int i=0;i<inv.getContainerSize();i++)
         {
             ItemStack it=inv.getItem(i);
-            if(it.getItem()instanceof Meathook&&Meathook.getHookUUID(it)!=null&&Meathook.getHookUUID(it).equals(getUUID()))
+            if(it.getItem()instanceof Meathook && Meathook.getHookUUID(it)!=null&& Meathook.getHookUUID(it).equals(getUUID()))
             {
                 return it;
             }

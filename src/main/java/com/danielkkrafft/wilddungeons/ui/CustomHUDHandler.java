@@ -1,6 +1,7 @@
 package com.danielkkrafft.wilddungeons.ui;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.entity.EssenceOrb;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import net.minecraft.client.Minecraft;
@@ -21,7 +22,7 @@ public class CustomHUDHandler {
         if (player == null) {return;}
         WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateClientWDPlayer(player);
 
-        if (!wdPlayer.getRecentEssence().equals("essence:overworld")) {
+        if (!wdPlayer.getRecentEssence().equals(EssenceOrb.Type.OVERWORLD)) {
             if (event.getName().getPath().equals("experience_level") || event.getName().getPath().equals("experience_bar")) {
                 event.setCanceled(true);
             }

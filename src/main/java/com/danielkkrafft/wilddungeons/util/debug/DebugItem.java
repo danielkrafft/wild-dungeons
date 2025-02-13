@@ -6,9 +6,11 @@ import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
+import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundPostDungeonScreenPacket;
 import com.danielkkrafft.wilddungeons.player.SavedTransform;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -17,6 +19,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 public class DebugItem extends Item {
 
@@ -30,7 +33,7 @@ public class DebugItem extends Item {
         if (!(player instanceof ServerPlayer serverPlayer)) return InteractionResultHolder.fail(player.getItemInHand(usedHand));
         WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer.getStringUUID());
 
-        //PacketDistributor.sendToPlayer((ServerPlayer) player, new ClientboundPostDungeonScreenPacket(new CompoundTag()));
+        PacketDistributor.sendToPlayer((ServerPlayer) player, new ClientboundPostDungeonScreenPacket(new CompoundTag()));
         //logNonDungeonStuff(wdPlayer);
         logDungeonStuff((ServerLevel) level, wdPlayer);
 

@@ -2,12 +2,13 @@ package com.danielkkrafft.wilddungeons;
 
 import com.danielkkrafft.wilddungeons.block.WDBlocks;
 import com.danielkkrafft.wilddungeons.block.WDFluids;
-import com.danielkkrafft.wilddungeons.dungeon.components.Alignments;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonPerk;
 import com.danielkkrafft.wilddungeons.dungeon.registries.PerkRegistry;
+import com.danielkkrafft.wilddungeons.entity.AmogusEntity;
 import com.danielkkrafft.wilddungeons.entity.WDEntities;
 import com.danielkkrafft.wilddungeons.entity.boss.BreezeGolem;
 import com.danielkkrafft.wilddungeons.entity.boss.MutantBogged;
+import com.danielkkrafft.wilddungeons.entity.model.AmogusModel;
 import com.danielkkrafft.wilddungeons.entity.renderer.*;
 import com.danielkkrafft.wilddungeons.network.clientbound.*;
 import com.danielkkrafft.wilddungeons.network.serverbound.ServerboundRestorePlayerGamemodePacket;
@@ -80,7 +81,6 @@ public class WildDungeons {
     public static void onCommonSetup(FMLCommonSetupEvent event) {
         FileUtil.setGamePath(FMLPaths.GAMEDIR.get());
         FileUtil.setDungeonsPath(FileUtil.getGamePath().resolve(MODID));
-        Alignments.setupAlignments();
     }
 
     @SubscribeEvent
@@ -109,6 +109,7 @@ public class WildDungeons {
     @SubscribeEvent
     public static void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(WDEntities.ESSENCE_ORB.get(), EssenceOrbRenderer::new);
+        event.registerEntityRenderer(WDEntities.AMOGUS.get(), AmogusRenderer::new);
         event.registerEntityRenderer(WDEntities.OFFERING.get(), OfferingRenderer::new);
         event.registerEntityRenderer(WDEntities.BREEZE_GOLEM.get(), BreezeGolemRenderer::new);
         event.registerEntityRenderer(WDEntities.MUTANT_BOGGED.get(), MutantBoggedRenderer::new);
@@ -161,6 +162,7 @@ public class WildDungeons {
     {
         e.put(WDEntities.BREEZE_GOLEM.get(), BreezeGolem.setAttributes());
         e.put(WDEntities.MUTANT_BOGGED.get(), MutantBogged.setAttributes());
+        e.put(WDEntities.AMOGUS.get(), AmogusEntity.setAttributes());
     }
 
     public static ShaderInstance RIFT_SHADER;
@@ -171,6 +173,11 @@ public class WildDungeons {
         } catch (IOException e) {
             WildDungeons.getLogger().info("Failed to load custom shader!", e);
         }
+    }
+
+    @SubscribeEvent
+    public static void registerLayerDefinition(EntityRenderersEvent.RegisterLayerDefinitions event) {
+        event.registerLayerDefinition(AmogusModel.LAYER_LOCATION, AmogusModel::createBodyLayer);
     }
 
     public static ResourceLocation rl(String path) {

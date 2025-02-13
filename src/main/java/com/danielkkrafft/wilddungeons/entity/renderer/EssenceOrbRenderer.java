@@ -1,6 +1,5 @@
 package com.danielkkrafft.wilddungeons.entity.renderer;
 
-import com.danielkkrafft.wilddungeons.dungeon.components.Alignments;
 import com.danielkkrafft.wilddungeons.entity.EssenceOrb;
 import com.danielkkrafft.wilddungeons.util.ColorUtil;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -25,7 +24,7 @@ public class EssenceOrbRenderer extends ExperienceOrbRenderer {
     @Override
     public void render(ExperienceOrb entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
         EssenceOrb essenceOrb = (EssenceOrb) entity;
-        int hueOffset = Alignments.ALIGNMENTS.get(essenceOrb.essence_type).ORB_HUE_OFFSET();
+        int hueOffset = EssenceOrb.getHueOffset(essenceOrb.essence_type);
         poseStack.pushPose();
         int i = entity.getIcon();
         float f = (float)(i % 4 * 16 + 0) / 64.0F;

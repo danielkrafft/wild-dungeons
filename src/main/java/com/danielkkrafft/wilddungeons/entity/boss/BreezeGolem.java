@@ -155,6 +155,7 @@ public class BreezeGolem extends Monster implements RangedAttackMob, GeoEntity
                 add(Attributes.FLYING_SPEED, 2).
                 build();
     }
+
     @Override
     protected void registerGoals()
     {

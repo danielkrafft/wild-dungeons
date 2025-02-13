@@ -29,6 +29,9 @@ public class OfferingTemplateRegistry {
     public static final OfferingTemplate ENDER_PEARLS = create("ENDER_PEARLS", ItemTemplateRegistry.ENDER_PEARL, END_XP_LEVEL, 4, 1.5f);
     public static final OfferingTemplate COAL = create("COAL",ItemTemplateRegistry.COAL, XP_LEVEL, 2, 1.5f);
 
+    public static final OfferingTemplate FREE_AMOGUS_STAFF = create("FREE_AMOGUS_STAFF", ItemTemplateRegistry.AMOGUS_STAFF, XP_LEVEL, 0, 1.0f).setRenderScale(2.0f);
+    public static final OfferingTemplate FREE_MEATHOOK = create("FREE_MEATHOOK", ItemTemplateRegistry.MEATHOOK, XP_LEVEL, 0, 1.0f).setRenderScale(2.0f);
+
     public static final OfferingTemplate FREE_SWORD_DAMAGE = create("FREE_SWORD_DAMAGE", PERK, 1, "SWORD_DAMAGE", XP_LEVEL, 0, 1);
     public static final OfferingTemplate FREE_AXE_DAMAGE = create("FREE_AXE_DAMAGE", PERK, 1, "AXE_DAMAGE", XP_LEVEL, 0, 1);
     public static final OfferingTemplate FREE_BOW_DAMAGE = create("FREE_BOW_DAMAGE", PERK, 1, "BOW_DAMAGE", XP_LEVEL, 0, 1);
@@ -50,8 +53,8 @@ public class OfferingTemplateRegistry {
     public static final OfferingTemplate BOW_DAMAGE_NETHER = create("BOW_DAMAGE_NETHER", PERK, 1, "BOW_DAMAGE", NETHER_XP_LEVEL, 8, 1.5f);
     public static final OfferingTemplate BOW_DAMAGE_END = create("BOW_DAMAGE_END", PERK, 1, "BOW_DAMAGE", END_XP_LEVEL, 8, 1.5f);
 
-    public static final OfferingTemplate OVERWORLD_TEST_RIFT = create("OVERWORLD_TEST_RIFT", RIFT, 1, "wd-mega_dungeon", XP_LEVEL, 30, 1.5f).setRenderScale(1.0f).setSoundLoop(WDSoundEvents.RIFT_AURA.value());
-    public static final OfferingTemplate NETHER_TEST_RIFT = create("NETHER_TEST_RIFT", RIFT, 1, "wd-piglin_factory", NETHER_XP_LEVEL, 30, 1.5f);
+    public static final OfferingTemplate OVERWORLD_TEST_RIFT = create("OVERWORLD_TEST_RIFT", RIFT, 1, "wd-mega_dungeon", XP_LEVEL, 30, 1.5f).setSoundLoop(WDSoundEvents.RIFT_AURA.value());
+    public static final OfferingTemplate NETHER_TEST_RIFT = create("NETHER_TEST_RIFT", RIFT, 1, "wd-piglin_factory", NETHER_XP_LEVEL, 30, 1.5f).setSoundLoop(WDSoundEvents.WHISPERS.value());
     public static final OfferingTemplate END_TEST_RIFT = create("END_TEST_RIFT", RIFT, 1, "wd-dungeon_1", END_XP_LEVEL, 30, 1.5f);
 
 

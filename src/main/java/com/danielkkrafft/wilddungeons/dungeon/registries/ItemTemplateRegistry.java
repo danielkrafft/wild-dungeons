@@ -2,6 +2,7 @@ package com.danielkkrafft.wilddungeons.dungeon.registries;
 
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.ItemTemplate;
+import com.danielkkrafft.wilddungeons.registry.WDItems;
 import net.minecraft.core.Holder;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
@@ -61,6 +62,8 @@ public class ItemTemplateRegistry {
     public static ItemTemplate SPIDER_EYE = create("spider_eye_8", Items.SPIDER_EYE, 8).setDeviance(1.5f);
     public static ItemTemplate RABBIT_FOOT = create("rabbit_foot_2", Items.RABBIT_FOOT, 2);
 
+    public static ItemTemplate AMOGUS_STAFF = create("amogus_staff", WDItems.AMOGUS_STAFF.get(), 1);
+    public static ItemTemplate MEATHOOK = create("meathook", WDItems.MEATHOOK_ITEM.get(), 1);
 
     public static ItemTemplate create(String name, Item item, int count) {
         ItemTemplate itemTemplate = new ItemTemplate(name, item, count);

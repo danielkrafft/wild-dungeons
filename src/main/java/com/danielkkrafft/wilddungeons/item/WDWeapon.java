@@ -99,12 +99,6 @@ public abstract class WDWeapon extends Item implements GeoAnimatable, GeoItem {
         public WDWeaponRenderer() {
             super(new WDWeaponModel<T>());
         }
-
-        @Override
-        public void actuallyRender(PoseStack poseStack, T animatable, BakedGeoModel model, @Nullable RenderType renderType, MultiBufferSource bufferSource, @Nullable VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int colour) {
-            WildDungeons.getLogger().info("name: {}", animatable.name);
-            super.actuallyRender(poseStack, animatable, model, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, colour);
-        }
     }
 
     public static class WDWeaponModel<T extends WDWeapon> extends GeoModel<T> {

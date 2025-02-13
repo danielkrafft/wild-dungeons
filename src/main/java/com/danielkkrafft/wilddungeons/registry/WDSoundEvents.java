@@ -31,7 +31,15 @@ public class WDSoundEvents {
     public static final Holder<SoundEvent> MUTANT_BOGGED_CHARGED_ARROW = SOUND_EVENTS.register("entity.mutant_bogged.charged_arrow", SoundEvent::createVariableRangeEvent);
     public static final Holder<SoundEvent> MUTANT_BOGGED_GROWL = SOUND_EVENTS.register("entity.mutant_bogged.growl", SoundEvent::createVariableRangeEvent);
 
+
+    public static final Holder<SoundEvent> AMOGUS_AMBIENT = SOUND_EVENTS.register("entity.amogus.ambient", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> AMOGUS_KILL = SOUND_EVENTS.register("entity.amogus.kill", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> AMOGUS_STEP = SOUND_EVENTS.register("entity.amogus.step", SoundEvent::createVariableRangeEvent);
+
     public static final Holder<SoundEvent> RIFT_AURA = SOUND_EVENTS.register("entity.rift_aura", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> WHISPERS = SOUND_EVENTS.register("entity.whispers", SoundEvent::createVariableRangeEvent);
+
+    public static final Holder<SoundEvent> UI_BEEP = SOUND_EVENTS.register("ui.misc.beep", SoundEvent::createVariableRangeEvent);
 
     public static final Holder<SoundEvent> MEATHOOK_HIT = SOUND_EVENTS.register("entity.meathook.hit", SoundEvent::createVariableRangeEvent);
     public static final Holder<SoundEvent> MEATHOOK_REEL = SOUND_EVENTS.register("entity.meathook.reel", SoundEvent::createVariableRangeEvent);
