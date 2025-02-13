@@ -7,6 +7,8 @@ import net.minecraft.world.item.Items;
 
 import java.util.ArrayList;
 
+import static com.danielkkrafft.wilddungeons.entity.WDEntities.BREEZE_GOLEM;
+
 public class TargetTemplateRegistry {
     public static final DungeonComponentRegistry<TargetTemplate> TARGET_TEMPLATE_REGISTRY = new DungeonComponentRegistry<>();
     public static final ArrayList<TargetTemplate> targetTemplates = new ArrayList<>();
@@ -25,6 +27,8 @@ public class TargetTemplateRegistry {
     public static final TargetTemplate STRAY = createMob("STRAY", EntityType.STRAY);
     public static final TargetTemplate VINDICATOR = createMob("VINDICATOR", EntityType.VINDICATOR);
     public static final TargetTemplate WITHER_SKELETON = createMob("WITHER_SKELETON", EntityType.WITHER_SKELETON).setMainHandItem(Items.STONE_SWORD,true);
+
+    public static final TargetTemplate NETHER_DRAGON = createMob("NETHER_DRAGON", BREEZE_GOLEM.get());
 
     public static TargetTemplate createMob(String name, EntityType<?> entityType) {
         TargetTemplate targetTemplate = TargetTemplate.createMob(name, entityType);

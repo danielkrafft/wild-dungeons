@@ -1,10 +1,7 @@
 package com.danielkkrafft.wilddungeons.dungeon.registries;
 
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
-import com.danielkkrafft.wilddungeons.dungeon.components.room.CombatRoom;
-import com.danielkkrafft.wilddungeons.dungeon.components.room.KeyRequiredRoom;
-import com.danielkkrafft.wilddungeons.dungeon.components.room.LootRoom;
-import com.danielkkrafft.wilddungeons.dungeon.components.room.SecretRoom;
+import com.danielkkrafft.wilddungeons.dungeon.components.room.*;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
@@ -424,7 +421,10 @@ public class DungeonRoomRegistry {
                     of("nether/factory/nether_dragon_arena_1", new BlockPos(-48, 0, 0)),
                     of("nether/factory/nether_dragon_arena_2", new BlockPos(0, 0, 48)),
                     of("nether/factory/nether_dragon_arena_3", new BlockPos(-48,0,48))
-            )).set(HAS_BEDROCK_SHELL,false);
+            ))
+            .setClazz(BossRoom.class)
+            .set(ENEMY_TABLE, EnemyTableRegistry.NETHER_DRAGON_ARENA)
+            .set(HAS_BEDROCK_SHELL,false);
     public static DungeonRoomTemplate copyOf(DungeonRoomTemplate template, String name) {
         DungeonRoomTemplate room = DungeonRoomTemplate.copyOf(template, name);
         dungeonRooms.add(room);
