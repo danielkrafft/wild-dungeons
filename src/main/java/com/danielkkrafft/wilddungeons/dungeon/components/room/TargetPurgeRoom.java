@@ -55,6 +55,7 @@ public class TargetPurgeRoom extends LockableEventRoom {
     }
 
     public void discardByBlockPos(BlockPos pos) {
+
         List<DungeonTarget> toRemove = new ArrayList<>();
         this.targets.forEach(target -> {
             if (!target.spawned) return;

@@ -65,6 +65,8 @@ public class ItemTemplateRegistry {
     public static ItemTemplate AMOGUS_STAFF = create("amogus_staff", WDItems.AMOGUS_STAFF.get(), 1);
     public static ItemTemplate MEATHOOK = create("meathook", WDItems.MEATHOOK_ITEM.get(), 1);
 
+    public static ItemTemplate DUNGEON_KEY = create("dungeon_key", WDItems.WD_DUNGEON_KEY.get(), 1);
+
     public static ItemTemplate create(String name, Item item, int count) {
         ItemTemplate itemTemplate = new ItemTemplate(name, item, count);
         lootEntries.add(itemTemplate);
