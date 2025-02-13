@@ -90,18 +90,7 @@ public class CombatRoom extends TargetPurgeRoom {
         if (offeringTemplate == null) return;
         Offering offering = offeringTemplate.asOffering(this.getBranch().getFloor().getLevel());
         List<BlockPos> validPoints = sampleSpawnablePositions(getBranch().getFloor().getLevel(), 5, -Mth.ceil(Math.max(offering.getBoundingBox().getXsize(), offering.getBoundingBox().getZsize())));
-        BlockPos finalPos = validPoints.stream().map(pos -> {
-            int score = 0;
-
-            for (WDPlayer wdPlayer : getActivePlayers()) {
-                ServerPlayer player = wdPlayer.getServerPlayer();
-                if (player!=null)
-                    score += pos.distManhattan( player.blockPosition());
-            }
-
-            return new Pair<>(pos, score);
-        //unlike spawning enemies, we want to choose the closest spawn point to the players to make it more obvious
-        }).min(Comparator.comparingInt(Pair::getSecond)).get().getFirst();
+        BlockPos finalPos = calculateClosestPoint(validPoints,5);
         offering.setPos(Vec3.atCenterOf(finalPos));
         this.getBranch().getFloor().getLevel().addFreshEntity(offering);
     }

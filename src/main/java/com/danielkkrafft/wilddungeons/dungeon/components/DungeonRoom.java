@@ -17,6 +17,7 @@ import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.danielkkrafft.wilddungeons.util.IgnoreSerialization;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import com.danielkkrafft.wilddungeons.util.debug.WDProfiler;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
@@ -543,5 +544,37 @@ public class DungeonRoom {
                 connectionPoint.unSetConnectedPoint();
             }
         });
+    }
+
+    public BlockPos calculateFurthestPoint(List<BlockPos> validPoints) {
+        return validPoints.stream().map(pos -> {
+            int score = 0;
+
+            for (WDPlayer wdPlayer : getActivePlayers()) {
+                ServerPlayer player = wdPlayer.getServerPlayer();
+                if (player!=null)
+                    score += pos.distManhattan( player.blockPosition());
+            }
+
+            return new Pair<>(pos, score);
+
+        }).max(Comparator.comparingInt(Pair::getSecond)).get().getFirst();
+    }
+
+    public BlockPos calculateClosestPoint(List<BlockPos> validPoints, int minDistance) {
+        return validPoints.stream().map(pos -> {
+            int score = 0;
+
+            for (WDPlayer wdPlayer : getActivePlayers()) {
+                ServerPlayer player = wdPlayer.getServerPlayer();
+                if (player!=null){
+                    int dist = pos.distManhattan(player.blockPosition());
+                    score += dist;
+                    if (dist < minDistance) score -= 1000;
+                }
+            }
+
+            return new Pair<>(pos, score);
+        }).min(Comparator.comparingInt(Pair::getSecond)).get().getFirst();
     }
 }

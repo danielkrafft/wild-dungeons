@@ -75,18 +75,8 @@ public class DungeonTarget {
             }
 
             List<BlockPos> validPoints = room.sampleSpawnablePositions(room.getBranch().getFloor().getLevel(), 3, -Mth.ceil(Math.max(entity.getBoundingBox().getXsize(), entity.getBoundingBox().getZsize())));
-            BlockPos finalPos = validPoints.stream().map(pos -> {
-                int score = 0;
 
-                for (WDPlayer wdPlayer : room.getActivePlayers()) {
-                    ServerPlayer player = wdPlayer.getServerPlayer();
-                    if (player!=null)
-                        score += pos.distManhattan( player.blockPosition());
-                }
-
-                return new Pair<>(pos, score);
-
-            }).max(Comparator.comparingInt(Pair::getSecond)).get().getFirst();
+            BlockPos finalPos = room.calculateFurthestPoint(validPoints);
 
             entity.setPos(Vec3.atCenterOf(finalPos));
             this.uuid = entity.getStringUUID();
@@ -98,18 +88,7 @@ public class DungeonTarget {
         if (type.equals(Type.SPAWNER.toString()))
         {
             List<BlockPos> validPoints = room.sampleSpawnablePositions(room.getBranch().getFloor().getLevel(), 3, -1);
-            BlockPos finalPos = validPoints.stream().map(pos -> {
-                int score = 0;
-
-                for (WDPlayer wdPlayer : room.getActivePlayers()) {
-                    ServerPlayer player = wdPlayer.getServerPlayer();
-                    if (player!=null)
-                        score += pos.distManhattan( player.blockPosition());
-                }
-
-                return new Pair<>(pos, score);
-
-            }).max(Comparator.comparingInt(Pair::getSecond)).get().getFirst();
+            BlockPos finalPos = room.calculateFurthestPoint(validPoints);
 
             ServerLevel level = room.getBranch().getFloor().getLevel();
             level.setBlock(finalPos, Blocks.SPAWNER.defaultBlockState(), 2);
