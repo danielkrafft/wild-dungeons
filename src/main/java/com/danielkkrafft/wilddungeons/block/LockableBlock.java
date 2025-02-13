@@ -17,10 +17,13 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.ChestType;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -97,6 +100,34 @@ public class LockableBlock extends Block {
         return getVoxelShape(direction, locked);
     }
 
+    protected @NotNull BlockState rotate(BlockState state, Rotation rotation) {
+        return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
+    }
+
+    protected @NotNull BlockState mirror(BlockState state, Mirror mirror) {
+        switch (mirror) {
+            case LEFT_RIGHT:
+                switch (state.getValue(FACING)) {
+                    case NORTH:
+                        return state.setValue(FACING, Direction.SOUTH);
+                    case SOUTH:
+                        return state.setValue(FACING, Direction.NORTH);
+                    default:
+                        return state;
+                }
+            case FRONT_BACK:
+                switch (state.getValue(FACING)) {
+                    case EAST:
+                        return state.setValue(FACING, Direction.WEST);
+                    case WEST:
+                        return state.setValue(FACING, Direction.EAST);
+                    default:
+                        return state;
+                }
+            default:
+                return super.mirror(state, mirror);
+        }
+    }
 
     private VoxelShape getVoxelShape(Direction direction, Boolean locked) {
         return switch (direction) {

@@ -399,11 +399,16 @@ public class DungeonRoomRegistry {
                     of("nether/pipeworks/lava_falls", EMPTY_BLOCK_POS)
             ))
             .setBlockingMaterialIndex(1);
+    public static final DungeonRoomTemplate NETHER_PIPEWORKS_COMBAT_0 = copyOf(NETHER_PIPEWORKS_5, "nether_pipeworks_combat_0")
+            .setType(COMBAT)
+            .setRoomClearOffering(OfferingTemplateRegistry.DUNGEON_KEY);
+
     public static final DungeonRoomTemplate NETHER_PIPEWORKS_TO_FACTORY = create(
             "nether_pipeworks_to_factory",
             List.of(
                     of("nether/pipeworks/pipe_to_factory", EMPTY_BLOCK_POS)
-            )).setType(KEYLOCKED)
+            ))
+            .setType(KEYLOCKED)
             .setBlockingMaterialIndex(1);
     public static DungeonRoomTemplate copyOf(DungeonRoomTemplate template, String name) {
         DungeonRoomTemplate room = DungeonRoomTemplate.copyOf(template, name);
