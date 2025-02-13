@@ -1,7 +1,7 @@
 package com.danielkkrafft.wilddungeons.entity.renderer;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.dungeon.components.Alignments;
+import com.danielkkrafft.wilddungeons.entity.EssenceOrb;
 import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
@@ -294,8 +294,8 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
 
             int levels = switch(entity.getOfferingCostType()) {
                 case XP_LEVEL -> Minecraft.getInstance().player.experienceLevel;
-                case NETHER_XP_LEVEL -> Mth.floor(wdPlayer.getEssenceLevel("essence:nether"));
-                case END_XP_LEVEL -> Mth.floor(wdPlayer.getEssenceLevel("essence:end"));
+                case NETHER_XP_LEVEL -> Mth.floor(wdPlayer.getEssenceLevel(EssenceOrb.Type.NETHER));
+                case END_XP_LEVEL -> Mth.floor(wdPlayer.getEssenceLevel(EssenceOrb.Type.END));
             };
 
             if (levels >= entity.getCostAmount()) {
@@ -315,8 +315,8 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
         {
             int hueOffset = switch (entity.getOfferingCostType()) {
                 case XP_LEVEL -> 0;
-                case END_XP_LEVEL -> Alignments.ALIGNMENTS.get("end").ORB_HUE_OFFSET();
-                case NETHER_XP_LEVEL -> Alignments.ALIGNMENTS.get("nether").ORB_HUE_OFFSET();
+                case END_XP_LEVEL -> EssenceOrb.getHueOffset(EssenceOrb.Type.END);
+                case NETHER_XP_LEVEL -> EssenceOrb.getHueOffset(EssenceOrb.Type.NETHER);
                 case null, default -> 0;
             };
 

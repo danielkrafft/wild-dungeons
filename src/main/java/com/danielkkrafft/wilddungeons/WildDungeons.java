@@ -2,7 +2,6 @@ package com.danielkkrafft.wilddungeons;
 
 import com.danielkkrafft.wilddungeons.block.WDBlocks;
 import com.danielkkrafft.wilddungeons.block.WDFluids;
-import com.danielkkrafft.wilddungeons.dungeon.components.Alignments;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonPerk;
 import com.danielkkrafft.wilddungeons.dungeon.registries.PerkRegistry;
 import com.danielkkrafft.wilddungeons.entity.AmogusEntity;
@@ -23,8 +22,6 @@ import com.danielkkrafft.wilddungeons.world.dimension.tools.UpdateDimensionsPack
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.geom.ModelLayerLocation;
-import net.minecraft.client.model.geom.builders.CubeDeformation;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderInstance;
@@ -84,7 +81,6 @@ public class WildDungeons {
     public static void onCommonSetup(FMLCommonSetupEvent event) {
         FileUtil.setGamePath(FMLPaths.GAMEDIR.get());
         FileUtil.setDungeonsPath(FileUtil.getGamePath().resolve(MODID));
-        Alignments.setupAlignments();
     }
 
     @SubscribeEvent

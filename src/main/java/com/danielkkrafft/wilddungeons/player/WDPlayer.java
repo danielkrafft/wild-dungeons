@@ -6,6 +6,7 @@ import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
+import com.danielkkrafft.wilddungeons.entity.EssenceOrb;
 import com.danielkkrafft.wilddungeons.util.CommandUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
@@ -27,7 +28,7 @@ public class WDPlayer {
     private HashMap<String, Integer> essenceTotals = new HashMap<>();
     private HashMap<Integer, SavedTransform> respawns = new HashMap<>();
     private HashMap<Integer, SavedTransform> positions = new HashMap<>();
-    private String recentEssence = "essence:overworld";
+    private String recentEssence = EssenceOrb.Type.OVERWORLD.toString();
     private String lastGameMode = GameType.SURVIVAL.toString();
     private String UUID;
     private int riftCooldown = 100;
@@ -40,10 +41,10 @@ public class WDPlayer {
 
     private long blockPos = 0;
 
-    public int getEssenceTotal(String key) {return this.essenceTotals.getOrDefault(key, 0);}
-    public void setEssenceTotal(String key, int value) {this.essenceTotals.put(key, value);}
-    public String getRecentEssence() {return this.recentEssence;}
-    public void setRecentEssence(String recentEssence) {this.recentEssence = recentEssence;}
+    public int getEssenceTotal(EssenceOrb.Type type) {return this.essenceTotals.getOrDefault(type.toString(), 0);}
+    public void setEssenceTotal(EssenceOrb.Type type, int value) {this.essenceTotals.put(type.toString(), value);}
+    public EssenceOrb.Type getRecentEssence() {return EssenceOrb.Type.valueOf(this.recentEssence);}
+    public void setRecentEssence(EssenceOrb.Type recentEssence) {this.recentEssence = recentEssence.toString();}
 
     public GameType getLastGameMode() {return GameType.valueOf(lastGameMode);}
     public void setLastGameMode(GameType gameType) {this.lastGameMode = gameType.toString();}
@@ -109,13 +110,13 @@ public class WDPlayer {
         return server.getPlayerList().getPlayer(java.util.UUID.fromString(UUID));
     }
 
-    public void giveEssencePoints(String key, int points) {
-        this.setRecentEssence(key);
-        this.setEssenceTotal(key, Mth.clamp(this.getEssenceTotal(key) + points, 0, Integer.MAX_VALUE));
+    public void giveEssencePoints(EssenceOrb.Type type, int points) {
+        this.setRecentEssence(type);
+        this.setEssenceTotal(type, Mth.clamp(this.getEssenceTotal(type) + points, 0, Integer.MAX_VALUE));
     }
 
-    public float getEssenceLevel(String key) {
-        int total = this.getEssenceTotal(key); //-5
+    public float getEssenceLevel(EssenceOrb.Type type) {
+        int total = this.getEssenceTotal(type); //-5
         float level = 0;
         int need = 0;
 
@@ -143,11 +144,11 @@ public class WDPlayer {
         }
     }
 
-    public void giveEssenceLevels(int levels, String key) {
-        int currentLevels = Mth.floor(getEssenceLevel(key));
+    public void giveEssenceLevels(int levels, EssenceOrb.Type type) {
+        int currentLevels = Mth.floor(getEssenceLevel(type));
         int startingLevel = Math.min(currentLevels + levels, currentLevels);
         int targetLevel = Math.max(currentLevels + levels, currentLevels);
-        this.giveEssencePoints(key, pointsBetweenRange(startingLevel, targetLevel));
+        this.giveEssencePoints(type, pointsBetweenRange(startingLevel, targetLevel));
     }
 
     public int pointsBetweenRange(int startingLevel, int targetLevel) {
