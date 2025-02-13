@@ -5,10 +5,12 @@ import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundUpdateWDPla
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.danielkkrafft.wilddungeons.util.Serializer;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
+import net.minecraft.network.protocol.game.ClientboundAddExperienceOrbPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
@@ -74,6 +76,15 @@ public class EssenceOrb extends ExperienceOrb implements IEntityWithComplexSpawn
         super(entityType, level);
     }
 
+    public EssenceOrb(Level level, double x, double y, double z, int value, Type type) {
+        this(WDEntities.ESSENCE_ORB.get(), level);
+        this.setPos(x, y, z);
+        this.setYRot((float)(this.random.nextDouble() * (double)360.0F));
+        this.setDeltaMovement((this.random.nextDouble() * (double)0.2F - (double)0.1F) * (double)2.0F, this.random.nextDouble() * 0.2 * (double)2.0F, (this.random.nextDouble() * (double)0.2F - (double)0.1F) * (double)2.0F);
+        this.value = value;
+        this.essence_type = type;
+    }
+
     @Override
     public Packet<ClientGamePacketListener> getAddEntityPacket(ServerEntity entity) {
         return new ClientboundAddEntityPacket(this, entity);
@@ -82,11 +93,13 @@ public class EssenceOrb extends ExperienceOrb implements IEntityWithComplexSpawn
     @Override
     public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
         buffer.writeUtf(essence_type.toString());
+        buffer.writeInt(this.value);
     }
 
     @Override
     public void readSpawnData(RegistryFriendlyByteBuf additionalData) {
         this.essence_type = Type.valueOf(additionalData.readUtf());
+        this.value = additionalData.readInt();
     }
 
     @Override
@@ -106,11 +119,7 @@ public class EssenceOrb extends ExperienceOrb implements IEntityWithComplexSpawn
             int i = getExperienceValue(amount);
             amount -= i;
             if (!tryMergeToExisting(level, pos, i, type)) {
-                EssenceOrb orb = new EssenceOrb(WDEntities.ESSENCE_ORB.get(), level);
-                orb.setPos(pos);
-                orb.essence_type = type;
-                orb.value = amount;
-                level.addFreshEntity(orb);
+                level.addFreshEntity(new EssenceOrb(level, pos.x, pos.y, pos.z, i, type));
             }
         }
     }
@@ -118,7 +127,7 @@ public class EssenceOrb extends ExperienceOrb implements IEntityWithComplexSpawn
     private static boolean tryMergeToExisting(ServerLevel level, Vec3 pos, int amount, Type type) {
         AABB aabb = AABB.ofSize(pos, 1.0, 1.0, 1.0);
         int i = level.getRandom().nextInt(40);
-        List<EssenceOrb> list = level.getEntities(EntityTypeTest.forClass(EssenceOrb.class), aabb, p_147081_ -> canMerge(p_147081_, i, amount, type));
+        List<EssenceOrb> list = level.getEntities(EntityTypeTest.forClass(EssenceOrb.class), aabb, orb -> canMerge(orb, i, amount, type));
         if (!list.isEmpty()) {
             EssenceOrb essenceOrb = list.get(0);
             offsetCount(essenceOrb, 1, true);
@@ -150,8 +159,12 @@ public class EssenceOrb extends ExperienceOrb implements IEntityWithComplexSpawn
         }
     }
 
-    private static boolean canMerge(EssenceOrb orb, int amount, int other, Type type) {
-        return !orb.isRemoved() && type.equals(orb.essence_type) && (orb.getId() - amount) % 40 == 0 && orb.value == other;
+    private static boolean canMerge(EssenceOrb orb, int rand, int other, Type type) {
+        boolean removedCondition = !orb.isRemoved();
+        boolean typeCondition = type.equals(orb.essence_type);
+        boolean randCondition = (orb.getId() - rand) % 40 == 0;
+        boolean valueCondition = orb.value == other;
+        return removedCondition && typeCondition && randCondition && valueCondition;
     }
 
     public static void giveEssence(ServerPlayer player, Type type, int value) {

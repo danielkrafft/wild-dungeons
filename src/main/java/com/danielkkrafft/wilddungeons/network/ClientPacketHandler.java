@@ -1,5 +1,6 @@
 package com.danielkkrafft.wilddungeons.network;
 
+import com.danielkkrafft.wilddungeons.entity.EssenceOrb;
 import com.danielkkrafft.wilddungeons.sound.DynamicPitchSound;
 import com.danielkkrafft.wilddungeons.ui.ConnectionBlockEditScreen;
 import com.danielkkrafft.wilddungeons.ui.WDLoadingScreen;

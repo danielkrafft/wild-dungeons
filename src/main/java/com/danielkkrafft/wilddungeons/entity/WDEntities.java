@@ -13,11 +13,18 @@ public class WDEntities {
     public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(Registries.ENTITY_TYPE, WildDungeons.MODID);
 
     public static final DeferredHolder<EntityType<?>, EntityType<EssenceOrb>> ESSENCE_ORB = ENTITIES.register("essence_orb", () -> EntityType.Builder
-            .of(EssenceOrb::new, MobCategory.MISC)
+            .<EssenceOrb>of(EssenceOrb::new, MobCategory.MISC)
             .sized(0.5F, 0.5F)
             .clientTrackingRange(6)
             .updateInterval(20)
             .build(WildDungeons.rl("essence_orb").toString()));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<ThrownEssenceBottle>> ESSENCE_BOTTLE = ENTITIES.register("essence_bottle", () -> EntityType.Builder
+            .<ThrownEssenceBottle>of(ThrownEssenceBottle::new, MobCategory.MISC)
+            .sized(0.25F, 0.25F)
+            .clientTrackingRange(4)
+            .updateInterval(10)
+            .build(WildDungeons.rl("essence_bottle").toString()));
 
     public static final DeferredHolder<EntityType<?>, EntityType<Offering>> OFFERING = ENTITIES.register("offering", () -> EntityType.Builder
             .<Offering>of(Offering::new, MobCategory.MISC)

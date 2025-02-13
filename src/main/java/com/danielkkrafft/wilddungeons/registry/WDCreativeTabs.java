@@ -1,6 +1,8 @@
 package com.danielkkrafft.wilddungeons.registry;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.entity.EssenceOrb;
+import com.danielkkrafft.wilddungeons.item.EssenceBottleItem;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -61,6 +63,8 @@ public class WDCreativeTabs {
 
                 output.accept(OFFERING_ITEM.get());
                 output.accept(RIFT_ITEM.get());
+                output.accept(EssenceBottleItem.setEssenceType(new ItemStack(ESSENCE_BOTTLE.get()), EssenceOrb.Type.NETHER));
+                output.accept(EssenceBottleItem.setEssenceType(new ItemStack(ESSENCE_BOTTLE.get()), EssenceOrb.Type.END));
             })
             .build()
     );
