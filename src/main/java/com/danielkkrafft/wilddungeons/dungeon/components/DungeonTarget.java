@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class DungeonTarget {
-    public enum Type {BLOCK, ENTITY, SPAWNER} //TODO implement blocks //TODO implement custom spawners (light level issue, max entity issue)
+    public enum Type {BLOCK, ENTITY, SPAWNER} //TODO implement custom spawners (light level issue, max entity issue)
     public final String type;
     public final String entityTypeKey;
     public String uuid;
@@ -56,6 +56,7 @@ public class DungeonTarget {
     public DungeonTarget(BlockPos pos) {
         this.type = Type.BLOCK.toString();
         this.startPos = pos;
+        this.spawned = true;
         this.entityTypeKey = "";
     }
 

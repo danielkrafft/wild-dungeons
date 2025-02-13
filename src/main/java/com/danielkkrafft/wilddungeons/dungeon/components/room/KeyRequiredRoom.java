@@ -34,10 +34,9 @@ public class KeyRequiredRoom extends TargetPurgeRoom{
                     for (int z = box.minZ(); z < box.maxZ(); z++) {
                         BlockPos pos = new BlockPos(x, y, z);
                         if (getBranch().getFloor().getLevel().getBlockState(pos).getBlock() instanceof LockableBlock) {
-                            WildDungeons.getLogger().info("Found LockableBlock at {}", pos);
+//                            WildDungeons.getLogger().info("Found LockableBlock at {}", pos);
                             lockableBlocks.add(pos);
                             DungeonTarget target = new DungeonTarget(pos);
-                            target.spawned = true;
                             targets.add(target);
                         }
                     }

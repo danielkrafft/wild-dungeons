@@ -31,10 +31,10 @@ import org.jetbrains.annotations.Nullable;
 public class LockableBlock extends Block {
     public static BooleanProperty LOCKED = BooleanProperty.create("locked");
     public static DirectionProperty FACING = BlockStateProperties.FACING;
-    public static final VoxelShape LOCKED_NORTH_SHAPE = Block.box(2, 0, 0, 14, 14, 2);
-    public static final VoxelShape LOCKED_SOUTH_SHAPE = Block.box(2, 0, 14, 14, 14, 16);
-    public static final VoxelShape LOCKED_EAST_SHAPE = Block.box(14, 0, 2, 16, 14, 14);
-    public static final VoxelShape LOCKED_WEST_SHAPE = Block.box(0, 0, 2, 2, 14, 14);
+    public static final VoxelShape LOCKED_NORTH_SHAPE = Block.box(2, 2, 0, 14, 16, 2);
+    public static final VoxelShape LOCKED_SOUTH_SHAPE = Block.box(2, 2, 14, 14, 16, 16);
+    public static final VoxelShape LOCKED_EAST_SHAPE = Block.box(14, 2, 2, 16, 16, 14);
+    public static final VoxelShape LOCKED_WEST_SHAPE = Block.box(0, 2, 2, 2, 16, 14);
     public static final VoxelShape UNLOCKED_NORTH_SHAPE = Block.box(2, 0, 0, 14, 16, 2);
     public static final VoxelShape UNLOCKED_SOUTH_SHAPE = Block.box(2, 0, 14, 14, 16, 16);
     public static final VoxelShape UNLOCKED_EAST_SHAPE = Block.box(14, 0, 2, 16, 16, 14);
