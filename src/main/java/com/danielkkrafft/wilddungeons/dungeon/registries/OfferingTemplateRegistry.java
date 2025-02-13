@@ -21,8 +21,10 @@ public class OfferingTemplateRegistry {
     public static final OfferingTemplate BAKED_POTATOES = create("BAKED_POTATOES", ItemTemplateRegistry.BAKED_POTATOES, XP_LEVEL, 4, 1.5f);
     public static final OfferingTemplate IRON_INGOTS = create("IRON_INGOTS", ItemTemplateRegistry.IRON_INGOTS, XP_LEVEL, 6, 1.5f);
     public static final OfferingTemplate LEATHER = create("LEATHER", ItemTemplateRegistry.LEATHER, XP_LEVEL, 4, 1.5f);
-    public static final OfferingTemplate HEALTH_POTION = create("HEALTH_POTION", ItemTemplateRegistry.HEALTH_POTION, XP_LEVEL, 8, 1.5f);
-    public static final OfferingTemplate REGENERATION_POTION = create("REGENERATION_POTION", ItemTemplateRegistry.REGENERATION_POTION_SPLASH, XP_LEVEL, 8, 1.5f);
+    //potion effects do not transfer into offerings as neither OfferingTemplates nor Offerings have a way to store potion effects.
+    //could be added later, but I am writing this with 3 days left to work on this project so it's just out of scope for now -Skylor
+//    public static final OfferingTemplate HEALTH_POTION = create("HEALTH_POTION", ItemTemplateRegistry.HEALTH_POTION, XP_LEVEL, 8, 1.5f);
+//    public static final OfferingTemplate REGENERATION_POTION = create("REGENERATION_POTION", ItemTemplateRegistry.REGENERATION_POTION_SPLASH, XP_LEVEL, 8, 1.5f);
 
     public static final OfferingTemplate EMERALDS = create("EMERALDS",ItemTemplateRegistry.EMERALD, XP_LEVEL, 8, 1.5f);
     public static final OfferingTemplate BLAZE_RODS = create("BLAZE_RODS", ItemTemplateRegistry.BLAZE_ROD, NETHER_XP_LEVEL, 4, 1.5f);

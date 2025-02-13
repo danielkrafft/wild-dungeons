@@ -29,8 +29,8 @@ public class OfferingTemplatePoolRegistry {
                 .add(BAKED_POTATOES,5)
                 .add(IRON_INGOTS,5)
                 .add(LEATHER,4)
-                .add(HEALTH_POTION,1)
-                .add(REGENERATION_POTION,1)
+//                .add(HEALTH_POTION,1)
+//                .add(REGENERATION_POTION,1)
                 .add(COAL,1)
         ;
         OFFERING_TEMPLATE_POOL_REGISTRY.add(CHEAP_BASIC_POOL);
@@ -40,8 +40,8 @@ public class OfferingTemplatePoolRegistry {
                 .add(BLAZE_RODS,5)
                 .add(ENDER_PEARLS,5)
                 .add(EXTRA_LIFE_NORMAL,5)
-                .add(HEALTH_POTION,5)
-                .add(REGENERATION_POTION,5)
+//                .add(HEALTH_POTION,5)
+//                .add(REGENERATION_POTION,5)
         ;
         OFFERING_TEMPLATE_POOL_REGISTRY.add(MEDIUM_BASIC_POOL);
 
