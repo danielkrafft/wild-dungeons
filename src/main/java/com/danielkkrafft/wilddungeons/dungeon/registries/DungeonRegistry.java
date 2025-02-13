@@ -17,55 +17,56 @@ import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialP
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialRegistry.PIGLIN_FACTORY_MATERIAL;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonPoolRegistry.*;
 import static com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession.DungeonExitBehavior.DESTROY;
+import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.*;
 
 public class DungeonRegistry {
     public static final DungeonRegistration.DungeonComponentRegistry<DungeonTemplate> DUNGEON_REGISTRY = new DungeonRegistration.DungeonComponentRegistry<>();
     public static ArrayList<DungeonTemplate> dungeons = new ArrayList<>();
 
-    public static DungeonTemplate TEST_DUNGEON = DungeonTemplate.create("test_dungeon");
+    public static DungeonTemplate TEST_DUNGEON = create("test_dungeon");
 
     public static DungeonTemplate OVERWORLD_BASIC_DUNGEON = create("mega_dungeon")
             .setFloorTemplates(new DungeonLayout<DungeonFloorTemplate>()
                     .add(OVERWORLD_FLOOR_POOL, 1))
-            .setMaterials(OVERWORLD_MATERIAL_POOL_0)
-            .setDisplayName("MEGA DUNGEON")
-            .setIcon("1-1")
-            .setPrimaryColor(0xFF44cc00)
-            .setSecondaryColor(0xFFdde63e)
-            .setTargetTime(12000)
-            .setTargetDeaths(0)
-            .setTargetScore(15000)
-            .setExitBehavior(DESTROY)
-            .setNextDungeon(OVERWORLD_DUNGEON_POOL);
+            .set(MATERIAL, OVERWORLD_MATERIAL_POOL_0)
+            .set(DISPLAY_NAME, "MEGA DUNGEON")
+            .set(ICON, "1-1")
+            .set(PRIMARY_COLOR, 0xFF44cc00)
+            .set(SECONDARY_COLOR, 0xFFdde63e)
+            .set(TARGET_TIME, 12000)
+            .set(TARGET_DEATHS, 0)
+            .set(TARGET_SCORE, 15000)
+            .set(EXIT_BEHAVIOR, DESTROY)
+            .set(NEXT_DUNGEON, OVERWORLD_DUNGEON_POOL);
 
     public static DungeonTemplate PIGLIN_FACTORY_DUNGEON = create("piglin_factory")
             .setFloorTemplates(new DungeonLayout<DungeonFloorTemplate>()
                     .add(new WeightedPool<DungeonFloorTemplate>().add(PIGLIN_FACTORY_FLOOR, 1), 1))
-            .setMaterials(new WeightedPool<DungeonMaterial>().add(PIGLIN_FACTORY_MATERIAL, 1))
-            .setDisplayName("PIGLIN FACTORY")
-            .setIcon("2-1")
-            .setPrimaryColor(0xFFde1616)
-            .setSecondaryColor(0xFFb83f1a)
-            .setTargetTime(12000)
-            .setTargetDeaths(0)
-            .setTargetScore(15000)
-            .setExitBehavior(DESTROY)
-            .setNextDungeon(NETHER_DUNGEON_POOL);
+            .set(MATERIAL, new WeightedPool<DungeonMaterial>().add(PIGLIN_FACTORY_MATERIAL, 1))
+            .set(DISPLAY_NAME, "PIGLIN FACTORY")
+            .set(ICON, "2-1")
+            .set(PRIMARY_COLOR, 0xFFde1616)
+            .set(SECONDARY_COLOR, 0xFFb83f1a)
+            .set(TARGET_TIME, 12000)
+            .set(TARGET_DEATHS, 0)
+            .set(TARGET_SCORE, 15000)
+            .set(EXIT_BEHAVIOR, DESTROY)
+            .set(NEXT_DUNGEON, NETHER_DUNGEON_POOL);
 
     public static DungeonTemplate VILLAGE_DUNGEON = create("village_dungeon")
             .setFloorTemplates(new DungeonLayout<DungeonFloorTemplate>()
                     .add(VILLAGE_FLOOR_POOL, 1))
-            .setMaterials(VILLAGE_MATERIAL_POOL)
-            .setBedrockShell(false)
-            .setDisplayName("VILLAGE DUNGEON")
-            .setIcon("1-1")
-            .setPrimaryColor(0xFF44cc00)
-            .setSecondaryColor(0xFFdde63e)
-            .setTargetTime(12000)
-            .setTargetDeaths(0)
-            .setTargetScore(15000)
-            .setExitBehavior(DESTROY)
-            .setNextDungeon(VILLAGE_DUNGEON_POOL);
+            .set(MATERIAL, VILLAGE_MATERIAL_POOL)
+            .set(HAS_BEDROCK_SHELL, false)
+            .set(DISPLAY_NAME, "VILLAGE DUNGEON")
+            .set(ICON, "1-2")
+            .set(PRIMARY_COLOR, 0xFF44cc00)
+            .set(SECONDARY_COLOR, 0xFFdde63e)
+            .set(TARGET_TIME, 12000)
+            .set(TARGET_DEATHS, 0)
+            .set(TARGET_SCORE, 15000)
+            .set(EXIT_BEHAVIOR, DESTROY)
+            .set(NEXT_DUNGEON, VILLAGE_DUNGEON_POOL);
 
 
     public static DungeonTemplate create(String name){

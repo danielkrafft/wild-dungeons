@@ -13,6 +13,7 @@ import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomPoolR
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomRegistry.*;
 import static com.danielkkrafft.wilddungeons.util.WeightedPool.combine;
 import static com.mojang.datafixers.util.Pair.of;
+import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.*;
 
 public class DungeonBranchRegistry {
     public static final DungeonRegistration.DungeonComponentRegistry<DungeonBranchTemplate> DUNGEON_BRANCH_REGISTRY = new DungeonRegistration.DungeonComponentRegistry<>();
@@ -42,57 +43,57 @@ public class DungeonBranchRegistry {
     public static final DungeonBranchTemplate OVERWORLD_STARTER_BRANCH = create("OVERWORLD_STARTER_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .addSimple(OVERWORLD_START))
-            .setMaterials(OVERWORLD_MATERIAL_POOL_0);
+            .set(MATERIAL, OVERWORLD_MATERIAL_POOL_0);
 
     public static final DungeonBranchTemplate OVERWORLD_FREE_STUFF_BRANCH_0 = create("OVERWORLD_FREE_STUFF_BRANCH_0")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .add(OVERWORLD_LOOT_ROOM_POOL, 1)
                     .add(OVERWORLD_SHOP_ROOM_POOL, 1)
                     .addSimple(OVERWORLD_TRANSITION_ROOM))
-            .setMaterials(OVERWORLD_MATERIAL_POOL_0)
-            .setDifficultyScaling(1.0f);
+            .set(MATERIAL, OVERWORLD_MATERIAL_POOL_0)
+            .set(DIFFICULTY_SCALING, 1.0);
     public static final DungeonBranchTemplate OVERWORLD_FREE_STUFF_BRANCH_1 = copyOf(OVERWORLD_FREE_STUFF_BRANCH_0,"OVERWORLD_FREE_STUFF_BRANCH_1")
-            .setMaterials(OVERWORLD_MATERIAL_POOL_1)
-            .setDifficultyScaling(1.0f);
+            .set(MATERIAL, OVERWORLD_MATERIAL_POOL_1)
+            .set(DIFFICULTY_SCALING, 1.0);
     public static final DungeonBranchTemplate OVERWORLD_FREE_STUFF_BRANCH_2 = copyOf(OVERWORLD_FREE_STUFF_BRANCH_0,"OVERWORLD_FREE_STUFF_BRANCH_2")
-            .setMaterials(OVERWORLD_MATERIAL_POOL_2)
-            .setDifficultyScaling(1.0f);
+            .set(MATERIAL, OVERWORLD_MATERIAL_POOL_2)
+            .set(DIFFICULTY_SCALING, 1.0);
 
     public static final DungeonBranchTemplate OVERWORLD_SPRAWL_0 = create("OVERWORLD_SPRAWL_0")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .add(combine(of(OVERWORLD_SPRAWL_ROOM_POOL, 100)), 15))
-            .setMaterials(OVERWORLD_MATERIAL_POOL_0);
+            .set(MATERIAL, OVERWORLD_MATERIAL_POOL_0);
     public static final DungeonBranchTemplate OVERWORLD_SPRAWL_1 = copyOf(OVERWORLD_SPRAWL_0,"OVERWORLD_SPRAWL_1")
-            .setMaterials(OVERWORLD_MATERIAL_POOL_1);
+            .set(MATERIAL, OVERWORLD_MATERIAL_POOL_1);
     public static final DungeonBranchTemplate OVERWORLD_SPRAWL_2 = copyOf(OVERWORLD_SPRAWL_0,"OVERWORLD_SPRAWL_2")
-            .setMaterials(OVERWORLD_MATERIAL_POOL_2);
+            .set(MATERIAL, OVERWORLD_MATERIAL_POOL_2);
     public static final DungeonBranchTemplate OVERWORLD_ENDING_BRANCH = create("OVERWORLD_ENDING_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .addSimple(OVERWORLD_EXIT_ROOM))
-            .setMaterials(OVERWORLD_MATERIAL_POOL_2);
+            .set(MATERIAL, OVERWORLD_MATERIAL_POOL_2);
 
     public static final DungeonBranchTemplate SANDY_STARTER_BRANCH = copyOf(OVERWORLD_STARTER_BRANCH, "SANDY_STARTER_BRANCH")
-            .setMaterials(SANDY_MATERIAL_POOL);
+            .set(MATERIAL, SANDY_MATERIAL_POOL);
     public static final DungeonBranchTemplate SANDY_FREE_STUFF_BRANCH_0 = copyOf(OVERWORLD_FREE_STUFF_BRANCH_0, "SANDY_FREE_STUFF_BRANCH_0")
-            .setMaterials(SANDY_MATERIAL_POOL);
+            .set(MATERIAL, SANDY_MATERIAL_POOL);
     public static final DungeonBranchTemplate SANDY_SPRAWL_0 = copyOf(OVERWORLD_SPRAWL_0, "SANDY_SPRAWL_0")
-            .setMaterials(SANDY_MATERIAL_POOL);
+            .set(MATERIAL, SANDY_MATERIAL_POOL);
     public static final DungeonBranchTemplate SANDY_ENDING_BRANCH = copyOf(OVERWORLD_ENDING_BRANCH, "SANDY_ENDING_BRANCH")
-            .setMaterials(SANDY_MATERIAL_POOL);
+            .set(MATERIAL, SANDY_MATERIAL_POOL);
 
     public static final DungeonBranchTemplate RED_SANDY_STARTER_BRANCH = copyOf(OVERWORLD_STARTER_BRANCH, "RED_SANDY_STARTER_BRANCH")
-            .setMaterials(RED_SANDY_MATERIAL_POOL);
+            .set(MATERIAL, RED_SANDY_MATERIAL_POOL);
     public static final DungeonBranchTemplate RED_SANDY_FREE_STUFF_BRANCH_0 = copyOf(OVERWORLD_FREE_STUFF_BRANCH_0, "RED_SANDY_FREE_STUFF_BRANCH_0")
-            .setMaterials(RED_SANDY_MATERIAL_POOL);
+            .set(MATERIAL, RED_SANDY_MATERIAL_POOL);
     public static final DungeonBranchTemplate RED_SANDY_SPRAWL_0 = copyOf(OVERWORLD_SPRAWL_0, "RED_SANDY_SPRAWL_0")
-            .setMaterials(RED_SANDY_MATERIAL_POOL);
+            .set(MATERIAL, RED_SANDY_MATERIAL_POOL);
     public static final DungeonBranchTemplate RED_SANDY_ENDING_BRANCH = copyOf(OVERWORLD_ENDING_BRANCH, "RED_SANDY_ENDING_BRANCH")
-            .setMaterials(RED_SANDY_MATERIAL_POOL);
+            .set(MATERIAL, RED_SANDY_MATERIAL_POOL);
 
     public static final DungeonBranchTemplate VILLAGE_PATH_BRANCH = create("VILLAGE_PATH_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .add(VILLAGE_PATH_POOL, 10))
-            .setMaterials(VILLAGE_MATERIAL_POOL)
+            .set(MATERIAL, VILLAGE_MATERIAL_POOL)
             .setLimitedRooms(List.of(of(VILLAGE_CENTER,1),of(VILLAGE_FORGE,1)))
             ;
     public static final DungeonBranchTemplate PIGLIN_FACTORY_START_BRANCH = create("PIGLIN_FACTORY_START_BRANCH")

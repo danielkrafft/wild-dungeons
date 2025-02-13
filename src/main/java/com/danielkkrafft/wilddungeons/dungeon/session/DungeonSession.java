@@ -5,6 +5,7 @@ import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonPerk;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonPerkTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonTemplate;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
 import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundPostDungeonScreenPacket;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
@@ -61,8 +62,6 @@ public class DungeonSession {
         this.entranceUUID = entranceUUID;
         this.entranceLevelKey = entranceLevelKey;
         this.template = template;
-        WildDungeons.getLogger().info("DUNGEON MATERIALS: {}", this.getTemplate().materials().size());
-
     }
 
     public void generateFloor(int index) {
@@ -145,7 +144,7 @@ public class DungeonSession {
             this.onExit(wdPlayer);
             wdPlayer.getServerPlayer().addItem(new ItemStack(Items.DIAMOND.asItem(), 1));
             wdPlayer.setLastGameMode(wdPlayer.getServerPlayer().gameMode.getGameModeForPlayer());
-            DungeonStatsHolder holder = new DungeonStatsHolder(this.playerStats, this.getTemplate().displayName(), this.getTemplate().getIcon(), this.getTemplate().primaryColor(), this.getTemplate().secondaryColor(), this.getTemplate().targetTime(), this.getTemplate().targetDeaths(), this.getTemplate().targetScore());
+            DungeonStatsHolder holder = new DungeonStatsHolder(this.playerStats, this.getTemplate().get(HierarchicalProperty.DISPLAY_NAME), this.getTemplate().get(HierarchicalProperty.ICON), this.getTemplate().get(HierarchicalProperty.PRIMARY_COLOR), this.getTemplate().get(HierarchicalProperty.SECONDARY_COLOR), this.getTemplate().get(HierarchicalProperty.TARGET_TIME), this.getTemplate().get(HierarchicalProperty.TARGET_DEATHS), this.getTemplate().get(HierarchicalProperty.TARGET_SCORE));
             PacketDistributor.sendToPlayer(wdPlayer.getServerPlayer(), new ClientboundPostDungeonScreenPacket(Serializer.toCompoundTag(holder)));
             wdPlayer.getServerPlayer().setGameMode(GameType.SPECTATOR);
         }
@@ -163,7 +162,7 @@ public class DungeonSession {
 
     public void handleExitBehavior() {
         WildDungeons.getLogger().info("SHUTTING DOWN DUE TO EXIT BEHAVIOR");
-        switch (this.getTemplate().exitBehavior()) {
+        switch (this.getTemplate().get(HierarchicalProperty.EXIT_BEHAVIOR)) {
             case DESTROY -> {
                 DungeonSessionManager.getInstance().server.execute(() -> {
                     Entity entity = DungeonSessionManager.getInstance().server.getLevel(this.getEntranceLevel().dimension()).getEntity(UUID.fromString(this.getEntranceUUID()));

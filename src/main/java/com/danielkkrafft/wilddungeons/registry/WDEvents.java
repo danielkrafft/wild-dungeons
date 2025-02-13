@@ -152,7 +152,6 @@ public class WDEvents {
         else if (event.getEntity() instanceof WitherBoss) endAmount = RandomUtil.randIntBetween(10, 40);
         else if (event.getEntity() instanceof Phantom) endAmount = RandomUtil.sample(0.6) ? RandomUtil.randIntBetween(1, 7) : 0;
         else if (event.getEntity() instanceof Silverfish) endAmount = RandomUtil.sample(0.9) ? RandomUtil.randIntBetween(1, 2) : 0;
-        else if (event.getEntity() instanceof Silverfish) endAmount = RandomUtil.sample(0.9) ? RandomUtil.randIntBetween(1, 2) : 0;
 
         if (endAmount > 0) EssenceOrb.award((ServerLevel) event.getEntity().level(), event.getEntity().position(), EssenceOrb.Type.END, endAmount);
 

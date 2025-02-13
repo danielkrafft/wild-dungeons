@@ -6,6 +6,7 @@ import com.danielkkrafft.wilddungeons.block.WDBlocks;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.TargetPurgeRoom;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
 import com.danielkkrafft.wilddungeons.dungeon.registries.LootTableRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
@@ -44,6 +45,7 @@ import static com.danielkkrafft.wilddungeons.block.WDBedrockBlock.MIMIC;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialRegistry.DUNGEON_MATERIAL_REGISTRY;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomRegistry.DUNGEON_ROOM_REGISTRY;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.OfferingTemplateTableRegistry.BASIC_SHOP_TABLE;
+import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.*;
 
 public class DungeonRoom {
     private final String templateKey;
@@ -68,14 +70,12 @@ public class DungeonRoom {
     @IgnoreSerialization
     protected DungeonBranch branch = null;
 
+    public <T> T getProperty(HierarchicalProperty<T> property) { return this.getTemplate().get(property) == null ? this.getBranch().getProperty(property) : this.getTemplate().get(property); }
     public DungeonRoomTemplate getTemplate() {return DUNGEON_ROOM_REGISTRY.get(this.templateKey);}
     public DungeonSession getSession() {return DungeonSessionManager.getInstance().getDungeonSession(this.sessionKey);}
     public DungeonBranch getBranch() {return this.branch != null ? this.branch : this.getSession().getFloors().get(this.floorIndex).getBranches().get(this.branchIndex);}
     public DungeonMaterial getMaterial() {return DUNGEON_MATERIAL_REGISTRY.get(this.materialKey);}
-    public boolean hasBedrockShell() {return this.getTemplate().hasBedrockShell() == null ? this.getBranch().hasBedrockShell() : this.getTemplate().hasBedrockShell();}
-    public DungeonRoomTemplate.DestructionRule getDestructionRule() {return this.getTemplate().getDestructionRule() == null ? this.getBranch().getDestructionRule() : this.getTemplate().getDestructionRule();}
-    public WeightedTable<DungeonRegistration.TargetTemplate> getEnemyTable() {return this.getTemplate().enemyTable() == null ? this.getBranch().getEnemyTable() : this.getTemplate().enemyTable();}
-    public double getDifficulty() {return this.getBranch().getDifficulty() * this.getTemplate().difficulty();}
+    public double getDifficulty() {return this.getBranch().getDifficulty() * this.getProperty(DIFFICULTY_MODIFIER);}
     public boolean isRotated() {return Objects.equals(rotation, Rotation.CLOCKWISE_90.getSerializedName()) || Objects.equals(rotation, Rotation.COUNTERCLOCKWISE_90.getSerializedName());}
     public StructurePlaceSettings getSettings() {return new StructurePlaceSettings().setMirror(Mirror.valueOf(this.mirror)).setRotation(Rotation.valueOf(this.rotation));}
     public List<ConnectionPoint> getConnectionPoints() {return this.connectionPoints;}
@@ -91,8 +91,6 @@ public class DungeonRoom {
     public boolean isClear() {return this.clear;}
     public Set<BlockPos> getAlwaysBreakable() {return this.alwaysBreakable;}
     public BlockPos getPosition() {return this.position;}
-    public int blockingMaterialIndex() {return this.getTemplate().blockingMaterialIndex() == -1 ? this.getBranch().blockingMaterialIndex() : this.getTemplate().blockingMaterialIndex();}
-
 
     public DungeonRoom(DungeonBranch branch, String templateKey, BlockPos position, StructurePlaceSettings settings, List<ConnectionPoint> allConnectionPoints) {
         ServerLevel level = branch.getFloor().getLevel();
@@ -101,8 +99,7 @@ public class DungeonRoom {
         this.branch.getRooms().add(this);
         this.templateKey = templateKey;
         WildDungeons.getLogger().info("ADDING ROOM: {} AT INDEX {}, {}", getTemplate().name(), this.getBranch().getIndex(), this.getIndex());
-
-        this.materialKey = this.getTemplate().materials() == null ? branch.getMaterials().getRandom().name() : this.getTemplate().materials().getRandom().name();
+        this.materialKey = this.getTemplate().get(MATERIAL) == null ? branch.getProperty(MATERIAL).getRandom().name() : this.getTemplate().get(MATERIAL).getRandom().name();
         this.sessionKey = branch.getSession().getSessionKey();
         this.mirror = settings.getMirror().name();
         this.rotation = settings.getRotation().name();
@@ -139,8 +136,8 @@ public class DungeonRoom {
     }
 
     public void processShell() {
-        if (this.hasBedrockShell()) this.surroundWith(Blocks.BEDROCK.defaultBlockState());
-        if (this.getDestructionRule() == DungeonRoomTemplate.DestructionRule.SHELL || this.getDestructionRule() == DungeonRoomTemplate.DestructionRule.SHELL_CLEAR) {
+        if (this.getProperty(HAS_BEDROCK_SHELL)) this.surroundWith(Blocks.BEDROCK.defaultBlockState());
+        if (this.getProperty(DESTRUCTION_RULE) == DungeonRoomTemplate.DestructionRule.SHELL || this.getProperty(DESTRUCTION_RULE) == DungeonRoomTemplate.DestructionRule.SHELL_CLEAR) {
             this.createProtectedShell(WDBedrockBlock.of(Blocks.DIAMOND_BLOCK));
             for (ConnectionPoint point : this.connectionPoints) {
                 if (point.isConnected()) point.unBlock(this.getBranch().getFloor().getLevel());
@@ -391,7 +388,7 @@ public class DungeonRoom {
     }
 
     public void destroy() {
-        if (this.hasBedrockShell()) this.surroundWith(Blocks.AIR.defaultBlockState());
+        if (this.getProperty(HAS_BEDROCK_SHELL)) this.surroundWith(Blocks.AIR.defaultBlockState());
 
         this.boundingBoxes.forEach(box -> {
             removeBlocks(this.getBranch().getFloor(), box);
@@ -508,7 +505,7 @@ public class DungeonRoom {
 
     public void onClear() {
         this.clear = true;
-        if (this.getDestructionRule() == DungeonRoomTemplate.DestructionRule.SHELL_CLEAR) {
+        if (this.getProperty(DESTRUCTION_RULE) == DungeonRoomTemplate.DestructionRule.SHELL_CLEAR) {
             CompletableFuture.runAsync(() -> {
                 this.removeProtectedShell(Blocks.AIR.defaultBlockState());
             });

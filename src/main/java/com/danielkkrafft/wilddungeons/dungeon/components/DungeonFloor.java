@@ -1,10 +1,7 @@
 package com.danielkkrafft.wilddungeons.dungeon.components;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
-import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonBranchTemplate;
-import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonFloorTemplate;
-import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.*;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundNullScreenPacket;
@@ -53,16 +50,8 @@ public class DungeonFloor {
 
     public DungeonFloorTemplate getTemplate() {return DUNGEON_FLOOR_REGISTRY.get(this.templateKey);}
     public DungeonSession getSession() {return DungeonSessionManager.getInstance().getDungeonSession(this.sessionKey);}
-    public WeightedPool<DungeonMaterial> getMaterials() {return this.getTemplate().materials() == null ? this.getSession().getTemplate().materials() : this.getTemplate().materials();}
-    public boolean hasBedrockShell() {return this.getTemplate().hasBedrockShell() == null ? this.getSession().getTemplate().hasBedrockShell() : this.getTemplate().hasBedrockShell();}
-    public DungeonRoomTemplate.DestructionRule getDestructionRule() {return this.getTemplate().getDestructionRule() == null ? this.getSession().getTemplate().getDestructionRule() : this.getTemplate().getDestructionRule();}
-    public WeightedTable<DungeonRegistration.TargetTemplate> getEnemyTable() {return this.getTemplate().enemyTable() == null ? this.getSession().getTemplate().enemyTable() : this.getTemplate().enemyTable();}
-    public double getDifficultyScaling(){
-        double difficultyScaling = this.getTemplate().difficultyScaling();
-        if (difficultyScaling == -1) difficultyScaling = this.getSession().getTemplate().difficultyScaling();
-        return difficultyScaling;
-    }
-    public double getDifficulty() {return this.getSession().getTemplate().difficulty() * this.getSession().getPlayers().size() * this.getTemplate().difficulty();}
+    public <T> T getProperty(HierarchicalProperty<T> property) { return this.getTemplate().get(property) == null ? this.getSession().getTemplate().get(property) : this.getTemplate().get(property); }
+    public double getDifficulty() {return this.getSession().getTemplate().get(HierarchicalProperty.DIFFICULTY_MODIFIER) * this.getSession().getPlayers().size() * this.getProperty(HierarchicalProperty.DIFFICULTY_MODIFIER);}
     public ServerLevel getLevel() {
         return DungeonSessionManager.getInstance().server.levels.get(this.LEVEL_KEY);
     }
@@ -83,8 +72,6 @@ public class DungeonFloor {
     public List<CompletableFuture<Void>> generationFutures = new ArrayList<>();
     List<WDPlayer> playersWaitingToEnter = new ArrayList<>();
     public boolean unsafeForPlayer = true;
-    public int blockingMaterialIndex() {return this.getTemplate().blockingMaterialIndex();}
-
 
     public DungeonFloor(String templateKey, String sessionKey, BlockPos origin) {
         this.sessionKey = sessionKey;

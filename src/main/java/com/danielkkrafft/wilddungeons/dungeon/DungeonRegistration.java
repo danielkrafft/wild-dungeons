@@ -3,6 +3,7 @@ package com.danielkkrafft.wilddungeons.dungeon;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonTarget;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonComponent;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonTemplate;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
 import com.danielkkrafft.wilddungeons.dungeon.registries.*;
 import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
@@ -127,8 +128,8 @@ public class DungeonRegistration {
             offering.setSoundLoop(soundLoop);
             if (this.type == Offering.Type.RIFT && this.id.split("-")[0].equals("wd")) {
                 DungeonTemplate dungeonTemplate = DungeonRegistry.DUNGEON_REGISTRY.get(this.id.split("wd-")[1]);
-                offering.setPrimaryColor(dungeonTemplate.primaryColor());
-                offering.setSecondaryColor(dungeonTemplate.secondaryColor());
+                offering.setPrimaryColor(dungeonTemplate.get(HierarchicalProperty.PRIMARY_COLOR));
+                offering.setSecondaryColor(dungeonTemplate.get(HierarchicalProperty.SECONDARY_COLOR));
             }
             return offering;
         }

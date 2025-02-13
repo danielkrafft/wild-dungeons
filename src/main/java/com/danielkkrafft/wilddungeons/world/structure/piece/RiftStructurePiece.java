@@ -2,6 +2,7 @@ package com.danielkkrafft.wilddungeons.world.structure.piece;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonTemplate;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
 import com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRegistry;
 import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.registry.WDStructurePieceTypes;
@@ -49,8 +50,8 @@ public class RiftStructurePiece extends TemplateStructurePiece {
             if (offering == null) return;
 
             DungeonTemplate template = DungeonRegistry.DUNGEON_REGISTRY.get(offering.getOfferingId().split("wd-")[1]);
-            offering.setPrimaryColor(template.primaryColor());
-            offering.setSecondaryColor(template.secondaryColor());
+            offering.setPrimaryColor(template.get(HierarchicalProperty.PRIMARY_COLOR));
+            offering.setSecondaryColor(template.get(HierarchicalProperty.SECONDARY_COLOR));
             offering.setPos(Vec3.atCenterOf(blockPos.above()));
             serverLevelAccessor.addFreshEntity(offering);
         }

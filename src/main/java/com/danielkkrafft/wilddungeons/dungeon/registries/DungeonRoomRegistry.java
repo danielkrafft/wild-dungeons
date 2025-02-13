@@ -13,8 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate.DestructionRule;
+import static com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate.Type.*;
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper.EMPTY_BLOCK_POS;
 import static com.mojang.datafixers.util.Pair.of;
+import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.*;
+
 
 public class DungeonRoomRegistry {
     public static final DungeonRegistration.DungeonComponentRegistry<DungeonRoomTemplate> DUNGEON_ROOM_REGISTRY = new DungeonRegistration.DungeonComponentRegistry<>();
@@ -150,20 +153,21 @@ public class DungeonRoomRegistry {
     public static final DungeonRoomTemplate OVERWORLD_COMBAT_1 = copyOf(
             OVERWORLD_BASIC_3,
             "overworld_combat_1")
-            .setDestructionRule(DestructionRule.SHELL_CLEAR)
+            .set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR)
             .setClazz(CombatRoom.class);
+
     public static final DungeonRoomTemplate OVERWORLD_COMBAT_2 = copyOf(
             OVERWORLD_BASIC_4,
             "overworld_combat_2")
             .setClazz(CombatRoom.class)
-            .setDestructionRule(DestructionRule.SHELL_CLEAR)
-            .setDifficulty(0.5);
+            .set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR)
+            .set(DIFFICULTY_MODIFIER, 0.5);
     public static final DungeonRoomTemplate OVERWORLD_COMBAT_3 = copyOf(
             OVERWORLD_BASIC_5,
             "overworld_combat_3")
             .setClazz(CombatRoom.class)
-            .setDestructionRule(DestructionRule.SHELL_CLEAR)
-            .setDifficulty(0.75);
+            .set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR)
+            .set(DIFFICULTY_MODIFIER, 0.75);
     public static final DungeonRoomTemplate OVERWORLD_CHEST_ROOM = create(
             "overworld_chest_room",
             List.of(
@@ -262,8 +266,6 @@ public class DungeonRoomRegistry {
             List.of(
                     of("village/village_fenced_horses", EMPTY_BLOCK_POS)
             ));
-
-
     public static final DungeonRoomTemplate NETHER_CAVE_ENTRANCE_ROOM = create(
             "nether_cave_entrance",
             List.of(
@@ -349,55 +351,55 @@ public class DungeonRoomRegistry {
             List.of(
                     of("nether/pipeworks/breakout", EMPTY_BLOCK_POS)
             ))
-            .setBlockingMaterialIndex(1);
+            .set(BLOCKING_MATERIAL_INDEX, 1);
     public static final DungeonRoomTemplate NETHER_PIPEWORKS_0 = create(
             "nether_pipeworks_0",
             List.of(
                     of("nether/pipeworks/0", EMPTY_BLOCK_POS)
             ))
-            .setBlockingMaterialIndex(1);
+            .set(BLOCKING_MATERIAL_INDEX, 1);
     public static final DungeonRoomTemplate NETHER_PIPEWORKS_1 = create(
             "nether_pipeworks_1",
             List.of(
                     of("nether/pipeworks/1", EMPTY_BLOCK_POS)
             ))
-            .setBlockingMaterialIndex(1);
+            .set(BLOCKING_MATERIAL_INDEX, 1);
     public static final DungeonRoomTemplate NETHER_PIPEWORKS_2 = create(
             "nether_pipeworks_2",
             List.of(
                     of("nether/pipeworks/2", EMPTY_BLOCK_POS)
             ))
-            .setBlockingMaterialIndex(1);
+            .set(BLOCKING_MATERIAL_INDEX, 1);
     public static final DungeonRoomTemplate NETHER_PIPEWORKS_3 = create(
             "nether_pipeworks_3",
             List.of(
                     of("nether/pipeworks/3", EMPTY_BLOCK_POS)
             ))
-            .setBlockingMaterialIndex(1);
+            .set(BLOCKING_MATERIAL_INDEX, 1);
     public static final DungeonRoomTemplate NETHER_PIPEWORKS_4 = create(
             "nether_pipeworks_4",
             List.of(
                     of("nether/pipeworks/4", EMPTY_BLOCK_POS)
             ))
-            .setBlockingMaterialIndex(1);
+            .set(BLOCKING_MATERIAL_INDEX, 1);
     public static final DungeonRoomTemplate NETHER_PIPEWORKS_5 = create(
             "nether_pipeworks_5",
             List.of(
                     of("nether/pipeworks/5", EMPTY_BLOCK_POS)
             ))
-            .setBlockingMaterialIndex(1);
+            .set(BLOCKING_MATERIAL_INDEX, 1);
     public static final DungeonRoomTemplate NETHER_PIPEWORKS_6 = create(
             "nether_pipeworks_6",
             List.of(
                     of("nether/pipeworks/6", EMPTY_BLOCK_POS)
             ))
-            .setBlockingMaterialIndex(1);
+            .set(BLOCKING_MATERIAL_INDEX, 1);
     public static final DungeonRoomTemplate NETHER_PIPEWORKS_LAVAFALLS = create(
             "nether_pipewalk_lava_falls",
             List.of(
                     of("nether/pipeworks/lava_falls", EMPTY_BLOCK_POS)
             ))
-            .setBlockingMaterialIndex(1);
+            .set(BLOCKING_MATERIAL_INDEX, 1);
     public static final DungeonRoomTemplate NETHER_PIPEWORKS_COMBAT_0 = copyOf(NETHER_PIPEWORKS_5, "nether_pipeworks_combat_0")
             .setClazz(CombatRoom.class)
             .setRoomClearOffering(OfferingTemplateRegistry.DUNGEON_KEY);
@@ -408,7 +410,7 @@ public class DungeonRoomRegistry {
                     of("nether/pipeworks/pipe_to_factory", EMPTY_BLOCK_POS)
             ))
             .setClazz(KeyRequiredRoom.class)
-            .setBlockingMaterialIndex(1);
+            .set(BLOCKING_MATERIAL_INDEX, 1);
     public static DungeonRoomTemplate copyOf(DungeonRoomTemplate template, String name) {
         DungeonRoomTemplate room = DungeonRoomTemplate.copyOf(template, name);
         dungeonRooms.add(room);
