@@ -182,5 +182,30 @@
     "sounds": [
       {"name": "wilddungeons:entity/whispers"}
     ]
+  },
+  "soundscape.ambient.cave_01": {
+    "sounds": [
+      {"name": "wilddungeons:soundscape/ambient/cave_01"}
+    ]
+  },
+  "soundscape.music.nether_bass": {
+    "sounds": [
+      {"name": "wilddungeons:soundscape/music/nether_bass"}
+    ]
+  },
+  "soundscape.music.nether_backing": {
+    "sounds": [
+      {"name": "wilddungeons:soundscape/music/nether_backing"}
+    ]
+  },
+  "soundscape.music.nether_melody": {
+    "sounds": [
+      {"name": "wilddungeons:soundscape/music/nether_melody"}
+    ]
+  },
+  "soundscape.music.nether_beat": {
+    "sounds": [
+      {"name": "wilddungeons:soundscape/music/nether_beat"}
+    ]
   }
 }

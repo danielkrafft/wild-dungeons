@@ -39,6 +39,12 @@ public class WDSoundEvents {
     public static final Holder<SoundEvent> RIFT_AURA = SOUND_EVENTS.register("entity.rift_aura", SoundEvent::createVariableRangeEvent);
     public static final Holder<SoundEvent> WHISPERS = SOUND_EVENTS.register("entity.whispers", SoundEvent::createVariableRangeEvent);
 
+    public static final Holder<SoundEvent> CAVE_01 = SOUND_EVENTS.register("soundscape.ambient.cave_01", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> NETHER_BASS = SOUND_EVENTS.register("soundscape.music.nether_bass", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> NETHER_BACKING = SOUND_EVENTS.register("soundscape.music.nether_backing", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> NETHER_MELODY = SOUND_EVENTS.register("soundscape.music.nether_melody", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> NETHER_BEAT = SOUND_EVENTS.register("soundscape.music.nether_beat", SoundEvent::createVariableRangeEvent);
+
     public static final Holder<SoundEvent> UI_BEEP = SOUND_EVENTS.register("ui.misc.beep", SoundEvent::createVariableRangeEvent);
 
     public static final Holder<SoundEvent> MEATHOOK_HIT = SOUND_EVENTS.register("entity.meathook.hit", SoundEvent::createVariableRangeEvent);

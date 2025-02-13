@@ -1,6 +1,9 @@
 package com.danielkkrafft.wilddungeons.network;
 
+import com.danielkkrafft.wilddungeons.dungeon.registries.SoundscapeTemplateRegistry;
+import com.danielkkrafft.wilddungeons.entity.EssenceOrb;
 import com.danielkkrafft.wilddungeons.sound.DynamicPitchSound;
+import com.danielkkrafft.wilddungeons.sound.SoundscapeHandler;
 import com.danielkkrafft.wilddungeons.ui.ConnectionBlockEditScreen;
 import com.danielkkrafft.wilddungeons.ui.WDLoadingScreen;
 import com.danielkkrafft.wilddungeons.ui.WDPostDungeonScreen;
@@ -48,5 +51,9 @@ public class ClientPacketHandler {
             DynamicPitchSound dynamicPitchSound = new DynamicPitchSound(soundEvent, soundSource, data.getFloat("volume"), data.getFloat("pitch"), entity, data.getBoolean("loop"));
             Minecraft.getInstance().getSoundManager().play(dynamicPitchSound);
         }
+    }
+
+    public static void handleSwitchSoundscape(CompoundTag data) {
+        SoundscapeHandler.handleSwitchSoundscape(SoundscapeTemplateRegistry.SOUNDSCAPE_TEMPLATE_REGISTRY.get(data.getString("sound_key")), data.getInt("intensity"));
     }
 }

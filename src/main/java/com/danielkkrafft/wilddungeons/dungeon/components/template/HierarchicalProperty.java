@@ -3,6 +3,7 @@ package com.danielkkrafft.wilddungeons.dungeon.components.template;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonMaterial;
 import com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialPoolRegistry;
+import com.danielkkrafft.wilddungeons.dungeon.registries.SoundscapeTemplateRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonOpenBehavior;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
@@ -30,6 +31,9 @@ public class HierarchicalProperty<T> {
     public static final HierarchicalProperty<Boolean> HAS_BEDROCK_SHELL = new HierarchicalProperty<>(new TypeToken<>() {}, true);
     public static final HierarchicalProperty<DungeonRoomTemplate.DestructionRule> DESTRUCTION_RULE = new HierarchicalProperty<>(new TypeToken<>() {}, DungeonRoomTemplate.DestructionRule.NONE);
     public static final HierarchicalProperty<Integer> BLOCKING_MATERIAL_INDEX = new HierarchicalProperty<>(new TypeToken<>() {}, 0); //TODO replace with Blocked Blockstate in the connection block entity
+    public static final HierarchicalProperty<Integer> WAVE_SIZE = new HierarchicalProperty<>(new TypeToken<>() {}, 10);
+    public static final HierarchicalProperty<Integer> INTENSITY = new HierarchicalProperty<>(new TypeToken<>() {}, 0);
+    public static final HierarchicalProperty<DungeonRegistration.SoundscapeTemplate> SOUNDSCAPE = new HierarchicalProperty<>(new TypeToken<>() {}, SoundscapeTemplateRegistry.NETHER_CAVES);
 
 
     private final TypeToken<T> type;

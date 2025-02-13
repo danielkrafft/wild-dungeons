@@ -51,7 +51,9 @@ public class DungeonRegistry {
             .set(TARGET_DEATHS, 0)
             .set(TARGET_SCORE, 15000)
             .set(EXIT_BEHAVIOR, DESTROY)
-            .set(NEXT_DUNGEON, NETHER_DUNGEON_POOL);
+            .set(NEXT_DUNGEON, NETHER_DUNGEON_POOL)
+            .set(SOUNDSCAPE, SoundscapeTemplateRegistry.NETHER_CAVES)
+            .set(INTENSITY, 0);
 
     public static DungeonTemplate VILLAGE_DUNGEON = create("village_dungeon")
             .setFloorTemplates(new DungeonLayout<DungeonFloorTemplate>()

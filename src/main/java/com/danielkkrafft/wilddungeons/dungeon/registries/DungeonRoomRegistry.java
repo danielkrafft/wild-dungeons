@@ -160,12 +160,14 @@ public class DungeonRoomRegistry {
             "overworld_combat_2")
             .setClazz(CombatRoom.class)
             .set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR)
+            .set(WAVE_SIZE, 5)
             .set(DIFFICULTY_MODIFIER, 0.5);
     public static final DungeonRoomTemplate OVERWORLD_COMBAT_3 = copyOf(
             OVERWORLD_BASIC_5,
             "overworld_combat_3")
             .setClazz(CombatRoom.class)
             .set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR)
+            .set(WAVE_SIZE, 7)
             .set(DIFFICULTY_MODIFIER, 0.75);
     public static final DungeonRoomTemplate OVERWORLD_CHEST_ROOM = create(
             "overworld_chest_room",

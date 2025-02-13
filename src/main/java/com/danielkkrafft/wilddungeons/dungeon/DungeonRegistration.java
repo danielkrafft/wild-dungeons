@@ -56,6 +56,7 @@ public class DungeonRegistration {
 
         RiftPoolRegistry.setupRiftPools();
         TargetTemplateRegistry.setupTargetTemplateRegistry();
+        SoundscapeTemplateRegistry.setupSoundscapes();
     }
 
     public static class DungeonComponentRegistry<T extends DungeonComponent> {
@@ -248,5 +249,18 @@ public class DungeonRegistration {
         public ItemTemplate setDeviance(float deviance) {this.deviance = deviance; return this;}
         public ItemTemplate setSplashPotion() {this.itemID=Item.getId(Items.SPLASH_POTION); return this;}
         public ItemTemplate setLingeringPotion() {this.itemID=Item.getId(Items.LINGERING_POTION); return this;}
+    }
+
+    public static class SoundscapeTemplate implements DungeonComponent {
+        public String name;
+        public List<List<SoundEvent>> soundsList = new ArrayList<>();
+        public SoundscapeTemplate(String name) {this.name = name;}
+        public SoundscapeTemplate addSound(SoundEvent event, int intensity) {
+            while (soundsList.size() <= intensity) {
+                soundsList.add(new ArrayList<>());
+            }
+            this.soundsList.get(intensity).add(event); return this;
+        }
+        public String name() {return this.name;}
     }
 }
