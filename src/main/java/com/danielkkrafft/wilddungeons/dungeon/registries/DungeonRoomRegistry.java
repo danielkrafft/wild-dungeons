@@ -403,7 +403,7 @@ public class DungeonRoomRegistry {
             "nether_pipeworks_to_factory",
             List.of(
                     of("nether/pipeworks/pipe_to_factory", EMPTY_BLOCK_POS)
-            ))
+            )).setType(KEYLOCKED)
             .setBlockingMaterialIndex(1);
     public static DungeonRoomTemplate copyOf(DungeonRoomTemplate template, String name) {
         DungeonRoomTemplate room = DungeonRoomTemplate.copyOf(template, name);

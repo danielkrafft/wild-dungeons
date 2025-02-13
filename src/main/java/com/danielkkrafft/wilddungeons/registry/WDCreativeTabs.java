@@ -24,6 +24,7 @@ public class WDCreativeTabs {
                 output.accept(ROTTEN_MOSS.get());
                 output.accept(HEAVY_RUNE.get());
                 output.accept(WD_LOCKABLE.get());
+                output.accept(WD_DUNGEON_KEY.get());
 
                 output.accept(WD_BASIC.get());
                 output.accept(WD_BASIC_2.get());
@@ -60,7 +61,6 @@ public class WDCreativeTabs {
 
                 output.accept(OFFERING_ITEM.get());
                 output.accept(RIFT_ITEM.get());
-                output.accept(WD_DUNGEON_KEY.get());
             })
             .build()
     );

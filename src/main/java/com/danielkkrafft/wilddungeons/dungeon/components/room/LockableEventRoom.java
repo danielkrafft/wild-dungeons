@@ -1,6 +1,7 @@
 package com.danielkkrafft.wilddungeons.dungeon.components.room;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.block.WDBedrockBlock;
 import com.danielkkrafft.wilddungeons.dungeon.components.ConnectionPoint;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
@@ -8,6 +9,8 @@ import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 
 import java.util.List;
@@ -74,6 +77,7 @@ public class LockableEventRoom extends DungeonRoom {
                 point.unBlock(this.getBranch().getFloor().getLevel());
             }
         });
+        processDataMarkers();
     }
 
     @Override
@@ -99,7 +103,7 @@ public class LockableEventRoom extends DungeonRoom {
     }
 
     private void setPreviewDoorways() {
-        if (clear) return;
+        if (isClear()) return;
         this.getConnectionPoints().forEach(point -> {
             if (point.isConnected()) {
                 //this code only works when the *next* branch is generated too
@@ -111,5 +115,13 @@ public class LockableEventRoom extends DungeonRoom {
                 }
             }
         });
+    }
+
+    @Override
+    public void processDataMarker(BlockPos pos, String metadata) {
+        if (metadata.equals("wd_gate")) {
+            BlockState state = this.isClear() ? Blocks.AIR.defaultBlockState() : WDBedrockBlock.of(Blocks.REDSTONE_BLOCK);
+            this.getBranch().getFloor().getLevel().setBlock(pos, state, 2);
+        }
     }
 }

@@ -7,6 +7,7 @@ import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonMaterial;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.CombatRoom;
+import com.danielkkrafft.wilddungeons.dungeon.components.room.KeyRequiredRoom;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.LootRoom;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.SecretRoom;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
@@ -43,7 +44,7 @@ public final class DungeonRoomTemplate implements DungeonComponent {
 
 
     public enum Type {
-        NONE, SECRET, COMBAT, SHOP, LOOT
+        NONE, SECRET, COMBAT, SHOP, LOOT, KEYLOCKED
     }
     public enum DestructionRule {
         SHELL, NONE, SHELL_CLEAR
@@ -97,6 +98,9 @@ public final class DungeonRoomTemplate implements DungeonComponent {
             }
             case LOOT -> {
                 return new LootRoom(branch, this.name, position, settings, connectionPoints);
+            }
+            case KEYLOCKED -> {
+                return new KeyRequiredRoom(branch, this.name, position, settings, connectionPoints);
             }
             case null, default -> {
                 return new DungeonRoom(branch, this.name, position, settings, connectionPoints);

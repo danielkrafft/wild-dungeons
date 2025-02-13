@@ -57,7 +57,7 @@ public class FireworkGun extends WDWeapon {
             }
         }
 
-        setAnimation(FireworkGunRenderer.rotateAnim,stack,p,level);
+        setAnimation(AnimationList.rotate.toString(),stack,p,level);
         p.getCooldowns().addCooldown(this,1);
     }
 

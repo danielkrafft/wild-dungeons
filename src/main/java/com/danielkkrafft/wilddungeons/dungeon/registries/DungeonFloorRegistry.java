@@ -62,8 +62,6 @@ public class DungeonFloorRegistry {
                     .addSimple(PIGLIN_FACTORY_CAVE_BRANCH)
                     .addSimple(PIGLIN_FACTORY_CAVE_END_BRANCH)
                     .addSimple(PIGLIN_FACTORY_PIPEWORKS_BRANCH)
-                    .addSimple(PIGLIN_FACTORY_PIPEWORKS_SIDE_BRANCH)
-
             )
             .setOrigin(new BlockPos(0, 100, 0));
 

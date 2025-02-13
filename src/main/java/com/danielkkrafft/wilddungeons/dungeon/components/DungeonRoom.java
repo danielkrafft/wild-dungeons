@@ -316,21 +316,17 @@ public class DungeonRoom {
         return result.isEmpty() ? List.of(this.spawnPoint) : result;
     }
 
-    private void processDataMarkers(){
+    public void processDataMarkers(){
         if (this.getTemplate().dataMarkers().isEmpty()) return;
         this.getTemplate().dataMarkers().forEach(marker -> {
             BlockPos pos = TemplateHelper.transform(marker.pos(), this);
             assert marker.nbt() != null;//we null check when we register the template
-            handleDataMarker(pos, marker.nbt().getString("metadata"));
+            processDataMarker(pos, marker.nbt().getString("metadata"));
         });
     }
 
-    //override this with the specific handling for each room
-    public void handleDataMarker(BlockPos pos, String metadata){
-        //todo this is debug code and needs to be replaced with real implementation
-        if (metadata.equals("wd_gate")){
-            this.getBranch().getFloor().getLevel().setBlock(pos, WDBedrockBlock.of(Blocks.REDSTONE_BLOCK) , 2);
-        };
+    public void processDataMarker(BlockPos pos, String metadata){
+        //override this with the specific handling for each room
     }
 
     public void processLootBlocks() {
@@ -478,7 +474,6 @@ public class DungeonRoom {
     }
 
     public void onGenerate() {
-        processDataMarkers();
     }
     public void onEnter(WDPlayer player) {
         WildDungeons.getLogger().info("ENTERING ROOM {} OF CLASS {}", this.getTemplate().name(), this.getClass().getSimpleName());
@@ -506,6 +501,7 @@ public class DungeonRoom {
     }
 
     public void onBranchComplete(){
+        processDataMarkers();
     }
 
     public void onExit(WDPlayer player) {

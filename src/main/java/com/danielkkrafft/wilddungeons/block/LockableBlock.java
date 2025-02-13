@@ -1,8 +1,12 @@
 package com.danielkkrafft.wilddungeons.block;
 
+import com.danielkkrafft.wilddungeons.dungeon.components.room.TargetPurgeRoom;
 import com.danielkkrafft.wilddungeons.item.DungeonKeyItem;
+import com.danielkkrafft.wilddungeons.player.WDPlayer;
+import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -47,6 +51,9 @@ public class LockableBlock extends Block {
 
     @Override
     protected @NotNull ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        if (level.isClientSide) {
+            return ItemInteractionResult.SUCCESS;
+        }
         Boolean locked = state.getValue(LOCKED);
         if (!locked) {
             return ItemInteractionResult.FAIL;
@@ -55,6 +62,15 @@ public class LockableBlock extends Block {
             stack.shrink(1);
             level.setBlock(pos, state.setValue(LOCKED, false), 2);
             level.playSound(null, pos, SoundEvents.IRON_TRAPDOOR_OPEN, SoundSource.BLOCKS, 1.0F, 1.0F);
+
+            ServerPlayer serverPlayer = (ServerPlayer) player;
+            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer);
+            if (wdPlayer.getCurrentDungeon() != null) {
+                if (wdPlayer.getCurrentRoom() instanceof TargetPurgeRoom enemyPurgeRoom) {
+                        enemyPurgeRoom.discardByBlockPos(pos);
+                }
+            }
+
             return ItemInteractionResult.SUCCESS;
         } else {
             return ItemInteractionResult.FAIL;

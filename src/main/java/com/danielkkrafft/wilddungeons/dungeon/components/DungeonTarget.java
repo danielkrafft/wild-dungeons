@@ -14,6 +14,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
@@ -50,6 +51,12 @@ public class DungeonTarget {
         this.uuid = entity.getStringUUID();
         this.startPos = entity.blockPosition();
         this.spawned = true;
+    }
+
+    public DungeonTarget(BlockPos pos) {
+        this.type = Type.BLOCK.toString();
+        this.startPos = pos;
+        this.entityTypeKey = "";
     }
 
     public void spawn(DungeonRoom room) {
@@ -128,6 +135,11 @@ public class DungeonTarget {
         if (type.equals(Type.SPAWNER.toString()))
         {
             return room.getBranch().getFloor().getLevel().getBlockState(this.startPos).is(Blocks.SPAWNER);
+        }
+
+        if (type.equals(Type.BLOCK.toString()))
+        {
+            return room.getBranch().getFloor().getLevel().getBlockState(this.startPos).getBlock() != Blocks.AIR;
         }
 
         return false;
