@@ -2,16 +2,13 @@ package com.danielkkrafft.wilddungeons.dungeon.components;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
-import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonBranchTemplate;
-import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
-import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.*;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.danielkkrafft.wilddungeons.util.IgnoreSerialization;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
-import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.util.WeightedTable;
 import com.danielkkrafft.wilddungeons.util.debug.WDProfiler;
 import com.mojang.datafixers.util.Pair;
@@ -46,22 +43,15 @@ public class DungeonBranch {
     public DungeonBranchTemplate getTemplate() {return DUNGEON_BRANCH_REGISTRY.get(this.templateKey);}
     public DungeonSession getSession() {return DungeonSessionManager.getInstance().getDungeonSession(this.sessionKey);}
     public DungeonFloor getFloor() {return floor != null ? floor : getSession().getFloors().get(this.floorIndex);}
-    public WeightedPool<DungeonMaterial> getMaterials() {return this.getTemplate().materials() == null ? this.getFloor().getMaterials() : this.getTemplate().materials();}
-    public boolean hasBedrockShell() {return this.getTemplate().hasBedrockShell() == null ? this.getFloor().hasBedrockShell() : this.getTemplate().hasBedrockShell();}
-    public DungeonRoomTemplate.DestructionRule getDestructionRule() {return this.getTemplate().getDestructionRule() == null ? this.getFloor().getDestructionRule() : this.getTemplate().getDestructionRule();}
-    public WeightedTable<DungeonRegistration.TargetTemplate> getEnemyTable() {return this.getTemplate().enemyTable() == null ? this.getFloor().getEnemyTable() : this.getTemplate().enemyTable();}
-    public double getDifficultyScaling(){
-        double difficultyScaling = this.getTemplate().difficultyScaling();
-        if (difficultyScaling == -1) difficultyScaling = this.getFloor().getDifficultyScaling();
-        return difficultyScaling;
-    }
+
+    public <T> T getProperty(HierarchicalProperty<T> property) { return this.getTemplate().get(property) == null ? this.getFloor().getProperty(property) : this.getTemplate().get(property); }
     public double getDifficulty() {
         int totalBranches = 0;
         for (int i = 0; i < this.getFloor().getIndex(); i++) {
             totalBranches += this.getFloor().getSession().getFloors().get(i).getBranches().size();
         }
         totalBranches += this.getIndex();
-        return (this.getFloor().getDifficulty() * this.getTemplate().difficulty()) * Math.max(Math.pow(this.getDifficultyScaling(), totalBranches), 1);
+        return (this.getFloor().getDifficulty() * this.getProperty(HierarchicalProperty.DIFFICULTY_MODIFIER) * Math.max(Math.pow(this.getProperty(HierarchicalProperty.DIFFICULTY_SCALING), totalBranches), 1));
     }
     public List<WDPlayer> getActivePlayers() {return this.playerStatuses.entrySet().stream().map(e -> {
         if (e.getValue().inside) return WDPlayerManager.getInstance().getOrCreateServerWDPlayer(e.getKey());
@@ -73,7 +63,6 @@ public class DungeonBranch {
     public void setIndex(int index) {this.index = index;}
     public boolean isFullyGenerated() {return this.fullyGenerated;}
     public boolean hasPlayerVisited(String uuid) {return this.playerStatuses.containsKey(uuid);}
-    public int blockingMaterialIndex() {return this.getTemplate().blockingMaterialIndex() == -1 ? this.getFloor().blockingMaterialIndex() : this.getTemplate().blockingMaterialIndex();}
 
     public DungeonBranch(String templateKey, DungeonFloor floor, BlockPos origin) {
         this.floor = floor;
