@@ -18,6 +18,7 @@ public class WDItems {
     public static final DeferredItem<Item> OFFERING_ITEM = ITEMS.register("offering_item", () -> new OfferingItem(new Item.Properties()));
     public static final DeferredItem<Item> RIFT_ITEM = ITEMS.register("rift_item", () -> new RiftItem(new Item.Properties()));
     public static final DeferredItem<Item> MEATHOOK_ITEM = ITEMS.register("meathook", Meathook::new);
+    public static final DeferredItem<Item> ESSENCE_BOTTLE = ITEMS.register("essence_bottle", EssenceBottleItem::new);
     public static final DeferredItem<Item> AMOGUS_STAFF = ITEMS.register("amogus_staff", AmogusStaff::new);
     public static final DeferredItem<Item> LASER_SWORD_ITEM = ITEMS.register("laser_sword", LaserSword::new);
     public static final DeferredItem<Item> FIREWORK_GUN_ITEM = ITEMS.register("firework_gun", FireworkGun::new);

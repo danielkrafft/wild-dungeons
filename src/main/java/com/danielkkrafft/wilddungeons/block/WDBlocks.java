@@ -1,6 +1,8 @@
 package com.danielkkrafft.wilddungeons.block;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.entity.EssenceOrb;
+import com.danielkkrafft.wilddungeons.item.EssenceBottleItem;
 import com.danielkkrafft.wilddungeons.registry.WDItems;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
