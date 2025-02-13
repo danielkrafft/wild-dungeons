@@ -22,6 +22,7 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -247,7 +248,12 @@ public class WDPlayer {
         return !Objects.equals(this.currentDungeon,"none");
     }
 
-    public void setSoundScape(DungeonRegistration.SoundscapeTemplate soundScape, int intensity) {
+    public void setSoundScape(@Nullable DungeonRegistration.SoundscapeTemplate soundScape, int intensity) {
+        if (soundScape == null) {
+            PacketDistributor.sendToPlayer(this.getServerPlayer(), new ClientboundSwitchSoundscapePacket(new CompoundTag()));
+            return;
+        }
+
         CompoundTag tag = new CompoundTag();
         tag.putString("sound_key", soundScape.name());
         tag.putInt("intensity", intensity);

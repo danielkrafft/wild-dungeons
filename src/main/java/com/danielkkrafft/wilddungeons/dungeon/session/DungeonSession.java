@@ -93,6 +93,7 @@ public class DungeonSession {
         playerStatuses.get(wdPlayer.getUUID()).inside = false;
         wdPlayer.rootRespawn(wdPlayer.getServerPlayer().getServer());
         wdPlayer.setRiftCooldown(100);
+        wdPlayer.setSoundScape(null, 0);
         WildDungeons.getLogger().info("EXITED PLAYER WITH {} RIFT COOLDOWN", wdPlayer.getRiftCooldown());
         WDPlayerManager.syncAll(List.of(wdPlayer.getUUID()));
     }

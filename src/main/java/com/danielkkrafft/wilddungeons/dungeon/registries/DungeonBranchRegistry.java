@@ -8,8 +8,7 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTem
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.DIFFICULTY_SCALING;
-import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.MATERIAL;
+import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialPoolRegistry.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomPoolRegistry.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomRegistry.*;
@@ -103,23 +102,27 @@ public class DungeonBranchRegistry {
 
     public static final DungeonBranchTemplate PIGLIN_FACTORY_CAVE_BRANCH = create("PIGLIN_FACTORY_CAVE_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
-                    .add(PIGLIN_FACTORY_CAVE_SPRAWL_ROOM_POOL, 10));
+                    .add(PIGLIN_FACTORY_CAVE_SPRAWL_ROOM_POOL, 7))
+            .set(INTENSITY, 1);
     public static final DungeonBranchTemplate PIGLIN_FACTORY_CAVE_END_BRANCH = create("PIGLIN_FACTORY_CAVE_END_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .add(PIGLIN_FACTORY_CAVE_SPRAWL_ROOM_POOL, 5)
-                    .addSimple(NETHER_CAVE_END_ROOM));
+                    .addSimple(NETHER_CAVE_END_ROOM))
+            .set(INTENSITY, 3);
 
     public static final DungeonBranchTemplate PIGLIN_FACTORY_PIPEWORKS_BRANCH = create("PIGLIN_FACTORY_PIPEWORKS_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .addSimple(NETHER_PIPEWORKS_3)
                     .add(PIGLIN_FACTORY_PIPEWORKS_ROOM_POOL, 10)
-                    .addSimple(NETHER_PIPEWORKS_TO_FACTORY));
+                    .addSimple(NETHER_PIPEWORKS_TO_FACTORY))
+            .set(INTENSITY, 4);
     public static final DungeonBranchTemplate PIGLIN_FACTORY_PIPEWORKS_SIDE_BRANCH = create("PIGLIN_FACTORY_PIPEWORKS_SIDE_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
 //                    .addSimple(NETHER_PIPEWORKS_3)
                     .add(PIGLIN_FACTORY_PIPEWORKS_ROOM_POOL, 5)
                     .addSimple(NETHER_PIPEWORKS_COMBAT_0))
-            .setRootOriginBranchIndex(2);
+            .setRootOriginBranchIndex(2)
+            .set(INTENSITY, 4);
 
     public static DungeonBranchTemplate copyOf(DungeonBranchTemplate branch, String name) {
         DungeonBranchTemplate copy = DungeonBranchTemplate.copyOf(branch, name);

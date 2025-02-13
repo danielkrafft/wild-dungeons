@@ -1,40 +1,77 @@
 package com.danielkkrafft.wilddungeons.sound;
 
+import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
+import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.event.sound.PlaySoundEvent;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 public class SoundscapeHandler {
 
-    public static HashSet<ResourceLocation> currentlyPlayingSounds = new HashSet<>();
+    public static HashSet<SynchronizedSoundLoop> currentlyPlayingSounds = new HashSet<>();
 
     public static void handleSwitchSoundscape(DungeonRegistration.SoundscapeTemplate template, int intensity) {
-        HashSet<SoundEvent> soundsToPlay = new HashSet<>();
+        if (template == null) {
+            currentlyPlayingSounds.forEach(soundLoop -> {soundLoop.stopPlaying();});
+            currentlyPlayingSounds.clear();
+            return;
+        }
         HashSet<ResourceLocation> soundRLs = new HashSet<>();
+        HashSet<SynchronizedSoundLoop> toPlay = new HashSet<>();
 
-        for (int i = 0; i <= intensity; i++) {
-            soundsToPlay.addAll(template.soundsList.get(i));
+
+        for (int i = 0; i < template.soundsList.size(); i++) {
+            for (int j = 0; j < template.soundsList.get(i).size(); j++) {
+                SoundEvent soundEvent = template.soundsList.get(i).get(j);
+                soundRLs.add(soundEvent.getLocation());
+
+                if (currentlyPlayingSounds.stream().noneMatch(sound -> sound.getLocation().equals(soundEvent.getLocation()))) {
+                    SynchronizedSoundLoop sound = new SynchronizedSoundLoop(soundEvent, SoundSource.MUSIC, i);
+                    toPlay.add(sound);
+                }
+            }
         }
 
-        soundsToPlay.forEach(soundEvent -> {
-            soundRLs.add(soundEvent.getLocation());
-            if (!currentlyPlayingSounds.contains(soundEvent.getLocation())) {
-                BasicSoundLoop sound = new BasicSoundLoop(soundEvent, SoundSource.MUSIC, 1.0f, 1.0f);
-                currentlyPlayingSounds.add(sound.getLocation());
-                Minecraft.getInstance().getSoundManager().play(sound);
-            }
+        toPlay.forEach(soundLoop -> {
+            currentlyPlayingSounds.add(soundLoop);
+            Minecraft.getInstance().getSoundManager().play(soundLoop);
         });
 
+        currentlyPlayingSounds.forEach(soundInstance -> {
+            if (intensity >= soundInstance.layer && !soundInstance.active) soundInstance.rise();
+            else if (intensity < soundInstance.layer && soundInstance.active) soundInstance.fade();
+        });
 
-        currentlyPlayingSounds.forEach(resourceLocation -> {
-           if (!soundRLs.contains(resourceLocation)) {
-               currentlyPlayingSounds.remove(resourceLocation);
-               Minecraft.getInstance().getSoundManager().stop(resourceLocation, SoundSource.MUSIC);
+        List<SynchronizedSoundLoop> toRemove = new ArrayList<>();
+        currentlyPlayingSounds.forEach(soundLoop -> {
+           if (!soundRLs.contains(soundLoop.getLocation())) {
+               toRemove.add(soundLoop);
+               Minecraft.getInstance().getSoundManager().stop(soundLoop);
            }
         });
+
+        toRemove.forEach(soundLoop -> {
+            currentlyPlayingSounds.remove(soundLoop);
+        });
+    }
+
+    @SubscribeEvent
+    public static void onMusicPlay(PlaySoundEvent event) {
+        WildDungeons.getLogger().info("PLAYING SOUND: {}", event.getSound().getLocation());
+        if (Minecraft.getInstance().player == null) return;
+        if (WDPlayerManager.getInstance().getOrCreateClientWDPlayer(Minecraft.getInstance().player).getCurrentDungeon() == null) return;
+        if (event.getSound().getLocation().toString().contains(WildDungeons.MODID)) return;
+        if (event.getSound().getLocation().toString().contains("music")) {
+            event.setSound(null);
+        }
     }
 }

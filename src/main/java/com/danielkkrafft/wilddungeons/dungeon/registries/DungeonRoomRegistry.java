@@ -345,7 +345,8 @@ public class DungeonRoomRegistry {
             List.of(
                     of("nether/cave/end_1", EMPTY_BLOCK_POS),
                     of("nether/cave/end_2", new BlockPos(48, 0, 0))
-            ));
+            ))
+            .set(INTENSITY, 4);
 
     public static final DungeonRoomTemplate NETHER_PIPEWORKS_BREAKOUT_ROOM = create(
             "nether/pipeworks_breakout",
@@ -411,7 +412,8 @@ public class DungeonRoomRegistry {
                     of("nether/pipeworks/pipe_to_factory", EMPTY_BLOCK_POS)
             ))
             .setClazz(KeyRequiredRoom.class)
-            .set(BLOCKING_MATERIAL_INDEX, 1);
+            .set(BLOCKING_MATERIAL_INDEX, 1)
+            .set(INTENSITY, 0);
     public static DungeonRoomTemplate copyOf(DungeonRoomTemplate template, String name) {
         DungeonRoomTemplate room = DungeonRoomTemplate.copyOf(template, name);
         dungeonRooms.add(room);
