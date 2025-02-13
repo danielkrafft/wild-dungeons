@@ -212,7 +212,7 @@ public class DungeonRoomRegistry {
             List.of(
                     of("overworld/free_perk", EMPTY_BLOCK_POS)
             ))
-            .setClazz(CombatRoom.class);
+            .setClazz(LootRoom.class);
     public static final DungeonRoomTemplate OVERWORLD_EXIT_ROOM = create(
             "overworld_exit",
             List.of(
