@@ -4,6 +4,7 @@ import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.components.ConnectionPoint;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonTarget;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
 import com.danielkkrafft.wilddungeons.entity.Offering;
@@ -100,5 +101,10 @@ public class CombatRoom extends TargetPurgeRoom {
         }).min(Comparator.comparingInt(Pair::getSecond)).get().getFirst();
         offering.setPos(Vec3.atCenterOf(finalPos));
         this.getBranch().getFloor().getLevel().addFreshEntity(offering);
+    }
+
+    @Override
+    public void templateBasedUnblock(DungeonFloor floor, ConnectionPoint point) {
+        point.combatRoomUnblock(floor.getLevel());
     }
 }

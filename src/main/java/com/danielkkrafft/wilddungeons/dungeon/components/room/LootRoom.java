@@ -3,6 +3,7 @@ package com.danielkkrafft.wilddungeons.dungeon.components.room;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.components.ConnectionPoint;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonTarget;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
 import com.danielkkrafft.wilddungeons.dungeon.registries.OfferingTemplateTableRegistry;
@@ -32,5 +33,10 @@ public class LootRoom extends TargetPurgeRoom {
             this.getOfferingUUIDs().add(next.getStringUUID());
             this.targets.add(new DungeonTarget(next));
         });
+    }
+
+    @Override
+    public void templateBasedUnblock(DungeonFloor floor, ConnectionPoint point) {
+        point.lootRoomUnblock(floor.getLevel());
     }
 }

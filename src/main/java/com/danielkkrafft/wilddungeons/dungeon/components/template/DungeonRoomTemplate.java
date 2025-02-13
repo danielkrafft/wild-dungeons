@@ -6,10 +6,6 @@ import com.danielkkrafft.wilddungeons.dungeon.components.ConnectionPoint;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonMaterial;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
-import com.danielkkrafft.wilddungeons.dungeon.components.room.CombatRoom;
-import com.danielkkrafft.wilddungeons.dungeon.components.room.KeyRequiredRoom;
-import com.danielkkrafft.wilddungeons.dungeon.components.room.LootRoom;
-import com.danielkkrafft.wilddungeons.dungeon.components.room.SecretRoom;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.util.WeightedTable;
@@ -26,7 +22,7 @@ import java.util.List;
 import java.util.Objects;
 
 public final class DungeonRoomTemplate implements DungeonComponent {
-    private Type type;
+    private Class<?> clazz = DungeonRoom.class;
     private String name;
     private List<Pair<StructureTemplate, BlockPos>> templates;
     private List<ConnectionPoint> connectionPoints;
@@ -43,10 +39,6 @@ public final class DungeonRoomTemplate implements DungeonComponent {
     private int blockingMaterialIndex = -1;
     private DungeonRegistration.OfferingTemplate roomClearOffering = null;
 
-
-    public enum Type {
-        NONE, SECRET, COMBAT, SHOP, LOOT, KEYLOCKED
-    }
     public enum DestructionRule {
         SHELL, NONE, SHELL_CLEAR
     }
@@ -90,28 +82,14 @@ public final class DungeonRoomTemplate implements DungeonComponent {
 
 
     public DungeonRoom placeInWorld(DungeonBranch branch, ServerLevel level, BlockPos position, StructurePlaceSettings settings, List<ConnectionPoint> connectionPoints) {
-        switch (this.type()) {
-            case SECRET -> {
-                return new SecretRoom(branch, this.name, position, settings, connectionPoints);
-            }
-            case COMBAT -> {
-                return new CombatRoom(branch, this.name, position, settings, connectionPoints);
-            }
-            case LOOT -> {
-                return new LootRoom(branch, this.name, position, settings, connectionPoints);
-            }
-            case KEYLOCKED -> {
-                return new KeyRequiredRoom(branch, this.name, position, settings, connectionPoints);
-            }
-            case null, default -> {
-                return new DungeonRoom(branch, this.name, position, settings, connectionPoints);
-            }
+        try {
+            return (DungeonRoom) this.clazz.getConstructor(DungeonBranch.class, String.class, BlockPos.class, StructurePlaceSettings.class, List.class)
+                    .newInstance(branch, this.name, position, settings, connectionPoints);
+        } catch (Exception e) {
+            WildDungeons.getLogger().error("Failed to create instance of DungeonRoom class for room template: {}", this.name);
+            e.printStackTrace();
+            return null;
         }
-
-    }
-
-    public Type type() {
-        return type;
     }
 
     @Override
@@ -164,19 +142,20 @@ public final class DungeonRoomTemplate implements DungeonComponent {
 
     public DestructionRule getDestructionRule() {return this.destructionRule;}
 
-    public int blockingMaterialIndex() {
-        return blockingMaterialIndex;
-    }
+    public int blockingMaterialIndex() {return blockingMaterialIndex;}
 
     public DungeonRegistration.OfferingTemplate roomClearOffering() {return roomClearOffering;}
+
+    public Class<?> getClazz() {
+        return clazz;
+    }
 
     @Override
     public boolean equals(Object obj) {
         if (obj == this) return true;
         if (obj == null || obj.getClass() != this.getClass()) return false;
         var that = (DungeonRoomTemplate) obj;
-        return Objects.equals(this.type, that.type) &&
-                Objects.equals(this.name, that.name) &&
+        return Objects.equals(this.name, that.name) &&
                 Objects.equals(this.templates, that.templates) &&
                 Objects.equals(this.connectionPoints, that.connectionPoints) &&
                 Objects.equals(this.spawnPoint, that.spawnPoint) &&
@@ -190,13 +169,12 @@ public final class DungeonRoomTemplate implements DungeonComponent {
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, name, templates, connectionPoints, spawnPoint, rifts, offerings, lootBlocks, materials, enemyTable, difficulty);
+        return Objects.hash( name, templates, connectionPoints, spawnPoint, rifts, offerings, lootBlocks, materials, enemyTable, difficulty);
     }
 
     @Override
     public String toString() {
         return "DungeonRoomTemplate[" +
-                "type=" + type + ", " +
                 "name=" + name + ", " +
                 "templates=" + templates + ", " +
                 "connectionPoints=" + connectionPoints + ", " +
@@ -213,8 +191,8 @@ public final class DungeonRoomTemplate implements DungeonComponent {
         return this;
     }
 
-    public DungeonRoomTemplate setType(Type type) {
-        this.type = type;
+    public DungeonRoomTemplate setClazz(Class<?> clazz) {
+        this.clazz = clazz;
         return this;
     }
 
@@ -291,7 +269,7 @@ public final class DungeonRoomTemplate implements DungeonComponent {
 
     public static DungeonRoomTemplate copyOf(DungeonRoomTemplate template, String newName) {
         DungeonRoomTemplate newTemplate = new DungeonRoomTemplate()
-                .setType(template.type)
+                .setClazz(template.clazz)
                 .setName(newName)
                 .setTemplates(template.templates)
                 .setConnectionPoints(template.connectionPoints)

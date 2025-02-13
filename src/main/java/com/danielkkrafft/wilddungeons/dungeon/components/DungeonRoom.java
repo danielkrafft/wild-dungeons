@@ -279,12 +279,9 @@ public class DungeonRoom {
         WDProfiler.INSTANCE.logTimestamp("DungeonRoom::processConnectionPoints");
     }
 
+    //override this in your subclass if necessary
     public void templateBasedUnblock(DungeonFloor floor, ConnectionPoint point) {
-        switch (getTemplate().type()){
-            case COMBAT -> point.combatRoomUnblock(floor.getLevel());
-            case LOOT -> point.lootRoomUnblock(floor.getLevel());
-            case null, default -> point.unBlock(floor.getLevel());
-        }
+        point.unBlock(floor.getLevel());
     }
 
     public BlockPos getSpawnPoint(ServerLevel level) {
