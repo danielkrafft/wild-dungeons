@@ -2,10 +2,7 @@ package com.danielkkrafft.wilddungeons.util;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.components.*;
-import com.danielkkrafft.wilddungeons.dungeon.components.room.CombatRoom;
-import com.danielkkrafft.wilddungeons.dungeon.components.room.KeyRequiredRoom;
-import com.danielkkrafft.wilddungeons.dungeon.components.room.LootRoom;
-import com.danielkkrafft.wilddungeons.dungeon.components.room.SecretRoom;
+import com.danielkkrafft.wilddungeons.dungeon.components.room.*;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.player.SavedTransform;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
@@ -62,6 +59,7 @@ public class Serializer
         addCustom(Pair.class);
         addCustom(DungeonSession.DungeonStatsHolder.class);
         addCustom(KeyRequiredRoom.class);
+        addCustom(BossRoom.class);
     }
 
     private static void addCustom(Class<?> clazz) {
