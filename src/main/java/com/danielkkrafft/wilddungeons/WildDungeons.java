@@ -10,7 +10,6 @@ import com.danielkkrafft.wilddungeons.entity.boss.BreezeGolem;
 import com.danielkkrafft.wilddungeons.entity.boss.MutantBogged;
 import com.danielkkrafft.wilddungeons.entity.boss.NetherDragonEntity;
 import com.danielkkrafft.wilddungeons.entity.model.AmogusModel;
-import com.danielkkrafft.wilddungeons.entity.model.NetherDragonModel;
 import com.danielkkrafft.wilddungeons.entity.renderer.*;
 import com.danielkkrafft.wilddungeons.network.clientbound.*;
 import com.danielkkrafft.wilddungeons.network.serverbound.ServerboundRestorePlayerGamemodePacket;

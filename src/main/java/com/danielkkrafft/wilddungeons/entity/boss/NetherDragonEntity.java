@@ -22,10 +22,9 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
-import net.minecraft.world.entity.animal.Cat;
 import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.LargeFireball;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -37,20 +36,19 @@ import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 
-import static com.danielkkrafft.wilddungeons.entity.boss.NetherDragonEntity.AttackPhase.CIRCLE;
-import static com.danielkkrafft.wilddungeons.entity.boss.NetherDragonEntity.AttackPhase.SWOOP;
+import static com.danielkkrafft.wilddungeons.entity.boss.NetherDragonEntity.AttackPhase.*;
 
-public class NetherDragonEntity extends FlyingMob implements RangedAttackMob, GeoEntity {
+public class NetherDragonEntity extends FlyingMob implements GeoEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private final ServerBossEvent bossEvent = new ServerBossEvent(getDisplayName(), BossEvent.BossBarColor.YELLOW, BossEvent.BossBarOverlay.NOTCHED_20);
     private Vec3 moveTargetPoint = Vec3.ZERO;
     private BlockPos anchorPoint = BlockPos.ZERO;
     private AttackPhase attackPhase = CIRCLE;
 
+    //<editor-fold desc="Core Mob Properties">
     public NetherDragonEntity(EntityType<? extends FlyingMob> entityType, Level level) {
         super(entityType, level);
         this.moveTargetPoint = Vec3.ZERO;
@@ -63,7 +61,8 @@ public class NetherDragonEntity extends FlyingMob implements RangedAttackMob, Ge
 
     @Override
     public @Nullable SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
-        this.anchorPoint = this.blockPosition().above(15);
+        setAnchorAboveTarget();
+        bossEvent.setVisible(true);
         return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
     }
 
@@ -72,11 +71,12 @@ public class NetherDragonEntity extends FlyingMob implements RangedAttackMob, Ge
         goalSelector.addGoal(1,new NetherDragonEntityAttackStrategyGoal());
         goalSelector.addGoal(2, new NetherDragonEntitySweepAttackGoal());
         goalSelector.addGoal(3, new NetherDragonEntityCircleAroundAnchorGoal());
+        goalSelector.addGoal(3, new NetherDragonEntityFireBallTargetGoal());
         goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 30));
         goalSelector.addGoal(7, new RandomLookAroundGoal(this));
 
         targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 0, false, false, li -> !(li instanceof NetherDragonEntity)));
-        targetSelector.addGoal(1, new NetherDragonEntityAttackPlayerTargetGoal());
+        targetSelector.addGoal(1, new NetherDragonEntityTargetPlayerGoal());
     }
 
     public static AttributeSupplier setAttributes() {
@@ -92,13 +92,8 @@ public class NetherDragonEntity extends FlyingMob implements RangedAttackMob, Ge
     }
 
     @Override
-    public void performRangedAttack(LivingEntity livingEntity, float v) {
-
-    }
-
-    @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-
+        //todo animation controllers
     }
 
     @Override
@@ -189,22 +184,28 @@ public class NetherDragonEntity extends FlyingMob implements RangedAttackMob, Ge
     public void tick() {
         super.tick();
         Level level = getCommandSenderWorld();
-        bossEvent.setVisible(true);
         float hp = getHealth() / getMaxHealth();
         bossEvent.setProgress(hp);
         if (!level.isClientSide && !isDeadOrDying()) {
             //logic
+            WildDungeons.getLogger().info("Nether Dragon attack phase: {}", attackPhase);
+//            WildDungeons.getLogger().info("Nether Dragon Y: {}, desired Y {}", getY(), moveTargetPoint.y);
         }
-        WildDungeons.getLogger().info("Nether Dragon attack phase: {}", attackPhase);
-        WildDungeons.getLogger().info("Nether Dragon Y: {}, desired Y {}", getY(), moveTargetPoint.y);
-    }
 
+    }
+// </editor-fold>
+
+    //<editor-fold desc="Goals">
     enum AttackPhase {
         CIRCLE,
-        SWOOP;
+        SWOOP,
+        FIREBALL;
+    }
 
-        AttackPhase() {
-        }
+    private void setAnchorAboveTarget() {
+        LivingEntity livingentity = NetherDragonEntity.this.getTarget();
+        BlockPos blockpos = livingentity != null ? livingentity.blockPosition() : NetherDragonEntity.this.blockPosition();
+        this.anchorPoint = blockpos.above(15 + this.random.nextInt(10));
     }
 
     class NetherDragonMoveControl extends MoveControl {
@@ -219,41 +220,43 @@ public class NetherDragonEntity extends FlyingMob implements RangedAttackMob, Ge
                 NetherDragonEntity.this.setYRot(NetherDragonEntity.this.getYRot() + 180.0F);
                 this.speed = 0.1F;
             }
+            if (NetherDragonEntity.this.attackPhase == FIREBALL) {
+                //slow down the dragon when it is charging up a fireball
+                this.speed = Mth.approach(this.speed, 0.1F, 0.5f);
+            }
 
-            double d0 = NetherDragonEntity.this.moveTargetPoint.x - NetherDragonEntity.this.getX();
-            double d1 = NetherDragonEntity.this.moveTargetPoint.y - NetherDragonEntity.this.getY();
-            double d2 = NetherDragonEntity.this.moveTargetPoint.z - NetherDragonEntity.this.getZ();
-            double d3 = Math.sqrt(d0 * d0 + d2 * d2);
-            if (Math.abs(d3) > (double)1.0E-5F) {
-                double d4 = (double)1.0F - Math.abs(d1 * (double)0.7F) / d3;
-                d0 *= d4;
-                d2 *= d4;
-                d3 = Math.sqrt(d0 * d0 + d2 * d2);
-                double d5 = Math.sqrt(d0 * d0 + d2 * d2 + d1 * d1);
-                float f = NetherDragonEntity.this.getYRot();
-                float f1 = (float) Mth.atan2(d2, d0);
-                float f2 = Mth.wrapDegrees(NetherDragonEntity.this.getYRot() + 90.0F);
-                float f3 = Mth.wrapDegrees(f1 * (180F / (float)Math.PI));
-                NetherDragonEntity.this.setYRot(Mth.approachDegrees(f2, f3, 4.0F) - 90.0F);
+            double xDir = NetherDragonEntity.this.moveTargetPoint.x - NetherDragonEntity.this.getX();
+            double yDir = NetherDragonEntity.this.moveTargetPoint.y - NetherDragonEntity.this.getY();
+            double zDir = NetherDragonEntity.this.moveTargetPoint.z - NetherDragonEntity.this.getZ();
+            double distance = Math.sqrt(xDir * xDir + zDir * zDir);
+            float oldRot = NetherDragonEntity.this.getYRot();
+            if (Math.abs(distance) > (double)1.0E-5F) {
+                double horizontalAdjustmentFactor = (double)1.0F - Math.abs(yDir * (double)0.7F) / distance;
+                xDir *= horizontalAdjustmentFactor;
+                zDir *= horizontalAdjustmentFactor;
+                distance = Math.sqrt(xDir * xDir + zDir * zDir);
+                double distance3D = Math.sqrt(xDir * xDir + zDir * zDir + yDir * yDir);
+                NetherDragonEntity.this.setYRot(Mth.approachDegrees(Mth.wrapDegrees(NetherDragonEntity.this.getYRot() + 90.0F), Mth.wrapDegrees((float)Mth.atan2(zDir, xDir) * (180F / (float)Math.PI)), 4.0F) - 90.0F);
                 NetherDragonEntity.this.yBodyRot = NetherDragonEntity.this.getYRot();
-                if (Mth.degreesDifferenceAbs(f, NetherDragonEntity.this.getYRot()) < 3.0F) {
+                if (Mth.degreesDifferenceAbs(oldRot, NetherDragonEntity.this.getYRot()) < 3.0F) {
                     this.speed = Mth.approach(this.speed, 3f, 0.005F * (1.8F / this.speed));
                 } else {
                     this.speed = Mth.approach(this.speed, 1f, 0.025F);
                 }
 
-                float f4 = (float)(-(Mth.atan2(-d1, d3) * (double)180.0F / (double)(float)Math.PI));
-                NetherDragonEntity.this.setXRot(f4);
-                float f5 = NetherDragonEntity.this.getYRot() + 90.0F;
-                double d6 = (double)(this.speed * Mth.cos(f5 * ((float)Math.PI / 180F))) * Math.abs(d0 / d5);
-                double d7 = (double)(this.speed * Mth.sin(f5 * ((float)Math.PI / 180F))) * Math.abs(d2 / d5);
-                double d8 = (double)(this.speed * Mth.sin(f4 * ((float)Math.PI / 180F))) * Math.abs(d1 / d5);
+                float pitchAngle = (float)(-(Mth.atan2(-yDir, distance) * (double)180.0F / (double)(float)Math.PI));
+                NetherDragonEntity.this.setXRot(pitchAngle);
+                float yawAngle = NetherDragonEntity.this.getYRot() + 90.0F;
+                double xMovement = (double)(this.speed * Mth.cos(yawAngle * ((float)Math.PI / 180F))) * Math.abs(xDir / distance3D);
+                double yMovement = (double)(this.speed * Mth.sin(pitchAngle * ((float)Math.PI / 180F))) * Math.abs(yDir / distance3D);
+                double zMovement = (double)(this.speed * Mth.sin(yawAngle * ((float)Math.PI / 180F))) * Math.abs(zDir / distance3D);
                 Vec3 vec3 = NetherDragonEntity.this.getDeltaMovement();
-                NetherDragonEntity.this.setDeltaMovement(vec3.add((new Vec3(d6, d8, d7)).subtract(vec3).scale(0.2)));
+                NetherDragonEntity.this.setDeltaMovement(vec3.add((new Vec3(xMovement, yMovement, zMovement)).subtract(vec3).scale(0.2)));
             }
-
         }
     }
+
+
 
     class NetherDragonEntityAttackStrategyGoal extends Goal {
         private int nextSweepTick;
@@ -269,34 +272,35 @@ public class NetherDragonEntity extends FlyingMob implements RangedAttackMob, Ge
         public void start() {
             this.nextSweepTick = this.adjustedTickDelay(10);
             NetherDragonEntity.this.attackPhase = CIRCLE;
-            this.setAnchorAboveTarget();
+            NetherDragonEntity.this.setAnchorAboveTarget();
         }
 
         public void stop() {
-            NetherDragonEntity.this.anchorPoint = NetherDragonEntity.this.level().getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, NetherDragonEntity.this.anchorPoint).above(20 + NetherDragonEntity.this.random.nextInt(20));
+            NetherDragonEntity.this.anchorPoint = NetherDragonEntity.this.level().getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, NetherDragonEntity.this.anchorPoint).above(5 + NetherDragonEntity.this.random.nextInt(20));
         }
 
         public void tick() {
             if (NetherDragonEntity.this.attackPhase == CIRCLE) {
                 --this.nextSweepTick;
                 if (this.nextSweepTick <= 0) {
-                    NetherDragonEntity.this.attackPhase = SWOOP;
-                    this.setAnchorAboveTarget();
-                    this.nextSweepTick = this.adjustedTickDelay((100 + NetherDragonEntity.this.random.nextInt(5)) * 20);
-                    NetherDragonEntity.this.playSound(WDSoundEvents.BREEZE_GOLEM_WALK.value(), 10.0F, 0.95F + NetherDragonEntity.this.random.nextFloat() * 0.1F);//todo
+                    this.nextSweepTick = this.adjustedTickDelay((40 + NetherDragonEntity.this.random.nextInt(3)) * 20);
+                    NetherDragonEntity.this.attackPhase = NetherDragonEntity.this.random.nextBoolean() ? SWOOP : FIREBALL;
+                    switch (NetherDragonEntity.this.attackPhase) {
+                        case SWOOP:
+                            NetherDragonEntity.this.setAnchorAboveTarget();
+                            NetherDragonEntity.this.playSound(WDSoundEvents.BREEZE_GOLEM_WALK.value(), 10.0F, 0.95F + NetherDragonEntity.this.random.nextFloat() * 0.1F);//todo
+                            break;
+                        case FIREBALL:
+                            NetherDragonEntity.this.anchorPoint = NetherDragonEntity.this.blockPosition();
+                            NetherDragonEntity.this.playSound(WDSoundEvents.BREEZE_GOLEM_WALK.value(), 10.0F, 0.95F + NetherDragonEntity.this.random.nextFloat() * 0.1F);//todo
+                            break;
+                    }
                 }
             }
         }
-
-        private void setAnchorAboveTarget() {
-            LivingEntity livingentity = NetherDragonEntity.this.getTarget();
-            if (livingentity==null){
-                NetherDragonEntity.this.anchorPoint = NetherDragonEntity.this.blockPosition().above(10 + NetherDragonEntity.this.random.nextInt(10));
-                return;
-            }
-            NetherDragonEntity.this.anchorPoint = NetherDragonEntity.this.getTarget().blockPosition().above(10 + NetherDragonEntity.this.random.nextInt(10));
-        }
     }
+
+
 
     abstract class NetherDragonEntityMoveTargetGoal extends Goal {
         public NetherDragonEntityMoveTargetGoal() {
@@ -335,7 +339,7 @@ public class NetherDragonEntity extends FlyingMob implements RangedAttackMob, Ge
 
             if (NetherDragonEntity.this.random.nextInt(this.adjustedTickDelay(250)) == 0) {
                 ++this.distance;
-                if (this.distance > 15.0F) {
+                if (this.distance > 50) {
                     this.distance = 5.0F;
                     this.clockwise = -this.clockwise;
                 }
@@ -372,10 +376,7 @@ public class NetherDragonEntity extends FlyingMob implements RangedAttackMob, Ge
         }
     }
 
-    class NetherDragonEntitySweepAttackGoal extends NetherDragonEntity.NetherDragonEntityMoveTargetGoal {
-        private static final int CAT_SEARCH_TICK_DELAY = 20;
-        private boolean isScaredOfCat;
-        private int catSearchTick;
+    class NetherDragonEntitySweepAttackGoal extends NetherDragonEntityMoveTargetGoal {
 
         NetherDragonEntitySweepAttackGoal() {
         }
@@ -386,34 +387,16 @@ public class NetherDragonEntity extends FlyingMob implements RangedAttackMob, Ge
 
         public boolean canContinueToUse() {
             LivingEntity livingentity = NetherDragonEntity.this.getTarget();
-            if (livingentity == null) {
-                return false;
-            } else if (!livingentity.isAlive()) {
+            if (livingentity == null || !livingentity.isAlive()) {
                 return false;
             } else {
-                if (livingentity instanceof Player) {
-                    Player player = (Player)livingentity;
+                if (livingentity instanceof Player player) {
                     if (livingentity.isSpectator() || player.isCreative()) {
                         return false;
                     }
                 }
 
-                if (!this.canUse()) {
-                    return false;
-                } else {
-                    if (NetherDragonEntity.this.tickCount > this.catSearchTick) {
-                        this.catSearchTick = NetherDragonEntity.this.tickCount + 20;
-                        List<Cat> list = NetherDragonEntity.this.level().getEntitiesOfClass(Cat.class, NetherDragonEntity.this.getBoundingBox().inflate((double)16.0F), EntitySelector.ENTITY_STILL_ALIVE);
-
-                        for(Cat cat : list) {
-                            cat.hiss();
-                        }
-
-                        this.isScaredOfCat = !list.isEmpty();
-                    }
-
-                    return !this.isScaredOfCat;
-                }
+                return this.canUse();
             }
         }
 
@@ -443,36 +426,116 @@ public class NetherDragonEntity extends FlyingMob implements RangedAttackMob, Ge
         }
     }
 
-    class NetherDragonEntityAttackPlayerTargetGoal extends Goal {
+    class NetherDragonEntityFireBallTargetGoal extends Goal{
+        public int chargeTime;
+        private int firedFireballs;
+
+        NetherDragonEntityFireBallTargetGoal() {
+            this.setFlags(EnumSet.of(Flag.TARGET, Flag.LOOK));
+        }
+        @Override
+        public boolean canUse() {
+            return NetherDragonEntity.this.getTarget() != null && NetherDragonEntity.this.attackPhase == FIREBALL;
+        }
+
+        public boolean canContinueToUse() {
+            LivingEntity livingentity = NetherDragonEntity.this.getTarget();
+            if (livingentity == null || !livingentity.isAlive()) {
+                return false;
+            } else {
+                if (livingentity instanceof Player player) {
+                    if (livingentity.isSpectator() || player.isCreative()) {
+                        return false;
+                    }
+                }
+
+                return this.canUse();
+            }
+        }
+
+        public void start() {
+            firedFireballs = 0;
+        }
+
+        public void stop() {
+            NetherDragonEntity.this.setTarget((LivingEntity)null);
+            NetherDragonEntity.this.attackPhase = CIRCLE;
+        }
+
+        public void tick() {
+            LivingEntity livingentity = NetherDragonEntity.this.getTarget();
+            if (livingentity != null) {
+                Level level = NetherDragonEntity.this.level();
+                this.chargeTime++;
+                if (this.chargeTime == 5 && !NetherDragonEntity.this.isSilent()) {
+                    //todo fireball charging noise
+                }
+
+                if (this.chargeTime == 10) {
+                    Vec3 vec3 = NetherDragonEntity.this.getViewVector(1.0F);
+                    double d2 = livingentity.getX() - (NetherDragonEntity.this.getX() + vec3.x * 4.0);
+                    double d3 = livingentity.getY(0.5) - (0.5 + NetherDragonEntity.this.getY(0.5));
+                    double d4 = livingentity.getZ() - (NetherDragonEntity.this.getZ() + vec3.z * 4.0);
+                    Vec3 vec31 = new Vec3(d2, d3, d4);
+                    if (!NetherDragonEntity.this.isSilent()) {
+                        //todo fireball launch noise
+                    }
+
+                    LargeFireball largefireball = new LargeFireball(level, NetherDragonEntity.this, vec31.normalize(),1);
+                    largefireball.setPos(NetherDragonEntity.this.getX() + vec3.x * 4.0, NetherDragonEntity.this.getY(0.5) + 0.5, largefireball.getZ() + vec3.z * 4.0);
+                    level.addFreshEntity(largefireball);
+                    this.chargeTime = 0;
+                    if (++this.firedFireballs == 3) {
+                        NetherDragonEntity.this.attackPhase = CIRCLE;
+                        this.firedFireballs = 0;
+                    }
+                }
+
+                //todo set the dragons state to charging to make it look like it is charging up in the animations
+//                NetherDragonEntity.this.setCharging(this.chargeTime > 10);
+            } else {
+                this.chargeTime = 0;
+            }
+        }
+
+        @Override
+        public boolean requiresUpdateEveryTick() {
+            return true;
+        }
+    }
+
+
+    class NetherDragonEntityTargetPlayerGoal extends Goal {
         private final TargetingConditions attackTargeting = TargetingConditions.forCombat().range((double)64.0F);
         private int nextScanTick = reducedTickDelay(20);
 
-        NetherDragonEntityAttackPlayerTargetGoal() {
+        NetherDragonEntityTargetPlayerGoal() {
         }
 
         public boolean canUse() {
             if (this.nextScanTick > 0) {
                 --this.nextScanTick;
-                return false;
             } else {
                 this.nextScanTick = reducedTickDelay(60);
                 List<Player> list = NetherDragonEntity.this.level().getNearbyPlayers(this.attackTargeting, NetherDragonEntity.this, NetherDragonEntity.this.getBoundingBox().inflate((double)16.0F, (double)64.0F, (double)16.0F));
                 if (!list.isEmpty()) {
+                    list.sort((p1, p2) -> NetherDragonEntity.this.random.nextInt(3) - 1);
                     for(Player player : list) {
-                        if (NetherDragonEntity.this.canAttack(player, TargetingConditions.DEFAULT)) {
+                        if (NetherDragonEntity.this.canAttack(player, attackTargeting)) {
                             NetherDragonEntity.this.setTarget(player);
                             return true;
                         }
                     }
                 }
 
-                return false;
             }
+            return false;
         }
 
         public boolean canContinueToUse() {
             LivingEntity livingentity = NetherDragonEntity.this.getTarget();
-            return livingentity != null ? NetherDragonEntity.this.canAttack(livingentity, TargetingConditions.DEFAULT) : false;
+            return livingentity != null && NetherDragonEntity.this.canAttack(livingentity, attackTargeting);
         }
     }
+    // </editor-fold>
 }
