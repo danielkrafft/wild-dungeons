@@ -66,7 +66,7 @@ public class SoundscapeHandler {
 
     @SubscribeEvent
     public static void onMusicPlay(PlaySoundEvent event) {
-        WildDungeons.getLogger().info("PLAYING SOUND: {}", event.getSound().getLocation());
+//        WildDungeons.getLogger().info("PLAYING SOUND: {}", event.getSound().getLocation());
         if (Minecraft.getInstance().player == null) return;
         if (WDPlayerManager.getInstance().getOrCreateClientWDPlayer(Minecraft.getInstance().player).getCurrentDungeon() == null) return;
         if (event.getSound().getLocation().toString().contains(WildDungeons.MODID)) return;

@@ -8,7 +8,9 @@ import com.danielkkrafft.wilddungeons.entity.AmogusEntity;
 import com.danielkkrafft.wilddungeons.entity.WDEntities;
 import com.danielkkrafft.wilddungeons.entity.boss.BreezeGolem;
 import com.danielkkrafft.wilddungeons.entity.boss.MutantBogged;
+import com.danielkkrafft.wilddungeons.entity.boss.NetherDragonEntity;
 import com.danielkkrafft.wilddungeons.entity.model.AmogusModel;
+import com.danielkkrafft.wilddungeons.entity.model.NetherDragonModel;
 import com.danielkkrafft.wilddungeons.entity.renderer.*;
 import com.danielkkrafft.wilddungeons.network.clientbound.*;
 import com.danielkkrafft.wilddungeons.network.serverbound.ServerboundRestorePlayerGamemodePacket;
@@ -117,6 +119,7 @@ public class WildDungeons {
         event.registerEntityRenderer(WDEntities.OFFERING.get(), OfferingRenderer::new);
         event.registerEntityRenderer(WDEntities.BREEZE_GOLEM.get(), BreezeGolemRenderer::new);
         event.registerEntityRenderer(WDEntities.MUTANT_BOGGED.get(), MutantBoggedRenderer::new);
+        event.registerEntityRenderer(WDEntities.NETHER_DRAGON.get(), NetherDragonRenderer::new);
         event.registerEntityRenderer(WDEntities.PIERCING_ARROW.get(), PiercingArrowRenderer::new);
         event.registerEntityRenderer(WDEntities.WIND_CHARGE_PROJECTILE.get(), WindChargeProjectileRenderer::new);
         event.registerEntityRenderer(WDEntities.WIND_CHARGE_PROJECTILE.get(), WindChargeProjectileRenderer::new);
@@ -168,6 +171,7 @@ public class WildDungeons {
         e.put(WDEntities.BREEZE_GOLEM.get(), BreezeGolem.setAttributes());
         e.put(WDEntities.MUTANT_BOGGED.get(), MutantBogged.setAttributes());
         e.put(WDEntities.AMOGUS.get(), AmogusEntity.setAttributes());
+        e.put(WDEntities.NETHER_DRAGON.get(), NetherDragonEntity.setAttributes());
     }
 
     public static ShaderInstance RIFT_SHADER;
