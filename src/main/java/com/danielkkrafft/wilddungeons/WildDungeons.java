@@ -20,12 +20,10 @@ import com.danielkkrafft.wilddungeons.util.FileUtil;
 import com.danielkkrafft.wilddungeons.util.Serializer;
 import com.danielkkrafft.wilddungeons.world.dimension.EmptyGenerator;
 import com.danielkkrafft.wilddungeons.world.dimension.tools.UpdateDimensionsPacket;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -38,7 +36,6 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
-import net.neoforged.neoforge.client.event.RegisterShadersEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.common.NeoForge;
@@ -75,9 +72,7 @@ public class WildDungeons {
 
         modEventBus.register(WildDungeons.class);
         NeoForge.EVENT_BUS.register(WDEvents.class);
-        NeoForge.EVENT_BUS.register(WDPlayerManager.class);
         NeoForge.EVENT_BUS.register(DungeonPerk.class);
-        NeoForge.EVENT_BUS.register(SoundscapeHandler.class);
     }
 
     @SubscribeEvent
@@ -168,16 +163,6 @@ public class WildDungeons {
         e.put(WDEntities.BREEZE_GOLEM.get(), BreezeGolem.setAttributes());
         e.put(WDEntities.MUTANT_BOGGED.get(), MutantBogged.setAttributes());
         e.put(WDEntities.AMOGUS.get(), AmogusEntity.setAttributes());
-    }
-
-    public static ShaderInstance RIFT_SHADER;
-    @SubscribeEvent
-    public static void onRegisterShaders(RegisterShadersEvent event) {
-        try {
-            event.registerShader(new ShaderInstance(event.getResourceProvider(), rl("rift"), DefaultVertexFormat.POSITION), shader -> RIFT_SHADER = shader);
-        } catch (IOException e) {
-            WildDungeons.getLogger().info("Failed to load custom shader!", e);
-        }
     }
 
     @SubscribeEvent
