@@ -278,6 +278,35 @@ public class TemplateHelper {
                 int l = Integer.MIN_VALUE;
                 int i1 = Integer.MIN_VALUE;
                 int j1 = Integer.MIN_VALUE;
+                /*
+                * The selected code is part of a method that handles placing blocks in the world, specifically dealing with waterlogging and block entities. Here's a brief explanation of what the code does:
+
+1. **Iterate Over Block Infos**:
+   - The code iterates over a list of `StructureBlockInfo` objects, which contain information about blocks to be placed.
+
+2. **Bounding Box Check**:
+   - It checks if the block position is inside the bounding box (if a bounding box is defined).
+
+3. **Fluid State Handling**:
+   - If waterlogging is enabled, it retrieves the fluid state at the block position.
+
+4. **Block State Transformation**:
+   - It transforms the block state based on the mirror and rotation settings.
+
+5. **Block Entity Handling**:
+   - If the block has associated NBT data, it clears any existing block entity at that position and sets a temporary barrier block.
+
+6. **Set Block in World**:
+   - It sets the transformed block state in the world and updates the minimum and maximum coordinates for the bounding box.
+
+7. **Update Block Entity**:
+   - If the block has associated NBT data, it updates the block entity with the new data.
+
+8. **Waterlogging**:
+   - If the block state supports waterlogging, it places the fluid in the block and adds the position to a list for further processing if the fluid is not a source.
+
+This code ensures that blocks are properly placed in the world, their states are updated based on settings, and any associated block entities are correctly handled.
+* */
                 for(StructureTemplate.StructureBlockInfo structuretemplate$structureblockinfo : StructureTemplate.processBlockInfos(serverLevel, offset, pos, settings, list, template)) {
                     if (boundingbox == null || boundingbox.isInside(structuretemplate$structureblockinfo.pos())) {
                         FluidState fluidstate = settings.shouldApplyWaterlogging() ? serverLevel.getFluidState(structuretemplate$structureblockinfo.pos()) : null;
@@ -322,8 +351,31 @@ public class TemplateHelper {
                         }
                     }
                 }
+                /*
+                * The selected code is part of a method that handles placing blocks in the world, specifically dealing with waterlogging. Here's a brief explanation of what the code does:
+1. **Initialization**:
+   - `flag` is set to `true` to enter the while loop.
+   - `adirection` is an array of directions (UP, NORTH, EAST, SOUTH, WEST).
 
-                boolean flag = true;
+2. **While Loop**:
+   - The loop continues as long as `flag` is `true` and `list1` is not empty.
+   - `flag` is set to `false` at the start of each iteration.
+
+3. **Iterator Loop**:
+   - Iterates over `list1`, which contains positions of blocks that need waterlogging.
+
+4. **Fluid State Check**:
+   - For each block position (`blockpos3`), it checks the fluid state.
+   - It then checks adjacent blocks in the directions specified in `adirection` to see if any of them are a source of fluid.
+
+5. **Waterlogging**:
+   - If an adjacent block is a fluid source, it updates the fluid state of the current block position.
+   - If the block at the current position is a `LiquidBlockContainer`, it places the liquid and removes the position from `list1`.
+   - `flag` is set to `true` to continue the while loop.
+
+This code ensures that blocks are properly waterlogged by checking adjacent blocks and updating the fluid state accordingly.
+* */
+                /*boolean flag = true;
                 Direction[] adirection = new Direction[]{Direction.UP, Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST};
 
                 while(flag && !list1.isEmpty()) {
@@ -352,9 +404,35 @@ public class TemplateHelper {
                             }
                         }
                     }
-                }
+                }*/
 
-                if (i <= l) {
+                /*
+                The selected code is part of a method that handles placing blocks in the world, specifically dealing with updating block states and handling block entities. Here's a brief explanation of what the code does:
+
+1. **Bounding Box Check**:
+   - The code checks if the minimum coordinates (`i`, `j`, `k`) are less than or equal to the maximum coordinates (`l`, `i1`, `j1`).
+
+2. **Voxel Shape Creation**:
+   - If the shape is not known (`!settings.getKnownShape()`), it creates a `DiscreteVoxelShape` to represent the bounding box of the structure being placed.
+
+3. **Filling Voxel Shape**:
+   - It iterates over the list of block positions (`list3`) and fills the voxel shape with the positions of the blocks.
+
+4. **Updating Shape at Edge**:
+   - Calls `StructureTemplate.updateShapeAtEdge` to update the shape at the edge of the structure.
+
+5. **Block State Updates**:
+   - Iterates over the list of block positions (`list3`) again to update the block states.
+   - If the shape is not known, it updates the block state based on neighboring blocks.
+   - Calls `serverLevel.blockUpdated` to notify the server of the block update.
+
+6. **Block Entity Updates**:
+   - If the block has an associated block entity, it marks the block entity as changed.
+
+This code ensures that blocks are properly placed in the world, their states are updated based on neighboring blocks, and any associated block entities are correctly updated.
+*/
+
+                /*if (i <= l) {
                     if (!settings.getKnownShape()) {
                         DiscreteVoxelShape discretevoxelshape = new BitSetDiscreteVoxelShape(l - i + 1, i1 - j + 1, j1 - k + 1);
                         int k1 = i;
@@ -388,7 +466,7 @@ public class TemplateHelper {
                             }
                         }
                     }
-                }
+                }*/
 
                 if (!settings.isIgnoreEntities()) {
                     addEntitiesToWorld(template, serverLevel, offset, settings);
