@@ -3,6 +3,10 @@ package com.danielkkrafft.wilddungeons.registry;
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.block.WDBlocks;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
+import com.danielkkrafft.wilddungeons.dungeon.components.room.TargetPurgeRoom;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.entity.EssenceOrb;
 import com.danielkkrafft.wilddungeons.entity.WDEntities;
@@ -15,10 +19,14 @@ import com.danielkkrafft.wilddungeons.util.FileUtil;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import com.danielkkrafft.wilddungeons.util.SaveSystem;
 import com.danielkkrafft.wilddungeons.util.Serializer;
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Chicken;
@@ -29,13 +37,19 @@ import net.minecraft.world.entity.monster.*;
 import net.minecraft.world.entity.monster.hoglin.Hoglin;
 import net.minecraft.world.entity.monster.piglin.Piglin;
 import net.minecraft.world.entity.monster.piglin.PiglinBrute;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.common.EffectCures;
 import net.neoforged.neoforge.event.entity.EntityStruckByLightningEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingExperienceDropEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerXpEvent;
@@ -203,6 +217,117 @@ public class WDEvents {
                     }
                 }
             }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onBlockBreak(BlockEvent.BreakEvent event) {
+        if (event.getLevel() instanceof ServerLevel serverLevel && event.getPlayer() instanceof ServerPlayer serverPlayer) {
+            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer);
+            if (wdPlayer.getCurrentDungeon() == null) return;
+            WildDungeons.getLogger().info("FOUND BLOCK BREAK");
+            event.setCanceled(WDPlayerManager.isProtectedBlock(serverPlayer, event.getPos(), serverLevel));
+            wdPlayer.getCurrentDungeon().getStats(wdPlayer).blocksBroken += 1;
+
+            if (wdPlayer.getCurrentRoom() instanceof TargetPurgeRoom enemyPurgeRoom) {
+                if (event.getLevel().getBlockState(event.getPos()).is(Blocks.SPAWNER)) {
+                    enemyPurgeRoom.discardByBlockPos(event.getPos());
+                }
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onBlockPlace(BlockEvent.EntityPlaceEvent event) {
+        if (event.getLevel() instanceof ServerLevel serverLevel && event.getEntity() instanceof ServerPlayer serverPlayer) {
+            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer.getStringUUID());
+            if (wdPlayer.getCurrentDungeon() == null) return;
+            event.setCanceled(WDPlayerManager.isProtectedBlock(serverPlayer, event.getPos(), serverLevel));
+            wdPlayer.getCurrentDungeon().getStats(wdPlayer).blocksPlaced += 1;
+        }
+    }
+
+    @SubscribeEvent
+    public static void onDeath(LivingDeathEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(player);
+            if (wdPlayer.getCurrentDungeon() == null) return;
+
+            WildDungeons.getLogger().info("TESTING DEATH WITH DUNGEON LIVES: {}", wdPlayer.getCurrentDungeon().getLives());
+
+            if (wdPlayer.getCurrentDungeon().getLives() > 0) {
+
+                CriteriaTriggers.USED_TOTEM.trigger(player, new ItemStack(Items.TOTEM_OF_UNDYING));
+                player.gameEvent(GameEvent.ITEM_INTERACT_FINISH);
+
+                player.setHealth(1.0f);
+                player.removeEffectsCuredBy(EffectCures.PROTECTED_BY_TOTEM);
+                player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 900, 1));
+                player.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 100, 1));
+                player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 800, 0));
+                player.level().broadcastEntityEvent(player, (byte)35);
+                BlockPos respawnPoint;
+                DungeonRoom room = wdPlayer.getCurrentRoom();
+
+                if (room == null) {
+                    DungeonFloor floor = wdPlayer.getCurrentFloor();
+                    int index = 0;
+                    for (DungeonBranch branch : floor.getBranches()) {
+                        if (branch.hasPlayerVisited(wdPlayer.getUUID())) {
+                            if (branch.getIndex() > index) {
+                                index = branch.getIndex();
+                            }
+                        }
+                    }
+                    room = floor.getBranches().get(index).getRooms().getFirst();
+                }
+
+                if (room.getBranch().getIndex() == 0) {
+                    respawnPoint = room.getBranch().getRooms().getFirst().getSpawnPoint(room.getBranch().getFloor().getLevel());
+                } else {
+                    respawnPoint = room.getBranch().getFloor().getBranches().get(room.getBranch().getIndex()-1).getRooms().getLast().getSpawnPoint(room.getBranch().getFloor().getLevel());
+                }
+
+                wdPlayer.setRiftCooldown(140);
+                player.teleportTo(respawnPoint.getX(), respawnPoint.getY(), respawnPoint.getZ());
+                wdPlayer.getCurrentDungeon().getStats(wdPlayer).deaths += 1;
+                wdPlayer.getCurrentDungeon().offsetLives(-1);
+            } else {
+                wdPlayer.getCurrentDungeon().offsetLives(-1);
+                wdPlayer.getCurrentDungeon().fail();
+            }
+
+            event.setCanceled(true);
+
+        }
+    }
+
+    @SubscribeEvent
+    public static void onMobDeath(LivingDeathEvent event) {
+        if (event.getSource().getEntity() instanceof ServerPlayer serverPlayer) {
+            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer);
+
+            if (wdPlayer.getCurrentDungeon() == null) return;
+            wdPlayer.getCurrentDungeon().getStats(wdPlayer).mobsKilled += 1;
+            if (wdPlayer.getCurrentRoom() instanceof TargetPurgeRoom room) room.discardByUUID(event.getEntity().getStringUUID());
+        }
+    }
+
+    @SubscribeEvent
+    public static void onHit(LivingDamageEvent.Post event) {
+        if (event.getSource().getEntity() instanceof ServerPlayer serverPlayer) {
+            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer);
+            if (wdPlayer.getCurrentDungeon() == null || event.getSource().typeHolder().equals(DamageTypes.GENERIC_KILL)) return;
+            wdPlayer.getCurrentDungeon().getStats(wdPlayer).damageDealt += event.getNewDamage();
+        }
+    }
+
+    @SubscribeEvent
+    public static void onDamage(LivingDamageEvent.Post event) {
+        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
+            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer);
+            if (wdPlayer.getCurrentDungeon() == null) return;
+            wdPlayer.getCurrentDungeon().getStats(wdPlayer).damageTaken += event.getNewDamage();
         }
     }
 

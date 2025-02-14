@@ -1,6 +1,7 @@
 package com.danielkkrafft.wilddungeons.render;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.registry.WDShaders;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.renderer.RenderStateShard;
@@ -16,7 +17,7 @@ public class RiftRenderType extends RenderType {
             false,
             false,
             RenderType.CompositeState.builder()
-                    .setShaderState(new RenderStateShard.ShaderStateShard(() -> WildDungeons.RIFT_SHADER))
+                    .setShaderState(new RenderStateShard.ShaderStateShard(() -> WDShaders.RIFT_SHADER))
                     .setTextureState(MultiTextureStateShard.builder().add(TheEndPortalRenderer.END_SKY_LOCATION, false, false).add(TheEndPortalRenderer.END_PORTAL_LOCATION, false, false).build())
                     .createCompositeState(false));
 
