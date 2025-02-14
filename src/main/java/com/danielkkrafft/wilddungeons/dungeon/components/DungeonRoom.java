@@ -476,6 +476,7 @@ public class DungeonRoom {
             return new DungeonSession.PlayerStatus();
         });
         this.playerStatuses.get(player.getUUID()).inside = true;
+        player.setSoundScape(this.getProperty(SOUNDSCAPE), this.getProperty(INTENSITY));
     }
 
     public void onFloorEnter(WDPlayer player) {

@@ -157,12 +157,14 @@ public class DungeonRoomRegistry {
             "overworld_combat_2")
             .setClazz(CombatRoom.class)
             .set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR)
+            .set(WAVE_SIZE, 5)
             .set(DIFFICULTY_MODIFIER, 0.5);
     public static final DungeonRoomTemplate OVERWORLD_COMBAT_3 = copyOf(
             OVERWORLD_BASIC_5,
             "overworld_combat_3")
             .setClazz(CombatRoom.class)
             .set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR)
+            .set(WAVE_SIZE, 7)
             .set(DIFFICULTY_MODIFIER, 0.75);
     public static final DungeonRoomTemplate OVERWORLD_CHEST_ROOM = create(
             "overworld_chest_room",
@@ -340,7 +342,8 @@ public class DungeonRoomRegistry {
             List.of(
                     of("nether/cave/end_1", EMPTY_BLOCK_POS),
                     of("nether/cave/end_2", new BlockPos(48, 0, 0))
-            ));
+            ))
+            .set(INTENSITY, 4);
 
     public static final DungeonRoomTemplate NETHER_PIPEWORKS_BREAKOUT_ROOM = create(
             "nether/pipeworks_breakout",
@@ -406,7 +409,8 @@ public class DungeonRoomRegistry {
                     of("nether/pipeworks/pipe_to_factory", EMPTY_BLOCK_POS)
             ))
             .setClazz(KeyRequiredRoom.class)
-            .set(BLOCKING_MATERIAL_INDEX, 1);
+            .set(BLOCKING_MATERIAL_INDEX, 1)
+            .set(INTENSITY, 0);
 
     public static final DungeonRoomTemplate NETHER_FACTORY_TOWER = create(
             "nether_factory_tower",

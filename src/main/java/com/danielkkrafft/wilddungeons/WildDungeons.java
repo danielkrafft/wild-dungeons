@@ -15,6 +15,7 @@ import com.danielkkrafft.wilddungeons.network.serverbound.ServerboundRestorePlay
 import com.danielkkrafft.wilddungeons.network.serverbound.ServerboundUpdateConnectionBlockPacket;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.danielkkrafft.wilddungeons.registry.*;
+import com.danielkkrafft.wilddungeons.sound.SoundscapeHandler;
 import com.danielkkrafft.wilddungeons.util.FileUtil;
 import com.danielkkrafft.wilddungeons.util.Serializer;
 import com.danielkkrafft.wilddungeons.world.dimension.EmptyGenerator;
@@ -76,6 +77,7 @@ public class WildDungeons {
         NeoForge.EVENT_BUS.register(WDEvents.class);
         NeoForge.EVENT_BUS.register(WDPlayerManager.class);
         NeoForge.EVENT_BUS.register(DungeonPerk.class);
+        NeoForge.EVENT_BUS.register(SoundscapeHandler.class);
     }
 
     @SubscribeEvent
@@ -95,6 +97,7 @@ public class WildDungeons {
         registrar.playToClient(ClientboundLoadingScreenPacket.TYPE, ClientboundLoadingScreenPacket.STREAM_CODEC, ClientboundLoadingScreenPacket::handle);
         registrar.playToClient(ClientboundPostDungeonScreenPacket.TYPE, ClientboundPostDungeonScreenPacket.STREAM_CODEC, ClientboundPostDungeonScreenPacket::handle);
         registrar.playToClient(ClientboundPlayDynamicSoundPacket.TYPE, ClientboundPlayDynamicSoundPacket.STREAM_CODEC, ClientboundPlayDynamicSoundPacket::handle);
+        registrar.playToClient(ClientboundSwitchSoundscapePacket.TYPE, ClientboundSwitchSoundscapePacket.STREAM_CODEC, ClientboundSwitchSoundscapePacket::handle);
 
         registrar.playToServer(ServerboundUpdateConnectionBlockPacket.TYPE, ServerboundUpdateConnectionBlockPacket.STREAM_CODEC, ServerboundUpdateConnectionBlockPacket::handle);
         registrar.playToServer(ServerboundRestorePlayerGamemodePacket.TYPE, ServerboundRestorePlayerGamemodePacket.STREAM_CODEC, ServerboundRestorePlayerGamemodePacket::handle);

@@ -24,7 +24,6 @@ import java.util.Optional;
 public class CombatRoom extends TargetPurgeRoom {
 
     public static final int SPAWN_INTERVAL = 200;
-    public static final int BASE_QUANTITY = 10;
     public static final float QUANTITY_VARIANCE = 2f;
     public static final int BASE_DIFFICULTY = 10;
 
@@ -52,7 +51,7 @@ public class CombatRoom extends TargetPurgeRoom {
     }
 
     public List<DungeonRegistration.TargetTemplate> getTargetTemplates() {
-        return this.getProperty(HierarchicalProperty.ENEMY_TABLE).randomResults(Mth.ceil(RandomUtil.randFloatBetween(BASE_QUANTITY / QUANTITY_VARIANCE, BASE_QUANTITY * QUANTITY_VARIANCE)), (int) (BASE_DIFFICULTY * this.getDifficulty()), 2);
+        return this.getProperty(HierarchicalProperty.ENEMY_TABLE).randomResults(Mth.ceil(RandomUtil.randFloatBetween(this.getProperty(HierarchicalProperty.WAVE_SIZE) / QUANTITY_VARIANCE, this.getProperty(HierarchicalProperty.WAVE_SIZE) * QUANTITY_VARIANCE)), (int) (BASE_DIFFICULTY * this.getDifficulty()), 2);
     }
 
     public void spawnNext() {

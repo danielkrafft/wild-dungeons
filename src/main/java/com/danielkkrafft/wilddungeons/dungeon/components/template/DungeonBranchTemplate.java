@@ -4,6 +4,7 @@ import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.DungeonLayout;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
+import com.danielkkrafft.wilddungeons.dungeon.registries.DungeonBranchRegistry;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 
@@ -83,13 +84,14 @@ public final class DungeonBranchTemplate implements DungeonComponent {
     public DungeonBranchTemplate setProperties(HashMap<HierarchicalProperty<?>, Object> prop) {this.PROPERTIES = prop; return this;}
 
     public static DungeonBranchTemplate copyOf(DungeonBranchTemplate template, String newName) {
-        return new DungeonBranchTemplate()
+        DungeonBranchRegistry.DUNGEON_BRANCH_REGISTRY.add(new DungeonBranchTemplate()
                 .setName(newName)
                 .setRoomTemplates(template.roomTemplates)
                 .setMandatoryRooms(template.mandatoryRooms)
                 .setLimitedRooms(template.limitedRooms)
                 .setRootOriginBranchIndex(template.rootOriginBranchIndex)
-                .setProperties(new HashMap<>(template.PROPERTIES));
+                .setProperties(new HashMap<>(template.PROPERTIES)));
+        return DungeonBranchRegistry.DUNGEON_BRANCH_REGISTRY.get(newName);
     }
 
     public int rootOriginBranchIndex() {

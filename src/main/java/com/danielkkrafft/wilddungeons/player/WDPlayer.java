@@ -1,15 +1,18 @@
 package com.danielkkrafft.wilddungeons.player;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.entity.EssenceOrb;
+import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundSwitchSoundscapePacket;
 import com.danielkkrafft.wilddungeons.util.CommandUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -17,7 +20,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.network.PacketDistributor;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -241,5 +246,17 @@ public class WDPlayer {
 
     public boolean clientIsInDungeon() {
         return !Objects.equals(this.currentDungeon,"none");
+    }
+
+    public void setSoundScape(@Nullable DungeonRegistration.SoundscapeTemplate soundScape, int intensity) {
+        if (soundScape == null) {
+            PacketDistributor.sendToPlayer(this.getServerPlayer(), new ClientboundSwitchSoundscapePacket(new CompoundTag()));
+            return;
+        }
+
+        CompoundTag tag = new CompoundTag();
+        tag.putString("sound_key", soundScape.name());
+        tag.putInt("intensity", intensity);
+        PacketDistributor.sendToPlayer(this.getServerPlayer(), new ClientboundSwitchSoundscapePacket(tag));
     }
 }
