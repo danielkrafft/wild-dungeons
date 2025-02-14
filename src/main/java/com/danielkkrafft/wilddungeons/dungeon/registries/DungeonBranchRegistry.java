@@ -108,7 +108,7 @@ public class DungeonBranchRegistry {
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .add(PIGLIN_FACTORY_CAVE_SPRAWL_ROOM_POOL, 5)
                     .addSimple(NETHER_CAVE_END_ROOM))
-            .set(INTENSITY, 3);
+            .set(INTENSITY, 2);
 
     public static final DungeonBranchTemplate PIGLIN_FACTORY_PIPEWORKS_BRANCH = create("PIGLIN_FACTORY_PIPEWORKS_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
@@ -118,15 +118,14 @@ public class DungeonBranchRegistry {
                     .addSimple(NETHER_PIPEWORKS_3)
                     .addSimple(NETHER_PIPEWORKS_TO_FACTORY)
                     .addSimple(NETHER_FACTORY_TOWER)
-                    .addSimple(NETHER_FACTORY_BOSS)
-            .set(INTENSITY, 4));
+                    .addSimple(NETHER_FACTORY_BOSS))
+            .set(INTENSITY, 3);
     public static final DungeonBranchTemplate PIGLIN_FACTORY_PIPEWORKS_SIDE_BRANCH = create("PIGLIN_FACTORY_PIPEWORKS_SIDE_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
-//                    .addSimple(NETHER_PIPEWORKS_3)
                     .add(PIGLIN_FACTORY_PIPEWORKS_ROOM_POOL, 5)
                     .addSimple(NETHER_PIPEWORKS_COMBAT_0))
             .setRootOriginBranchIndex(2)
-            .set(INTENSITY, 4);
+            .set(INTENSITY, 3);//todo none of these intensities are correct because the dungeon isn't setup right
 
     public static DungeonBranchTemplate copyOf(DungeonBranchTemplate branch, String name) {
         DungeonBranchTemplate copy = DungeonBranchTemplate.copyOf(branch, name);

@@ -2,12 +2,11 @@ package com.danielkkrafft.wilddungeons.dungeon.registries;
 
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.DungeonComponentRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.TargetTemplate;
+import com.danielkkrafft.wilddungeons.entity.WDEntities;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Items;
 
 import java.util.ArrayList;
-
-import static com.danielkkrafft.wilddungeons.entity.WDEntities.BREEZE_GOLEM;
 
 public class TargetTemplateRegistry {
     public static final DungeonComponentRegistry<TargetTemplate> TARGET_TEMPLATE_REGISTRY = new DungeonComponentRegistry<>();
@@ -28,7 +27,9 @@ public class TargetTemplateRegistry {
     public static final TargetTemplate VINDICATOR = createMob("VINDICATOR", EntityType.VINDICATOR);
     public static final TargetTemplate WITHER_SKELETON = createMob("WITHER_SKELETON", EntityType.WITHER_SKELETON).setMainHandItem(Items.STONE_SWORD,true);
 
-    public static final TargetTemplate NETHER_DRAGON = createMob("NETHER_DRAGON", BREEZE_GOLEM.get());
+    public static final TargetTemplate NETHER_DRAGON = createMob("NETHER_DRAGON", WDEntities.NETHER_DRAGON.get());
+    public static final TargetTemplate MUTANT_BOGGED = createMob("MUTANT_BOGGED", WDEntities.MUTANT_BOGGED.get());
+    public static final TargetTemplate BREEZE_GOLEM = createMob("BREEZE_GOLEM", WDEntities.BREEZE_GOLEM.get());
 
     public static TargetTemplate createMob(String name, EntityType<?> entityType) {
         TargetTemplate targetTemplate = TargetTemplate.createMob(name, entityType);

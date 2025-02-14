@@ -3,6 +3,7 @@ package com.danielkkrafft.wilddungeons.entity;
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.entity.boss.BreezeGolem;
 import com.danielkkrafft.wilddungeons.entity.boss.MutantBogged;
+import com.danielkkrafft.wilddungeons.entity.boss.NetherDragonEntity;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -67,4 +68,9 @@ public class WDEntities {
             .of(AmogusEntity::new, MobCategory.CREATURE)
             .sized(1f, 1.0f)
             .build(WildDungeons.rl("amogus").toString()));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<NetherDragonEntity>> NETHER_DRAGON = ENTITIES.register("nether_dragon", () -> EntityType.Builder
+            .of(NetherDragonEntity::new, MobCategory.MONSTER)
+            .sized(16f, 8.0f)
+            .build(WildDungeons.rl("nether_dragon").toString()));
 }
