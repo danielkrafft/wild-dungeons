@@ -19,6 +19,7 @@ public class NetherDragonRenderer extends GeoEntityRenderer<NetherDragonEntity>
     {
         super(renderManager,new NetherDragonModel());
         shadowRadius = 12f;
+        shadowStrength = 1;
         //addRenderLayer(new NetherDragonLayer<>(this));
     }
     @Override
