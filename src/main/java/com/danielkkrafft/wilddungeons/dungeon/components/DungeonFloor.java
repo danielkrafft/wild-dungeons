@@ -36,6 +36,7 @@ import org.joml.Vector2i;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.locks.LockSupport;
 
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonFloorRegistry.DUNGEON_FLOOR_REGISTRY;
 import static com.danielkkrafft.wilddungeons.registry.WDDimensions.WILDDUNGEON;
@@ -165,6 +166,12 @@ public class DungeonFloor {
                 }
                 branchCount = this.dungeonBranches.size();
             }
+        }).handle((result, throwable) -> {
+            if (throwable != null) {
+                WildDungeons.getLogger().error("Error generating branches", throwable);
+            }
+            LockSupport.unpark(Thread.currentThread());
+            return null;
         });
         generationFutures.add(future);
     }

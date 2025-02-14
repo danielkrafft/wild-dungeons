@@ -119,7 +119,7 @@ public class DungeonRoom {
         getTemplate().templates().forEach(template -> {
             BlockPos newOffset = StructureTemplate.transform(template.getSecond(), settings.getMirror(), settings.getRotation(), TemplateHelper.EMPTY_BLOCK_POS);
             BlockPos newPosition = position.offset(newOffset);
-            TemplateHelper.placeInWorld(template.getFirst(), this, this.getMaterial(), level, newPosition, template.getSecond(), settings, 2);
+            TemplateHelper.placeInWorld(template.getFirst(), this, this.getMaterial(), level, newPosition, template.getSecond(), settings, 130);
         });
 
         this.processRifts();
@@ -398,7 +398,7 @@ public class DungeonRoom {
             value.removeIf(v -> v.x == getBranch().getIndex() && v.y == this.getIndex());
         });
 
-        this.boundingBoxes.forEach(box -> {
+        this.boundingBoxes.forEach(box -> {//todo check to make sure the box is not inside of itself
             fixContactedShells(getBranch().getFloor(), box);
         });
         destroyEntities();
