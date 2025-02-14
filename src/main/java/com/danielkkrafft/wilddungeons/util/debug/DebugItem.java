@@ -71,6 +71,7 @@ public class DebugItem extends Item {
         WildDungeons.getLogger().info("CURRENT FLOOR: {} INDEX: {}", dungeonFloor == null ? "none" : dungeonFloor.getTemplate().name(), dungeonFloor == null ? "-1" : dungeonFloor.getIndex());
         WildDungeons.getLogger().info("CURRENT BRANCH: {} INDEX: {}", dungeonBranch == null ? "none" : dungeonBranch.getTemplate().name(), dungeonBranch == null ? "-1" : dungeonBranch.getIndex());
         WildDungeons.getLogger().info("CURRENT ROOM: {} INDEX: {}", dungeonRoom == null ? "none" : dungeonRoom.getTemplate().name(), dungeonRoom == null ? "-1" : dungeonRoom.getIndex());
+        WildDungeons.getLogger().info("CURRENT ROOM CLEARED: {}", dungeonRoom == null ? "none" : dungeonRoom.isClear());
         WildDungeons.getLogger().info("CURRENT ROOM BOUNDING BOXES: {}", dungeonRoom == null ? "none" : dungeonRoom.getBoundingBoxes());
         WildDungeons.getLogger().info("CURRENT ROOM DIFFICULTY: {}", dungeonRoom == null ? "none" : dungeonRoom.getDifficulty());
         WildDungeons.getLogger().info("CURRENT POSITIONS: {}", WDPlayerManager.getInstance().getServerPlayers().get(wdPlayer.getUUID()).getPositions().values().stream().map(SavedTransform::getBlockPos).toList());

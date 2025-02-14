@@ -74,9 +74,9 @@ public class DungeonTarget {
                 mobEffects.forEach(pair -> livingEntity.addEffect(new MobEffectInstance(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(BuiltInRegistries.MOB_EFFECT.byId(pair.getFirst())), Integer.MAX_VALUE, pair.getSecond())));
             }
 
-            List<BlockPos> validPoints = room.sampleSpawnablePositions(room.getBranch().getFloor().getLevel(), 3, -Mth.ceil(Math.max(entity.getBoundingBox().getXsize(), entity.getBoundingBox().getZsize())));
+            List<BlockPos> validPoints = room.sampleSpawnablePositions(room.getBranch().getFloor().getLevel(), 10, -Mth.ceil(Math.max(entity.getBoundingBox().getXsize(), entity.getBoundingBox().getZsize())));
 
-            BlockPos finalPos = room.calculateFurthestPoint(validPoints,30);
+            BlockPos finalPos = room.calculateFurthestPoint(validPoints,20);
 
             entity.setPos(Vec3.atCenterOf(finalPos));
             this.uuid = entity.getStringUUID();
@@ -88,7 +88,7 @@ public class DungeonTarget {
         if (type.equals(Type.SPAWNER.toString()))
         {
             List<BlockPos> validPoints = room.sampleSpawnablePositions(room.getBranch().getFloor().getLevel(), 3, -1);
-            BlockPos finalPos = room.calculateFurthestPoint(validPoints, 30);
+            BlockPos finalPos = room.calculateFurthestPoint(validPoints, 20);
 
             ServerLevel level = room.getBranch().getFloor().getLevel();
             level.setBlock(finalPos, Blocks.SPAWNER.defaultBlockState(), 2);

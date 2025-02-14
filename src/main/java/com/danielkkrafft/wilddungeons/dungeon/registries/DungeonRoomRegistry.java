@@ -423,6 +423,7 @@ public class DungeonRoomRegistry {
                     of("nether/factory/nether_dragon_arena_3", new BlockPos(-48,0,48))
             ))
             .setClazz(BossRoom.class)
+            .setRoomClearOffering(OfferingTemplateRegistry.EXIT_RIFT)
             .set(ENEMY_TABLE, EnemyTableRegistry.NETHER_DRAGON_ARENA)
             .set(HAS_BEDROCK_SHELL,false);
 
