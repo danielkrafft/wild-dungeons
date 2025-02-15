@@ -8,8 +8,7 @@ import com.danielkkrafft.wilddungeons.util.WeightedTable;
 import java.util.ArrayList;
 
 import static com.danielkkrafft.wilddungeons.dungeon.registries.EnemyPoolRegistry.*;
-import static com.danielkkrafft.wilddungeons.dungeon.registries.TargetTemplateRegistry.BREEZE_GOLEM;
-import static com.danielkkrafft.wilddungeons.dungeon.registries.TargetTemplateRegistry.MUTANT_BOGGED;
+import static com.danielkkrafft.wilddungeons.dungeon.registries.TargetTemplateRegistry.*;
 
 public class EnemyTableRegistry {
     public static final DungeonRegistration.DungeonComponentRegistry<WeightedTable<TargetTemplate>> ENEMY_TABLE_REGISTRY = new DungeonRegistration.DungeonComponentRegistry<>();
@@ -21,7 +20,7 @@ public class EnemyTableRegistry {
             .add(HARD_ENEMY_POOL,10);
 
     public static final WeightedTable<TargetTemplate> NETHER_DRAGON_ARENA = create("NETHER_DRAGON_ARENA")
-            .add(new WeightedPool<TargetTemplate>().add(BREEZE_GOLEM, 1).add(MUTANT_BOGGED,1), 1);
+            .add(new WeightedPool<TargetTemplate>().add(NETHER_DRAGON, 1), 1);
 
     public static WeightedTable<TargetTemplate> create(String name){
         WeightedTable<TargetTemplate> enemyTable = new WeightedTable<TargetTemplate>();

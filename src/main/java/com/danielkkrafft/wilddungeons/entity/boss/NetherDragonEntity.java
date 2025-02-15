@@ -71,6 +71,8 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
 
     @Override
     protected void registerGoals() {
+        //todo spawn goal like BreezeGolem
+        //todo death goal like EnderDragon
         goalSelector.addGoal(1, new NetherDragonEntityAttackStrategyGoal());
         goalSelector.addGoal(2, new NetherDragonEntitySweepAttackGoal());
         goalSelector.addGoal(3, new NetherDragonEntityCircleAroundAnchorGoal());
