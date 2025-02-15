@@ -17,6 +17,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
@@ -108,7 +109,14 @@ public class DungeonTarget {
         if (type.equals(Type.ENTITY.toString()))
         {
             Entity entity = room.getBranch().getFloor().getLevel().getEntity(UUID.fromString(this.uuid));
-            return entity != null && entity.isAlive();
+            if (entity == null) return false;
+            if (!entity.isAlive()) return false;
+
+            for (BoundingBox box : room.getBoundingBoxes()) {
+                if (box.isInside(entity.blockPosition())) return true;
+            }
+
+            return false;
         }
 
         if (type.equals(Type.SPAWNER.toString()))

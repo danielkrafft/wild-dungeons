@@ -40,7 +40,6 @@ public final class DungeonRoomTemplate implements DungeonComponent {
     public <T> T get(HierarchicalProperty<T> property) { return (T) this.PROPERTIES.get(property); }
 
     public static DungeonRoomTemplate create(String name, List<Pair<String, BlockPos>> structures) {
-
         List<Pair<StructureTemplate, BlockPos>> templates = new ArrayList<>();
         for (Pair<String, BlockPos> structure : structures) {
             WildDungeons.getLogger().info("TRYING TO LOAD STRUCTURE FILE {}", structure.getFirst());
@@ -63,7 +62,8 @@ public final class DungeonRoomTemplate implements DungeonComponent {
                 .setRifts(rifts)
                 .setOfferings(offerings)
                 .setLootBlocks(lootBlocks)
-                .setDataMarkers(locatedDataMarkers);
+                .setDataMarkers(locatedDataMarkers)
+                .set(HierarchicalProperty.DIFFICULTY_MODIFIER, 1.0);
     }
 
     public List<BoundingBox> getBoundingBoxes(StructurePlaceSettings settings, BlockPos position) {

@@ -456,7 +456,7 @@ This code ensures that blocks are properly placed in the world, their states are
                                 serverLevel.setBlock(blockpos4, blockstate3, flags & -2 | 16);
                             }
 
-                            serverLevel.blockUpdated(blockpos4, blockstate3.getBlock());
+                            //serverLevel.blockUpdated(blockpos4, blockstate3.getBlock());
                         }
 
                         if (pair.getSecond() != null) {

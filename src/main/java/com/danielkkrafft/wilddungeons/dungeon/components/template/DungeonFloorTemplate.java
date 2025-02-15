@@ -18,7 +18,7 @@ public final class DungeonFloorTemplate implements DungeonComponent {
     public <T> T get(HierarchicalProperty<T> property) { return (T) this.PROPERTIES.get(property); }
 
     public static DungeonFloorTemplate create(String name) {
-        return new DungeonFloorTemplate().setName(name);
+        return new DungeonFloorTemplate().setName(name).set(HierarchicalProperty.DIFFICULTY_MODIFIER, 1.0);
     }
 
     public DungeonFloor placeInWorld(DungeonSession session, BlockPos position) {
