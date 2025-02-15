@@ -29,7 +29,7 @@ public class WDEntities {
 
     public static final DeferredHolder<EntityType<?>, EntityType<Offering>> OFFERING = ENTITIES.register("offering", () -> EntityType.Builder
             .<Offering>of(Offering::new, MobCategory.MISC)
-            .sized(1.0F, 1.0F)
+            .sized(0.3F, 0.3F)
             .clientTrackingRange(6)
             .updateInterval(20)
             .build(WildDungeons.rl("offering").toString()));

@@ -25,6 +25,8 @@ public class DungeonRoomPoolRegistry {
 
     public static final WeightedPool<DungeonRoomTemplate> PIGLIN_FACTORY_CAVE_SPRAWL_ROOM_POOL = new WeightedPool<>();
     public static final WeightedPool<DungeonRoomTemplate> PIGLIN_FACTORY_PIPEWORKS_ROOM_POOL = new WeightedPool<>();
+    public static final WeightedPool<DungeonRoomTemplate> PIGLIN_FACTORY_SPRAWL_ROOM_POOL = new WeightedPool<>();
+    public static final WeightedPool<DungeonRoomTemplate> PIGLIN_FACTORY_SHOP_ROOM_POOL = new WeightedPool<>();
 
     public static void setupRoomPools(){
         SMALL_ROOM_POOL
@@ -111,7 +113,23 @@ public class DungeonRoomPoolRegistry {
                 .add(NETHER_PIPEWORKS_5, 1)
                 .add(NETHER_PIPEWORKS_6, 1)
                 .add(NETHER_PIPEWORKS_LAVAFALLS, 1)
-                .add(NETHER_PIPEWORKS_BREAKOUT_ROOM, 1)
-                ;
+                .add(NETHER_PIPEWORKS_BREAKOUT_ROOM, 1);
+
+        PIGLIN_FACTORY_SPRAWL_ROOM_POOL
+                .add(NETHER_FACTORY_SPRAWL_1, 1)
+                .add(NETHER_FACTORY_SPRAWL_2, 1)
+                .add(NETHER_FACTORY_SPRAWL_3, 1)
+                .add(NETHER_FACTORY_SPRAWL_4, 1)
+                .add(NETHER_FACTORY_SPRAWL_5, 1)
+                .add(NETHER_FACTORY_SPRAWL_6, 1)
+                .add(NETHER_FACTORY_COMBAT_1, 1)
+                .add(NETHER_FACTORY_PARKOUR_1, 1)
+                .add(NETHER_FACTORY_PARKOUR_2, 1)
+                .add(NETHER_FACTORY_REST_1, 1)
+                .add(NETHER_FACTORY_TRAP_1, 1);
+
+        PIGLIN_FACTORY_SHOP_ROOM_POOL
+                .add(NETHER_FACTORY_SHOP_1, 1)
+                .add(NETHER_FACTORY_SHOP_2, 1);
     }
 }

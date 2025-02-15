@@ -58,6 +58,7 @@ public class OfferingTemplateRegistry {
 
     public static final OfferingTemplate OVERWORLD_TEST_RIFT = create("OVERWORLD_TEST_RIFT", RIFT, 1, "wd-mega_dungeon", XP_LEVEL, 30, 1.5f).setSoundLoop(WDSoundEvents.RIFT_AURA.value());
     public static final OfferingTemplate NETHER_TEST_RIFT = create("NETHER_TEST_RIFT", RIFT, 1, "wd-piglin_factory", NETHER_XP_LEVEL, 30, 1.5f).setSoundLoop(WDSoundEvents.WHISPERS.value());
+    public static final OfferingTemplate REACTION_TEST_RIFT = create("REACTION_TEST_RIFT", RIFT, 1, "wd-reaction_dungeon", XP_LEVEL, 30, 1.5f).setSoundLoop(WDSoundEvents.WHISPERS.value());
     public static final OfferingTemplate END_TEST_RIFT = create("END_TEST_RIFT", RIFT, 1, "wd-dungeon_1", END_XP_LEVEL, 30, 1.5f);
 
     public static final OfferingTemplate EXIT_RIFT = create("EXIT_RIFT", RIFT, 1, "win", XP_LEVEL, 0, 1.5f).setSoundLoop(WDSoundEvents.RIFT_AURA.value());
