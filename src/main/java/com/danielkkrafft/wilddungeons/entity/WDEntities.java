@@ -71,7 +71,7 @@ public class WDEntities {
 
     public static final DeferredHolder<EntityType<?>, EntityType<NetherDragonEntity>> NETHER_DRAGON = ENTITIES.register("nether_dragon", () -> EntityType.Builder
             .of(NetherDragonEntity::new, MobCategory.MONSTER)
-            .sized(16f, 8.0f)
+            .sized(12, 6)
             .fireImmune()
             .build(WildDungeons.rl("nether_dragon").toString()));
 }
