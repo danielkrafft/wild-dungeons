@@ -27,10 +27,11 @@ public class DungeonRegistry {
 
     public static DungeonTemplate OVERWORLD_BASIC_DUNGEON = create("mega_dungeon")
             .setFloorTemplates(new DungeonLayout<DungeonFloorTemplate>()
-                    .add(OVERWORLD_FLOOR_POOL, 1))
+                    .add(OVERWORLD_FLOOR_POOL, 2))
             .set(MATERIAL, OVERWORLD_MATERIAL_POOL_0)
             .set(DISPLAY_NAME, "MEGA DUNGEON")
             .set(ICON, "1-1")
+            .set(DIFFICULTY_MODIFIER, 4.0)
             .set(PRIMARY_COLOR, 0xFF44cc00)
             .set(SECONDARY_COLOR, 0xFFdde63e)
             .set(TARGET_TIME, 12000)

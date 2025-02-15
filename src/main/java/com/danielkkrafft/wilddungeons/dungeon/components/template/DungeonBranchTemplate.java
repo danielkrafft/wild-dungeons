@@ -24,7 +24,7 @@ public final class DungeonBranchTemplate implements DungeonComponent {
     public <T> T get(HierarchicalProperty<T> property) { return (T) this.PROPERTIES.get(property); }
 
     public static DungeonBranchTemplate create(String name) {
-        return new DungeonBranchTemplate().setName(name);
+        return new DungeonBranchTemplate().setName(name).set(HierarchicalProperty.DIFFICULTY_MODIFIER, 1.0);
     }
 
 

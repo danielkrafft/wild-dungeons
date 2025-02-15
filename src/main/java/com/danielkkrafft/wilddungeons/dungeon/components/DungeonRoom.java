@@ -23,6 +23,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -341,15 +342,25 @@ public class DungeonRoom {
         //get loot entries from the loot table registry
         List<DungeonRegistration.ItemTemplate> entries = LootTableRegistry.BASIC_LOOT_TABLE.randomResults(maxItems, (int) (5 * this.getDifficulty()), 2f);
         //for each entry, place it in a random chest
+
         entries.forEach(entry -> {
             //get a random chest
             BaseContainerBlockEntity lootBlock = (BaseContainerBlockEntity) lootBlockEntities.get(RandomUtil.randIntBetween(0, lootBlockEntities.size() - 1));
+
+            boolean flag = true;
+            for (int i = 0; i < lootBlock.getContainerSize(); i++) {
+                if (lootBlock.getItem(i).equals(ItemStack.EMPTY)) {
+                    break;
+                } else if (i == lootBlock.getContainerSize()-1) flag = false;
+            }
+            if (!flag) return;
+
             int slot = RandomUtil.randIntBetween(0, lootBlock.getContainerSize() - 1);
             //make sure the slot is empty to prevent overwriting existing loot
             while (!lootBlock.getItem(slot).isEmpty()) {
                 slot = RandomUtil.randIntBetween(0, lootBlock.getContainerSize() - 1);
             }
-            lootBlock.setItem(slot, entry.asItemStack());
+            lootBlock.setItem(slot, entry.asItemStack()); // TODO yuck
         });
         WDProfiler.INSTANCE.logTimestamp("DungeonRoom::processLootBlocks");
     }
@@ -484,7 +495,8 @@ public class DungeonRoom {
 
     public void onBranchEnter(WDPlayer player) {
         if (!lootGenerated){
-            DungeonSessionManager.getInstance().server.execute(this::processLootBlocks);
+            //DungeonSessionManager.getInstance().server.execute(this::processLootBlocks);
+            this.processLootBlocks();
             lootGenerated = true;
         }
     }
