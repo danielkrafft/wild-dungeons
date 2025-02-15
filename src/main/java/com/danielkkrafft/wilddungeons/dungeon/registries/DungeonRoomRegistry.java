@@ -403,7 +403,7 @@ public class DungeonRoomRegistry {
             .setClazz(CombatRoom.class)
             .setRoomClearOffering(OfferingTemplateRegistry.DUNGEON_KEY);
 
-    public static final DungeonRoomTemplate NETHER_PIPEWORKS_TO_FACTORY = create(
+    public static final DungeonRoomTemplate NETHER_PIPEWORKS_TO_FACTORY = create(//todo remove the lock blocks from this template or add keys to the dungeon
             "nether_pipeworks_to_factory",
             List.of(
                     of("nether/pipeworks/pipe_to_factory", EMPTY_BLOCK_POS)
@@ -494,7 +494,7 @@ public class DungeonRoomRegistry {
                     of("nether/factory/nether_dragon_arena_tower", EMPTY_BLOCK_POS)
             ));
 
-    public static final DungeonRoomTemplate NETHER_FACTORY_BOSS = create(
+    public static final DungeonRoomTemplate NETHER_FACTORY_BOSS = create(//todo make the bounding boxes of this room bigger because the game crashes when the nether dragon spawns otherwise
             "nether_factory_boss",
             List.of(
                     of("nether/factory/nether_dragon_arena_0", EMPTY_BLOCK_POS),

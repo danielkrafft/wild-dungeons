@@ -198,6 +198,7 @@ public class TemplateHelper {
         templates.forEach(template -> {
             result.addAll(template.getFirst().filterBlocks(template.getSecond(), new StructurePlaceSettings(), Blocks.CHEST));
             result.addAll(template.getFirst().filterBlocks(template.getSecond(), new StructurePlaceSettings(), Blocks.BARREL));
+            result.addAll(template.getFirst().filterBlocks(template.getSecond(), new StructurePlaceSettings(), Blocks.TRAPPED_CHEST));
         });
         return result;
     }

@@ -81,6 +81,7 @@ public class DungeonMaterial implements DungeonComponent {
         else if (input.getBlock() == WDBlocks.WD_HANGING_LIGHT_3.get()) {result = getHangingLight(2).trySetValue(BlockStateProperties.HANGING,true);}
         else if (input.getBlock() == WDBlocks.WD_HANGING_LIGHT_4.get()) {result = getHangingLight(3).trySetValue(BlockStateProperties.HANGING,true);}
         else if (input.getBlock() == WDBlocks.WD_SECRET.get()) {result = getHidden(0);}
+        //IMPORTANT: do NOT replace Trapped Chests as this will break some rooms
         else if (input.getBlock() == Blocks.CHEST) {result = RandomUtil.randFloatBetween(0, 1) < chestChance ? Blocks.CHEST.defaultBlockState() : Blocks.AIR.defaultBlockState();}
         else if (input.getBlock() == Blocks.BARREL) {result = RandomUtil.randFloatBetween(0, 1) < chestChance ? Blocks.BARREL.defaultBlockState() : Blocks.AIR.defaultBlockState();}
         else {return result;}
