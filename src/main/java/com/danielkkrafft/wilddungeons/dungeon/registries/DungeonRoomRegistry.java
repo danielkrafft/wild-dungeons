@@ -494,7 +494,7 @@ public class DungeonRoomRegistry {
                     of("nether/factory/nether_dragon_arena_tower", EMPTY_BLOCK_POS)
             ));
 
-    public static final DungeonRoomTemplate NETHER_FACTORY_BOSS = create(//todo make the bounding boxes of this room bigger because the game crashes when the nether dragon spawns otherwise
+    public static final DungeonRoomTemplate NETHER_FACTORY_BOSS = create(
             "nether_factory_boss",
             List.of(
                     of("nether/factory/nether_dragon_arena_0", EMPTY_BLOCK_POS),

@@ -121,7 +121,7 @@ public class LockableEventRoom extends DungeonRoom {
     public void processDataMarker(BlockPos pos, String metadata) {
         if (metadata.equals("wd_gate")) {
             BlockState state = this.isClear() ? Blocks.AIR.defaultBlockState() : WDBedrockBlock.of(Blocks.REDSTONE_BLOCK);
-            this.getBranch().getFloor().getLevel().setBlock(pos, state, 2);
+            this.getBranch().getFloor().getLevel().setBlock(pos, state, 130);
         }
     }
 }

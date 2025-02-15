@@ -129,7 +129,7 @@ public class DungeonRoom {
 
         if (getTemplate().spawnPoint() != null) {
             this.spawnPoint = TemplateHelper.transform(getTemplate().spawnPoint(), this);
-            level.setBlock(spawnPoint, Blocks.AIR.defaultBlockState(), 2);
+            level.setBlock(spawnPoint, Blocks.AIR.defaultBlockState(), 130);
         } else {this.spawnPoint = null;}
 
         this.handleChunkMap();
@@ -189,7 +189,7 @@ public class DungeonRoom {
                         case 4, 5 -> mutableBlockPos.set(wallOffset[i], y, x);
                     }
 
-                    if (predicate.apply(floor, room, mutableBlockPos) && !level.getServer().isShutdown()) level.setBlock(mutableBlockPos, blockState, 2);
+                    if (predicate.apply(floor, room, mutableBlockPos) && !level.getServer().isShutdown()) level.setBlock(mutableBlockPos, blockState, 130);
                 }
             }
         }
@@ -211,7 +211,7 @@ public class DungeonRoom {
             if (!room.isPosInsideShell(blockPos)) {
                 Block block = floor.getLevel().getBlockState(blockPos).getBlock();
                 if (block != WDBlocks.WD_BEDROCK.get()) {
-                    floor.getLevel().setBlock(blockPos, WDBedrockBlock.of(floor.getLevel().getBlockState(blockPos).getBlock()), 2);
+                    floor.getLevel().setBlock(blockPos, WDBedrockBlock.of(floor.getLevel().getBlockState(blockPos).getBlock()), 130);
                     room.totalPlaced++;
                 }
             }
@@ -225,7 +225,7 @@ public class DungeonRoom {
             if (!room.isPosInsideShell(blockPos)) {
                 room.totalRemoved++;
                 BlockState blockState = floor.getLevel().getBlockState(blockPos);
-                if (blockState.hasProperty(MIMIC)) floor.getLevel().setBlock(blockPos, BuiltInRegistries.BLOCK.byId(floor.getLevel().getBlockState(blockPos).getValue(MIMIC)).defaultBlockState(), 2);
+                if (blockState.hasProperty(MIMIC)) floor.getLevel().setBlock(blockPos, BuiltInRegistries.BLOCK.byId(floor.getLevel().getBlockState(blockPos).getValue(MIMIC)).defaultBlockState(), 130);
             }
             return false;
         };
@@ -421,16 +421,19 @@ public class DungeonRoom {
         });
 
         this.boundingBoxes.forEach(box -> {
-            fixContactedShells(getBranch().getFloor(), box);
+            fixContactedShells(getBranch().getFloor(), box, getBranch().getIndex());
         });
         destroyEntities();
     }
-
-    public static void fixContactedShells(DungeonFloor floor, BoundingBox box) {
+    public static void fixContactedShells(DungeonFloor floor, BoundingBox box){
+        fixContactedShells(floor, box, -1);
+    }
+    public static void fixContactedShells(DungeonFloor floor, BoundingBox box, int branchToIgnore) {
         BoundingBox inflatedBox = box.inflatedBy(2);
         List<DungeonRoom> touchingRooms = new ArrayList<>();
         floor.getChunkMap().forEach((key, value) -> {
             value.forEach(v -> {
+                if (branchToIgnore != -1 && v.x == branchToIgnore) return;
                 DungeonRoom room = floor.getBranches().get(v.x).getRooms().get(v.y);
                 if (room.boundingBoxes.stream().anyMatch(inflatedBox::intersects)) {
                     touchingRooms.add(room);
@@ -446,7 +449,7 @@ public class DungeonRoom {
             for (int y = box.minY(); y <= box.maxY(); y++) {
                 for (int z = box.minZ(); z <= box.maxZ(); z++) {
                     mutableBlockPos.set(x, y, z);
-                    floor.getLevel().setBlock(mutableBlockPos, Blocks.AIR.defaultBlockState(), 2);
+                    floor.getLevel().setBlock(mutableBlockPos, Blocks.AIR.defaultBlockState(), 130);
                 }
             }
         }

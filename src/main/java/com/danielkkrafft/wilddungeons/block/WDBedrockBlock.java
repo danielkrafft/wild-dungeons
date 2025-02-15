@@ -44,7 +44,7 @@ public class WDBedrockBlock extends Block {
 
     public static void setBlockToMimic(BlockState state, Level level, BlockPos pos, BlockState newBlockstate) {
         int index = BuiltInRegistries.BLOCK.getId(newBlockstate.getBlock());
-        level.setBlock(pos, state.trySetValue(MIMIC, index), 2);
+        level.setBlock(pos, state.trySetValue(MIMIC, index), 130);
     }
 
     public static BlockState of(Block mimicBlock) {

@@ -114,7 +114,6 @@ public class DungeonBranchRegistry {
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .addSimple(NETHER_PIPEWORKS_3)
                     .add(PIGLIN_FACTORY_PIPEWORKS_ROOM_POOL, 10)
-                    .addSimple(NETHER_PIPEWORKS_TO_FACTORY)
                     .addSimple(NETHER_PIPEWORKS_3)
                     .addSimple(NETHER_PIPEWORKS_TO_FACTORY)
             )
@@ -135,6 +134,7 @@ public class DungeonBranchRegistry {
     public static final DungeonBranchTemplate NETHER_DRAGON_BOSS_BRANCH = create("NETHER_DRAGON_BOSS_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .add(PIGLIN_FACTORY_SHOP_ROOM_POOL, 1)
+//                    .addSimple(NETHER_FACTORY_BOSS_HALLWAY)//todo add a hallway before this one to give the boss room more chances to successfully spawn
                     .addSimple(NETHER_FACTORY_TOWER)
                     .addSimple(NETHER_FACTORY_BOSS))
             .set(INTENSITY, 3);

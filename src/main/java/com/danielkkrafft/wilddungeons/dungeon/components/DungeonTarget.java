@@ -89,7 +89,7 @@ public class DungeonTarget {
             BlockPos finalPos = room.calculateFurthestPoint(validPoints, 20);
 
             ServerLevel level = room.getBranch().getFloor().getLevel();
-            level.setBlock(finalPos, Blocks.SPAWNER.defaultBlockState(), 2);
+            level.setBlock(finalPos, Blocks.SPAWNER.defaultBlockState(), 130);
             BlockEntity blockEntity = level.getBlockEntity(finalPos);
             if (blockEntity instanceof SpawnerBlockEntity spawnerBlockEntity) {
                 spawnerBlockEntity.setEntityId(EntityType.byString(this.entityTypeKey).get(), level.random);
