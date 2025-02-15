@@ -24,7 +24,7 @@ public final class DungeonRoomTemplate implements DungeonComponent {
     private String name;
     private List<Pair<StructureTemplate, BlockPos>> templates;
     private List<ConnectionPoint> connectionPoints;
-    private List<BlockPos> spawnPoints;
+    private List<BlockPos> spawnPoints = new ArrayList<>();
     private List<Vec3> rifts;
     private List<Vec3> offerings;
     private List<StructureTemplate.StructureBlockInfo> lootBlocks;
@@ -104,7 +104,12 @@ public final class DungeonRoomTemplate implements DungeonComponent {
     }
 
     public BlockPos spawnPoint() {
+        if (spawnPoints == null || spawnPoints.isEmpty()) return null;
         return spawnPoints.get(RandomUtil.randIntBetween(0, spawnPoints.size() - 1));
+    }
+
+    public List<BlockPos> spawnPoints() {
+        return spawnPoints == null ? new ArrayList<>() : spawnPoints;
     }
 
     public List<Vec3> rifts() {

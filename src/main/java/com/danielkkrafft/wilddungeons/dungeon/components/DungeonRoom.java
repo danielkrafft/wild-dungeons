@@ -129,7 +129,9 @@ public class DungeonRoom {
 
         if (getTemplate().spawnPoint() != null) {
             this.spawnPoint = TemplateHelper.transform(getTemplate().spawnPoint(), this);
-            level.setBlock(spawnPoint, Blocks.AIR.defaultBlockState(), 130);
+            getTemplate().spawnPoints().forEach(spawnPoint -> {
+                level.setBlock(TemplateHelper.transform(spawnPoint, this), Blocks.AIR.defaultBlockState(), 130);
+            });
         } else {this.spawnPoint = null;}
 
         this.handleChunkMap();
