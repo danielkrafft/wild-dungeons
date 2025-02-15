@@ -344,23 +344,34 @@ public class DungeonRoom {
         //for each entry, place it in a random chest
 
         entries.forEach(entry -> {
+            if (lootBlockEntities.isEmpty()) return;
+            ItemStack lootStack = entry.asItemStack();
             //get a random chest
             BaseContainerBlockEntity lootBlock = (BaseContainerBlockEntity) lootBlockEntities.get(RandomUtil.randIntBetween(0, lootBlockEntities.size() - 1));
-
-            boolean flag = true;
-            for (int i = 0; i < lootBlock.getContainerSize(); i++) {
-                if (lootBlock.getItem(i).equals(ItemStack.EMPTY)) {
-                    break;
-                } else if (i == lootBlock.getContainerSize()-1) flag = false;
-            }
-            if (!flag) return;
-
-            int slot = RandomUtil.randIntBetween(0, lootBlock.getContainerSize() - 1);
-            //make sure the slot is empty to prevent overwriting existing loot
-            while (!lootBlock.getItem(slot).isEmpty()) {
-                slot = RandomUtil.randIntBetween(0, lootBlock.getContainerSize() - 1);
-            }
-            lootBlock.setItem(slot, entry.asItemStack()); // TODO yuck
+            ArrayList<Integer> emptySlots = new ArrayList<>();
+            boolean isFull = true;
+            do {
+                //check to see if the chest is full
+                for (int i = 0; i < lootBlock.getContainerSize(); i++) {
+                    ItemStack stack = lootBlock.getItem(i);
+                    if (stack.isEmpty()) {
+                        isFull = false;
+                        emptySlots.add(i);
+                    } else if (stack.getItem() == lootStack.getItem() && stack.getCount()+lootStack.getCount() <= stack.getMaxStackSize()) {
+                        stack.grow(lootStack.getCount());
+                        lootBlock.setItem(i, stack);
+                        return;
+                    }
+                }
+                if (isFull) {
+                    lootBlockEntities.remove(lootBlock);
+                    if (lootBlockEntities.isEmpty()) return;
+                    lootBlock = (BaseContainerBlockEntity) lootBlockEntities.get(RandomUtil.randIntBetween(0, lootBlockEntities.size() - 1));
+                }
+            } while (isFull);
+            //place the loot in a random empty slot
+            int slot = emptySlots.get(RandomUtil.randIntBetween(0, emptySlots.size() - 1));
+            lootBlock.setItem(slot, lootStack);
         });
         WDProfiler.INSTANCE.logTimestamp("DungeonRoom::processLootBlocks");
     }
