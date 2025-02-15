@@ -153,12 +153,16 @@ public class TemplateHelper {
         return StructureTemplate.transform(input, room.getSettings().getMirror(), room.getSettings().getRotation(), EMPTY_BLOCK_POS).offset(room.getPosition());
     }
 
-    public static BlockPos locateSpawnPoint(List<Pair<StructureTemplate, BlockPos>> templates) {
+    public static List<BlockPos> locateSpawnPoint(List<Pair<StructureTemplate, BlockPos>> templates) {
         List<StructureTemplate.StructureBlockInfo> SPAWN_BLOCKS = new ArrayList<>();
         templates.forEach(template -> {
             SPAWN_BLOCKS.addAll(template.getFirst().filterBlocks(template.getSecond(), new StructurePlaceSettings(), WDBlocks.SPAWN_BLOCK.get()));
         });
-        return SPAWN_BLOCKS.isEmpty() ? null : SPAWN_BLOCKS.getFirst().pos();
+        List<BlockPos> result = new ArrayList<>();
+        SPAWN_BLOCKS.forEach(block -> {
+            result.add(block.pos());
+        });
+        return SPAWN_BLOCKS.isEmpty() ? null : result;
     }
 
     public static List<Vec3> locateRifts(List<Pair<StructureTemplate, BlockPos>> templates) {

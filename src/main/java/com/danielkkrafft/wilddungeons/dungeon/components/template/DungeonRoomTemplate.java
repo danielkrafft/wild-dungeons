@@ -6,6 +6,7 @@ import com.danielkkrafft.wilddungeons.dungeon.components.ConnectionPoint;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
+import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -23,7 +24,7 @@ public final class DungeonRoomTemplate implements DungeonComponent {
     private String name;
     private List<Pair<StructureTemplate, BlockPos>> templates;
     private List<ConnectionPoint> connectionPoints;
-    private BlockPos spawnPoint;
+    private List<BlockPos> spawnPoints;
     private List<Vec3> rifts;
     private List<Vec3> offerings;
     private List<StructureTemplate.StructureBlockInfo> lootBlocks;
@@ -50,7 +51,7 @@ public final class DungeonRoomTemplate implements DungeonComponent {
         List<ConnectionPoint> connectionPoints = TemplateHelper.locateConnectionPoints(templates);
         WildDungeons.getLogger().info("LOCATED {} CONNECTION POINTS FOR ROOM: {}", connectionPoints.size(), name);
         List<Vec3> rifts = TemplateHelper.locateRifts(templates);
-        BlockPos spawnPoint = TemplateHelper.locateSpawnPoint(templates);
+        List<BlockPos> spawnPoint = TemplateHelper.locateSpawnPoint(templates);
         List<Vec3> offerings = TemplateHelper.locateOfferings(templates);
         List<StructureTemplate.StructureBlockInfo> lootBlocks = TemplateHelper.locateLootTargets(templates);
         List<StructureTemplate.StructureBlockInfo> locatedDataMarkers = TemplateHelper.locateDataMarkers(templates);
@@ -58,7 +59,7 @@ public final class DungeonRoomTemplate implements DungeonComponent {
                 .setName(name)
                 .setTemplates(templates)
                 .setConnectionPoints(connectionPoints)
-                .setSpawnPoint(spawnPoint)
+                .setSpawnPoints(spawnPoint)
                 .setRifts(rifts)
                 .setOfferings(offerings)
                 .setLootBlocks(lootBlocks)
@@ -103,7 +104,7 @@ public final class DungeonRoomTemplate implements DungeonComponent {
     }
 
     public BlockPos spawnPoint() {
-        return spawnPoint;
+        return spawnPoints.get(RandomUtil.randIntBetween(0, spawnPoints.size() - 1));
     }
 
     public List<Vec3> rifts() {
@@ -147,8 +148,8 @@ public final class DungeonRoomTemplate implements DungeonComponent {
         return this;
     }
 
-    private DungeonRoomTemplate setSpawnPoint(BlockPos spawnPoint) {
-        this.spawnPoint = spawnPoint;
+    private DungeonRoomTemplate setSpawnPoints(List<BlockPos> spawnPoints) {
+        this.spawnPoints = spawnPoints;
         return this;
     }
 
@@ -186,7 +187,7 @@ public final class DungeonRoomTemplate implements DungeonComponent {
                 .setName(newName)
                 .setTemplates(template.templates)
                 .setConnectionPoints(template.connectionPoints)
-                .setSpawnPoint(template.spawnPoint)
+                .setSpawnPoints(template.spawnPoints)
                 .setRifts(template.rifts)
                 .setOfferings(template.offerings)
                 .setLootBlocks(template.lootBlocks)
