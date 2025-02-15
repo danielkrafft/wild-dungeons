@@ -283,7 +283,7 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
             if (NetherDragonEntity.this.attackPhase == CIRCLE) {
                 --this.nextSweepTick;
                 if (this.nextSweepTick <= 0) {
-                    this.nextSweepTick = this.adjustedTickDelay((40 + NetherDragonEntity.this.random.nextInt(3)) * 20);
+                    this.nextSweepTick = this.adjustedTickDelay((8 + NetherDragonEntity.this.random.nextInt(3)) * 20);
                     NetherDragonEntity.this.attackPhase = NetherDragonEntity.this.random.nextBoolean() ? SWOOP : FIREBALL;
                     switch (NetherDragonEntity.this.attackPhase) {
                         case SWOOP:
@@ -429,6 +429,7 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
     class NetherDragonEntityFireBallTargetGoal extends Goal{
         public int chargeTime;
         private int firedFireballs;
+        private int initialFireballDelay;
 
         NetherDragonEntityFireBallTargetGoal() {
             this.setFlags(EnumSet.of(Flag.TARGET, Flag.LOOK));
@@ -465,6 +466,19 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
         public void tick() {
             LivingEntity livingentity = NetherDragonEntity.this.getTarget();
             if (livingentity != null) {
+                //face the target
+                NetherDragonEntity.this.getLookControl().setLookAt(livingentity, 30.0F, 30.0F);
+                //get the direction to the target, then rotate the body to face that direction
+                Vec3 vec3 = NetherDragonEntity.this.getViewVector(1.0F);
+                double d0 = livingentity.getX() - (NetherDragonEntity.this.getX() + vec3.x * 4.0);
+                double d1 = livingentity.getY(0.5) - (0.5 + NetherDragonEntity.this.getY(0.5));
+                double d2 = livingentity.getZ() - (NetherDragonEntity.this.getZ() + vec3.z * 4.0);
+                float rotation = (float)(Mth.atan2(d2, d0) * (double)(180F / (float)Math.PI) - 90.0F);
+                //set the dragons rotation to face the target smoothly
+                NetherDragonEntity.this.setYRot(Mth.approachDegrees(NetherDragonEntity.this.getYRot(), rotation, 10.0F));
+
+                if (++initialFireballDelay < 60) return;
+
                 Level level = NetherDragonEntity.this.level();
                 this.chargeTime++;
                 if (this.chargeTime == 5 && !NetherDragonEntity.this.isSilent()) {
@@ -472,11 +486,7 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
                 }
 
                 if (this.chargeTime == 10) {
-                    Vec3 vec3 = NetherDragonEntity.this.getViewVector(1.0F);
-                    double d2 = livingentity.getX() - (NetherDragonEntity.this.getX() + vec3.x * 4.0);
-                    double d3 = livingentity.getY(0.5) - (0.5 + NetherDragonEntity.this.getY(0.5));
-                    double d4 = livingentity.getZ() - (NetherDragonEntity.this.getZ() + vec3.z * 4.0);
-                    Vec3 vec31 = new Vec3(d2, d3, d4);
+                    Vec3 vec31 = new Vec3(d0, d1, d2);
                     if (!NetherDragonEntity.this.isSilent()) {
                         //todo fireball launch noise
                     }
@@ -488,11 +498,13 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
                     if (++this.firedFireballs == 3) {
                         NetherDragonEntity.this.attackPhase = CIRCLE;
                         this.firedFireballs = 0;
+                        this.initialFireballDelay = 0;
                     }
+
                 }
 
                 //todo set the dragons state to charging to make it look like it is charging up in the animations
-//                NetherDragonEntity.this.setCharging(this.chargeTime > 10);
+//                NetherDragonEntity.this.setCharging(this.chargeTime > 0);
             } else {
                 this.chargeTime = 0;
             }
