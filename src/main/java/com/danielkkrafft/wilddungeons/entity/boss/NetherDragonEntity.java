@@ -17,7 +17,9 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.MoveControl;
-import net.minecraft.world.entity.ai.goal.*;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
+import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
@@ -68,7 +70,7 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
 
     @Override
     protected void registerGoals() {
-        goalSelector.addGoal(1,new NetherDragonEntityAttackStrategyGoal());
+        goalSelector.addGoal(1, new NetherDragonEntityAttackStrategyGoal());
         goalSelector.addGoal(2, new NetherDragonEntitySweepAttackGoal());
         goalSelector.addGoal(3, new NetherDragonEntityCircleAroundAnchorGoal());
         goalSelector.addGoal(3, new NetherDragonEntityFireBallTargetGoal());
@@ -151,15 +153,17 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
         path.setCanPassDoors(true);
         return path;
     }
+
     @Override
-    protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder)
-    {
+    protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
         super.defineSynchedData(builder);
 //        builder.define(TICKSINVULNERABLE,0);
     }
 
     @Override
-    protected @org.jetbrains.annotations.Nullable SoundEvent getAmbientSound() { return WDSoundEvents.BREEZE_GOLEM_AMBIENT.value(); }//todo
+    protected @org.jetbrains.annotations.Nullable SoundEvent getAmbientSound() {
+        return WDSoundEvents.BREEZE_GOLEM_AMBIENT.value();
+    }//todo
 
     @Override
     protected @NotNull SoundEvent getHurtSound(@NotNull DamageSource damageSource) {
@@ -167,13 +171,19 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
     }
 
     @Override
-    protected @NotNull SoundEvent getDeathSound() { return WDSoundEvents.BREEZE_GOLEM_DEATH.value(); }//todo
+    protected @NotNull SoundEvent getDeathSound() {
+        return WDSoundEvents.BREEZE_GOLEM_DEATH.value();
+    }//todo
 
     @Override
-    public @NotNull SoundSource getSoundSource() { return SoundSource.HOSTILE; }
+    public @NotNull SoundSource getSoundSource() {
+        return SoundSource.HOSTILE;
+    }
 
     @Override
-    public void startSeenByPlayer(@NotNull ServerPlayer serverPlayer) { bossEvent.addPlayer(serverPlayer); }
+    public void startSeenByPlayer(@NotNull ServerPlayer serverPlayer) {
+        bossEvent.addPlayer(serverPlayer);
+    }
 
     @Override
     public void stopSeenByPlayer(@NotNull ServerPlayer serverPlayer) {
@@ -230,13 +240,13 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
             double zDir = NetherDragonEntity.this.moveTargetPoint.z - NetherDragonEntity.this.getZ();
             double distance = Math.sqrt(xDir * xDir + zDir * zDir);
             float oldRot = NetherDragonEntity.this.getYRot();
-            if (Math.abs(distance) > (double)1.0E-5F) {
-                double horizontalAdjustmentFactor = (double)1.0F - Math.abs(yDir * (double)0.7F) / distance;
+            if (Math.abs(distance) > (double) 1.0E-5F) {
+                double horizontalAdjustmentFactor = (double) 1.0F - Math.abs(yDir * (double) 0.7F) / distance;
                 xDir *= horizontalAdjustmentFactor;
                 zDir *= horizontalAdjustmentFactor;
                 distance = Math.sqrt(xDir * xDir + zDir * zDir);
                 double distance3D = Math.sqrt(xDir * xDir + zDir * zDir + yDir * yDir);
-                NetherDragonEntity.this.setYRot(Mth.approachDegrees(Mth.wrapDegrees(NetherDragonEntity.this.getYRot() + 90.0F), Mth.wrapDegrees((float)Mth.atan2(zDir, xDir) * (180F / (float)Math.PI)), 4.0F) - 90.0F);
+                NetherDragonEntity.this.setYRot(Mth.approachDegrees(Mth.wrapDegrees(NetherDragonEntity.this.getYRot() + 90.0F), Mth.wrapDegrees((float) Mth.atan2(zDir, xDir) * (180F / (float) Math.PI)), 4.0F) - 90.0F);
                 NetherDragonEntity.this.yBodyRot = NetherDragonEntity.this.getYRot();
                 if (Mth.degreesDifferenceAbs(oldRot, NetherDragonEntity.this.getYRot()) < 3.0F) {
                     this.speed = Mth.approach(this.speed, 3f, 0.005F * (1.8F / this.speed));
@@ -244,18 +254,17 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
                     this.speed = Mth.approach(this.speed, 1f, 0.025F);
                 }
 
-                float pitchAngle = (float)(-(Mth.atan2(-yDir, distance) * (double)180.0F / (double)(float)Math.PI));
+                float pitchAngle = (float) (-(Mth.atan2(-yDir, distance) * (double) 180.0F / (double) (float) Math.PI));
                 NetherDragonEntity.this.setXRot(pitchAngle);
                 float yawAngle = NetherDragonEntity.this.getYRot() + 90.0F;
-                double xMovement = (double)(this.speed * Mth.cos(yawAngle * ((float)Math.PI / 180F))) * Math.abs(xDir / distance3D);
-                double yMovement = (double)(this.speed * Mth.sin(pitchAngle * ((float)Math.PI / 180F))) * Math.abs(yDir / distance3D);
-                double zMovement = (double)(this.speed * Mth.sin(yawAngle * ((float)Math.PI / 180F))) * Math.abs(zDir / distance3D);
+                double xMovement = (double) (this.speed * Mth.cos(yawAngle * ((float) Math.PI / 180F))) * Math.abs(xDir / distance3D);
+                double yMovement = (double) (this.speed * Mth.sin(pitchAngle * ((float) Math.PI / 180F))) * Math.abs(yDir / distance3D);
+                double zMovement = (double) (this.speed * Mth.sin(yawAngle * ((float) Math.PI / 180F))) * Math.abs(zDir / distance3D);
                 Vec3 vec3 = NetherDragonEntity.this.getDeltaMovement();
                 NetherDragonEntity.this.setDeltaMovement(vec3.add((new Vec3(xMovement, yMovement, zMovement)).subtract(vec3).scale(0.2)));
             }
         }
     }
-
 
 
     class NetherDragonEntityAttackStrategyGoal extends Goal {
@@ -301,17 +310,16 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
     }
 
 
-
     abstract class NetherDragonEntityMoveTargetGoal extends Goal {
         public NetherDragonEntityMoveTargetGoal() {
             this.setFlags(EnumSet.of(Flag.MOVE));
         }
 
         protected boolean touchingTarget() {
-            return NetherDragonEntity.this.moveTargetPoint.distanceToSqr(NetherDragonEntity.this.getX(), NetherDragonEntity.this.getY(), NetherDragonEntity.this.getZ()) < (double)4.0F;
+            return NetherDragonEntity.this.moveTargetPoint.distanceToSqr(NetherDragonEntity.this.getX(), NetherDragonEntity.this.getY(), NetherDragonEntity.this.getZ()) < (double) 4.0F;
         }
     }
-    
+
     class NetherDragonEntityCircleAroundAnchorGoal extends NetherDragonEntityMoveTargetGoal {
         private float angle;
         private float distance;
@@ -346,7 +354,7 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
             }
 
             if (NetherDragonEntity.this.random.nextInt(this.adjustedTickDelay(450)) == 0) {
-                this.angle = NetherDragonEntity.this.random.nextFloat() * 2.0F * (float)Math.PI;
+                this.angle = NetherDragonEntity.this.random.nextFloat() * 2.0F * (float) Math.PI;
                 this.selectNext();
             }
 
@@ -371,8 +379,8 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
                 NetherDragonEntity.this.anchorPoint = NetherDragonEntity.this.blockPosition();
             }
 
-            this.angle += this.clockwise * 15.0F * ((float)Math.PI / 180F);
-            NetherDragonEntity.this.moveTargetPoint = Vec3.atLowerCornerOf(NetherDragonEntity.this.anchorPoint).add((double)(this.distance * Mth.cos(this.angle)), (double)(-4.0F + this.height), (double)(this.distance * Mth.sin(this.angle)));
+            this.angle += this.clockwise * 15.0F * ((float) Math.PI / 180F);
+            NetherDragonEntity.this.moveTargetPoint = Vec3.atLowerCornerOf(NetherDragonEntity.this.anchorPoint).add((double) (this.distance * Mth.cos(this.angle)), (double) (-4.0F + this.height), (double) (this.distance * Mth.sin(this.angle)));
         }
     }
 
@@ -404,15 +412,15 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
         }
 
         public void stop() {
-            NetherDragonEntity.this.setTarget((LivingEntity)null);
+            NetherDragonEntity.this.setTarget((LivingEntity) null);
             NetherDragonEntity.this.attackPhase = CIRCLE;
         }
 
         public void tick() {
             LivingEntity livingentity = NetherDragonEntity.this.getTarget();
             if (livingentity != null) {
-                NetherDragonEntity.this.moveTargetPoint = new Vec3(livingentity.getX(), livingentity.getY((double)0.5F), livingentity.getZ());
-                if (NetherDragonEntity.this.getBoundingBox().inflate((double)0.2F).intersects(livingentity.getBoundingBox())) {
+                NetherDragonEntity.this.moveTargetPoint = new Vec3(livingentity.getX(), livingentity.getY((double) 0.5F), livingentity.getZ());
+                if (NetherDragonEntity.this.getBoundingBox().inflate((double) 0.2F).intersects(livingentity.getBoundingBox())) {
                     NetherDragonEntity.this.doHurtTarget(livingentity);
                     NetherDragonEntity.this.attackPhase = CIRCLE;
                     if (!NetherDragonEntity.this.isSilent()) {
@@ -426,7 +434,7 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
         }
     }
 
-    class NetherDragonEntityFireBallTargetGoal extends Goal{
+    class NetherDragonEntityFireBallTargetGoal extends Goal {
         public int chargeTime;
         private int firedFireballs;
         private int initialFireballDelay;
@@ -434,6 +442,7 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
         NetherDragonEntityFireBallTargetGoal() {
             this.setFlags(EnumSet.of(Flag.TARGET, Flag.LOOK));
         }
+
         @Override
         public boolean canUse() {
             return NetherDragonEntity.this.getTarget() != null && NetherDragonEntity.this.attackPhase == FIREBALL;
@@ -459,7 +468,7 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
         }
 
         public void stop() {
-            NetherDragonEntity.this.setTarget((LivingEntity)null);
+            NetherDragonEntity.this.setTarget((LivingEntity) null);
             NetherDragonEntity.this.attackPhase = CIRCLE;
         }
 
@@ -473,7 +482,7 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
                 double d0 = livingentity.getX() - (NetherDragonEntity.this.getX() + vec3.x * 4.0);
                 double d1 = livingentity.getY(0.5) - (0.5 + NetherDragonEntity.this.getY(0.5));
                 double d2 = livingentity.getZ() - (NetherDragonEntity.this.getZ() + vec3.z * 4.0);
-                float rotation = (float)(Mth.atan2(d2, d0) * (double)(180F / (float)Math.PI) - 90.0F);
+                float rotation = (float) (Mth.atan2(d2, d0) * (double) (180F / (float) Math.PI) - 90.0F);
                 //set the dragons rotation to face the target smoothly
                 NetherDragonEntity.this.setYRot(Mth.approachDegrees(NetherDragonEntity.this.getYRot(), rotation, 10.0F));
 
@@ -491,7 +500,7 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
                         //todo fireball launch noise
                     }
 
-                    LargeFireball largefireball = new LargeFireball(level, NetherDragonEntity.this, vec31.normalize(),1);
+                    LargeFireball largefireball = new LargeFireball(level, NetherDragonEntity.this, vec31.normalize(), 1);
                     largefireball.setPos(NetherDragonEntity.this.getX() + vec3.x * 4.0, NetherDragonEntity.this.getY(0.5) + 0.5, largefireball.getZ() + vec3.z * 4.0);
                     level.addFreshEntity(largefireball);
                     this.chargeTime = 0;
@@ -518,7 +527,7 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
 
 
     class NetherDragonEntityTargetPlayerGoal extends Goal {
-        private final TargetingConditions attackTargeting = TargetingConditions.forCombat().range((double)64.0F);
+        private final TargetingConditions attackTargeting = TargetingConditions.forCombat().range((double) 64.0F);
         private int nextScanTick = reducedTickDelay(20);
 
         NetherDragonEntityTargetPlayerGoal() {
@@ -529,10 +538,10 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
                 --this.nextScanTick;
             } else {
                 this.nextScanTick = reducedTickDelay(60);
-                List<Player> list = NetherDragonEntity.this.level().getNearbyPlayers(this.attackTargeting, NetherDragonEntity.this, NetherDragonEntity.this.getBoundingBox().inflate((double)16.0F, (double)64.0F, (double)16.0F));
+                List<Player> list = NetherDragonEntity.this.level().getNearbyPlayers(this.attackTargeting, NetherDragonEntity.this, NetherDragonEntity.this.getBoundingBox().inflate((double) 16.0F, (double) 64.0F, (double) 16.0F));
                 if (!list.isEmpty()) {
                     list.sort((p1, p2) -> NetherDragonEntity.this.random.nextInt(3) - 1);
-                    for(Player player : list) {
+                    for (Player player : list) {
                         if (NetherDragonEntity.this.canAttack(player, attackTargeting)) {
                             NetherDragonEntity.this.setTarget(player);
                             return true;
