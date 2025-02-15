@@ -412,6 +412,82 @@ public class DungeonRoomRegistry {
             .set(BLOCKING_MATERIAL_INDEX, 1)
             .set(INTENSITY, 0);
 
+    public static final DungeonRoomTemplate NETHER_FACTORY_PARKOUR_1 = create(
+            "nether_factory_parkour_1",
+            List.of(
+                    of("nether/factory/parkour1", EMPTY_BLOCK_POS)
+            ));
+
+    public static final DungeonRoomTemplate NETHER_FACTORY_PARKOUR_2 = create(
+            "nether_factory_parkour_2",
+            List.of(
+                    of("nether/factory/parkour2_1", EMPTY_BLOCK_POS),
+                    of("nether/factory/parkour2_2", new BlockPos(9, 0, 7))
+            ));
+
+    public static final DungeonRoomTemplate NETHER_FACTORY_REST_1 = create(
+            "nether_factory_rest_1",
+            List.of(
+                    of("nether/factory/rest1", EMPTY_BLOCK_POS)
+            ));
+
+    public static final DungeonRoomTemplate NETHER_FACTORY_SHOP_1 = create(
+            "nether_factory_shop_1",
+            List.of(
+                    of("nether/factory/shop1", EMPTY_BLOCK_POS)
+            ));
+
+    public static final DungeonRoomTemplate NETHER_FACTORY_SHOP_2 = create(
+            "nether_factory_shop_2",
+            List.of(
+                    of("nether/factory/shop2", EMPTY_BLOCK_POS)
+            ));
+
+    public static final DungeonRoomTemplate NETHER_FACTORY_SPRAWL_1 = create(
+            "nether_factory_sprawl_1",
+            List.of(
+                    of("nether/factory/sprawl1", EMPTY_BLOCK_POS)
+            ));
+
+    public static final DungeonRoomTemplate NETHER_FACTORY_SPRAWL_2 = create(
+            "nether_factory_sprawl_2",
+            List.of(
+                    of("nether/factory/sprawl2", EMPTY_BLOCK_POS)
+            ));
+
+    public static final DungeonRoomTemplate NETHER_FACTORY_SPRAWL_3 = create(
+            "nether_factory_sprawl_3",
+            List.of(
+                    of("nether/factory/sprawl3", EMPTY_BLOCK_POS)
+            ));
+
+    public static final DungeonRoomTemplate NETHER_FACTORY_SPRAWL_4 = create(
+            "nether_factory_sprawl_4",
+            List.of(
+                    of("nether/factory/sprawl4", EMPTY_BLOCK_POS)
+            ));
+
+    public static final DungeonRoomTemplate NETHER_FACTORY_SPRAWL_5 = create(
+            "nether_factory_sprawl_5",
+            List.of(
+                    of("nether/factory/sprawl5", EMPTY_BLOCK_POS)
+            ));
+
+    public static final DungeonRoomTemplate NETHER_FACTORY_SPRAWL_6 = create(
+            "nether_factory_sprawl_6",
+            List.of(
+                    of("nether/factory/sprawl6", EMPTY_BLOCK_POS)
+            ));
+
+    public static final DungeonRoomTemplate NETHER_FACTORY_TRAP_1 = create(
+            "nether_factory_trap_1",
+            List.of(
+                    of("nether/factory/trap1", EMPTY_BLOCK_POS)
+            ));
+
+    public static final DungeonRoomTemplate NETHER_FACTORY_COMBAT_1 = copyOf(NETHER_FACTORY_SPRAWL_3, "nether_factory_combat_1")
+            .setClazz(CombatRoom.class);
+
     public static final DungeonRoomTemplate NETHER_FACTORY_TOWER = create(
             "nether_factory_tower",
             List.of(

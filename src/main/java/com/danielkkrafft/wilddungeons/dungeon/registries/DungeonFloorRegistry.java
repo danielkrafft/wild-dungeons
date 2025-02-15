@@ -2,8 +2,10 @@ package com.danielkkrafft.wilddungeons.dungeon.registries;
 
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.DungeonLayout;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonMaterial;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonBranchTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonFloorTemplate;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import net.minecraft.core.BlockPos;
 
@@ -26,8 +28,6 @@ public class DungeonFloorRegistry {
             .setBranchTemplates(new DungeonLayout<DungeonBranchTemplate>()
                     .addSimple(OVERWORLD_STARTER_BRANCH)
                     .addSimple(OVERWORLD_SPRAWL_0)
-                    .add(new WeightedPool<DungeonBranchTemplate>()
-                            .add(OVERWORLD_SPRAWL_0, 1), 100)
                     .addSimple(OVERWORLD_FREE_STUFF_BRANCH_0)
                     .addSimple(OVERWORLD_SPRAWL_1)
                     .addSimple(OVERWORLD_FREE_STUFF_BRANCH_1)
@@ -64,7 +64,11 @@ public class DungeonFloorRegistry {
                     .addSimple(PIGLIN_FACTORY_CAVE_BRANCH)
                     .addSimple(PIGLIN_FACTORY_CAVE_END_BRANCH)
                     .addSimple(PIGLIN_FACTORY_PIPEWORKS_BRANCH)
+                    .addSimple(PIGLIN_FACTORY_BRANCH)
+                    .addSimple(NETHER_DRAGON_BOSS_BRANCH)
             )
+            .set(HierarchicalProperty.MATERIAL, new WeightedPool<DungeonMaterial>().add(DungeonMaterialRegistry.PIGLIN_FACTORY_MATERIAL, 1))
+            .set(HierarchicalProperty.SOUNDSCAPE, SoundscapeTemplateRegistry.NETHER_CAVES)
             .setOrigin(new BlockPos(0, 0, 0));
 
     public static final DungeonFloorTemplate VILLAGE_FLOOR = create("village")

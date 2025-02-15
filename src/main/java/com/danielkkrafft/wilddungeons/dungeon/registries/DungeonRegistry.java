@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonFloorPoolRegistry.OVERWORLD_FLOOR_POOL;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonFloorPoolRegistry.VILLAGE_FLOOR_POOL;
+import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonFloorRegistry.OVERWORLD_BASIC_FLOOR;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonFloorRegistry.PIGLIN_FACTORY_FLOOR;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialPoolRegistry.OVERWORLD_MATERIAL_POOL_0;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialPoolRegistry.VILLAGE_MATERIAL_POOL;
@@ -27,7 +28,8 @@ public class DungeonRegistry {
 
     public static DungeonTemplate OVERWORLD_BASIC_DUNGEON = create("mega_dungeon")
             .setFloorTemplates(new DungeonLayout<DungeonFloorTemplate>()
-                    .add(OVERWORLD_FLOOR_POOL, 2))
+                    .add(OVERWORLD_FLOOR_POOL, 2)
+            )
             .set(MATERIAL, OVERWORLD_MATERIAL_POOL_0)
             .set(DISPLAY_NAME, "MEGA DUNGEON")
             .set(ICON, "1-1")
@@ -42,7 +44,8 @@ public class DungeonRegistry {
 
     public static DungeonTemplate PIGLIN_FACTORY_DUNGEON = create("piglin_factory")
             .setFloorTemplates(new DungeonLayout<DungeonFloorTemplate>()
-                    .add(new WeightedPool<DungeonFloorTemplate>().add(PIGLIN_FACTORY_FLOOR, 1), 1))
+                    .add(new WeightedPool<DungeonFloorTemplate>().add(PIGLIN_FACTORY_FLOOR, 1), 1)
+            )
             .set(MATERIAL, new WeightedPool<DungeonMaterial>().add(PIGLIN_FACTORY_MATERIAL, 1))
             .set(DISPLAY_NAME, "PIGLIN FACTORY")
             .set(ICON, "2-1")
@@ -56,9 +59,25 @@ public class DungeonRegistry {
             .set(SOUNDSCAPE, SoundscapeTemplateRegistry.NETHER_CAVES)
             .set(INTENSITY, 0);
 
+    public static DungeonTemplate REACTION_DUNGEON = create("reaction_dungeon")
+            .setFloorTemplates(new DungeonLayout<DungeonFloorTemplate>()
+                    .add(new WeightedPool<DungeonFloorTemplate>().add(OVERWORLD_BASIC_FLOOR, 1), 1)
+                    .add(new WeightedPool<DungeonFloorTemplate>().add(PIGLIN_FACTORY_FLOOR, 1), 1)
+            )
+            .set(DISPLAY_NAME, "DK CHALLENGE")
+            .set(ICON, "1-1")
+            .set(PRIMARY_COLOR, 0xFFdb34eb)
+            .set(SECONDARY_COLOR, 0xFF6534eb)
+            .set(TARGET_TIME, 30000)
+            .set(TARGET_DEATHS, 0)
+            .set(TARGET_SCORE, 30000)
+            .set(EXIT_BEHAVIOR, DESTROY)
+            .set(NEXT_DUNGEON, NETHER_DUNGEON_POOL);
+
     public static DungeonTemplate VILLAGE_DUNGEON = create("village_dungeon")
             .setFloorTemplates(new DungeonLayout<DungeonFloorTemplate>()
-                    .add(VILLAGE_FLOOR_POOL, 1))
+                    .add(VILLAGE_FLOOR_POOL, 1)
+            )
             .set(MATERIAL, VILLAGE_MATERIAL_POOL)
             .set(HAS_BEDROCK_SHELL, false)
             .set(DISPLAY_NAME, "VILLAGE DUNGEON")

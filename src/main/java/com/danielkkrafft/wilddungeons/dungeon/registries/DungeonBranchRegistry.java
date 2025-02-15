@@ -117,15 +117,27 @@ public class DungeonBranchRegistry {
                     .addSimple(NETHER_PIPEWORKS_TO_FACTORY)
                     .addSimple(NETHER_PIPEWORKS_3)
                     .addSimple(NETHER_PIPEWORKS_TO_FACTORY)
-                    .addSimple(NETHER_FACTORY_TOWER)
-                    .addSimple(NETHER_FACTORY_BOSS))
+            )
             .set(INTENSITY, 3);
+
     public static final DungeonBranchTemplate PIGLIN_FACTORY_PIPEWORKS_SIDE_BRANCH = create("PIGLIN_FACTORY_PIPEWORKS_SIDE_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .add(PIGLIN_FACTORY_PIPEWORKS_ROOM_POOL, 5)
                     .addSimple(NETHER_PIPEWORKS_COMBAT_0))
             .setRootOriginBranchIndex(2)
             .set(INTENSITY, 3);//todo none of these intensities are correct because the dungeon isn't setup right
+
+    public static final DungeonBranchTemplate PIGLIN_FACTORY_BRANCH = create("PIGLIN_FACTORY_BRANCH")
+            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
+                    .add(PIGLIN_FACTORY_SPRAWL_ROOM_POOL, 20))
+            .set(INTENSITY, 3);
+
+    public static final DungeonBranchTemplate NETHER_DRAGON_BOSS_BRANCH = create("NETHER_DRAGON_BOSS_BRANCH")
+            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
+                    .add(PIGLIN_FACTORY_SHOP_ROOM_POOL, 1)
+                    .addSimple(NETHER_FACTORY_TOWER)
+                    .addSimple(NETHER_FACTORY_BOSS))
+            .set(INTENSITY, 3);
 
     public static DungeonBranchTemplate copyOf(DungeonBranchTemplate branch, String name) {
         DungeonBranchTemplate copy = DungeonBranchTemplate.copyOf(branch, name);
