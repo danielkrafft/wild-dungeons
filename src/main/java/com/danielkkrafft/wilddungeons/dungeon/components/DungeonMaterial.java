@@ -87,13 +87,14 @@ public class DungeonMaterial implements DungeonComponent {
 
         for (Property<?> property : input.getProperties()) {
             if (result.hasProperty(property)) {
-//                if (property==BlockStateProperties.STAIRS_SHAPE) {
-//                    WildDungeons.getLogger().info("Placing stairs with shape: {} && and half: {}", input.getValue(property), input.getValue(BlockStateProperties.HALF));
-//                }
                 if (property == BlockStateProperties.CHEST_TYPE) {continue;}
-                result = result.setValue((Property) property, input.getValue(property));
+                result = result.trySetValue((Property) property, input.getValue(property));
             }
         }
+        //I tried to breakpoint here, but it never triggered. That means the stairs are being fucked up... somewhere else.
+        /*if (input.hasProperty(BlockStateProperties.STAIRS_SHAPE) && result.hasProperty(BlockStateProperties.STAIRS_SHAPE)   && !input.getValue(BlockStateProperties.STAIRS_SHAPE).equals(result.getValue(BlockStateProperties.STAIRS_SHAPE))){
+            return result;
+        }*/
 
         return result;
     }

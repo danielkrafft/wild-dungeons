@@ -174,7 +174,7 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
     @Override
     protected @NotNull SoundEvent getDeathSound() {
         return SoundEvents.ENDER_DRAGON_DEATH;//todo
-    }//todo
+    }
 
     @Override
     public @NotNull SoundSource getSoundSource() {
@@ -199,7 +199,7 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
         bossEvent.setProgress(hp);
         if (!level.isClientSide && !isDeadOrDying()) {
             //logic
-            WildDungeons.getLogger().info("Nether Dragon attack phase: {}", attackPhase);
+//            WildDungeons.getLogger().info("Nether Dragon attack phase: {}", attackPhase);
 //            WildDungeons.getLogger().info("Nether Dragon Y: {}, desired Y {}", getY(), moveTargetPoint.y);
         }
 

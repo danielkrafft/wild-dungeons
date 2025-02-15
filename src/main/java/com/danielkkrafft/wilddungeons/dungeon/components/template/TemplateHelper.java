@@ -38,6 +38,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.*;
+
 public class TemplateHelper {
     public static final BlockPos EMPTY_BLOCK_POS = new BlockPos(0, 0, 0);
     public static final StructurePlaceSettings EMPTY_DUNGEON_SETTINGS = new StructurePlaceSettings();
@@ -263,7 +265,7 @@ public class TemplateHelper {
         return input;
     }
 
-    public static boolean placeInWorld(StructureTemplate template, DungeonRoom room, DungeonMaterial material, ServerLevelAccessor serverLevel, BlockPos offset, BlockPos pos, StructurePlaceSettings settings, int flags) {
+    public static boolean placeInWorld(StructureTemplate template, DungeonMaterial material, ServerLevelAccessor serverLevel, BlockPos offset, BlockPos pos, StructurePlaceSettings settings, int flags) {
         if (template.palettes.isEmpty()) {
             return false;
         } else {
@@ -312,8 +314,14 @@ This code ensures that blocks are properly placed in the world, their states are
                     if (boundingbox == null || boundingbox.isInside(structuretemplate$structureblockinfo.pos())) {
                         FluidState fluidstate = settings.shouldApplyWaterlogging() ? serverLevel.getFluidState(structuretemplate$structureblockinfo.pos()) : null;
 //                        BlockState blockstate = structuretemplate$structureblockinfo.state().mirror(settings.getMirror()).rotate(settings.getRotation());
-//                        BlockState blockstate = TemplateHelper.fixBlockStateProperties(material.replace(structuretemplate$structureblockinfo.state().mirror(settings.getMirror()).rotate(settings.getRotation())), settings);
-                        BlockState blockstate = material.replace(structuretemplate$structureblockinfo.state().mirror(settings.getMirror()).rotate(settings.getRotation()));
+//                        BlockState blockstate = TemplateHelper.fixBlockStateProperties(material.replace(structuretemplate$structureblockinfo.state()), settings);
+                        BlockState blockstate = structuretemplate$structureblockinfo.state();
+                        if (blockstate.hasProperty(STAIRS_SHAPE)){
+                          blockstate = TemplateHelper.fixBlockStateProperties(material.replace(structuretemplate$structureblockinfo.state()), settings);
+                        } else {
+                          blockstate = material.replace(structuretemplate$structureblockinfo.state().mirror(settings.getMirror()).rotate(settings.getRotation()));
+                        }
+
                         if (structuretemplate$structureblockinfo.nbt() != null) {
                             BlockEntity blockentity = serverLevel.getBlockEntity(structuretemplate$structureblockinfo.pos());
                             Clearable.tryClear(blockentity);
@@ -500,7 +508,7 @@ This code ensures that blocks are properly placed in the world, their states are
                     f += p_275190_.mirror(placementIn.getMirror()) - p_275190_.getYRot();
                     p_275190_.moveTo(vec31.x, vec31.y, vec31.z, f, p_275190_.getXRot());
                     if (placementIn.shouldFinalizeEntities() && p_275190_ instanceof Mob) {
-                        ((Mob)p_275190_).finalizeSpawn(p_74524_, p_74524_.getCurrentDifficultyAt(BlockPos.containing(vec31)), MobSpawnType.STRUCTURE, (SpawnGroupData)null);
+                        ((Mob)p_275190_).finalizeSpawn(p_74524_, p_74524_.getCurrentDifficultyAt(BlockPos.containing(vec31)), MobSpawnType.STRUCTURE, null);
                     }
 
                     p_74524_.addFreshEntityWithPassengers(p_275190_);

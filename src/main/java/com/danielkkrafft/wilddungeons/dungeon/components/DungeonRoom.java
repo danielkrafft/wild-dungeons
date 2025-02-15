@@ -120,7 +120,7 @@ public class DungeonRoom {
         getTemplate().templates().forEach(template -> {
             BlockPos newOffset = StructureTemplate.transform(template.getSecond(), settings.getMirror(), settings.getRotation(), TemplateHelper.EMPTY_BLOCK_POS);
             BlockPos newPosition = position.offset(newOffset);
-            TemplateHelper.placeInWorld(template.getFirst(), this, this.getMaterial(), level, newPosition, template.getSecond(), settings, 130);
+            TemplateHelper.placeInWorld(template.getFirst(),  this.getMaterial(), level, newPosition, template.getSecond(), settings, 130);
         });
 
         this.processRifts();
@@ -410,7 +410,7 @@ public class DungeonRoom {
     }
 
     public void destroy() {
-        if (this.getProperty(HAS_BEDROCK_SHELL)) this.surroundWith(Blocks.AIR.defaultBlockState());
+        if (this.getProperty(HAS_BEDROCK_SHELL)) this.surroundWith(Blocks.AIR.defaultBlockState());//todo why do the shells wrap before unwrapping?
 
         this.boundingBoxes.forEach(box -> {
             removeBlocks(this.getBranch().getFloor(), box);
@@ -420,7 +420,7 @@ public class DungeonRoom {
             value.removeIf(v -> v.x == getBranch().getIndex() && v.y == this.getIndex());
         });
 
-        this.boundingBoxes.forEach(box -> {//todo check to make sure the box is not inside of itself
+        this.boundingBoxes.forEach(box -> {
             fixContactedShells(getBranch().getFloor(), box);
         });
         destroyEntities();
