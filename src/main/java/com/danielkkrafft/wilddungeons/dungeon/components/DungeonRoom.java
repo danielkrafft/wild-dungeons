@@ -503,6 +503,7 @@ public class DungeonRoom {
             return new DungeonSession.PlayerStatus();
         });
         this.playerStatuses.get(player.getUUID()).inside = true;
+        WildDungeons.getLogger().info("SETTING SOUNDSCAPE {} FOR PLAYER {}", this.getProperty(SOUNDSCAPE).name(), player.getServerPlayer().getDisplayName());
         player.setSoundScape(this.getProperty(SOUNDSCAPE), this.getProperty(INTENSITY));
     }
 
