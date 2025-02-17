@@ -347,6 +347,28 @@ public class DungeonMaterialRegistry {
                             .add(POLISHED_BLACKSTONE_BRICKS.defaultBlockState(), 1)
                             .add(CHISELED_POLISHED_BLACKSTONE.defaultBlockState(), 1)
             )
+            .addStairBlockSet(
+                    new WeightedPool<BlockState>()
+                            .add(BLACKSTONE_STAIRS.defaultBlockState(), 1)
+                            .add(POLISHED_BLACKSTONE_BRICK_STAIRS.defaultBlockState(), 1)
+                            .add(POLISHED_BLACKSTONE_STAIRS.defaultBlockState(), 1)
+            )
+            .addSlabBlockSet(
+                    new WeightedPool<BlockState>()
+                            .add(BLACKSTONE_SLAB.defaultBlockState(), 1)
+                            .add(POLISHED_BLACKSTONE_SLAB.defaultBlockState(), 1)
+                            .add(POLISHED_BLACKSTONE_BRICK_SLAB.defaultBlockState(), 1)
+            )
+            .addWallBlockSet(
+                    new WeightedPool<BlockState>()
+                            .add(BLACKSTONE_WALL.defaultBlockState(), 1)
+                            .add(POLISHED_BLACKSTONE_WALL.defaultBlockState(), 1)
+                            .add(POLISHED_BLACKSTONE_BRICK_WALL.defaultBlockState(), 1)
+            )
+            .addLightBlockSet(
+                    new WeightedPool<BlockState>()
+                            .add(SHROOMLIGHT.defaultBlockState(), 1)
+            )
             .setHangingLights(
                     new WeightedPool<BlockState>()
                             .add(SOUL_LANTERN.defaultBlockState(), 1)
