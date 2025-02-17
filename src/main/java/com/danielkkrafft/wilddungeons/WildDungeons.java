@@ -4,6 +4,7 @@ import com.danielkkrafft.wilddungeons.block.WDBlocks;
 import com.danielkkrafft.wilddungeons.block.WDFluids;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonPerk;
 import com.danielkkrafft.wilddungeons.dungeon.registries.PerkRegistry;
+import com.danielkkrafft.wilddungeons.dungeon.registries.SoundscapeTemplateRegistry;
 import com.danielkkrafft.wilddungeons.entity.AmogusEntity;
 import com.danielkkrafft.wilddungeons.entity.WDEntities;
 import com.danielkkrafft.wilddungeons.entity.boss.BreezeGolem;
@@ -66,6 +67,7 @@ public class WildDungeons {
         WDDataComponents.DATA_COMPONENT_TYPES.register(modEventBus);
 
         PerkRegistry.setupPerks();
+        SoundscapeTemplateRegistry.setupSoundscapes();
 
         modEventBus.register(WildDungeons.class);
         NeoForge.EVENT_BUS.register(WDEvents.class);

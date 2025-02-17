@@ -38,6 +38,8 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.locks.LockSupport;
 
+import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.INTENSITY;
+import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.SOUNDSCAPE;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonFloorRegistry.DUNGEON_FLOOR_REGISTRY;
 import static com.danielkkrafft.wilddungeons.registry.WDDimensions.WILDDUNGEON;
 
@@ -111,6 +113,7 @@ public class DungeonFloor {
         wdPlayer.getServerPlayer().setGameMode(wdPlayer.getLastGameMode());
         PacketDistributor.sendToPlayer(wdPlayer.getServerPlayer(), new ClientboundNullScreenPacket(new CompoundTag()));
         WDPlayerManager.syncAll(this.playerStatuses.keySet().stream().toList());
+        wdPlayer.setSoundScape(this.getProperty(SOUNDSCAPE), this.getProperty(INTENSITY), true);
     }
 
     public void onExit(WDPlayer wdPlayer) {

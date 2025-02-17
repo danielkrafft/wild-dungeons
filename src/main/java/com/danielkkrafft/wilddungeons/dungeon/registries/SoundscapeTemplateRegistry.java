@@ -11,11 +11,11 @@ public class SoundscapeTemplateRegistry {
     public static ArrayList<SoundscapeTemplate> soundscapes = new ArrayList<>();
 
     public static final SoundscapeTemplate NETHER_CAVES = create("NETHER_CAVES")
-            .addSound(WDSoundEvents.CAVE_01.value(), 0)
-            .addSound(WDSoundEvents.NETHER_MELODY.value(), 1)
-            .addSound(WDSoundEvents.NETHER_BACKING.value(), 2)
-            .addSound(WDSoundEvents.NETHER_BASS.value(), 3)
-            .addSound(WDSoundEvents.NETHER_BEAT.value(), 4);
+            .addSound(WDSoundEvents.CAVE_01, 0)
+            .addSound(WDSoundEvents.NETHER_MELODY, 1)
+            .addSound(WDSoundEvents.NETHER_BACKING, 2)
+            .addSound(WDSoundEvents.NETHER_BASS, 3)
+            .addSound(WDSoundEvents.NETHER_BEAT, 4);
 
     public static SoundscapeTemplate create(String name){
         SoundscapeTemplate soundscape = new SoundscapeTemplate(name);

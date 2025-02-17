@@ -53,6 +53,6 @@ public class ClientPacketHandler {
     }
 
     public static void handleSwitchSoundscape(CompoundTag data) {
-        SoundscapeHandler.handleSwitchSoundscape(SoundscapeTemplateRegistry.SOUNDSCAPE_TEMPLATE_REGISTRY.get(data.getString("sound_key")), data.getInt("intensity"));
+        SoundscapeHandler.handleSwitchSoundscape(SoundscapeTemplateRegistry.SOUNDSCAPE_TEMPLATE_REGISTRY.get(data.getString("sound_key")), data.getInt("intensity"), data.getBoolean("reset"));
     }
 }

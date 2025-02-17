@@ -513,8 +513,7 @@ public class DungeonRoom {
             return new DungeonSession.PlayerStatus();
         });
         this.playerStatuses.get(player.getUUID()).inside = true;
-        WildDungeons.getLogger().info("SETTING SOUNDSCAPE {} FOR PLAYER {}", this.getProperty(SOUNDSCAPE).name(), player.getServerPlayer().getDisplayName());
-        player.setSoundScape(this.getProperty(SOUNDSCAPE), this.getProperty(INTENSITY));
+        player.setSoundScape(this.getProperty(SOUNDSCAPE), this.getProperty(INTENSITY), false);
     }
 
     public void onFloorEnter(WDPlayer player) {
@@ -529,6 +528,7 @@ public class DungeonRoom {
     }
 
     public void onEnterInner(WDPlayer player) {
+
     }
 
     public void onFloorComplete(){

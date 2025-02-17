@@ -248,7 +248,7 @@ public class WDPlayer {
         return !Objects.equals(this.currentDungeon,"none");
     }
 
-    public void setSoundScape(@Nullable DungeonRegistration.SoundscapeTemplate soundScape, int intensity) {
+    public void setSoundScape(@Nullable DungeonRegistration.SoundscapeTemplate soundScape, int intensity, boolean forceReset) {
         if (soundScape == null) {
             PacketDistributor.sendToPlayer(this.getServerPlayer(), new ClientboundSwitchSoundscapePacket(new CompoundTag()));
             return;
@@ -257,6 +257,7 @@ public class WDPlayer {
         CompoundTag tag = new CompoundTag();
         tag.putString("sound_key", soundScape.name());
         tag.putInt("intensity", intensity);
+        tag.putBoolean("reset", forceReset);
         PacketDistributor.sendToPlayer(this.getServerPlayer(), new ClientboundSwitchSoundscapePacket(tag));
     }
 }

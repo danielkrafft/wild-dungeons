@@ -253,9 +253,9 @@ public class DungeonRegistration {
 
     public static class SoundscapeTemplate implements DungeonComponent {
         public String name;
-        public List<List<SoundEvent>> soundsList = new ArrayList<>();
+        public List<List<Holder<SoundEvent>>> soundsList = new ArrayList<>();
         public SoundscapeTemplate(String name) {this.name = name;}
-        public SoundscapeTemplate addSound(SoundEvent event, int intensity) {
+        public SoundscapeTemplate addSound(Holder<SoundEvent> event, int intensity) {
             while (soundsList.size() <= intensity) {
                 soundsList.add(new ArrayList<>());
             }

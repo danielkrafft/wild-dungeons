@@ -21,11 +21,13 @@ public class SoundscapeHandler {
 
     public static HashSet<SynchronizedSoundLoop> currentlyPlayingSounds = new HashSet<>();
 
-    public static void handleSwitchSoundscape(DungeonRegistration.SoundscapeTemplate template, int intensity) {
-        if (template == null) {
+    public static void handleSwitchSoundscape(DungeonRegistration.SoundscapeTemplate template, int intensity, boolean forceReset) {
+        WildDungeons.getLogger().info("SWITCHING TO SOUNDSCAPE {} FOR PLAYER {}", template.name(), Minecraft.getInstance().player.getDisplayName().getString());
+        WildDungeons.getLogger().info("CURRENTLY PLAYING {} SOUNDS", currentlyPlayingSounds.size());
+        if (template == null || forceReset) {
             currentlyPlayingSounds.forEach(soundLoop -> {soundLoop.stopPlaying();});
             currentlyPlayingSounds.clear();
-            return;
+            if (template == null) return;
         }
         HashSet<ResourceLocation> soundRLs = new HashSet<>();
         HashSet<SynchronizedSoundLoop> toPlay = new HashSet<>();
@@ -33,7 +35,7 @@ public class SoundscapeHandler {
 
         for (int i = 0; i < template.soundsList.size(); i++) {
             for (int j = 0; j < template.soundsList.get(i).size(); j++) {
-                SoundEvent soundEvent = template.soundsList.get(i).get(j);
+                SoundEvent soundEvent = template.soundsList.get(i).get(j).value();
                 soundRLs.add(soundEvent.getLocation());
 
                 if (currentlyPlayingSounds.stream().noneMatch(sound -> sound.getLocation().equals(soundEvent.getLocation()))) {
@@ -68,7 +70,6 @@ public class SoundscapeHandler {
 
     @SubscribeEvent
     public static void onMusicPlay(PlaySoundEvent event) {
-//        WildDungeons.getLogger().info("PLAYING SOUND: {}", event.getSound().getLocation());
         if (Minecraft.getInstance().player == null) return;
         if (WDPlayerManager.getInstance().getOrCreateClientWDPlayer(Minecraft.getInstance().player).getCurrentDungeon() == null) return;
         if (event.getSound().getLocation().toString().contains(WildDungeons.MODID)) return;
