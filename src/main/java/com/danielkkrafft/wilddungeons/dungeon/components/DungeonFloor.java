@@ -50,7 +50,7 @@ public class DungeonFloor {
     private BlockPos spawnPoint;
     private final String sessionKey;
     private final int index;
-    private final HashMap<ChunkPos, List<Vector2i>> chunkMap = new HashMap<>();
+    private final HashMap<ChunkPos, ArrayList<Vector2i>> chunkMap = new HashMap<>();
     private final HashMap<String, DungeonSession.PlayerStatus> playerStatuses = new HashMap<>();
 
     public DungeonFloorTemplate getTemplate() {return DUNGEON_FLOOR_REGISTRY.get(this.templateKey);}
@@ -71,7 +71,7 @@ public class DungeonFloor {
     public BlockPos getSpawnPoint() {return this.spawnPoint;}
     public String getSessionKey() {return this.sessionKey;}
     public int getIndex() {return this.index;}
-    public HashMap<ChunkPos, List<Vector2i>> getChunkMap() {return this.chunkMap;}
+    public HashMap<ChunkPos, ArrayList<Vector2i>> getChunkMap() {return this.chunkMap;}
     public List<BoundingBox> halfGeneratedRooms = new ArrayList<>();
     @IgnoreSerialization
     public List<CompletableFuture<Void>> generationFutures = new ArrayList<>();
@@ -144,8 +144,8 @@ public class DungeonFloor {
 
                 DungeonRoom.fillShellWith(this, null, this.getLevel(), box, Blocks.AIR.defaultBlockState(), 1, DungeonRoom.isSafeForBoundingBoxes());
                 DungeonRoom.removeBlocks(this, box);
-                DungeonRoom.fixContactedShells(this, box);
             });
+            DungeonRoom.fixContactedShells(this, halfGeneratedRooms);
             halfGeneratedRooms.clear();
         }
     }
@@ -183,11 +183,11 @@ public class DungeonFloor {
         DungeonBranch newBranch = nextBranch.placeInWorld(this, origin);
         if (newBranch == null) {
             branchGenAttempts++;
-            if (branchGenAttempts > 10) {
-                WildDungeons.getLogger().info("Failed to generate branch {} after 50 total attempts", branchIndex);
+            if (branchGenAttempts > 5) {
+                WildDungeons.getLogger().info("Failed to generate branch {} after 25 total attempts", branchIndex);
                 if (branchIndex > 0) {
                     DungeonBranch previousBranch = this.dungeonBranches.get(branchIndex - 1);
-                    checkForPlayersInBranch(branchIndex-1);
+                    checkForPlayersInBranch(branchIndex - 1);
                     previousBranch.destroy();
                     this.dungeonBranches.remove(previousBranch);
                 }
@@ -195,7 +195,7 @@ public class DungeonFloor {
             return;
         }
         branchGenAttempts = 0;
-        if (branchIndex==0)
+        if (branchIndex == 0)
             this.spawnPoint = this.dungeonBranches.getFirst().getSpawnPoint();
         onSequentialBranchGenerationComplete();
     }
@@ -267,7 +267,7 @@ public class DungeonFloor {
     }
 
     protected boolean isBoundingBoxValid(List<BoundingBox> proposedBoxes) {
-        HashMap<ChunkPos, List<Vector2i>> chunkMap = getChunkMap();
+        HashMap<ChunkPos, ArrayList<Vector2i>> chunkMap = getChunkMap();
         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
         for (BoundingBox proposedBox : proposedBoxes) {
             if (proposedBox.minY() < EmptyGenerator.MIN_Y || proposedBox.maxY() > EmptyGenerator.MIN_Y + EmptyGenerator.GEN_DEPTH) {

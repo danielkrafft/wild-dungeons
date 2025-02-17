@@ -82,12 +82,19 @@ public class DungeonBranch {
         WildDungeons.getLogger().info("STARTING A NEW BRANCH. THIS WILL BE BRANCH #{}", this.index);
         fullyGenerated = false;
         int tries = 0;
-        while (getRooms().size() < getTemplate().roomTemplates().size() && tries < 50) {
-            if (populateNextRoom()) {
-                tries = 0;
-            } else {
-                tries++;
+        while (getRooms().size() < getTemplate().roomTemplates().size() && tries < 25) {
+            try {
+                if (populateNextRoom()) {
+                    tries = 0;
+                } else {
+                    tries++;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                destroy();
+                return false;
             }
+
         }
         if (getRooms().size() < getTemplate().roomTemplates().size()) {
             WildDungeons.getLogger().info("FAILED TO GENERATE ALL ROOMS. RESETTING BRANCH #{}", this.index);

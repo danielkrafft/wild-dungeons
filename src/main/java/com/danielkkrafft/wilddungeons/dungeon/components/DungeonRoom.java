@@ -37,6 +37,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlac
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.function.TriFunction;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2i;
 
 import java.util.*;
@@ -310,7 +311,7 @@ public class DungeonRoom {
             tries--;
         }
 
-        return result.isEmpty() ? List.of(this.spawnPoint) : result;
+        return result.isEmpty() ? spawnPoint == null ? Collections.singletonList(this.boundingBoxes.getFirst().getCenter()) : Collections.singletonList(spawnPoint) : result;
     }
 
     public void processDataMarkers(){
@@ -392,8 +393,17 @@ public class DungeonRoom {
     }
 
     public void handleChunkMap() {
+        Set<ChunkPos> chunkPosSet = getChunkPos(this.boundingBoxes);
+
+        chunkPosSet.forEach(pos -> {
+            getBranch().getFloor().getChunkMap().computeIfAbsent(pos, k -> new ArrayList<>()).add(new Vector2i(getBranch().getIndex(), this.getIndex()));
+        });
+        WDProfiler.INSTANCE.logTimestamp("DungeonRoom::handleChunkMap");
+    }
+
+    public static @NotNull Set<ChunkPos> getChunkPos(List<BoundingBox> boundingBoxes) {
         Set<ChunkPos> chunkPosSet = new HashSet<>();
-        for (BoundingBox box : this.boundingBoxes) {
+        for (BoundingBox box : boundingBoxes) {
             ChunkPos min = new ChunkPos(new BlockPos(box.minX(), box.minY(), box.minZ()));
             ChunkPos max = new ChunkPos(new BlockPos(box.maxX(), box.maxY(), box.maxZ()));
 
@@ -404,46 +414,46 @@ public class DungeonRoom {
                 }
             }
         }
-
-        chunkPosSet.forEach(pos -> {
-            getBranch().getFloor().getChunkMap().computeIfAbsent(pos, k -> new ArrayList<>()).add(new Vector2i(getBranch().getIndex(), this.getIndex()));
-        });
-        WDProfiler.INSTANCE.logTimestamp("DungeonRoom::handleChunkMap");
+        return chunkPosSet;
     }
 
     public void destroy() {
-        if (this.getProperty(HAS_BEDROCK_SHELL)) this.surroundWith(Blocks.AIR.defaultBlockState());//todo why do the shells wrap before unwrapping?
+        destroyEntities();
+
+        if (this.getProperty(HAS_BEDROCK_SHELL)) this.surroundWith(Blocks.AIR.defaultBlockState());
 
         this.boundingBoxes.forEach(box -> {
             removeBlocks(this.getBranch().getFloor(), box);
         });
+
         unsetAttachedPoints();
+
+        Set<ChunkPos> chunkPosSet = getChunkPos(this.boundingBoxes);
         getBranch().getFloor().getChunkMap().forEach((key, value) -> {
-            value.removeIf(v -> v.x == getBranch().getIndex() && v.y == this.getIndex());
+            value.removeIf(v -> chunkPosSet.contains(key) && v.x == getBranch().getIndex() && v.y == this.getIndex());
         });
 
-        this.boundingBoxes.forEach(box -> {
-            fixContactedShells(getBranch().getFloor(), box, getBranch().getIndex());
-        });
-        destroyEntities();
+        fixContactedShells(this.getBranch().getFloor(), this.boundingBoxes, this.getBranch().getIndex());
     }
-    public static void fixContactedShells(DungeonFloor floor, BoundingBox box){
-        fixContactedShells(floor, box, -1);
+
+    public static void fixContactedShells(DungeonFloor floor, List<BoundingBox> boundingBoxes) {
+        fixContactedShells(floor, boundingBoxes, -1);
     }
-    public static void fixContactedShells(DungeonFloor floor, BoundingBox box, int branchToIgnore) {
-        BoundingBox inflatedBox = box.inflatedBy(2);
-        List<DungeonRoom> touchingRooms = new ArrayList<>();
+
+    public static void fixContactedShells(DungeonFloor floor, List<BoundingBox> boundingBoxes, int branchToIgnore) {
+        Set<ChunkPos> chunkPosSet = getChunkPos(boundingBoxes);
+
         floor.getChunkMap().forEach((key, value) -> {
-            value.forEach(v -> {
-                if (branchToIgnore != -1 && v.x == branchToIgnore) return;
-                DungeonRoom room = floor.getBranches().get(v.x).getRooms().get(v.y);
-                if (room.boundingBoxes.stream().anyMatch(inflatedBox::intersects)) {
-                    touchingRooms.add(room);
-                }
-            });
+            if (chunkPosSet.contains(key)) {
+                value.forEach(v -> {
+                    if (v.x == branchToIgnore) return;
+                    DungeonRoom otherRoom = floor.getBranches().get(v.x).getRooms().get(v.y);
+                    otherRoom.processShell();
+                });
+            }
         });
-        touchingRooms.forEach(DungeonRoom::processShell);
     }
+
 
     public static void removeBlocks(DungeonFloor floor, BoundingBox box) {
         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
