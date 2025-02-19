@@ -25,7 +25,10 @@ public class WDBlocks {
     public static final DeferredBlock<Block> SPAWN_BLOCK = registerWithItem("spawn_block", () -> new Block(BlockBehaviour.Properties.of().destroyTime(-1).noCollission()));
     public static final DeferredBlock<Block> LIFE_LIQUID = BLOCKS.register("life_liquid", () -> new LifeLiquidBlock(WDFluids.LIFE_LIQUID.get(), BlockBehaviour.Properties.ofFullCopy(Blocks.WATER)));
     public static final DeferredBlock<Block> ROTTEN_MOSS = registerWithItem("rotten_moss", RottenMossBlock::new);
-    public static final DeferredBlock<Block> HEAVY_RUNE = registerWithItem("heavy_rune", HeavyRuneBlock::new);
+    public static final DeferredBlock<Block> HEAVY_RUNE = registerWithItem("heavy_rune", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.DEEPSLATE)
+            .instrument(NoteBlockInstrument.BASEDRUM)
+            .sound(SoundType.DEEPSLATE)
+            .strength(55, 1200)));
 
     public static final DeferredBlock<Block> WD_BASIC = registerWithItem("wd_basic", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops().strength(1.5F, 6.0F)));
     public static final DeferredBlock<Block> WD_BASIC_2 = registerWithItem("wd_basic_2", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops().strength(1.5F, 6.0F)));

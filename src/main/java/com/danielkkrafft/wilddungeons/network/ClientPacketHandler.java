@@ -1,6 +1,7 @@
 package com.danielkkrafft.wilddungeons.network;
 
 import com.danielkkrafft.wilddungeons.dungeon.registries.SoundscapeTemplateRegistry;
+import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.danielkkrafft.wilddungeons.render.DecalRenderer;
 import com.danielkkrafft.wilddungeons.render.RenderExtra;
 import com.danielkkrafft.wilddungeons.sound.DynamicPitchSound;
@@ -22,59 +23,55 @@ import net.minecraft.world.level.ChunkPos;
 import java.util.HashSet;
 
 public class ClientPacketHandler {
-
-    public static void handleOpenConnectionBlockUI(CompoundTag data) {
-
-        Minecraft.getInstance().setScreen(new ConnectionBlockEditScreen(
-                data.getString("unblockedBlockstate"),
-                data.getString("pool"),
-                data.getString("type"),
-                data.getInt("x"),
-                data.getInt("y"),
-                data.getInt("z")));
-    }
-
-    public static void handleNullScreen() {
-        Minecraft.getInstance().setScreen(null);
-    }
-
-    public static void handleLoadingScreen() {
-        Minecraft.getInstance().setScreen(new WDLoadingScreen());
-    }
-
-    public static void handlePostDungeonScreen(CompoundTag data) {
-        Minecraft.getInstance().setScreen(new WDPostDungeonScreen(data));
+    public enum Packets {
+        REMOVE_DECAL, ADD_DECAL, SYNC_DECALS, SWITCH_SOUNDSCAPE, PLAY_DYNAMIC_SOUND, POST_DUNGEON_SCREEN, LOADING_SCREEN, NULL_SCREEN, OPEN_CONNECTION_BLOCK_UI, UPDATE_WD_PLAYER
     }
 
     public static HashSet<Integer> loopingSounds = new HashSet<>();
-    public static void playDynamicSound(CompoundTag data) {
-        SoundEvent soundEvent = BuiltInRegistries.SOUND_EVENT.byId(data.getInt("soundEvent"));
-        SoundSource soundSource = SoundSource.valueOf(data.getString("soundSource"));
-        Entity entity = Minecraft.getInstance().level.getEntity(data.getInt("entityId"));
-        if (entity != null && (!data.getBoolean("loop") || !loopingSounds.contains(data.getInt("soundEvent")))) {
-            DynamicPitchSound dynamicPitchSound = new DynamicPitchSound(soundEvent, soundSource, data.getFloat("volume"), data.getFloat("pitch"), entity, data.getBoolean("loop"));
-            Minecraft.getInstance().getSoundManager().play(dynamicPitchSound);
+    public static void handleInbound(CompoundTag data) {
+        switch (Packets.valueOf(data.getString("packet"))) {
+            case REMOVE_DECAL -> {
+                DecalRenderer.removeClientDecal(Serializer.fromCompoundTag(data.getCompound("decal")));
+            }
+            case ADD_DECAL -> {
+                DecalRenderer.addClientDecal(Serializer.fromCompoundTag(data.getCompound("decal")));
+            }
+            case SYNC_DECALS -> {
+                DecalRenderer.CLIENT_DECALS_MAP = Serializer.fromCompoundTag(data);
+            }
+            case SWITCH_SOUNDSCAPE -> {
+                SoundscapeHandler.handleSwitchSoundscape(SoundscapeTemplateRegistry.SOUNDSCAPE_TEMPLATE_REGISTRY.get(data.getString("sound_key")), data.getInt("intensity"), data.getBoolean("reset"));
+            }
+            case PLAY_DYNAMIC_SOUND -> {
+                SoundEvent soundEvent = BuiltInRegistries.SOUND_EVENT.byId(data.getInt("soundEvent"));
+                SoundSource soundSource = SoundSource.valueOf(data.getString("soundSource"));
+                Entity entity = Minecraft.getInstance().level.getEntity(data.getInt("entityId"));
+                if (entity != null && (!data.getBoolean("loop") || !loopingSounds.contains(data.getInt("soundEvent")))) {
+                    DynamicPitchSound dynamicPitchSound = new DynamicPitchSound(soundEvent, soundSource, data.getFloat("volume"), data.getFloat("pitch"), entity, data.getBoolean("loop"));
+                    Minecraft.getInstance().getSoundManager().play(dynamicPitchSound);
+                }
+            }
+            case POST_DUNGEON_SCREEN -> {
+                Minecraft.getInstance().setScreen(new WDPostDungeonScreen(data.getCompound("stats")));
+            }
+            case LOADING_SCREEN -> {
+                Minecraft.getInstance().setScreen(new WDLoadingScreen());
+            }
+            case NULL_SCREEN -> {
+                Minecraft.getInstance().setScreen(null);
+            }
+            case OPEN_CONNECTION_BLOCK_UI -> {
+                Minecraft.getInstance().setScreen(new ConnectionBlockEditScreen(
+                        data.getString("unblockedBlockstate"),
+                        data.getString("pool"),
+                        data.getString("type"),
+                        data.getInt("x"),
+                        data.getInt("y"),
+                        data.getInt("z")));
+            }
+            case UPDATE_WD_PLAYER -> {
+                WDPlayerManager.getInstance().replaceClientPlayer(Serializer.fromCompoundTag(data.getCompound("player")));
+            }
         }
-    }
-
-    public static void handleSwitchSoundscape(CompoundTag data) {
-        SoundscapeHandler.handleSwitchSoundscape(SoundscapeTemplateRegistry.SOUNDSCAPE_TEMPLATE_REGISTRY.get(data.getString("sound_key")), data.getInt("intensity"), data.getBoolean("reset"));
-    }
-
-    public static void handleAddExtraRenderComponent(CompoundTag data) {
-        RenderExtra.ExtraRenderComponent component = Serializer.fromCompoundTag(data);
-        if (component != null) RenderExtra.components.add(Serializer.fromCompoundTag(data));
-    }
-
-    public static void handleSyncDecals(CompoundTag data) {
-        DecalRenderer.CLIENT_DECALS_MAP = Serializer.fromCompoundTag(data);
-    }
-
-    public static void handleAddDecal(CompoundTag data) {
-        DecalRenderer.addClientDecal(Serializer.fromCompoundTag(data));
-    }
-
-    public static void handleRemoveDecal(CompoundTag data) {
-        DecalRenderer.removeClientDecal(Serializer.fromCompoundTag(data));
     }
 }

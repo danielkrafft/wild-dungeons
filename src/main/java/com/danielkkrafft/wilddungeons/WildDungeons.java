@@ -12,9 +12,7 @@ import com.danielkkrafft.wilddungeons.entity.boss.MutantBogged;
 import com.danielkkrafft.wilddungeons.entity.boss.NetherDragonEntity;
 import com.danielkkrafft.wilddungeons.entity.model.AmogusModel;
 import com.danielkkrafft.wilddungeons.entity.renderer.*;
-import com.danielkkrafft.wilddungeons.network.clientbound.*;
-import com.danielkkrafft.wilddungeons.network.serverbound.ServerboundRestorePlayerGamemodePacket;
-import com.danielkkrafft.wilddungeons.network.serverbound.ServerboundUpdateConnectionBlockPacket;
+import com.danielkkrafft.wilddungeons.network.SimplePacketManager;
 import com.danielkkrafft.wilddungeons.registry.*;
 import com.danielkkrafft.wilddungeons.util.FileUtil;
 import com.danielkkrafft.wilddungeons.util.Serializer;
@@ -83,22 +81,8 @@ public class WildDungeons {
     @SubscribeEvent
     public static void register(final RegisterPayloadHandlersEvent event) {
         final PayloadRegistrar registrar = event.registrar("1");
-
-        registrar.playToClient(ClientboundUpdateWDPlayerPacket.TYPE, ClientboundUpdateWDPlayerPacket.STREAM_CODEC, ClientboundUpdateWDPlayerPacket::handle);
+        SimplePacketManager.setup(registrar);
         registrar.playToClient(UpdateDimensionsPacket.TYPE, UpdateDimensionsPacket.STREAM_CODEC, UpdateDimensionsPacket::handle);
-        registrar.playToClient(ClientboundOpenConnectionBlockUIPacket.TYPE, ClientboundOpenConnectionBlockUIPacket.STREAM_CODEC, ClientboundOpenConnectionBlockUIPacket::handle);
-        registrar.playToClient(ClientboundNullScreenPacket.TYPE, ClientboundNullScreenPacket.STREAM_CODEC, ClientboundNullScreenPacket::handle);
-        registrar.playToClient(ClientboundLoadingScreenPacket.TYPE, ClientboundLoadingScreenPacket.STREAM_CODEC, ClientboundLoadingScreenPacket::handle);
-        registrar.playToClient(ClientboundPostDungeonScreenPacket.TYPE, ClientboundPostDungeonScreenPacket.STREAM_CODEC, ClientboundPostDungeonScreenPacket::handle);
-        registrar.playToClient(ClientboundPlayDynamicSoundPacket.TYPE, ClientboundPlayDynamicSoundPacket.STREAM_CODEC, ClientboundPlayDynamicSoundPacket::handle);
-        registrar.playToClient(ClientboundSwitchSoundscapePacket.TYPE, ClientboundSwitchSoundscapePacket.STREAM_CODEC, ClientboundSwitchSoundscapePacket::handle);
-        registrar.playToClient(ClientboundAddExtraRenderComponentPacket.TYPE, ClientboundAddExtraRenderComponentPacket.STREAM_CODEC, ClientboundAddExtraRenderComponentPacket::handle);
-        registrar.playToClient(ClientboundSyncDecalsPacket.TYPE, ClientboundSyncDecalsPacket.STREAM_CODEC, ClientboundSyncDecalsPacket::handle);
-        registrar.playToClient(ClientboundAddDecalPacket.TYPE, ClientboundAddDecalPacket.STREAM_CODEC, ClientboundAddDecalPacket::handle);
-        registrar.playToClient(ClientboundRemoveDecalPacket.TYPE, ClientboundRemoveDecalPacket.STREAM_CODEC, ClientboundRemoveDecalPacket::handle);
-
-        registrar.playToServer(ServerboundUpdateConnectionBlockPacket.TYPE, ServerboundUpdateConnectionBlockPacket.STREAM_CODEC, ServerboundUpdateConnectionBlockPacket::handle);
-        registrar.playToServer(ServerboundRestorePlayerGamemodePacket.TYPE, ServerboundRestorePlayerGamemodePacket.STREAM_CODEC, ServerboundRestorePlayerGamemodePacket::handle);
     }
 
     @SubscribeEvent

@@ -1,12 +1,12 @@
 package com.danielkkrafft.wilddungeons.util;
 
-import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonComponent;
+import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.mojang.datafixers.util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class WeightedPool<T> implements DungeonComponent {
+public class WeightedPool<T> implements DungeonRegistration.DungeonComponent {
 
     private final List<Pair<T, Integer>> pool;
     public WeightedPool() { pool = new ArrayList<>(); }

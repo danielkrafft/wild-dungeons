@@ -8,7 +8,7 @@ import net.minecraft.core.BlockPos;
 
 import java.util.HashMap;
 
-public final class DungeonFloorTemplate implements DungeonComponent {
+public final class DungeonFloorTemplate implements DungeonRegistration.DungeonComponent {
     private String name;
     private DungeonRegistration.DungeonLayout<DungeonBranchTemplate> branchTemplates;
     private BlockPos origin = null;

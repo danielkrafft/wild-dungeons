@@ -7,8 +7,8 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonTemplat
 import com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
-import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundLoadingScreenPacket;
-import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundPlayDynamicSoundPacket;
+import com.danielkkrafft.wilddungeons.network.ClientPacketHandler;
+import com.danielkkrafft.wilddungeons.network.SimplePacketManager;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import net.minecraft.nbt.CompoundTag;
@@ -127,13 +127,14 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
         if (this.getSoundLoop() != 0) {
             if (this.level() instanceof ServerLevel serverLevel && this.tickCount % 25 == 0) {
                 CompoundTag payload = new CompoundTag();
+                payload.putString("packet", ClientPacketHandler.Packets.PLAY_DYNAMIC_SOUND.toString());
                 payload.putInt("soundEvent", this.getSoundLoop());
                 payload.putString("soundSource", SoundSource.HOSTILE.toString());
                 payload.putInt("entityId", this.getId());
                 payload.putBoolean("loop", true);
                 payload.putFloat("volume", 1.0f);
                 payload.putFloat("pitch", 1.0f);
-                PacketDistributor.sendToPlayersNear(serverLevel, null, this.getX(), this.getY(), this.getZ(), 100.0, new ClientboundPlayDynamicSoundPacket(payload));
+                PacketDistributor.sendToPlayersNear(serverLevel, null, this.getX(), this.getY(), this.getZ(), 100.0, new SimplePacketManager.ClientboundTagPacket(payload));
             }
         }
         super.tick();
@@ -340,7 +341,9 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
                     if (dungeonTemplate != null) {
                         DungeonSession dungeon = DungeonSessionManager.getInstance().getOrCreateDungeonSession(this.getStringUUID(), this.level().dimension(), dungeonTemplate.name());
                         wdPlayer.setLastGameMode(wdPlayer.getServerPlayer().gameMode.getGameModeForPlayer());
-                        PacketDistributor.sendToPlayer(wdPlayer.getServerPlayer(), new ClientboundLoadingScreenPacket(new CompoundTag()));
+                        CompoundTag tag = new CompoundTag();
+                        tag.putString("packet", ClientPacketHandler.Packets.LOADING_SCREEN.toString());
+                        PacketDistributor.sendToPlayer(wdPlayer.getServerPlayer(), new SimplePacketManager.ClientboundTagPacket(tag));
                         wdPlayer.getServerPlayer().setGameMode(GameType.SPECTATOR);
                         dungeon.onEnter(wdPlayer, 0);
                         wdPlayer.setRiftCooldown(100);
@@ -350,7 +353,9 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
                     DungeonSession dungeon = wdPlayer.getCurrentDungeon();
                     WildDungeons.getLogger().info("TRYING TO ENTER FLOOR: {}", Integer.parseInt(this.offerID));
                     wdPlayer.setLastGameMode(wdPlayer.getServerPlayer().gameMode.getGameModeForPlayer());
-                    PacketDistributor.sendToPlayer(wdPlayer.getServerPlayer(), new ClientboundLoadingScreenPacket(new CompoundTag()));
+                    CompoundTag tag = new CompoundTag();
+                    tag.putString("packet", ClientPacketHandler.Packets.LOADING_SCREEN.toString());
+                    PacketDistributor.sendToPlayer(wdPlayer.getServerPlayer(), new SimplePacketManager.ClientboundTagPacket(tag));
                     wdPlayer.getServerPlayer().setGameMode(GameType.SPECTATOR);
                     dungeon.onEnter(wdPlayer, Integer.parseInt(this.offerID));
                     wdPlayer.setRiftCooldown(100);

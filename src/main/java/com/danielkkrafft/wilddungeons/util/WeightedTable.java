@@ -1,6 +1,6 @@
 package com.danielkkrafft.wilddungeons.util;
 
-import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonComponent;
+import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.util.Mth;
 
@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class WeightedTable<T> implements DungeonComponent {
+public class WeightedTable<T> implements DungeonRegistration.DungeonComponent {
 
     List<Pair<Integer, WeightedPool<T>>> weightMap = new ArrayList<>();
     public String name;

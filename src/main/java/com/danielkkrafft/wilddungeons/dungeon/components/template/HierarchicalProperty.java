@@ -4,7 +4,6 @@ import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonMaterial;
 import com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialPoolRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.registries.SoundscapeTemplateRegistry;
-import com.danielkkrafft.wilddungeons.dungeon.session.DungeonOpenBehavior;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.util.WeightedTable;
@@ -23,7 +22,7 @@ public class HierarchicalProperty<T> {
     public static final HierarchicalProperty<Integer> TARGET_TIME = new HierarchicalProperty<>(new TypeToken<>() {}, 12000);
     public static final HierarchicalProperty<Integer> TARGET_DEATHS = new HierarchicalProperty<>(new TypeToken<>() {}, 0);
     public static final HierarchicalProperty<Integer> TARGET_SCORE = new HierarchicalProperty<>(new TypeToken<>() {}, 100000);
-    public static final HierarchicalProperty<String> OPEN_BEHAVIOR = new HierarchicalProperty<>(new TypeToken<>() {}, DungeonOpenBehavior.NONE);
+    public static final HierarchicalProperty<DungeonSession.DungeonOpenBehavior> OPEN_BEHAVIOR = new HierarchicalProperty<>(new TypeToken<>() {}, DungeonSession.DungeonOpenBehavior.NONE);
     public static final HierarchicalProperty<WeightedTable<DungeonRegistration.TargetTemplate>> ENEMY_TABLE = new HierarchicalProperty<>(new TypeToken<>() {}, BASIC_ENEMY_TABLE);
     public static final HierarchicalProperty<Double> DIFFICULTY_MODIFIER = new HierarchicalProperty<>(new TypeToken<>() {}, 1.0);
     public static final HierarchicalProperty<Double> DIFFICULTY_SCALING = new HierarchicalProperty<>(new TypeToken<>() {}, 1.1);

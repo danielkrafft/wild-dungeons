@@ -1,9 +1,10 @@
 package com.danielkkrafft.wilddungeons.dungeon.components.template;
 
+import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import org.joml.Vector2i;
 
-public class DungeonPerkTemplate implements DungeonComponent {
+public class DungeonPerkTemplate implements DungeonRegistration.DungeonComponent {
 
     private final String name;
     private final Vector2i texCoords;

@@ -8,7 +8,6 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class WDStructureTypes {
-
     public static final DeferredRegister<StructureType<?>> STRUCTURE_TYPES = DeferredRegister.create(Registries.STRUCTURE_TYPE, WildDungeons.MODID);
 
     public static final DeferredHolder<StructureType<?>, StructureType<RiftStructure>> RIFT = STRUCTURE_TYPES.register("rift", () -> () -> RiftStructure.CODEC);

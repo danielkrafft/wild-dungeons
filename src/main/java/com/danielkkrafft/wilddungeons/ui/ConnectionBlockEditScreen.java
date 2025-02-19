@@ -1,7 +1,8 @@
 package com.danielkkrafft.wilddungeons.ui;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.network.serverbound.ServerboundUpdateConnectionBlockPacket;
+import com.danielkkrafft.wilddungeons.network.ServerPacketHandler;
+import com.danielkkrafft.wilddungeons.network.SimplePacketManager;
 import net.minecraft.client.GameNarrator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -132,6 +133,7 @@ public class ConnectionBlockEditScreen extends Screen {
 
     private void sendToServer() {
         CompoundTag tag = new CompoundTag();
+        tag.putString("packet", ServerPacketHandler.Packets.UPDATE_CONNECTION_BLOCK.toString());
         tag.putString("unblockedBlockstate", this.unblockedEdit.getValue());
         tag.putString("pool", this.poolEdit.getValue());
         tag.putString("type", this.type);
@@ -139,7 +141,7 @@ public class ConnectionBlockEditScreen extends Screen {
         tag.putInt("y", this.y);
         tag.putInt("z", this.z);
 
-        PacketDistributor.sendToServer(new ServerboundUpdateConnectionBlockPacket(tag));
+        PacketDistributor.sendToServer(new SimplePacketManager.ServerboundTagPacket(tag));
     }
 
     private void handleCheckboxes(Checkbox box, boolean value) {

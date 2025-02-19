@@ -19,6 +19,4 @@ public class WDDataComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> CHARGING = DATA_COMPONENT_TYPES.register("charging", () -> DataComponentType.<Boolean>builder().persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL).build());
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> ESSENCE_TYPE = DATA_COMPONENT_TYPES.register("essence_type", () -> DataComponentType.<Integer>builder().persistent(Codec.INT).networkSynchronized(ByteBufCodecs.INT).build());
-
-
 }

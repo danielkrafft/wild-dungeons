@@ -7,13 +7,14 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonPerkTem
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
-import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundPostDungeonScreenPacket;
+import com.danielkkrafft.wilddungeons.network.ClientPacketHandler;
+import com.danielkkrafft.wilddungeons.network.SimplePacketManager;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
-import com.danielkkrafft.wilddungeons.util.IgnoreSerialization;
 import com.danielkkrafft.wilddungeons.util.SaveSystem;
 import com.danielkkrafft.wilddungeons.util.Serializer;
 import com.danielkkrafft.wilddungeons.util.debug.WDProfiler;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
@@ -23,6 +24,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.PacketDistributor;
+import org.checkerframework.checker.units.qual.C;
 
 import java.util.*;
 
@@ -37,7 +39,7 @@ public class DungeonSession {
     private final ResourceKey<Level> entranceLevelKey;
     private final HashMap<String, PlayerStatus> playerStatuses = new HashMap<>();
     private final HashMap<String, DungeonStats> playerStats = new HashMap<>();
-    @IgnoreSerialization
+    @Serializer.IgnoreSerialization
     private List<DungeonFloor> floors = new ArrayList<>();
     private final String template;
     private int shutdownTimer = SHUTDOWN_TIME;
@@ -57,6 +59,7 @@ public class DungeonSession {
     public DungeonStats getStats(String uuid) {return this.playerStats.get(uuid);}
 
     public enum DungeonExitBehavior {DESTROY, RANDOMIZE, RESET, NOTHING}
+    public enum DungeonOpenBehavior {NONE, ESSENCE_REQUIRED, ITEMS_REQUIRED, ENTITY_REQUIRED, GUARD_REQUIRED, KILLS_REQUIRED}
 
     protected DungeonSession(String entranceUUID, ResourceKey<Level> entranceLevelKey, String template) {
         this.entranceUUID = entranceUUID;
@@ -146,7 +149,10 @@ public class DungeonSession {
             wdPlayer.getServerPlayer().addItem(new ItemStack(Items.DIAMOND.asItem(), 1));
             wdPlayer.setLastGameMode(wdPlayer.getServerPlayer().gameMode.getGameModeForPlayer());
             DungeonStatsHolder holder = new DungeonStatsHolder(this.playerStats, this.getTemplate().get(HierarchicalProperty.DISPLAY_NAME), this.getTemplate().get(HierarchicalProperty.ICON), this.getTemplate().get(HierarchicalProperty.PRIMARY_COLOR), this.getTemplate().get(HierarchicalProperty.SECONDARY_COLOR), this.getTemplate().get(HierarchicalProperty.TARGET_TIME), this.getTemplate().get(HierarchicalProperty.TARGET_DEATHS), this.getTemplate().get(HierarchicalProperty.TARGET_SCORE));
-            PacketDistributor.sendToPlayer(wdPlayer.getServerPlayer(), new ClientboundPostDungeonScreenPacket(Serializer.toCompoundTag(holder)));
+            CompoundTag tag = new CompoundTag();
+            tag.putString("packet", ClientPacketHandler.Packets.POST_DUNGEON_SCREEN.toString());
+            tag.put("stats", Serializer.toCompoundTag(holder));
+            PacketDistributor.sendToPlayer(wdPlayer.getServerPlayer(), new SimplePacketManager.ClientboundTagPacket(tag));
             wdPlayer.getServerPlayer().setGameMode(GameType.SPECTATOR);
         }
         this.handleExitBehavior();

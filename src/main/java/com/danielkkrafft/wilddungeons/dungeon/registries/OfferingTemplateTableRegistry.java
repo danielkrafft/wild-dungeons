@@ -13,14 +13,10 @@ public class OfferingTemplateTableRegistry {
     public static final WeightedTable<OfferingTemplate> BASIC_SHOP_TABLE = new WeightedTable<OfferingTemplate>().setName("BASIC_SHOP_TABLE");
 
     public static void setupOfferingTables(){
-        FREE_PERK_OFFERING_TABLE
-                .add(FREE_PERK_POOL,1);
+        FREE_PERK_OFFERING_TABLE.add(FREE_PERK_POOL,1);
         OFFERING_TEMPLATE_TABLE_REGISTRY.add(FREE_PERK_OFFERING_TABLE);
 
-        BASIC_SHOP_TABLE
-                .add(CHEAP_BASIC_POOL,1)
-                .add(MEDIUM_BASIC_POOL,5)
-                .add(EXPENSIVE_BASIC_POOL,10);
+        BASIC_SHOP_TABLE.add(CHEAP_BASIC_POOL,1).add(MEDIUM_BASIC_POOL,5).add(EXPENSIVE_BASIC_POOL,10);
         OFFERING_TEMPLATE_TABLE_REGISTRY.add(BASIC_SHOP_TABLE);
     }
 }

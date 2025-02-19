@@ -22,10 +22,8 @@ public class SoundscapeHandler {
     public static HashSet<SynchronizedSoundLoop> currentlyPlayingSounds = new HashSet<>();
 
     public static void handleSwitchSoundscape(DungeonRegistration.SoundscapeTemplate template, int intensity, boolean forceReset) {
-        WildDungeons.getLogger().info("SWITCHING TO SOUNDSCAPE {} FOR PLAYER {}", template.name(), Minecraft.getInstance().player.getDisplayName().getString());
-        WildDungeons.getLogger().info("CURRENTLY PLAYING {} SOUNDS", currentlyPlayingSounds.size());
         if (template == null || forceReset) {
-            currentlyPlayingSounds.forEach(soundLoop -> {soundLoop.stopPlaying();});
+            currentlyPlayingSounds.forEach(SynchronizedSoundLoop::stopPlaying);
             currentlyPlayingSounds.clear();
             if (template == null) return;
         }

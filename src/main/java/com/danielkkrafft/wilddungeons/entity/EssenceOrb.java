@@ -1,10 +1,12 @@
 package com.danielkkrafft.wilddungeons.entity;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundUpdateWDPlayerPacket;
+import com.danielkkrafft.wilddungeons.network.ClientPacketHandler;
+import com.danielkkrafft.wilddungeons.network.SimplePacketManager;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.danielkkrafft.wilddungeons.util.Serializer;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -168,7 +170,10 @@ public class EssenceOrb extends ExperienceOrb implements IEntityWithComplexSpawn
     public static void giveEssence(ServerPlayer player, Type type, int value) {
         WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(player);
         wdPlayer.giveEssencePoints(type, value);
-        PacketDistributor.sendToPlayer(player, new ClientboundUpdateWDPlayerPacket(Serializer.toCompoundTag(wdPlayer)));
+        CompoundTag tag = new CompoundTag();
+        tag.putString("packet", ClientPacketHandler.Packets.UPDATE_WD_PLAYER.toString());
+        tag.put("player", Serializer.toCompoundTag(wdPlayer));
+        PacketDistributor.sendToPlayer(player, new SimplePacketManager.ClientboundTagPacket(tag));
     }
 }
 

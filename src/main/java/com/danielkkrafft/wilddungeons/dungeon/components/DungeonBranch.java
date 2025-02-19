@@ -9,8 +9,8 @@ import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
-import com.danielkkrafft.wilddungeons.util.IgnoreSerialization;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
+import com.danielkkrafft.wilddungeons.util.Serializer;
 import com.danielkkrafft.wilddungeons.util.debug.WDProfiler;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
@@ -25,7 +25,7 @@ public class DungeonBranch {
 
     private static final int OPEN_CONNECTIONS_TARGET = 6;
     private static final int Y_TARGET = 128;
-    @IgnoreSerialization
+    @Serializer.IgnoreSerialization
     private List<DungeonRoom> branchRooms = new ArrayList<>();
     private String templateKey;
     private int floorIndex;
@@ -38,7 +38,7 @@ public class DungeonBranch {
     private HashMap<String, DungeonSession.PlayerStatus> playerStatuses = new HashMap<>();
     private boolean fullyGenerated = false;
 
-    @IgnoreSerialization
+    @Serializer.IgnoreSerialization
     private DungeonFloor floor = null;
 
     public DungeonBranchTemplate getTemplate() {return DUNGEON_BRANCH_REGISTRY.get(this.templateKey);}

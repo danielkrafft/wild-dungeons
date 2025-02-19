@@ -6,16 +6,14 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonFloorTe
 import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
-import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundAddExtraRenderComponentPacket;
-import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundNullScreenPacket;
+import com.danielkkrafft.wilddungeons.network.ClientPacketHandler;
+import com.danielkkrafft.wilddungeons.network.SimplePacketManager;
 import com.danielkkrafft.wilddungeons.player.SavedTransform;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.danielkkrafft.wilddungeons.registry.WDDimensions;
-import com.danielkkrafft.wilddungeons.render.RenderExtra;
 import com.danielkkrafft.wilddungeons.util.CommandUtil;
 import com.danielkkrafft.wilddungeons.util.FileUtil;
-import com.danielkkrafft.wilddungeons.util.IgnoreSerialization;
 import com.danielkkrafft.wilddungeons.util.Serializer;
 import com.danielkkrafft.wilddungeons.util.debug.WDProfiler;
 import com.danielkkrafft.wilddungeons.world.dimension.EmptyGenerator;
@@ -47,7 +45,7 @@ import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonFloorRegi
 import static com.danielkkrafft.wilddungeons.registry.WDDimensions.WILDDUNGEON;
 
 public class DungeonFloor {
-    @IgnoreSerialization
+    @Serializer.IgnoreSerialization
     private List<DungeonBranch> dungeonBranches = new ArrayList<>();
     private final String templateKey;
     private final BlockPos origin;
@@ -78,7 +76,7 @@ public class DungeonFloor {
     public int getIndex() {return this.index;}
     public HashMap<ChunkPos, ArrayList<Vector2i>> getChunkMap() {return this.chunkMap;}
     public List<BoundingBox> halfGeneratedRooms = new ArrayList<>();
-    @IgnoreSerialization
+    @Serializer.IgnoreSerialization
     public List<CompletableFuture<Void>> generationFutures = new ArrayList<>();
     List<WDPlayer> playersWaitingToEnter = new ArrayList<>();
     public boolean unsafeForPlayer = true;
@@ -114,7 +112,9 @@ public class DungeonFloor {
         wdPlayer.setCurrentDungeon(getSession());
         wdPlayer.travelToFloor(wdPlayer, wdPlayer.getCurrentFloor(), this);
         wdPlayer.getServerPlayer().setGameMode(wdPlayer.getLastGameMode());
-        PacketDistributor.sendToPlayer(wdPlayer.getServerPlayer(), new ClientboundNullScreenPacket(new CompoundTag()));
+        CompoundTag tag = new CompoundTag();
+        tag.putString("packet", ClientPacketHandler.Packets.NULL_SCREEN.toString());
+        PacketDistributor.sendToPlayer(wdPlayer.getServerPlayer(), new SimplePacketManager.ClientboundTagPacket(tag));
         WDPlayerManager.syncAll(this.playerStatuses.keySet().stream().toList());
         wdPlayer.setSoundScape(this.getProperty(SOUNDSCAPE), this.getProperty(INTENSITY), true);
     }
@@ -155,7 +155,7 @@ public class DungeonFloor {
             halfGeneratedRooms.clear();
         }
     }
-    @IgnoreSerialization
+    @Serializer.IgnoreSerialization
     private int branchGenAttempts = 0;
     public void generateBranches() {
         DungeonFloorTemplate template = this.getTemplate();

@@ -10,7 +10,6 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ChunkPos;
@@ -24,7 +23,7 @@ import java.util.*;
 
 @EventBusSubscriber(value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME)
 public class DecalRenderer {
-    public static HashMap<ResourceKey<Level>, HashMap<ChunkPos, Set<Decal>>> SERVER_DECALS_MAP = new HashMap<>();
+    public static HashMap<ResourceKey<Level>, HashMap<ChunkPos, Set<Decal>>> SERVER_DECALS_MAP = new HashMap<>(); //TODO these are not being saved or loaded or restored to joining players
     public static HashMap<ResourceKey<Level>, HashMap<ChunkPos, Set<Decal>>> CLIENT_DECALS_MAP = new HashMap<>();
     public static int DECAL_RENDER_DISTANCE = 8;
 
@@ -78,6 +77,7 @@ public class DecalRenderer {
     }
 
     public static void removeServerDecal(Decal decal) {
+        if (decal == null) return;
         if (!SERVER_DECALS_MAP.containsKey(decal.dimension)) return;
         HashMap<ChunkPos, Set<Decal>> decalsInThisLevel = SERVER_DECALS_MAP.get(decal.dimension);
 
@@ -88,6 +88,7 @@ public class DecalRenderer {
     }
 
     public static void addClientDecal(Decal decal) {
+        if (decal == null) return;
         if (!CLIENT_DECALS_MAP.containsKey(decal.dimension)) CLIENT_DECALS_MAP.put(decal.dimension, new HashMap<>());
         HashMap<ChunkPos, Set<Decal>> decalsInThisLevel = CLIENT_DECALS_MAP.get(decal.dimension);
 
@@ -98,6 +99,7 @@ public class DecalRenderer {
     }
 
     public static void removeClientDecal(Decal decal) {
+        if (decal == null) return;
         if (!CLIENT_DECALS_MAP.containsKey(decal.dimension)) return;
         HashMap<ChunkPos, Set<Decal>> decalsInThisLevel = CLIENT_DECALS_MAP.get(decal.dimension);
 

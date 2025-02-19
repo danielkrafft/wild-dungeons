@@ -12,9 +12,6 @@ public class AmogusRenderer extends MobRenderer<AmogusEntity, AmogusModel<Amogus
     public AmogusRenderer(EntityRendererProvider.Context context) {
         super(context, new AmogusModel<>(context.bakeLayer(AmogusModel.LAYER_LOCATION)), 0.25f);
     }
-    public AmogusRenderer(EntityRendererProvider.Context context, AmogusModel<AmogusEntity> model, float shadowRadius) {
-        super(context, model, 0.25f);
-    }
 
     @Override
     public ResourceLocation getTextureLocation(AmogusEntity amogusEntity) {

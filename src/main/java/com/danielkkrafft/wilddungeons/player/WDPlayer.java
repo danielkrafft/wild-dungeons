@@ -8,7 +8,8 @@ import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.entity.EssenceOrb;
-import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundSwitchSoundscapePacket;
+import com.danielkkrafft.wilddungeons.network.ClientPacketHandler;
+import com.danielkkrafft.wilddungeons.network.SimplePacketManager;
 import com.danielkkrafft.wilddungeons.util.CommandUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
@@ -249,15 +250,17 @@ public class WDPlayer {
     }
 
     public void setSoundScape(@Nullable DungeonRegistration.SoundscapeTemplate soundScape, int intensity, boolean forceReset) {
+        CompoundTag tag = new CompoundTag();
+        tag.putString("packet", ClientPacketHandler.Packets.SWITCH_SOUNDSCAPE.toString());
+
         if (soundScape == null) {
-            PacketDistributor.sendToPlayer(this.getServerPlayer(), new ClientboundSwitchSoundscapePacket(new CompoundTag()));
+            PacketDistributor.sendToPlayer(this.getServerPlayer(), new SimplePacketManager.ClientboundTagPacket(tag));
             return;
         }
 
-        CompoundTag tag = new CompoundTag();
         tag.putString("sound_key", soundScape.name());
         tag.putInt("intensity", intensity);
         tag.putBoolean("reset", forceReset);
-        PacketDistributor.sendToPlayer(this.getServerPlayer(), new ClientboundSwitchSoundscapePacket(tag));
+        PacketDistributor.sendToPlayer(this.getServerPlayer(), new SimplePacketManager.ClientboundTagPacket(tag));
     }
 }

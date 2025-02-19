@@ -1,12 +1,13 @@
 package com.danielkkrafft.wilddungeons.dungeon.components.template;
 
+import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.DungeonLayout;
 
 import java.util.HashMap;
 
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonFloorPoolRegistry.TEST_FLOOR_POOL;
 
-public final class DungeonTemplate implements DungeonComponent {
+public final class DungeonTemplate implements DungeonRegistration.DungeonComponent {
 
     private String name;
     private DungeonLayout<DungeonFloorTemplate> floorTemplates = new DungeonLayout<DungeonFloorTemplate>().add(TEST_FLOOR_POOL, 1);

@@ -2,7 +2,8 @@ package com.danielkkrafft.wilddungeons.ui;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
-import com.danielkkrafft.wilddungeons.network.serverbound.ServerboundRestorePlayerGamemodePacket;
+import com.danielkkrafft.wilddungeons.network.ServerPacketHandler;
+import com.danielkkrafft.wilddungeons.network.SimplePacketManager;
 import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
 import com.danielkkrafft.wilddungeons.util.Serializer;
 import com.mojang.authlib.GameProfile;
@@ -190,7 +191,9 @@ public class WDPostDungeonScreen extends Screen {
     @Override
     public void onClose() {
         super.onClose();
-        PacketDistributor.sendToServer(new ServerboundRestorePlayerGamemodePacket(new CompoundTag()));
+        CompoundTag tag = new CompoundTag();
+        tag.putString("packet", ServerPacketHandler.Packets.RESTORE_PLAYER_GAMEMODE.toString());
+        PacketDistributor.sendToServer(new SimplePacketManager.ServerboundTagPacket(tag));
     }
 
     @Override

@@ -9,8 +9,6 @@ import net.minecraft.world.level.material.Fluid;
 public class WDTags {
 
     public static class Fluids {
-        private static void setup() {}
-
         public static final TagKey<Fluid> LIFE_LIQUID = create(WildDungeons.rl("fluid"));
 
         public static TagKey<Fluid> create(final ResourceLocation name) {

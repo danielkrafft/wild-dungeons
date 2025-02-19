@@ -1,22 +1,15 @@
 package com.danielkkrafft.wilddungeons.dungeon.components;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.block.DoorwayBlock;
 import com.danielkkrafft.wilddungeons.block.WDBedrockBlock;
-import com.danielkkrafft.wilddungeons.dungeon.components.room.CombatRoom;
-import com.danielkkrafft.wilddungeons.dungeon.components.room.LootRoom;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
-import com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.entity.blockentity.ConnectionBlockEntity;
-import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundAddDecalPacket;
-import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundRemoveDecalPacket;
-import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundSyncDecalsPacket;
-import com.danielkkrafft.wilddungeons.registry.WDEvents;
+import com.danielkkrafft.wilddungeons.network.ClientPacketHandler;
+import com.danielkkrafft.wilddungeons.network.SimplePacketManager;
 import com.danielkkrafft.wilddungeons.render.DecalRenderer;
-import com.danielkkrafft.wilddungeons.util.IgnoreSerialization;
 import com.danielkkrafft.wilddungeons.util.Serializer;
 import com.danielkkrafft.wilddungeons.util.debug.WDProfiler;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -65,7 +58,7 @@ public class ConnectionPoint {
     private BoundingBox boundingBox;
     private HashMap<BlockPos, String> unBlockedBlockStates = new HashMap<>();
 
-    @IgnoreSerialization
+    @Serializer.IgnoreSerialization
     private DungeonRoom room = null;
 
     public String getType() {return this.type;}
@@ -272,14 +265,19 @@ public class ConnectionPoint {
     }
 
     public void addDecal(ResourceLocation texture, int color) {
-        WildDungeons.getLogger().info("");
         DecalRenderer.addServerDecal(this.getDecal(texture, color));
-        PacketDistributor.sendToAllPlayers(new ClientboundAddDecalPacket(Serializer.toCompoundTag(this.getDecal(texture, color))));
+        CompoundTag tag = new CompoundTag();
+        tag.putString("packet", ClientPacketHandler.Packets.ADD_DECAL.toString());
+        tag.put("decal", Serializer.toCompoundTag(this.getDecal(texture, color)));
+        PacketDistributor.sendToAllPlayers(new SimplePacketManager.ClientboundTagPacket(tag));
     }
 
     public void removeDecal(ResourceLocation texture, int color) {
         DecalRenderer.removeServerDecal(this.getDecal(texture, color));
-        PacketDistributor.sendToAllPlayers(new ClientboundRemoveDecalPacket(Serializer.toCompoundTag(this.getDecal(texture, color))));
+        CompoundTag tag = new CompoundTag();
+        tag.putString("packet", ClientPacketHandler.Packets.REMOVE_DECAL.toString());
+        tag.put("decal", Serializer.toCompoundTag(this.getDecal(texture, color)));
+        PacketDistributor.sendToAllPlayers(new SimplePacketManager.ClientboundTagPacket(tag));
     }
 
     public DecalRenderer.Decal getDecal(ResourceLocation texture, int color) {

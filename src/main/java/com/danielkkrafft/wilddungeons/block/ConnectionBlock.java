@@ -1,7 +1,8 @@
 package com.danielkkrafft.wilddungeons.block;
 
 import com.danielkkrafft.wilddungeons.entity.blockentity.ConnectionBlockEntity;
-import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundOpenConnectionBlockUIPacket;
+import com.danielkkrafft.wilddungeons.network.ClientPacketHandler;
+import com.danielkkrafft.wilddungeons.network.SimplePacketManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
@@ -32,6 +33,7 @@ public class ConnectionBlock extends Block implements EntityBlock {
         BlockEntity blockentity = level.getBlockEntity(pos);
         if (blockentity instanceof ConnectionBlockEntity connectionBlockEntity && player.canUseGameMasterBlocks()) {
             CompoundTag data = new CompoundTag();
+            data.putString("packet", ClientPacketHandler.Packets.OPEN_CONNECTION_BLOCK_UI.toString());
             data.putString("unblockedBlockstate", connectionBlockEntity.unblockedBlockstate);
             data.putString("pool", connectionBlockEntity.pool);
             data.putString("type", connectionBlockEntity.type);
@@ -39,7 +41,7 @@ public class ConnectionBlock extends Block implements EntityBlock {
             data.putInt("y", connectionBlockEntity.getBlockPos().getY());
             data.putInt("z", connectionBlockEntity.getBlockPos().getZ());
 
-            PacketDistributor.sendToPlayer((ServerPlayer) player, new ClientboundOpenConnectionBlockUIPacket(data));
+            PacketDistributor.sendToPlayer((ServerPlayer) player, new SimplePacketManager.ClientboundTagPacket(data));
             return InteractionResult.SUCCESS;
         } else {
             return InteractionResult.PASS;

@@ -1,7 +1,6 @@
 package com.danielkkrafft.wilddungeons.dungeon;
 
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonTarget;
-import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonComponent;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
 import com.danielkkrafft.wilddungeons.dungeon.registries.*;
@@ -263,4 +262,6 @@ public class DungeonRegistration {
         }
         public String name() {return this.name;}
     }
+
+    public interface DungeonComponent { String name();}
 }

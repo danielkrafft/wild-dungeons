@@ -2,7 +2,7 @@ package com.danielkkrafft.wilddungeons.dungeon.components;
 
 
 import com.danielkkrafft.wilddungeons.block.WDBlocks;
-import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonComponent;
+import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import net.minecraft.world.level.block.Blocks;
@@ -13,7 +13,7 @@ import net.minecraft.world.level.block.state.properties.Property;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DungeonMaterial implements DungeonComponent {
+public class DungeonMaterial implements DungeonRegistration.DungeonComponent {
     public String name;
 
     public ArrayList<WeightedPool<BlockState>> basicBlockStates;

@@ -1,9 +1,9 @@
 package com.danielkkrafft.wilddungeons.block;
 
 import com.danielkkrafft.wilddungeons.dungeon.components.room.TargetPurgeRoom;
-import com.danielkkrafft.wilddungeons.item.DungeonKeyItem;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
+import com.danielkkrafft.wilddungeons.registry.WDItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
@@ -60,7 +60,7 @@ public class LockableBlock extends Block {
         if (!locked) {
             return ItemInteractionResult.FAIL;
         }
-        if (stack.getItem() instanceof DungeonKeyItem) {
+        if (stack.getItem().equals(WDItems.WD_DUNGEON_KEY.get())) {
             stack.shrink(1);
             level.setBlock(pos, state.setValue(LOCKED, false), 2);
             level.playSound(null, pos, SoundEvents.IRON_TRAPDOOR_OPEN, SoundSource.BLOCKS, 1.0F, 1.0F);

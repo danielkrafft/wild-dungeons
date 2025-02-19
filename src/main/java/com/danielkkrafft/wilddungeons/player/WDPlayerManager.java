@@ -5,10 +5,12 @@ import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
-import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundUpdateWDPlayerPacket;
+import com.danielkkrafft.wilddungeons.network.ClientPacketHandler;
+import com.danielkkrafft.wilddungeons.network.SimplePacketManager;
 import com.danielkkrafft.wilddungeons.util.Serializer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -53,7 +55,10 @@ public class WDPlayerManager {
 
             DungeonSession session = player.getCurrentDungeon();
             if (session != null) player.setCurrentLives(session.getLives());
-            PacketDistributor.sendToPlayer(player.getServerPlayer(), new ClientboundUpdateWDPlayerPacket(Serializer.toCompoundTag(player)));
+            CompoundTag tag = new CompoundTag();
+            tag.putString("packet", ClientPacketHandler.Packets.UPDATE_WD_PLAYER.toString());
+            tag.put("player", Serializer.toCompoundTag(player));
+            PacketDistributor.sendToPlayer(player.getServerPlayer(), new SimplePacketManager.ClientboundTagPacket(tag));
         }
     }
 

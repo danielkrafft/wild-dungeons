@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public final class DungeonRoomTemplate implements DungeonComponent {
+public final class DungeonRoomTemplate implements DungeonRegistration.DungeonComponent {
     private Class<?> clazz = DungeonRoom.class;
     private String name;
     private List<Pair<StructureTemplate, BlockPos>> templates;

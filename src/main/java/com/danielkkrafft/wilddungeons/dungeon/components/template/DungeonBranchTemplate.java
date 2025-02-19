@@ -1,6 +1,7 @@
 package com.danielkkrafft.wilddungeons.dungeon.components.template;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.DungeonLayout;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
@@ -12,7 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public final class DungeonBranchTemplate implements DungeonComponent {
+public final class DungeonBranchTemplate implements DungeonRegistration.DungeonComponent {
     private String name;
     private DungeonLayout<DungeonRoomTemplate> roomTemplates;
     private List<Pair<DungeonRoomTemplate, Integer>> mandatoryRooms = new ArrayList<>();
