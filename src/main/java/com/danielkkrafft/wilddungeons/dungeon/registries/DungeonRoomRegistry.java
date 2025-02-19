@@ -5,6 +5,7 @@ import com.danielkkrafft.wilddungeons.dungeon.components.room.*;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -500,6 +501,9 @@ public class DungeonRoomRegistry {
     public static final DungeonRoomTemplate NETHER_FACTORY_COMBAT_1 = copyOf(NETHER_FACTORY_SPRAWL_3, "nether_factory_combat_1")
             .setClazz(CombatRoom.class);
 
+    public static final DungeonRoomTemplate NETHER_FACTORY_KEY_COMBAT = copyOf(NETHER_FACTORY_COMBAT_1, "nether_factory_key_combat")
+            .setRoomClearOffering(OfferingTemplateRegistry.DUNGEON_KEY);
+
     public static final DungeonRoomTemplate NETHER_FACTORY_TOWER = create(
             "nether_factory_tower",
             List.of(
@@ -546,7 +550,8 @@ public class DungeonRoomRegistry {
             ))
             .setClazz(BossRoom.class)
             .setRoomClearOffering(OfferingTemplateRegistry.EXIT_RIFT)
-            .set(ENEMY_TABLE, EnemyTableRegistry.NETHER_DRAGON_ARENA);
+            .set(ENEMY_TABLE, EnemyTableRegistry.NETHER_DRAGON_ARENA)
+            .set(BOSS_SPAWN_POS, new Vec3(3.0, 40.0, 3.0));
 
     public static DungeonRoomTemplate copyOf(DungeonRoomTemplate template, String name) {
         DungeonRoomTemplate room = DungeonRoomTemplate.copyOf(template, name);

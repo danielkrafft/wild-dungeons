@@ -136,7 +136,7 @@ public class DungeonBranchRegistry {
     public static final DungeonBranchTemplate PIGLIN_FACTORY_SIDE_BRANCH = create("PIGLIN_FACTORY_SIDE_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .add(PIGLIN_FACTORY_SPRAWL_ROOM_POOL, 10)
-                    .addSimple(NETHER_FACTORY_COMBAT_1)
+                    .addSimple(NETHER_FACTORY_KEY_COMBAT)
             )
             .setRootOriginBranchIndex(4)
             .set(INTENSITY, 3);

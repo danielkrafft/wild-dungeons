@@ -38,6 +38,7 @@ public class WDSoundEvents {
 
     public static final Holder<SoundEvent> RIFT_AURA = SOUND_EVENTS.register("entity.rift_aura", SoundEvent::createVariableRangeEvent);
     public static final Holder<SoundEvent> WHISPERS = SOUND_EVENTS.register("entity.whispers", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> SHIMMER = SOUND_EVENTS.register("entity.shimmer", SoundEvent::createVariableRangeEvent);
 
     public static final Holder<SoundEvent> CAVE_01 = SOUND_EVENTS.register("soundscape.ambient.cave_01", SoundEvent::createVariableRangeEvent);
     public static final Holder<SoundEvent> NETHER_BASS = SOUND_EVENTS.register("soundscape.music.nether_bass", SoundEvent::createVariableRangeEvent);

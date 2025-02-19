@@ -9,6 +9,7 @@ import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.util.WeightedTable;
 import com.google.gson.reflect.TypeToken;
+import net.minecraft.world.phys.Vec3;
 
 import static com.danielkkrafft.wilddungeons.dungeon.registries.EnemyTableRegistry.BASIC_ENEMY_TABLE;
 
@@ -34,6 +35,7 @@ public class HierarchicalProperty<T> {
     public static final HierarchicalProperty<Integer> WAVE_SIZE = new HierarchicalProperty<>(new TypeToken<>() {}, 10);
     public static final HierarchicalProperty<Integer> INTENSITY = new HierarchicalProperty<>(new TypeToken<>() {}, 0);
     public static final HierarchicalProperty<DungeonRegistration.SoundscapeTemplate> SOUNDSCAPE = new HierarchicalProperty<>(new TypeToken<>() {}, SoundscapeTemplateRegistry.NETHER_CAVES);
+    public static final HierarchicalProperty<Vec3> BOSS_SPAWN_POS = new HierarchicalProperty<>(new TypeToken<>() {}, Vec3.ZERO);
 
 
     private final TypeToken<T> type;

@@ -214,5 +214,10 @@
       {"name": "wilddungeons:soundscape/music/nether_beat",
       "stream": true}
     ]
+  },
+  "entity.shimmer": {
+    "sounds": [
+      {"name": "wilddungeons:entity/shimmer"}
+    ]
   }
 }

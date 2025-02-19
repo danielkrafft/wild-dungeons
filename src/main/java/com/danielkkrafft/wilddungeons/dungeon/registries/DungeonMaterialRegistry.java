@@ -347,6 +347,12 @@ public class DungeonMaterialRegistry {
                             .add(POLISHED_BLACKSTONE_BRICKS.defaultBlockState(), 1)
                             .add(CHISELED_POLISHED_BLACKSTONE.defaultBlockState(), 1)
             )
+            .addBasicBlockSet(
+                    new WeightedPool<BlockState>()
+                            .add(GLASS.defaultBlockState(), 10)
+                            .add(GRAY_STAINED_GLASS.defaultBlockState(), 2)
+                            .add(TINTED_GLASS.defaultBlockState(), 1)
+            )
             .addStairBlockSet(
                     new WeightedPool<BlockState>()
                             .add(BLACKSTONE_STAIRS.defaultBlockState(), 1)

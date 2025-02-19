@@ -48,8 +48,8 @@ public class SynchronizedSoundLoop extends AbstractTickableSoundInstance {
         this.elapsedMS += System.currentTimeMillis() - this.currentMS;
         this.currentMS = System.currentTimeMillis();
         float ratio = Math.clamp((float) this.elapsedMS / fadeMS, 0.0f, 1.0f);
-        if (this.active) this.volume = Mth.lerp(ratio, 0.0f, 1.0f);
-        else this.volume = Mth.lerp(ratio, 1.0f, 0.0f);
+        if (this.active) this.volume = Math.max(this.volume, (Mth.lerp(ratio, 0.0f, 1.0f)));
+        else this.volume = Math.min(this.volume, Mth.lerp(ratio, 1.0f, 0.0f));
         return this.volume;
     }
 
