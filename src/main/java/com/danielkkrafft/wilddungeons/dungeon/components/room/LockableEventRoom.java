@@ -35,7 +35,10 @@ public class LockableEventRoom extends DungeonRoom {
         this.getBranch().getFloor().getLevel().playSound(null, this.getPosition(), SoundEvents.IRON_DOOR_CLOSE, SoundSource.BLOCKS, .5f, 1f);
 
         this.getConnectionPoints().forEach(point -> {
-            if (point.isConnected()) point.block(this.getBranch().getFloor().getLevel());
+            if (point.isConnected()) {
+                point.block(this.getBranch().getFloor().getLevel());
+                point.removeDecal(this.getDecalTexture(), this.getDecalColor());
+            }
         });
     }
 
@@ -110,6 +113,7 @@ public class LockableEventRoom extends DungeonRoom {
                 if (point.getConnectedPoint().getBranchIndex() > this.getBranch().getIndex() ||
                         (point.getConnectedPoint().getRoom().getIndex() > this.getIndex() && point.getConnectedPoint().getBranchIndex() == this.getBranch().getIndex())) {
                     point.block(this.getBranch().getFloor().getLevel());
+                    point.removeDecal(this.getDecalTexture(), this.getDecalColor());
                 } else {
                     this.templateBasedUnblock(getBranch().getFloor(), point);
                 }

@@ -20,6 +20,7 @@ import com.danielkkrafft.wilddungeons.util.debug.WDProfiler;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -276,7 +277,10 @@ public class DungeonRoom {
                 templateBasedUnblock(floor, point);
                 point.getConnectedPoint().unBlock(floor.getLevel());
             }
-            if (!point.isConnected()) point.block(floor.getLevel());
+            if (!point.isConnected()) {
+                point.block(floor.getLevel());
+                point.removeDecal(this.getDecalTexture(), this.getDecalColor());
+            }
             point.complete();
         }
         WDProfiler.INSTANCE.logTimestamp("DungeonRoom::processConnectionPoints");
@@ -624,4 +628,7 @@ public class DungeonRoom {
             return new Pair<>(pos, score);
         }).min(Comparator.comparingInt(Pair::getSecond)).get().getFirst();
     }
+
+    public ResourceLocation getDecalTexture() {return null;}
+    public int getDecalColor() {return 0xFFFFFFFF;}
 }

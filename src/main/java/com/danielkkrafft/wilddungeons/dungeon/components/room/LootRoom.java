@@ -9,6 +9,7 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper
 import com.danielkkrafft.wilddungeons.dungeon.registries.OfferingTemplateTableRegistry;
 import com.danielkkrafft.wilddungeons.entity.Offering;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.phys.Vec3;
@@ -35,8 +36,12 @@ public class LootRoom extends TargetPurgeRoom {
         });
     }
 
+    @Override public ResourceLocation getDecalTexture() {return ConnectionPoint.CHEST_TEXTURE;}
+    @Override public int getDecalColor() {return 0xFFffdd00;}
+
     @Override
     public void templateBasedUnblock(DungeonFloor floor, ConnectionPoint point) {
-        point.lootRoomUnblock(floor.getLevel());
+        point.unBlock(floor.getLevel());
+        point.addDecal(this.getDecalTexture(), this.getDecalColor());
     }
 }

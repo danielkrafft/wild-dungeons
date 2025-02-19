@@ -32,7 +32,6 @@ public class ClientPacketHandler {
                 data.getInt("x"),
                 data.getInt("y"),
                 data.getInt("z")));
-
     }
 
     public static void handleNullScreen() {
@@ -67,7 +66,15 @@ public class ClientPacketHandler {
         if (component != null) RenderExtra.components.add(Serializer.fromCompoundTag(data));
     }
 
+    public static void handleSyncDecals(CompoundTag data) {
+        DecalRenderer.CLIENT_DECALS_MAP = Serializer.fromCompoundTag(data);
+    }
+
     public static void handleAddDecal(CompoundTag data) {
         DecalRenderer.addClientDecal(Serializer.fromCompoundTag(data));
+    }
+
+    public static void handleRemoveDecal(CompoundTag data) {
+        DecalRenderer.removeClientDecal(Serializer.fromCompoundTag(data));
     }
 }

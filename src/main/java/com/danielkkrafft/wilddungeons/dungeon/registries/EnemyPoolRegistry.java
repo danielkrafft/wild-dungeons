@@ -44,7 +44,7 @@ public class EnemyPoolRegistry {
         ENEMY_POOL_REGISTRY.add(HARD_ENEMY_POOL);
 
         VERY_HARD_ENEMY_POOL
-                .add(WITHER, 1)
+                //.add(WITHER, 1)
                 .add(MUTANT_BOGGED, 1)
                 .add(BREEZE_GOLEM, 1);
         ENEMY_POOL_REGISTRY.add(VERY_HARD_ENEMY_POOL);

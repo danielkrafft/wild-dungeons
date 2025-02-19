@@ -3,12 +3,19 @@ package com.danielkkrafft.wilddungeons.dungeon.components;
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.block.DoorwayBlock;
 import com.danielkkrafft.wilddungeons.block.WDBedrockBlock;
+import com.danielkkrafft.wilddungeons.dungeon.components.room.CombatRoom;
+import com.danielkkrafft.wilddungeons.dungeon.components.room.LootRoom;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
 import com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.entity.blockentity.ConnectionBlockEntity;
+import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundAddDecalPacket;
+import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundRemoveDecalPacket;
+import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundSyncDecalsPacket;
+import com.danielkkrafft.wilddungeons.registry.WDEvents;
+import com.danielkkrafft.wilddungeons.render.DecalRenderer;
 import com.danielkkrafft.wilddungeons.util.IgnoreSerialization;
 import com.danielkkrafft.wilddungeons.util.Serializer;
 import com.danielkkrafft.wilddungeons.util.debug.WDProfiler;
@@ -20,6 +27,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.Blocks;
@@ -30,11 +38,16 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.joml.Vector2i;
+import org.joml.Vector3f;
 
 import java.util.*;
 
 public class ConnectionPoint {
+    public static final ResourceLocation SWORD_TEXTURE = WildDungeons.rl("textures/item/white_sword.png");
+    public static final ResourceLocation CHEST_TEXTURE = WildDungeons.rl("textures/item/white_chest.png");
+
     private String pool = "all";
     private String type = "both";
 
@@ -149,10 +162,6 @@ public class ConnectionPoint {
                 en.getSize(settings, position).equals(ex.getSize(ex.getRoom().getSettings(), ex.getRoom().getPosition()))
         );
 
-        if (nextRoom.equals(DungeonRoomRegistry.NETHER_FACTORY_BOSS_ROOM)) {
-            WildDungeons.getLogger().info("IS COMPATIBLE ???? {}", conditions.stream().allMatch(condition -> condition));
-        }
-
         WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::arePointsCompatible");
         return conditions.stream().allMatch(condition -> condition);
     }
@@ -240,6 +249,11 @@ public class ConnectionPoint {
         WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::block");
     }
 
+    public Vector3f getAveragePosition() {
+        BoundingBox box = this.getBoundingBox(this.getRoom().getSettings(), this.getRoom().getPosition());
+        return new Vector3f(box.minX() + (float) box.getXSpan() /2, box.minY() + (float) box.getYSpan() /2, box.minZ() + (float) box.getZSpan() /2);
+    }
+
     public void complete() {
         this.room = null;
     }
@@ -257,16 +271,44 @@ public class ConnectionPoint {
         unBlockedBlockStates.forEach((pos, blockState) -> level.setBlock(pos, WDBedrockBlock.of(Blocks.REDSTONE_BLOCK), 2));
     }
 
-    public void combatRoomUnblock(ServerLevel level) {
-        unBlockedBlockStates.forEach((pos, blockState) -> level.setBlock(pos, DoorwayBlock.of(DoorwayBlock.DoorType.COMBAT), 2));
+    public void addDecal(ResourceLocation texture, int color) {
+        WildDungeons.getLogger().info("");
+        DecalRenderer.addServerDecal(this.getDecal(texture, color));
+        PacketDistributor.sendToAllPlayers(new ClientboundAddDecalPacket(Serializer.toCompoundTag(this.getDecal(texture, color))));
     }
 
-    public void lootRoomUnblock(ServerLevel level) {
-        unBlockedBlockStates.forEach((pos, blockState) -> level.setBlock(pos, DoorwayBlock.of(DoorwayBlock.DoorType.LOOT), 2));
+    public void removeDecal(ResourceLocation texture, int color) {
+        DecalRenderer.removeServerDecal(this.getDecal(texture, color));
+        PacketDistributor.sendToAllPlayers(new ClientboundRemoveDecalPacket(Serializer.toCompoundTag(this.getDecal(texture, color))));
+    }
+
+    public DecalRenderer.Decal getDecal(ResourceLocation texture, int color) {
+        if (texture == null) return null;
+        Vector3f avgPosition = this.getAveragePosition();
+        BoundingBox box = this.getBoundingBox(this.getRoom().getSettings(), this.getRoom().getPosition());
+        Direction.Axis axis = this.getDirection(this.getRoom().getSettings()).getAxis();
+        float width = 1.0f;
+        float height = 1.0f;
+        switch (axis) {
+            case X -> {
+                width = box.getZSpan();
+                height = box.getYSpan();
+            }
+            case Y -> {
+                width = box.getXSpan();
+                height = box.getZSpan();
+            }
+            case Z -> {
+                width = box.getXSpan();
+                height = box.getYSpan();
+            }
+        }
+        return new DecalRenderer.Decal(texture, avgPosition.x, avgPosition.y, avgPosition.z, Math.min(width, height) * 0.75f, Math.min(width, height) * 0.75f, axis, color, this.getRoom().getBranch().getFloor().getLevelKey());
     }
 
     public void unSetConnectedPoint() {
         this.block(this.getRoom().getBranch().getFloor().getLevel());
+        this.removeDecal(this.getRoom().getDecalTexture(), this.getRoom().getDecalColor());
         this.connectedPointIndex = -1;
         this.connectedBranchIndex = -1;
         this.connectedRoomIndex = -1;

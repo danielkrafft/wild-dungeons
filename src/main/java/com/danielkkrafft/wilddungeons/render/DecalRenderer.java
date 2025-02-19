@@ -1,5 +1,6 @@
 package com.danielkkrafft.wilddungeons.render;
 
+import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Camera;
@@ -7,7 +8,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ChunkPos;
@@ -21,8 +24,8 @@ import java.util.*;
 
 @EventBusSubscriber(value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME)
 public class DecalRenderer {
-    public static final HashMap<ResourceKey<Level>, HashMap<ChunkPos, Set<Decal>>> SERVER_DECALS_MAP = new HashMap<>();
-    public static final HashMap<ResourceKey<Level>, HashMap<ChunkPos, Set<Decal>>> CLIENT_DECALS_MAP = new HashMap<>();
+    public static HashMap<ResourceKey<Level>, HashMap<ChunkPos, Set<Decal>>> SERVER_DECALS_MAP = new HashMap<>();
+    public static HashMap<ResourceKey<Level>, HashMap<ChunkPos, Set<Decal>>> CLIENT_DECALS_MAP = new HashMap<>();
     public static int DECAL_RENDER_DISTANCE = 8;
 
     @SubscribeEvent
@@ -41,28 +44,47 @@ public class DecalRenderer {
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
         RenderSystem.disableCull();
         Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+
         Camera camera = event.getCamera();
 
         poseStack.pushPose();
         poseStack.translate(-camera.getPosition().x, -camera.getPosition().y, -camera.getPosition().z);
 
-
         ChunkPos playerCurrentChunkPos = Minecraft.getInstance().player.chunkPosition();
-        int decalCount = 0;
         for (int x = playerCurrentChunkPos.x - DECAL_RENDER_DISTANCE; x < playerCurrentChunkPos.x + DECAL_RENDER_DISTANCE; x++) {
             for (int z = playerCurrentChunkPos.z - DECAL_RENDER_DISTANCE; z < playerCurrentChunkPos.z + DECAL_RENDER_DISTANCE; z++) {
                 Set<Decal> decalsInThisChunk = decalsInThisLevel.get(new ChunkPos(x, z));
                 if (decalsInThisChunk == null) continue;
                 for (Decal decal : decalsInThisChunk) {
+                    BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
                     decal.render(poseStack.last(), buffer);
-                    decalCount += 1;
+                    BufferUploader.drawWithShader(buffer.buildOrThrow()); //TODO this is doing a separate draw call for every single decal LMAO
                 }
             }
         }
 
         poseStack.popPose();
-        if (decalCount > 0) BufferUploader.drawWithShader(buffer.buildOrThrow());
+
+    }
+
+    public static void addServerDecal(Decal decal) {
+        if (!SERVER_DECALS_MAP.containsKey(decal.dimension)) SERVER_DECALS_MAP.put(decal.dimension, new HashMap<>());
+        HashMap<ChunkPos, Set<Decal>> decalsInThisLevel = SERVER_DECALS_MAP.get(decal.dimension);
+
+        if (!decalsInThisLevel.containsKey(decal.chunkPos)) decalsInThisLevel.put(decal.chunkPos, new HashSet<>());
+        Set<Decal> decalsInThisChunk = decalsInThisLevel.get(decal.chunkPos);
+
+        decalsInThisChunk.add(decal);
+    }
+
+    public static void removeServerDecal(Decal decal) {
+        if (!SERVER_DECALS_MAP.containsKey(decal.dimension)) return;
+        HashMap<ChunkPos, Set<Decal>> decalsInThisLevel = SERVER_DECALS_MAP.get(decal.dimension);
+
+        if (!decalsInThisLevel.containsKey(decal.chunkPos)) return;
+        Set<Decal> decalsInThisChunk = decalsInThisLevel.get(decal.chunkPos);
+
+        decalsInThisChunk.remove(decal);
     }
 
     public static void addClientDecal(Decal decal) {
@@ -75,6 +97,16 @@ public class DecalRenderer {
         decalsInThisChunk.add(decal);
     }
 
+    public static void removeClientDecal(Decal decal) {
+        if (!CLIENT_DECALS_MAP.containsKey(decal.dimension)) return;
+        HashMap<ChunkPos, Set<Decal>> decalsInThisLevel = CLIENT_DECALS_MAP.get(decal.dimension);
+
+        if (!decalsInThisLevel.containsKey(decal.chunkPos)) return;
+        Set<Decal> decalsInThisChunk = decalsInThisLevel.get(decal.chunkPos);
+
+        decalsInThisChunk.remove(decal);
+    }
+
     public static class Decal {
         public List<Vertex> vertices = new ArrayList<>();
         public ResourceLocation texture;
@@ -82,9 +114,10 @@ public class DecalRenderer {
         public ResourceKey<Level> dimension;
 
         public Decal(ResourceLocation texture, float originX, float originY, float originZ, float width, float height, Direction.Axis axis, int color, ResourceKey<Level> dimension) {
+            WildDungeons.getLogger().info("BUILDING NEW DECAL AT ORIGIN {}, {}, {} with texture {} and color {}", originX, originY, originZ, texture, color);
             this.texture = texture;
             this.dimension = dimension;
-            this.chunkPos = new ChunkPos((int) originX, (int) originZ);
+            this.chunkPos = new ChunkPos(new BlockPos((int) originX, (int) originY, (int) originZ));
 
             switch (axis) {
                 case X -> {
@@ -115,6 +148,21 @@ public class DecalRenderer {
             }
         }
 
+        @Override
+        public boolean equals(Object obj) {
+            if (!(obj instanceof Decal decal)) return false;
+            return
+                    decal.vertices.equals(this.vertices)
+                    && decal.chunkPos.equals(this.chunkPos)
+                    && decal.dimension.equals(this.dimension)
+                    && decal.texture.equals(this.texture);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(vertices, texture, chunkPos, dimension);
+        }
+
         public static class Vertex {
             public float x;
             public float y;
@@ -130,6 +178,22 @@ public class DecalRenderer {
                 this.u = u;
                 this.v = v;
                 this.color = color;
+            }
+
+            @Override
+            public boolean equals(Object obj) {
+                if (!(obj instanceof Vertex vertex)) return false;
+                return Float.compare(this.x, vertex.x) == 0
+                        && Float.compare(this.y, vertex.y) == 0
+                        && Float.compare(this.z, vertex.z) == 0
+                        && Float.compare(this.u, vertex.u) == 0
+                        && Float.compare(this.v, vertex.v) == 0
+                        && this.color == vertex.color;
+            }
+
+            @Override
+            public int hashCode() {
+                return Objects.hash(x, y, z, u, v, color);
             }
         }
     }

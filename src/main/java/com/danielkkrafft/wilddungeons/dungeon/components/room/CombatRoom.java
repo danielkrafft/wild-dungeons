@@ -10,6 +10,7 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalPr
 import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.phys.Vec3;
@@ -90,8 +91,12 @@ public class CombatRoom extends TargetPurgeRoom {
         this.getBranch().getFloor().getLevel().addFreshEntity(offering);
     }
 
+    @Override public ResourceLocation getDecalTexture() {return ConnectionPoint.SWORD_TEXTURE;}
+    @Override public int getDecalColor() {return 0xFFFF0000;}
+
     @Override
     public void templateBasedUnblock(DungeonFloor floor, ConnectionPoint point) {
-        point.combatRoomUnblock(floor.getLevel());
+        point.unBlock(floor.getLevel());
+        point.addDecal(this.getDecalTexture(), this.getDecalColor());
     }
 }
