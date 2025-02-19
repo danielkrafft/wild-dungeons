@@ -31,7 +31,7 @@ public final class DungeonBranchTemplate implements DungeonComponent {
     public DungeonBranch placeInWorld(DungeonFloor floor, BlockPos origin) {
         DungeonBranch newBranch = new DungeonBranch(this.name, floor, origin);
         int tries = 0;
-        while (tries < 5) {
+        while (tries < 2) {
             try {
                 if (newBranch.generateDungeonBranch()) {
                     return newBranch;
@@ -42,7 +42,7 @@ public final class DungeonBranchTemplate implements DungeonComponent {
             }
             tries++;
         }
-        WildDungeons.getLogger().warn("Failed to generate branch {} after 5 tries", this.name);
+        WildDungeons.getLogger().warn("Failed to generate branch {} after 2 tries", this.name);
         floor.getBranches().remove(newBranch);
         return null;
     }

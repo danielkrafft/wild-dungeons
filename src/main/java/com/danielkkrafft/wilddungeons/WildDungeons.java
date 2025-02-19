@@ -92,6 +92,7 @@ public class WildDungeons {
         registrar.playToClient(ClientboundPostDungeonScreenPacket.TYPE, ClientboundPostDungeonScreenPacket.STREAM_CODEC, ClientboundPostDungeonScreenPacket::handle);
         registrar.playToClient(ClientboundPlayDynamicSoundPacket.TYPE, ClientboundPlayDynamicSoundPacket.STREAM_CODEC, ClientboundPlayDynamicSoundPacket::handle);
         registrar.playToClient(ClientboundSwitchSoundscapePacket.TYPE, ClientboundSwitchSoundscapePacket.STREAM_CODEC, ClientboundSwitchSoundscapePacket::handle);
+        registrar.playToClient(ClientboundAddExtraRenderComponentPacket.TYPE, ClientboundAddExtraRenderComponentPacket.STREAM_CODEC, ClientboundAddExtraRenderComponentPacket::handle);
 
         registrar.playToServer(ServerboundUpdateConnectionBlockPacket.TYPE, ServerboundUpdateConnectionBlockPacket.STREAM_CODEC, ServerboundUpdateConnectionBlockPacket::handle);
         registrar.playToServer(ServerboundRestorePlayerGamemodePacket.TYPE, ServerboundRestorePlayerGamemodePacket.STREAM_CODEC, ServerboundRestorePlayerGamemodePacket::handle);

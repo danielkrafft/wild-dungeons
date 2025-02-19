@@ -22,6 +22,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
@@ -42,6 +43,7 @@ import org.joml.Vector2i;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 
 import static com.danielkkrafft.wilddungeons.block.WDBedrockBlock.MIMIC;
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.*;
@@ -294,7 +296,9 @@ public class DungeonRoom {
         int tries = count*10;
         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
         while (result.size() < count && tries > 0) {
-            BoundingBox innerShell = this.boundingBoxes.get(RandomUtil.randIntBetween(0, this.boundingBoxes.size()-1)).inflatedBy(inflation);
+            BoundingBox randomBox = this.boundingBoxes.get(RandomUtil.randIntBetween(0, this.boundingBoxes.size()-1));
+            BoundingBox innerShell = randomBox.inflatedBy(-1); //TODO cheating
+
             int randX = RandomUtil.randIntBetween(innerShell.minX(), innerShell.maxX());
             int randZ = RandomUtil.randIntBetween(innerShell.minZ(), innerShell.maxZ());
 

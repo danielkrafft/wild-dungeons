@@ -6,14 +6,17 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonFloorTe
 import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
+import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundAddExtraRenderComponentPacket;
 import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundNullScreenPacket;
 import com.danielkkrafft.wilddungeons.player.SavedTransform;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.danielkkrafft.wilddungeons.registry.WDDimensions;
+import com.danielkkrafft.wilddungeons.render.RenderExtra;
 import com.danielkkrafft.wilddungeons.util.CommandUtil;
 import com.danielkkrafft.wilddungeons.util.FileUtil;
 import com.danielkkrafft.wilddungeons.util.IgnoreSerialization;
+import com.danielkkrafft.wilddungeons.util.Serializer;
 import com.danielkkrafft.wilddungeons.util.debug.WDProfiler;
 import com.danielkkrafft.wilddungeons.world.dimension.EmptyGenerator;
 import com.danielkkrafft.wilddungeons.world.dimension.tools.InfiniverseAPI;
@@ -186,13 +189,17 @@ public class DungeonFloor {
         DungeonBranch newBranch = nextBranch.placeInWorld(this, origin);
         if (newBranch == null) {
             branchGenAttempts++;
-            if (branchGenAttempts > 5) {
-                WildDungeons.getLogger().info("Failed to generate branch {} after 25 total attempts", branchIndex);
+            if (branchGenAttempts > 2) {
+                WildDungeons.getLogger().info("Failed to generate branch {} after 4 total attempts", branchIndex);
                 if (branchIndex > 0) {
-                    DungeonBranch previousBranch = this.dungeonBranches.get(branchIndex - 1);
-                    checkForPlayersInBranch(branchIndex - 1);
-                    previousBranch.destroy();
-                    this.dungeonBranches.remove(previousBranch);
+                    int index = nextBranch.rootOriginBranchIndex() == -1 ? 1 : branchIndex - nextBranch.rootOriginBranchIndex();
+                    for (int i = 1; i <= index; i++) {
+                        DungeonBranch previousBranch = this.dungeonBranches.get(branchIndex - i);
+                        if (previousBranch.getIndex() == 0) continue;
+                        checkForPlayersInBranch(branchIndex - i);
+                        previousBranch.destroy();
+                        this.dungeonBranches.remove(previousBranch);
+                    }
                 }
             }
             return;

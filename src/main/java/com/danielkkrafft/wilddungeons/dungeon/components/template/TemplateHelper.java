@@ -316,6 +316,7 @@ public class TemplateHelper {
 This code ensures that blocks are properly placed in the world, their states are updated based on settings, and any associated block entities are correctly handled.
 * */
                 for(StructureTemplate.StructureBlockInfo structuretemplate$structureblockinfo : StructureTemplate.processBlockInfos(serverLevel, offset, pos, settings, list, template)) {
+                    if (structuretemplate$structureblockinfo.state().equals(Blocks.AIR.defaultBlockState())) continue;
                     if (boundingbox == null || boundingbox.isInside(structuretemplate$structureblockinfo.pos())) {
                         FluidState fluidstate = settings.shouldApplyWaterlogging() ? serverLevel.getFluidState(structuretemplate$structureblockinfo.pos()) : null;
 //                        BlockState blockstate = structuretemplate$structureblockinfo.state().mirror(settings.getMirror()).rotate(settings.getRotation());

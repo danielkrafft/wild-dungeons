@@ -1,11 +1,13 @@
 package com.danielkkrafft.wilddungeons.network;
 
 import com.danielkkrafft.wilddungeons.dungeon.registries.SoundscapeTemplateRegistry;
+import com.danielkkrafft.wilddungeons.render.RenderExtra;
 import com.danielkkrafft.wilddungeons.sound.DynamicPitchSound;
 import com.danielkkrafft.wilddungeons.sound.SoundscapeHandler;
 import com.danielkkrafft.wilddungeons.ui.ConnectionBlockEditScreen;
 import com.danielkkrafft.wilddungeons.ui.WDLoadingScreen;
 import com.danielkkrafft.wilddungeons.ui.WDPostDungeonScreen;
+import com.danielkkrafft.wilddungeons.util.Serializer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -54,5 +56,10 @@ public class ClientPacketHandler {
 
     public static void handleSwitchSoundscape(CompoundTag data) {
         SoundscapeHandler.handleSwitchSoundscape(SoundscapeTemplateRegistry.SOUNDSCAPE_TEMPLATE_REGISTRY.get(data.getString("sound_key")), data.getInt("intensity"), data.getBoolean("reset"));
+    }
+
+    public static void handleAddExtraRenderComponent(CompoundTag data) {
+        RenderExtra.ExtraRenderComponent component = Serializer.fromCompoundTag(data);
+        if (component != null) RenderExtra.components.add(Serializer.fromCompoundTag(data));
     }
 }

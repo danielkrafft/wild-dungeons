@@ -128,7 +128,7 @@ public class DungeonBranch {
         //in order to keep the openConnections from getting too low, we will try to find a room with at least 3 connection points
         if (openConnections < OPEN_CONNECTIONS_TARGET) {
             int tries = 0;
-            while (nextRoom.connectionPoints().size() < 3 && tries < 15) {
+            while (nextRoom.connectionPoints().size() < 2 && tries < 15) {
                 nextRoom = selectNextRoom();
                 tries++;
             }

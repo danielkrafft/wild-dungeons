@@ -519,6 +519,35 @@ public class DungeonRoomRegistry {
             .set(ENEMY_TABLE, EnemyTableRegistry.NETHER_DRAGON_ARENA)
             .set(HAS_BEDROCK_SHELL,false);
 
+    public static final DungeonRoomTemplate NETHER_FACTORY_TRI_BRANCH = create("nether_factory_tri_branch",
+            List.of(
+                    of("nether/factory/tribranch_1", EMPTY_BLOCK_POS),
+                    of("nether/factory/tribranch_2", new BlockPos(-8, 0, 4)),
+                    of("nether/factory/tribranch_3", new BlockPos(-12, 0, 12)),
+                    of("nether/factory/tribranch_4", new BlockPos(15, 0, 12)),
+                    of("nether/factory/tribranch_5", new BlockPos(0, 0, 27))
+            ))
+            .setClazz(KeyRequiredRoom.class)
+            .set(BLOCKING_MATERIAL_INDEX, 1)
+            .set(INTENSITY, 0);
+
+    public static final DungeonRoomTemplate NETHER_FACTORY_BOSS_ROOM = create("nether_factory_boss_room",
+            List.of(
+                    of("nether/factory/boss_1", EMPTY_BLOCK_POS),
+                    of("nether/factory/boss_2", new BlockPos(0,18,0)),
+                    of("nether/factory/boss_3", new BlockPos(-48,18,0)),
+                    of("nether/factory/boss_4", new BlockPos(7,18,0)),
+                    of("nether/factory/boss_5", new BlockPos(0,18,7)),
+                    of("nether/factory/boss_6", new BlockPos(0,18,-48)),
+                    of("nether/factory/boss_7", new BlockPos(-48,18,-48)),
+                    of("nether/factory/boss_8", new BlockPos(7,18,-48)),
+                    of("nether/factory/boss_9", new BlockPos(7,18,7)),
+                    of("nether/factory/boss_10", new BlockPos(-48,18,7))
+            ))
+            .setClazz(BossRoom.class)
+            .setRoomClearOffering(OfferingTemplateRegistry.EXIT_RIFT)
+            .set(ENEMY_TABLE, EnemyTableRegistry.NETHER_DRAGON_ARENA);
+
     public static DungeonRoomTemplate copyOf(DungeonRoomTemplate template, String name) {
         DungeonRoomTemplate room = DungeonRoomTemplate.copyOf(template, name);
         dungeonRooms.add(room);

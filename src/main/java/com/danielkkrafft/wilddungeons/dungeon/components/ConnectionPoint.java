@@ -6,6 +6,7 @@ import com.danielkkrafft.wilddungeons.block.WDBedrockBlock;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
+import com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.entity.blockentity.ConnectionBlockEntity;
 import com.danielkkrafft.wilddungeons.util.IgnoreSerialization;
@@ -142,11 +143,15 @@ public class ConnectionPoint {
         List<Boolean> conditions = List.of(
                 !ex.isConnected(),
                 !Objects.equals(ex.type, "entrance"),
-                ex.failures < 50 || bypassFailures,
+                //ex.failures < 50 || bypassFailures,
                 Objects.equals(en.pool, ex.pool),
                 en.getDirection(settings).getAxis() != Direction.Axis.Y || ex.getDirection(ex.getRoom().getSettings()).getName() == en.getDirection(settings).getOpposite().getName(),
                 en.getSize(settings, position).equals(ex.getSize(ex.getRoom().getSettings(), ex.getRoom().getPosition()))
         );
+
+        if (nextRoom.equals(DungeonRoomRegistry.NETHER_FACTORY_BOSS_ROOM)) {
+            WildDungeons.getLogger().info("IS COMPATIBLE ???? {}", conditions.stream().allMatch(condition -> condition));
+        }
 
         WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::arePointsCompatible");
         return conditions.stream().allMatch(condition -> condition);
