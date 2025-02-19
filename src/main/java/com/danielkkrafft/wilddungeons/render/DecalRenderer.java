@@ -1,0 +1,136 @@
+package com.danielkkrafft.wilddungeons.render;
+
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.*;
+import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+
+import java.util.*;
+
+@EventBusSubscriber(value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME)
+public class DecalRenderer {
+    public static final HashMap<ResourceKey<Level>, HashMap<ChunkPos, Set<Decal>>> SERVER_DECALS_MAP = new HashMap<>();
+    public static final HashMap<ResourceKey<Level>, HashMap<ChunkPos, Set<Decal>>> CLIENT_DECALS_MAP = new HashMap<>();
+    public static int DECAL_RENDER_DISTANCE = 8;
+
+    @SubscribeEvent
+    public static void onRenderWorldLast(RenderLevelStageEvent event) {
+
+        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) return;
+
+        ClientLevel level = Minecraft.getInstance().level;
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (level == null || player == null) return;
+
+        HashMap<ChunkPos, Set<Decal>> decalsInThisLevel = CLIENT_DECALS_MAP.get(level.dimension());
+        if (decalsInThisLevel == null) return;
+
+        PoseStack poseStack = event.getPoseStack();
+        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+        RenderSystem.disableCull();
+        Tesselator tesselator = Tesselator.getInstance();
+        BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+        Camera camera = event.getCamera();
+
+        poseStack.pushPose();
+        poseStack.translate(-camera.getPosition().x, -camera.getPosition().y, -camera.getPosition().z);
+
+
+        ChunkPos playerCurrentChunkPos = Minecraft.getInstance().player.chunkPosition();
+        int decalCount = 0;
+        for (int x = playerCurrentChunkPos.x - DECAL_RENDER_DISTANCE; x < playerCurrentChunkPos.x + DECAL_RENDER_DISTANCE; x++) {
+            for (int z = playerCurrentChunkPos.z - DECAL_RENDER_DISTANCE; z < playerCurrentChunkPos.z + DECAL_RENDER_DISTANCE; z++) {
+                Set<Decal> decalsInThisChunk = decalsInThisLevel.get(new ChunkPos(x, z));
+                if (decalsInThisChunk == null) continue;
+                for (Decal decal : decalsInThisChunk) {
+                    decal.render(poseStack.last(), buffer);
+                    decalCount += 1;
+                }
+            }
+        }
+
+        poseStack.popPose();
+        if (decalCount > 0) BufferUploader.drawWithShader(buffer.buildOrThrow());
+    }
+
+    public static void addClientDecal(Decal decal) {
+        if (!CLIENT_DECALS_MAP.containsKey(decal.dimension)) CLIENT_DECALS_MAP.put(decal.dimension, new HashMap<>());
+        HashMap<ChunkPos, Set<Decal>> decalsInThisLevel = CLIENT_DECALS_MAP.get(decal.dimension);
+
+        if (!decalsInThisLevel.containsKey(decal.chunkPos)) decalsInThisLevel.put(decal.chunkPos, new HashSet<>());
+        Set<Decal> decalsInThisChunk = decalsInThisLevel.get(decal.chunkPos);
+
+        decalsInThisChunk.add(decal);
+    }
+
+    public static class Decal {
+        public List<Vertex> vertices = new ArrayList<>();
+        public ResourceLocation texture;
+        public ChunkPos chunkPos;
+        public ResourceKey<Level> dimension;
+
+        public Decal(ResourceLocation texture, float originX, float originY, float originZ, float width, float height, Direction.Axis axis, int color, ResourceKey<Level> dimension) {
+            this.texture = texture;
+            this.dimension = dimension;
+            this.chunkPos = new ChunkPos((int) originX, (int) originZ);
+
+            switch (axis) {
+                case X -> {
+                    this.vertices.add(new Vertex(originX, originY + height/2, originZ - width/2, 0.0f, 0.0f, color));
+                    this.vertices.add(new Vertex(originX, originY + height/2, originZ + width/2, 1.0f, 0.0f, color));
+                    this.vertices.add(new Vertex(originX, originY - height/2, originZ + width/2, 1.0f, 1.0f, color));
+                    this.vertices.add(new Vertex(originX, originY - height/2, originZ - width/2, 0.0f, 1.0f, color));
+                }
+                case Y -> {
+                    this.vertices.add(new Vertex(originX - width/2, originY, originZ + height/2, 0.0f, 0.0f, color));
+                    this.vertices.add(new Vertex(originX + width/2, originY, originZ + height/2, 1.0f, 0.0f, color));
+                    this.vertices.add(new Vertex(originX + width/2, originY, originZ - height/2, 1.0f, 1.0f, color));
+                    this.vertices.add(new Vertex(originX - width/2, originY, originZ - height/2, 0.0f, 1.0f, color));
+                }
+                case Z -> {
+                    this.vertices.add(new Vertex(originX - width/2, originY + height/2, originZ, 0.0f, 0.0f, color));
+                    this.vertices.add(new Vertex(originX + width/2, originY + height/2, originZ, 1.0f, 0.0f, color));
+                    this.vertices.add(new Vertex(originX + width/2, originY - height/2, originZ, 1.0f, 1.0f, color));
+                    this.vertices.add(new Vertex(originX - width/2, originY - height/2, originZ, 0.0f, 1.0f, color));
+                }
+            }
+        }
+
+        public void render(PoseStack.Pose pose, BufferBuilder buffer) {
+            RenderSystem.setShaderTexture(0, this.texture);
+            for (Vertex vertex : this.vertices) {
+                buffer.addVertex(pose, vertex.x, vertex.y, vertex.z).setColor(vertex.color).setUv(vertex.u, vertex.v);
+            }
+        }
+
+        public static class Vertex {
+            public float x;
+            public float y;
+            public float z;
+            public float u;
+            public float v;
+            public int color;
+
+            public Vertex(float x, float y, float z, float u, float v, int color) {
+                this.x = x;
+                this.y = y;
+                this.z = z;
+                this.u = u;
+                this.v = v;
+                this.color = color;
+            }
+        }
+    }
+}

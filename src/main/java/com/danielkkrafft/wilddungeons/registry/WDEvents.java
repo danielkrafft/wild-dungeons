@@ -12,16 +12,21 @@ import com.danielkkrafft.wilddungeons.entity.EssenceOrb;
 import com.danielkkrafft.wilddungeons.entity.WDEntities;
 import com.danielkkrafft.wilddungeons.entity.boss.BreezeGolem;
 import com.danielkkrafft.wilddungeons.entity.boss.MutantBogged;
+import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundAddDecalPacket;
 import com.danielkkrafft.wilddungeons.network.clientbound.ClientboundUpdateWDPlayerPacket;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
+import com.danielkkrafft.wilddungeons.render.DecalRenderer;
 import com.danielkkrafft.wilddungeons.util.FileUtil;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import com.danielkkrafft.wilddungeons.util.SaveSystem;
 import com.danielkkrafft.wilddungeons.util.Serializer;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -98,11 +103,15 @@ public class WDEvents {
         });
     }
 
+    public static final ResourceLocation TEST_TEXTURE = WildDungeons.rl("textures/entity/rift.png");
     @SubscribeEvent
     public static void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
             WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer.getStringUUID());
             PacketDistributor.sendToPlayer(serverPlayer, new ClientboundUpdateWDPlayerPacket(Serializer.toCompoundTag(wdPlayer)));
+
+            DecalRenderer.Decal decal = new DecalRenderer.Decal(TEST_TEXTURE, 0.0f, 150.0f, 0.0f, 100.0f, 100.0f, Direction.Axis.Y, 0xFFFFFFFF, event.getEntity().level().dimension());
+            PacketDistributor.sendToPlayer(serverPlayer, new ClientboundAddDecalPacket(Serializer.toCompoundTag(decal)));
         }
     }
 

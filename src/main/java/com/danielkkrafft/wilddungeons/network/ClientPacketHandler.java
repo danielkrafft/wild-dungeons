@@ -1,6 +1,7 @@
 package com.danielkkrafft.wilddungeons.network;
 
 import com.danielkkrafft.wilddungeons.dungeon.registries.SoundscapeTemplateRegistry;
+import com.danielkkrafft.wilddungeons.render.DecalRenderer;
 import com.danielkkrafft.wilddungeons.render.RenderExtra;
 import com.danielkkrafft.wilddungeons.sound.DynamicPitchSound;
 import com.danielkkrafft.wilddungeons.sound.SoundscapeHandler;
@@ -11,9 +12,12 @@ import com.danielkkrafft.wilddungeons.util.Serializer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.ChunkPos;
 
 import java.util.HashSet;
 
@@ -61,5 +65,9 @@ public class ClientPacketHandler {
     public static void handleAddExtraRenderComponent(CompoundTag data) {
         RenderExtra.ExtraRenderComponent component = Serializer.fromCompoundTag(data);
         if (component != null) RenderExtra.components.add(Serializer.fromCompoundTag(data));
+    }
+
+    public static void handleAddDecal(CompoundTag data) {
+        DecalRenderer.addClientDecal(Serializer.fromCompoundTag(data));
     }
 }

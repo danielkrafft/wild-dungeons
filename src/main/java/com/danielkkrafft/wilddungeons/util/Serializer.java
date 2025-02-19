@@ -6,6 +6,7 @@ import com.danielkkrafft.wilddungeons.dungeon.components.room.*;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.player.SavedTransform;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
+import com.danielkkrafft.wilddungeons.render.DecalRenderer;
 import com.danielkkrafft.wilddungeons.render.RenderExtra;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
@@ -63,6 +64,8 @@ public class Serializer
         addCustom(BossRoom.class);
         addCustom(RenderExtra.ExtraRenderComponent.class);
         addCustom(RenderExtra.ExtraRenderVertex.class);
+        addCustom(DecalRenderer.Decal.class);
+        addCustom(DecalRenderer.Decal.Vertex.class);
     }
 
     private static void addCustom(Class<?> clazz) {
