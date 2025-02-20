@@ -188,6 +188,9 @@ public class DungeonFloor {
 
                 currentBranchCount = this.dungeonBranches.size();
             }
+
+            this.dungeonBranches.forEach(DungeonBranch::actuallyPlaceInWorld);
+
         }).handle((result, throwable) -> {
             if (throwable != null) WildDungeons.getLogger().error("Error generating branches", throwable);
             LockSupport.unpark(Thread.currentThread());
@@ -202,7 +205,6 @@ public class DungeonFloor {
      * @param branchIndex The index of the branch to place. Handled linearly.
      */
     private void tryGenerateBranch(int branchIndex) {
-        evictPlayersFromInvalidBranch(branchIndex);
         DungeonBranchTemplate nextBranch = getTemplate().branchTemplates().get(branchIndex).getRandom();
         DungeonBranch newBranch = nextBranch.placeInWorld(this, origin);
 
@@ -213,7 +215,6 @@ public class DungeonFloor {
             for (int i = 1; i <= index; i++) {
                 DungeonBranch previousBranch = this.dungeonBranches.get(branchIndex - i);
                 if (previousBranch.getIndex() == 0) continue;
-                evictPlayersFromInvalidBranch(branchIndex - i);
                 previousBranch.destroyRooms();
                 this.dungeonBranches.remove(previousBranch);
             }
@@ -221,14 +222,15 @@ public class DungeonFloor {
         }
 
         if (branchIndex == 0) this.spawnPoint = this.dungeonBranches.getFirst().getSpawnPoint();
-        onBranchComplete();
     }
 
     /**
      * Called every time a branch is completed. Checks if players on the "waiting list" can be entered depending on whether enough rooms have been generated.
      */
-    private void onBranchComplete() {
-        if (!playersWaitingToEnter.isEmpty() && getBranches().stream().mapToInt(b -> b.getRooms().size()).sum() > 10) {
+    int totalRooms = 0;
+    public void onBranchComplete(DungeonBranch branch) {
+        totalRooms += branch.getRooms().size();
+        if (!playersWaitingToEnter.isEmpty() && totalRooms > 10) {
             DungeonSessionManager.getInstance().server.execute(() -> {
                 playersWaitingToEnter.forEach(this::onEnter);
                 playersWaitingToEnter.clear();

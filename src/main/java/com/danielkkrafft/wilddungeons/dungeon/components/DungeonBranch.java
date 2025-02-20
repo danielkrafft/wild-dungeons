@@ -90,16 +90,19 @@ public class DungeonBranch {
             return false;
         }
 
+        this.spawnPoint = floor.getBranches().size() == 1 ? this.getRooms().getFirst().getSpawnPoint(floor.getLevel()) : getFloor().getBranches().getLast().getRooms().getLast().getSpawnPoint(floor.getLevel());
+        return true;
+    }
+
+    public void actuallyPlaceInWorld() {
         this.getRooms().forEach(room -> {
             room.actuallyPlaceInWorld();
             room.processConnectionPoints(floor);
             room.processShell();
             room.onBranchComplete();
         });
-
-        this.spawnPoint = floor.getBranches().size() == 1 ? this.getRooms().getFirst().getSpawnPoint(floor.getLevel()) : getFloor().getBranches().getLast().getRooms().getLast().getSpawnPoint(floor.getLevel());
         fullyGenerated = true;
-        return true;
+        getFloor().onBranchComplete(this);
     }
 
     /**

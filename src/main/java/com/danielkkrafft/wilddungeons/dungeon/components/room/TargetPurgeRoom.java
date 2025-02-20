@@ -20,6 +20,11 @@ public class TargetPurgeRoom extends LockableEventRoom {
 
     public TargetPurgeRoom(DungeonBranch branch, String templateKey, BlockPos position, StructurePlaceSettings settings) {
         super(branch, templateKey, position, settings);
+    }
+
+    @Override
+    public void actuallyPlaceInWorld() {
+        super.actuallyPlaceInWorld();
         this.processOfferings();
     }
 

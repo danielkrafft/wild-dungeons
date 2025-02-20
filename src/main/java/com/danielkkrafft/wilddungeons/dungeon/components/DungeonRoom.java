@@ -317,22 +317,11 @@ public class DungeonRoom {
     }
 
     public void destroy() {
-        destroyEntities();
-
-        if (this.getProperty(HAS_BEDROCK_SHELL)) this.surroundWith(Blocks.AIR.defaultBlockState());
-
-        this.boundingBoxes.forEach(box -> {
-            removeBlocks(this.getBranch().getFloor(), box);
-        });
-
         unsetAttachedPoints();
-
         Set<ChunkPos> chunkPosSet = getChunkPosSet(this.boundingBoxes);
         getBranch().getFloor().getChunkMap().forEach((key, value) -> {
             value.removeIf(v -> chunkPosSet.contains(key) && v.x == getBranch().getIndex() && v.y == this.getIndex());
         });
-
-        fixContactedShells(this.getBranch().getFloor(), this.boundingBoxes, this.getBranch().getIndex());
     }
 
     public static void removeBlocks(DungeonFloor floor, BoundingBox box) {
@@ -345,19 +334,6 @@ public class DungeonRoom {
                 }
             }
         }
-    }
-
-    private void destroyEntities() {
-        offeringUUIDs.forEach(uuid -> {
-            Offering offering = (Offering) this.getBranch().getFloor().getLevel().getEntity(UUID.fromString(uuid));
-            if (offering != null) offering.remove(Entity.RemovalReason.DISCARDED);
-        });
-        riftUUIDs.forEach(uuid -> {
-            Offering rift = (Offering) this.getBranch().getFloor().getLevel().getEntity(UUID.fromString(uuid));
-            if (rift != null) rift.remove(Entity.RemovalReason.DISCARDED);
-        });
-        offeringUUIDs.clear();
-        riftUUIDs.clear();
     }
 
     public void unsetAttachedPoints() {
