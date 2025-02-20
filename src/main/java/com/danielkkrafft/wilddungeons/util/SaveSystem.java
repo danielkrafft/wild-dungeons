@@ -166,9 +166,9 @@ public class SaveSystem {
                             return;
                         }
                         DungeonRoom room = roomFile.room;
-                        branch.addRoom(room);
+                        branch.getRooms().add(room);
                     });
-                    branch.sortRooms();
+                    branch.getRooms().sort(Comparator.comparingInt(DungeonRoom::getIndex));
                     floor.getBranches().add(branch);
                 });
                 floor.getBranches().sort(Comparator.comparingInt(DungeonBranch::getIndex));

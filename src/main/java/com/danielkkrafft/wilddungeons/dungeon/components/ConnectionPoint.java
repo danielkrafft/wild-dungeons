@@ -53,13 +53,12 @@ public class ConnectionPoint {
     private int index;
     private int connectedPointIndex = -1;
     private String direction;
-    private int failures = 0;
 
     private BoundingBox boundingBox;
     private HashMap<BlockPos, String> unBlockedBlockStates = new HashMap<>();
 
-    @Serializer.IgnoreSerialization
-    private DungeonRoom room = null;
+    @Serializer.IgnoreSerialization private DungeonRoom room = null;
+    @Serializer.IgnoreSerialization public StructurePlaceSettings tempSettings = null;
 
     public String getType() {return this.type;}
     public void setType(String type) {this.type = type;}
@@ -83,7 +82,6 @@ public class ConnectionPoint {
         this.connectedPointIndex = connectedPoint.index;
         this.connectedRoomIndex = connectedPoint.getRoom().getIndex();
         this.connectedBranchIndex = connectedPoint.getRoom().getBranch().getIndex();}
-    public void incrementFailures() {this.failures += 1;}
     public BlockPos getOrigin(StructurePlaceSettings settings, BlockPos position) {BoundingBox transBox = getBoundingBox(settings, position); return new BlockPos(transBox.minX(), transBox.minY(), transBox.minZ());}
     public void addPosition(BlockPos pos) {this.boundingBox.encapsulate(pos);}
     public void setIndex(int index) {this.index = index;}
@@ -145,29 +143,28 @@ public class ConnectionPoint {
         return BlockStateParser.serialize(state);
     }
 
-    public static boolean arePointsCompatible(StructurePlaceSettings settings, BlockPos position, DungeonRoomTemplate nextRoom, ConnectionPoint en, ConnectionPoint ex, boolean bypassFailures) {
+    public static boolean arePointsCompatible(ConnectionPoint en, ConnectionPoint ex) {
         List<Boolean> conditions = List.of(
                 !ex.isConnected(),
                 !Objects.equals(ex.type, "entrance"),
-                //ex.failures < 50 || bypassFailures,
                 Objects.equals(en.pool, ex.pool),
-                en.getDirection(settings).getAxis() != Direction.Axis.Y || ex.getDirection(ex.getRoom().getSettings()).getName() == en.getDirection(settings).getOpposite().getName(),
-                en.getSize(settings, position).equals(ex.getSize(ex.getRoom().getSettings(), ex.getRoom().getPosition()))
+                en.getDirection(TemplateHelper.EMPTY_DUNGEON_SETTINGS).getAxis() != Direction.Axis.Y || ex.getDirection(ex.getRoom().getSettings()).getName().equals(en.getDirection(TemplateHelper.EMPTY_DUNGEON_SETTINGS).getOpposite().getName()),
+                en.getSize(TemplateHelper.EMPTY_DUNGEON_SETTINGS, TemplateHelper.EMPTY_BLOCK_POS).equals(ex.getSize(ex.getRoom().getSettings(), ex.getRoom().getPosition()))
         );
 
         WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::arePointsCompatible");
         return conditions.stream().allMatch(condition -> condition);
     }
 
-    public static Pair<ConnectionPoint, StructurePlaceSettings> selectBestPoint(List<Pair<ConnectionPoint, StructurePlaceSettings>> pointPool, DungeonBranch branch, int yTarget, double branchWeight, double floorWeight, double heightWeight, double randomWeight) {
-        int totalBranchDistance = pointPool.stream().mapToInt(pair -> branch.getRooms().isEmpty() ? 0 : pair.getFirst().getOrigin(pair.getFirst().getRoom().getSettings(), pair.getFirst().getRoom().getPosition()).distManhattan(branch.getRooms().getFirst().getPosition())).sum();
-        int totalFloorDistance = pointPool.stream().mapToInt(pair -> pair.getFirst().getOrigin(pair.getFirst().getRoom().getSettings(), pair.getFirst().getRoom().getPosition()).distManhattan(branch.getFloor().getOrigin())).sum();
-        int totalHeightDistance = pointPool.stream().mapToInt(pair -> Math.abs(pair.getFirst().getOrigin(pair.getFirst().getRoom().getSettings(), pair.getFirst().getRoom().getPosition()).getY() - yTarget)).sum();
+    public static ConnectionPoint selectBestPoint(List<ConnectionPoint> pointPool, DungeonBranch branch, int yTarget, double branchWeight, double floorWeight, double heightWeight, double randomWeight) {
+        int totalBranchDistance = pointPool.stream().mapToInt(point -> branch.getRooms().isEmpty() ? 0 : point.getOrigin(point.getRoom().getSettings(), point.getRoom().getPosition()).distManhattan(branch.getRooms().getFirst().getPosition())).sum();
+        int totalFloorDistance = pointPool.stream().mapToInt(point -> point.getOrigin(point.getRoom().getSettings(), point.getRoom().getPosition()).distManhattan(branch.getFloor().getOrigin())).sum();
+        int totalHeightDistance = pointPool.stream().mapToInt(point -> Math.abs(point.getOrigin(point.getRoom().getSettings(), point.getRoom().getPosition()).getY() - yTarget)).sum();
 
-        Pair<ConnectionPoint, StructurePlaceSettings> result = pointPool.stream().map(pair -> {
-            int distanceToBranchOrigin = branch.getRooms().isEmpty() ? 0 : pair.getFirst().getOrigin(pair.getFirst().getRoom().getSettings(), pair.getFirst().getRoom().getPosition()).distManhattan(branch.getRooms().getFirst().getPosition());
-            int distanceToFloorOrigin = pair.getFirst().getOrigin(pair.getFirst().getRoom().getSettings(), pair.getFirst().getRoom().getPosition()).distManhattan(branch.getFloor().getOrigin());
-            int distanceToYTarget = Math.abs(pair.getFirst().getOrigin(pair.getFirst().getRoom().getSettings(), pair.getFirst().getRoom().getPosition()).getY() - yTarget);
+        return pointPool.stream().map(point -> {
+            int distanceToBranchOrigin = branch.getRooms().isEmpty() ? 0 : point.getOrigin(point.getRoom().getSettings(), point.getRoom().getPosition()).distManhattan(branch.getRooms().getFirst().getPosition());
+            int distanceToFloorOrigin = point.getOrigin(point.getRoom().getSettings(), point.getRoom().getPosition()).distManhattan(branch.getFloor().getOrigin());
+            int distanceToYTarget = Math.abs(point.getOrigin(point.getRoom().getSettings(), point.getRoom().getPosition()).getY() - yTarget);
 
             int score = 0;
             score += (int) (branchWeight * distanceToBranchOrigin / totalBranchDistance);
@@ -175,11 +172,8 @@ public class ConnectionPoint {
             score += (int) (heightWeight * distanceToYTarget / totalHeightDistance);
             score += (int) (randomWeight * Math.random());
 
-            return new Pair<>(pair, score);
+            return new Pair<>(point, score);
         }).max(Comparator.comparingInt(Pair::getSecond)).map(Pair::getFirst).orElse(null);
-
-        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::selectBestPoint");
-        return result;
     }
 
     public static BlockPos getOffset(StructurePlaceSettings settings, BlockPos position, ConnectionPoint en, ConnectionPoint ex) {
@@ -310,14 +304,9 @@ public class ConnectionPoint {
         this.connectedPointIndex = -1;
         this.connectedBranchIndex = -1;
         this.connectedRoomIndex = -1;
-        resetFailures();
     }
 
     public int getConnectedBranchIndex() {
         return this.connectedBranchIndex;
-    }
-
-    public void resetFailures() {
-        this.failures = 0;
     }
 }

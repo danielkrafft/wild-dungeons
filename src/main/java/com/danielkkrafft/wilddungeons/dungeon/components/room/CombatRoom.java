@@ -29,8 +29,8 @@ public class CombatRoom extends TargetPurgeRoom {
 
     public int totalSpawns = 0;
 
-    public CombatRoom(DungeonBranch branch, String templateKey, BlockPos position, StructurePlaceSettings settings, List<ConnectionPoint> allConnectionPoints) {
-        super(branch, templateKey, position, settings, allConnectionPoints);
+    public CombatRoom(DungeonBranch branch, String templateKey, BlockPos position, StructurePlaceSettings settings) {
+        super(branch, templateKey, position, settings);
     }
 
     @Override

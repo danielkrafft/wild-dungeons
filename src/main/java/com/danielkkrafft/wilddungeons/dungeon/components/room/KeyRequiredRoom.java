@@ -14,8 +14,8 @@ import java.util.List;
 public class KeyRequiredRoom extends TargetPurgeRoom {
     public ArrayList<BlockPos> lockableBlocks = new ArrayList<>();
 
-    public KeyRequiredRoom(DungeonBranch branch, String templateKey, BlockPos position, StructurePlaceSettings settings, List<ConnectionPoint> allConnectionPoints) {
-        super(branch, templateKey, position, settings, allConnectionPoints);
+    public KeyRequiredRoom(DungeonBranch branch, String templateKey, BlockPos position, StructurePlaceSettings settings) {
+        super(branch, templateKey, position, settings);
     }
 
     @Override

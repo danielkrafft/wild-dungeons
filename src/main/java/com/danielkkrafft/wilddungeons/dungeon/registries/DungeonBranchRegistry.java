@@ -93,9 +93,7 @@ public class DungeonBranchRegistry {
     public static final DungeonBranchTemplate VILLAGE_PATH_BRANCH = create("VILLAGE_PATH_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .add(VILLAGE_PATH_POOL, 10))
-            .set(MATERIAL, VILLAGE_MATERIAL_POOL)
-            .setLimitedRooms(List.of(of(VILLAGE_CENTER,1),of(VILLAGE_FORGE,1)))
-            ;
+            .set(MATERIAL, VILLAGE_MATERIAL_POOL);
     public static final DungeonBranchTemplate PIGLIN_FACTORY_START_BRANCH = create("PIGLIN_FACTORY_START_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .addSimple(NETHER_CAVE_ENTRANCE_ROOM));

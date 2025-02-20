@@ -18,8 +18,8 @@ public class TargetPurgeRoom extends LockableEventRoom {
     public List<DungeonTarget> targets = new ArrayList<>();
     public int checkTimer = SET_PURGE_INTERVAL;
 
-    public TargetPurgeRoom(DungeonBranch branch, String templateKey, BlockPos position, StructurePlaceSettings settings, List<ConnectionPoint> allConnectionPoints) {
-        super(branch, templateKey, position, settings, allConnectionPoints);
+    public TargetPurgeRoom(DungeonBranch branch, String templateKey, BlockPos position, StructurePlaceSettings settings) {
+        super(branch, templateKey, position, settings);
         this.processOfferings();
     }
 

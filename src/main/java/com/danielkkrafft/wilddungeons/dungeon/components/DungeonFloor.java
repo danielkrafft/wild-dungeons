@@ -134,7 +134,7 @@ public class DungeonFloor {
      *
      * @param proposedBoxes The list of BoundingBoxes to check. If any are found to overlap with existing boxes, we return false.
      */
-    protected boolean isBoundingBoxValid(List<BoundingBox> proposedBoxes) {
+    protected boolean areBoundingBoxesValid(List<BoundingBox> proposedBoxes) {
         HashMap<ChunkPos, ArrayList<Vector2i>> chunkMap = getChunkMap();
         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
         for (BoundingBox proposedBox : proposedBoxes) {
@@ -213,7 +213,7 @@ public class DungeonFloor {
                 DungeonBranch previousBranch = this.dungeonBranches.get(branchIndex - i);
                 if (previousBranch.getIndex() == 0) continue;
                 evictPlayersFromInvalidBranch(branchIndex - i);
-                previousBranch.destroy();
+                previousBranch.destroyRooms();
                 this.dungeonBranches.remove(previousBranch);
             }
             return;

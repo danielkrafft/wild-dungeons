@@ -78,11 +78,10 @@ public final class DungeonRoomTemplate implements DungeonRegistration.DungeonCom
     }
 
 
-    public DungeonRoom placeInWorld(DungeonBranch branch, ServerLevel level, BlockPos position, StructurePlaceSettings settings, List<ConnectionPoint> connectionPoints) {
+    public DungeonRoom placeInWorld(DungeonBranch branch, BlockPos position, StructurePlaceSettings settings) {
         try {
-//            WildDungeons.getLogger().info("Creating instance of class: {} for {}", this.getClazz().getName(), this.name);
-            return (DungeonRoom) this.getClazz().getDeclaredConstructor(DungeonBranch.class, String.class, BlockPos.class, StructurePlaceSettings.class, List.class)
-                    .newInstance(branch, this.name, position, settings, connectionPoints);
+            return (DungeonRoom) this.getClazz().getDeclaredConstructor(DungeonBranch.class, String.class, BlockPos.class, StructurePlaceSettings.class)
+                    .newInstance(branch, this.name, position, settings);
         } catch (Exception e) {
             WildDungeons.getLogger().error("Failed to create instance of DungeonRoom class for room template: {}", this.name);
             e.printStackTrace();

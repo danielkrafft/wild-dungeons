@@ -95,7 +95,7 @@ public class DungeonRoom {
     public Set<BlockPos> getAlwaysBreakable() {return this.alwaysBreakable;}
     public BlockPos getPosition() {return this.position;}
 
-    public DungeonRoom(DungeonBranch branch, String templateKey, BlockPos position, StructurePlaceSettings settings, List<ConnectionPoint> allConnectionPoints) {
+    public DungeonRoom(DungeonBranch branch, String templateKey, BlockPos position, StructurePlaceSettings settings) {
         ServerLevel level = branch.getFloor().getLevel();
         this.branch = branch;
         this.setIndex(this.getBranch().getRooms().size());
@@ -108,7 +108,7 @@ public class DungeonRoom {
         this.rotation = settings.getRotation().name();
         this.position = position;
 
-        for (ConnectionPoint point : allConnectionPoints) {
+        for (ConnectionPoint point : this.getTemplate().connectionPoints()) {
             ConnectionPoint newPoint = ConnectionPoint.copy(point);
             newPoint.setRoom(this);
             newPoint.setIndex(this.connectionPoints.size());
@@ -382,19 +382,17 @@ public class DungeonRoom {
             int slot = emptySlots.get(RandomUtil.randIntBetween(0, emptySlots.size() - 1));
             lootBlock.setItem(slot, lootStack);
         });
-        WDProfiler.INSTANCE.logTimestamp("DungeonRoom::processLootBlocks");
     }
 
-    public List<ConnectionPoint> getValidExitPoints(StructurePlaceSettings settings, BlockPos position, DungeonRoomTemplate nextRoom, ConnectionPoint entrancePoint, boolean bypassFailures) {
+    public List<ConnectionPoint> getValidExitPoints(ConnectionPoint entrancePoint) {
         List<ConnectionPoint> exitPoints = new ArrayList<>();
         for (ConnectionPoint point : connectionPoints) {
             point.setRoom(this);
-            if (ConnectionPoint.arePointsCompatible(settings, position, nextRoom, entrancePoint, point, bypassFailures)) {
+            if (ConnectionPoint.arePointsCompatible(entrancePoint, point)) {
                 exitPoints.add(point);
             }
         }
 
-        WDProfiler.INSTANCE.logTimestamp("DungeonRoom::getValidExitPoints");
         return exitPoints;
     }
 
@@ -404,7 +402,6 @@ public class DungeonRoom {
         chunkPosSet.forEach(pos -> {
             getBranch().getFloor().getChunkMap().computeIfAbsent(pos, k -> new ArrayList<>()).add(new Vector2i(getBranch().getIndex(), this.getIndex()));
         });
-        WDProfiler.INSTANCE.logTimestamp("DungeonRoom::handleChunkMap");
     }
 
     public static @NotNull Set<ChunkPos> getChunkPos(List<BoundingBox> boundingBoxes) {

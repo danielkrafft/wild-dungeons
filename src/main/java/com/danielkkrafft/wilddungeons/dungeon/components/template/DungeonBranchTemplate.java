@@ -6,18 +6,15 @@ import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.DungeonLayout;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.dungeon.registries.DungeonBranchRegistry;
-import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public final class DungeonBranchTemplate implements DungeonRegistration.DungeonComponent {
     private String name;
     private DungeonLayout<DungeonRoomTemplate> roomTemplates;
-    private List<Pair<DungeonRoomTemplate, Integer>> mandatoryRooms = new ArrayList<>();
-    private List<Pair<DungeonRoomTemplate, Integer>> limitedRooms = new ArrayList<>();
+    private HashMap<DungeonRoomTemplate, Integer> mandatoryRooms = new HashMap<>();
+    private HashMap<DungeonRoomTemplate, Integer> limitedRooms = new HashMap<>();
     private int rootOriginBranchIndex = -1;
 
     public HashMap<HierarchicalProperty<?>, Object> PROPERTIES = new HashMap<>();
@@ -34,12 +31,10 @@ public final class DungeonBranchTemplate implements DungeonRegistration.DungeonC
         int tries = 0;
         while (tries < 4) {
             try {
-                if (newBranch.generateDungeonBranch()) {
-                    return newBranch;
-                }
+                if (newBranch.generateDungeonBranch()) return newBranch;
             } catch (Exception e) {
                 e.printStackTrace();
-                newBranch.destroy();
+                newBranch.destroyRooms();
             }
             tries++;
         }
@@ -55,10 +50,10 @@ public final class DungeonBranchTemplate implements DungeonRegistration.DungeonC
     public DungeonLayout<DungeonRoomTemplate> roomTemplates() {
         return roomTemplates;
     }
-    public List<Pair<DungeonRoomTemplate, Integer>> mandatoryRooms() {
+    public HashMap<DungeonRoomTemplate, Integer> mandatoryRooms() {
         return mandatoryRooms;
     }
-    public List<Pair<DungeonRoomTemplate, Integer>> limitedRooms() {
+    public HashMap<DungeonRoomTemplate, Integer> limitedRooms() {
         return limitedRooms;
     }
 
@@ -72,12 +67,12 @@ public final class DungeonBranchTemplate implements DungeonRegistration.DungeonC
         return this;
     }
 
-    public DungeonBranchTemplate setMandatoryRooms(List<Pair<DungeonRoomTemplate, Integer>> mandatoryRooms) {
+    public DungeonBranchTemplate setMandatoryRooms(HashMap<DungeonRoomTemplate, Integer> mandatoryRooms) {
         this.mandatoryRooms = mandatoryRooms;
         return this;
     }
 
-    public DungeonBranchTemplate setLimitedRooms(List<Pair<DungeonRoomTemplate, Integer>> limitedRooms) {
+    public DungeonBranchTemplate setLimitedRooms(HashMap<DungeonRoomTemplate, Integer> limitedRooms) {
         this.limitedRooms = limitedRooms;
         return this;
     }

@@ -14,8 +14,8 @@ import java.util.List;
 
 public class BossRoom extends CombatRoom {
 
-    public BossRoom(DungeonBranch branch, String templateKey, BlockPos position, StructurePlaceSettings settings, List<ConnectionPoint> allConnectionPoints) {
-        super(branch, templateKey, position, settings, allConnectionPoints);
+    public BossRoom(DungeonBranch branch, String templateKey, BlockPos position, StructurePlaceSettings settings) {
+        super(branch, templateKey, position, settings);
     }
 
     @Override
