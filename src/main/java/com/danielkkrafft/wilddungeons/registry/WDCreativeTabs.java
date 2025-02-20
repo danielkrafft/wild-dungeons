@@ -59,7 +59,6 @@ public class WDCreativeTabs {
                 output.accept(WD_HANGING_LIGHT_4.get());
 
                 output.accept(WD_SECRET.get());
-                output.accept(WD_DOORWAY.get());
 
                 output.accept(OFFERING_ITEM.get());
                 output.accept(RIFT_ITEM.get());
