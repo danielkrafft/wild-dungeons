@@ -66,12 +66,10 @@ public class DungeonRoom {
     private final String materialKey;
     private int index;
     private boolean clear = false;
-    private final HashMap<String, Boolean> playerStatuses = new HashMap<>();
+    private final HashMap<String, Boolean> playersInside = new HashMap<>();
     private final Set<BlockPos> alwaysBreakable = new HashSet<>();
     private boolean lootGenerated = false;
-
-    @Serializer.IgnoreSerialization
-    protected DungeonBranch branch = null;
+    @Serializer.IgnoreSerialization protected DungeonBranch branch = null;
 
     public <T> T getProperty(HierarchicalProperty<T> property) { return this.getTemplate().get(property) == null ? this.getBranch().getProperty(property) : this.getTemplate().get(property); }
     public DungeonRoomTemplate getTemplate() {return DUNGEON_ROOM_REGISTRY.get(this.templateKey);}
@@ -82,15 +80,11 @@ public class DungeonRoom {
     public boolean isRotated() {return Objects.equals(rotation, Rotation.CLOCKWISE_90.getSerializedName()) || Objects.equals(rotation, Rotation.COUNTERCLOCKWISE_90.getSerializedName());}
     public StructurePlaceSettings getSettings() {return new StructurePlaceSettings().setMirror(Mirror.valueOf(this.mirror)).setRotation(Rotation.valueOf(this.rotation));}
     public List<ConnectionPoint> getConnectionPoints() {return this.connectionPoints;}
-    public List<String> getRiftUUIDs() {return this.riftUUIDs;}
     public List<String> getOfferingUUIDs() {return this.offeringUUIDs;}
     public List<BoundingBox> getBoundingBoxes() {return this.boundingBoxes;}
     public int getIndex() {return this.index;}
     public void setIndex(int index) {this.index = index;}
-    public List<WDPlayer> getActivePlayers() {return this.playerStatuses.entrySet().stream().map(e -> {
-        if (e.getValue()) return WDPlayerManager.getInstance().getOrCreateServerWDPlayer(e.getKey());
-        return null;
-    }).filter(Objects::nonNull).toList();}
+    public List<WDPlayer> getActivePlayers() {return this.playersInside.entrySet().stream().map(e -> e.getValue() ? WDPlayerManager.getInstance().getOrCreateServerWDPlayer(e.getKey()) : null).filter(Objects::nonNull).toList();}
     public boolean isClear() {return this.clear;}
     public Set<BlockPos> getAlwaysBreakable() {return this.alwaysBreakable;}
     public BlockPos getPosition() {return this.position;}
@@ -136,45 +130,62 @@ public class DungeonRoom {
             });
         } else {this.spawnPoint = null;}
 
-        this.handleChunkMap();
-        WDProfiler.INSTANCE.logTimestamp("DungeonRoom::new");
+        getChunkPosSet(this.boundingBoxes).forEach(pos -> {
+            getBranch().getFloor().getChunkMap().computeIfAbsent(pos, k -> new ArrayList<>()).add(new Vector2i(getBranch().getIndex(), this.getIndex()));
+        });
     }
 
+    /**
+     * Returns all connection points in this room which are compatible with the input entrance point.
+     *
+     * @param entrancePoint The ConnectionPoint to test compatibility with.
+     */
+    public List<ConnectionPoint> getValidExitPoints(ConnectionPoint entrancePoint) {
+        return this.connectionPoints.stream().filter(point -> ConnectionPoint.arePointsCompatible(entrancePoint, point)).toList();
+    }
+
+    /**
+     * Handles bedrock shells, and Protected Rooms with custom bedrock shells
+     */
     public void processShell() {
         if (this.getProperty(HAS_BEDROCK_SHELL)) this.surroundWith(Blocks.BEDROCK.defaultBlockState());
         if (this.getProperty(DESTRUCTION_RULE) == DungeonRoomTemplate.DestructionRule.SHELL || this.getProperty(DESTRUCTION_RULE) == DungeonRoomTemplate.DestructionRule.SHELL_CLEAR) {
-            this.createProtectedShell(WDBedrockBlock.of(Blocks.DIAMOND_BLOCK));
+            this.setProtected(true);
             for (ConnectionPoint point : this.connectionPoints) {
                 if (point.isConnected()) point.unBlock(this.getBranch().getFloor().getLevel());
             }
         }
     }
 
+    /**
+     * Surrounds the entire room with 1 layer of a specified blockstate
+     *
+     * @param blockState The blockstate to surround the room with
+     */
     public void surroundWith(BlockState blockState) {
-        ServerLevel level = this.getBranch().getFloor().getLevel();
-        for (BoundingBox box : this.getBoundingBoxes()) {
-            fillShellWith(this.getBranch().getFloor(), this, level, box, blockState, 1, isSafeForBoundingBoxes());
-        }
+        this.boundingBoxes.forEach(box -> fillShellWith(this.getBranch().getFloor(), this, box, blockState, 1, isSafeForBoundingBoxes()));
     }
 
-    public void createProtectedShell(BlockState blockState) {
-        ServerLevel level = this.getBranch().getFloor().getLevel();
-        for (BoundingBox box : this.getBoundingBoxes()) {
-            fillShellWith(this.getBranch().getFloor(), this, level, box, blockState, 0, handlePlaceProtectedShell());
-        }
-        WildDungeons.getLogger().info("PLACED A TOTAL OF {}", this.totalPlaced);
+    /**
+     * Toggles the protective bedrock shell which safeguards rooms from griefing and cheating
+     *
+     * @param protect True will place the bedrock shell, False will remove it
+     */
+    public void setProtected(boolean protect) {
+        this.getBoundingBoxes().forEach(box -> fillShellWith(this.getBranch().getFloor(), this, box, WDBedrockBlock.of(Blocks.DIAMOND_BLOCK), 0, protect ? handlePlaceProtectedShell() : handleRemoveProtectedShell()));
     }
 
-    public void removeProtectedShell(BlockState blockState) {
-        WildDungeons.getLogger().info("REMOVING PROTECTED SHELL");
-        ServerLevel level = this.getBranch().getFloor().getLevel();
-        for (BoundingBox box : this.getBoundingBoxes()) {
-            fillShellWith(this.getBranch().getFloor(), this, level, box, blockState, 0, handleRemoveProtectedShell());
-        }
-        WildDungeons.getLogger().info("REMOVED A TOTAL OF {}", this.totalRemoved);
-    }
-
-    public static void fillShellWith(DungeonFloor floor, DungeonRoom room, ServerLevel level, BoundingBox box, BlockState blockState, int shellDepth, TriFunction<DungeonFloor, DungeonRoom, BlockPos, Boolean> predicate) {
+    /**
+     * Handles the actual placement of a shell
+     *
+     * @param floor The DungeonFloor where the shell will be placed
+     * @param room The DungeonRoom which the shell will be associated with
+     * @param box The bounding box to surround with a shell
+     * @param blockState The blockstate to build the shell out of
+     * @param shellDepth How far outside the bounding box to begin placing blocks. 0 will replace the room's shell, 1 will surround the room
+     * @param predicate The test function to determine whether the block should be placed or skipped
+     */
+    public static void fillShellWith(DungeonFloor floor, DungeonRoom room, BoundingBox box, BlockState blockState, int shellDepth, TriFunction<DungeonFloor, DungeonRoom, BlockPos, Boolean> predicate) {
         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
 
         int[] minX = {box.minX() - shellDepth, box.minX() - shellDepth, box.minY() - shellDepth + 1, box.minY() - shellDepth + 1, box.minZ() - shellDepth + 1, box.minZ() - shellDepth + 1};
@@ -193,12 +204,16 @@ public class DungeonRoom {
                         case 4, 5 -> mutableBlockPos.set(wallOffset[i], y, x);
                     }
 
-                    if (predicate.apply(floor, room, mutableBlockPos) && !level.getServer().isShutdown()) level.setBlock(mutableBlockPos, blockState, 130);
+                    if (predicate.apply(floor, room, mutableBlockPos) && !floor.getLevel().getServer().isShutdown()) floor.getLevel().setBlock(mutableBlockPos, blockState, 130);
                 }
             }
         }
     }
 
+    /**
+     * Used as a predicate for fillShellWith.
+     * Tests whether the suggested blockPos will conflict with any existing BoundingBoxes
+     */
     public static TriFunction<DungeonFloor, DungeonRoom, BlockPos, Boolean> isSafeForBoundingBoxes() {
         return (floor, room, blockPos) -> {
             List<BoundingBox> potentialConflicts = new ArrayList<>();
@@ -209,30 +224,161 @@ public class DungeonRoom {
         };
     }
 
-    int totalPlaced = 0;
+    /**
+     * Used as a predicate for fillShellWith.
+     * Always returns false, skips the regular shell creation in order to match the Bedrock blockstate to the existing blockstate.
+     */
     public static TriFunction<DungeonFloor, DungeonRoom, BlockPos, Boolean> handlePlaceProtectedShell() {
         return (floor, room, blockPos) -> {
             if (!room.isPosInsideShell(blockPos)) {
                 Block block = floor.getLevel().getBlockState(blockPos).getBlock();
-                if (block != WDBlocks.WD_BEDROCK.get()) {
+                if (block != WDBlocks.WD_BEDROCK.get() && block != Blocks.AIR) {
                     floor.getLevel().setBlock(blockPos, WDBedrockBlock.of(floor.getLevel().getBlockState(blockPos).getBlock()), 130);
-                    room.totalPlaced++;
                 }
             }
             return false;
         };
     }
 
-    int totalRemoved = 0;
+    /**
+     * Used as a predicate for fillShellWith.
+     * Always returns false, skips the regular shell creation in order to match the new blockstate to the Bedrock blockstate which is being removed.
+     */
     public static TriFunction<DungeonFloor, DungeonRoom, BlockPos, Boolean> handleRemoveProtectedShell() {
         return (floor, room, blockPos) -> {
             if (!room.isPosInsideShell(blockPos)) {
-                room.totalRemoved++;
                 BlockState blockState = floor.getLevel().getBlockState(blockPos);
                 if (blockState.hasProperty(MIMIC)) floor.getLevel().setBlock(blockPos, BuiltInRegistries.BLOCK.byId(floor.getLevel().getBlockState(blockPos).getValue(MIMIC)).defaultBlockState(), 130);
             }
             return false;
         };
+    }
+
+    public static void fixContactedShells(DungeonFloor floor, List<BoundingBox> boundingBoxes, int branchToIgnore) {
+        Set<ChunkPos> chunkPosSet = getChunkPosSet(boundingBoxes);
+
+        floor.getChunkMap().forEach((key, value) -> {
+            if (chunkPosSet.contains(key)) {
+                value.forEach(v -> {
+                    if (v.x == branchToIgnore) return;
+                    DungeonRoom otherRoom = floor.getBranches().get(v.x).getRooms().get(v.y);
+                    otherRoom.processShell();
+                });
+            }
+        });
+    }
+
+    public boolean isPosInsideShell(BlockPos pos) {
+        for (BoundingBox box : this.boundingBoxes) {
+            if (box.isInside(pos)) {
+                if (box.inflatedBy(-1).isInside(pos)) {
+                    return true;
+                }
+                for (BoundingBox otherBox : this.boundingBoxes) {
+                    if (otherBox == box) continue;
+                    boolean xConnected = otherBox.inflatedBy(1, 0, 0).isInside(pos);
+                    boolean yConnected = otherBox.inflatedBy(0, 1, 0).isInside(pos);
+                    boolean zConnected = otherBox.inflatedBy(0, 0, 1).isInside(pos);
+
+                    //Only one axis is connected, indicating it's adjacent to another box, but not a corner
+                    if ((xConnected ? 1 : 0) + (yConnected ? 1 : 0) + (zConnected ? 1 : 0) == 1) {
+                        if (box.inflatedBy(xConnected ? 0 : -1, yConnected ? 0 : -1, zConnected ? 0 : -1).isInside(pos)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public static @NotNull Set<ChunkPos> getChunkPosSet(List<BoundingBox> boundingBoxes) {
+        Set<ChunkPos> chunkPosSet = new HashSet<>();
+        for (BoundingBox box : boundingBoxes) {
+            ChunkPos min = new ChunkPos(new BlockPos(box.minX(), box.minY(), box.minZ()));
+            ChunkPos max = new ChunkPos(new BlockPos(box.maxX(), box.maxY(), box.maxZ()));
+
+            for (int x = min.x; x <= max.x; x++) {
+                for (int z = min.z; z <= max.z; z++) {
+                    ChunkPos newPos = new ChunkPos(x, z);
+                    chunkPosSet.add(newPos);
+                }
+            }
+        }
+        return chunkPosSet;
+    }
+
+    public void destroy() {
+        destroyEntities();
+
+        if (this.getProperty(HAS_BEDROCK_SHELL)) this.surroundWith(Blocks.AIR.defaultBlockState());
+
+        this.boundingBoxes.forEach(box -> {
+            removeBlocks(this.getBranch().getFloor(), box);
+        });
+
+        unsetAttachedPoints();
+
+        Set<ChunkPos> chunkPosSet = getChunkPosSet(this.boundingBoxes);
+        getBranch().getFloor().getChunkMap().forEach((key, value) -> {
+            value.removeIf(v -> chunkPosSet.contains(key) && v.x == getBranch().getIndex() && v.y == this.getIndex());
+        });
+
+        fixContactedShells(this.getBranch().getFloor(), this.boundingBoxes, this.getBranch().getIndex());
+    }
+
+    public static void removeBlocks(DungeonFloor floor, BoundingBox box) {
+        BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
+        for (int x = box.minX(); x <= box.maxX(); x++) {
+            for (int y = box.minY(); y <= box.maxY(); y++) {
+                for (int z = box.minZ(); z <= box.maxZ(); z++) {
+                    mutableBlockPos.set(x, y, z);
+                    floor.getLevel().setBlock(mutableBlockPos, Blocks.AIR.defaultBlockState(), 130);
+                }
+            }
+        }
+    }
+
+    private void destroyEntities() {
+        offeringUUIDs.forEach(uuid -> {
+            Offering offering = (Offering) this.getBranch().getFloor().getLevel().getEntity(UUID.fromString(uuid));
+            if (offering != null) offering.remove(Entity.RemovalReason.DISCARDED);
+        });
+        riftUUIDs.forEach(uuid -> {
+            Offering rift = (Offering) this.getBranch().getFloor().getLevel().getEntity(UUID.fromString(uuid));
+            if (rift != null) rift.remove(Entity.RemovalReason.DISCARDED);
+        });
+        offeringUUIDs.clear();
+        riftUUIDs.clear();
+    }
+
+    public void unsetAttachedPoints() {
+        getConnectionPoints().forEach(connectionPoint -> {
+            if (connectionPoint.isConnected()) {
+                connectionPoint.getConnectedPoint().unSetConnectedPoint();
+            }
+        });
+    }
+
+    public void processConnectionPoints(DungeonFloor floor) {
+        WildDungeons.getLogger().info("PROCESSING {} CONNECTION POINTS", connectionPoints.size());
+        for (ConnectionPoint point : connectionPoints) {
+            point.setupBlockstates(getSettings(), getPosition(), this.getBranch().getFloor().getLevel());
+            if (point.isConnected()) {
+                templateBasedUnblock(floor, point);
+                point.getConnectedPoint().unBlock(floor.getLevel());
+            }
+            if (!point.isConnected()) {
+                point.block(floor.getLevel());
+                point.removeDecal(this.getDecalTexture(), this.getDecalColor());
+            }
+            point.complete();
+        }
+        WDProfiler.INSTANCE.logTimestamp("DungeonRoom::processConnectionPoints");
+    }
+
+    public void templateBasedUnblock(DungeonFloor floor, ConnectionPoint point) {
+        point.unBlock(floor.getLevel());
     }
 
     public void processRifts() {
@@ -265,72 +411,6 @@ public class DungeonRoom {
             this.getBranch().getFloor().getLevel().addFreshEntity(next);
             this.offeringUUIDs.add(next.getStringUUID());
         });
-    }
-
-    public void processConnectionPoints(DungeonFloor floor) {
-        WildDungeons.getLogger().info("PROCESSING {} CONNECTION POINTS", connectionPoints.size());
-        for (ConnectionPoint point : connectionPoints) {
-            point.setupBlockstates(getSettings(), getPosition(), this.getBranch().getFloor().getLevel());
-            if (point.isConnected()) {
-                templateBasedUnblock(floor, point);
-                point.getConnectedPoint().unBlock(floor.getLevel());
-            }
-            if (!point.isConnected()) {
-                point.block(floor.getLevel());
-                point.removeDecal(this.getDecalTexture(), this.getDecalColor());
-            }
-            point.complete();
-        }
-        WDProfiler.INSTANCE.logTimestamp("DungeonRoom::processConnectionPoints");
-    }
-
-    //override this in your subclass if necessary
-    public void templateBasedUnblock(DungeonFloor floor, ConnectionPoint point) {
-        point.unBlock(floor.getLevel());
-    }
-
-    public BlockPos getSpawnPoint(ServerLevel level) {
-        return this.spawnPoint == null ? this.sampleSpawnablePositions(level, 1, -1).getFirst() : this.spawnPoint;
-    }
-
-    public List<BlockPos> sampleSpawnablePositions(ServerLevel level, int count, int inflation) {
-        List<BlockPos> result = new ArrayList<>();
-        int tries = count*10;
-        BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
-        while (result.size() < count && tries > 0) {
-            BoundingBox randomBox = this.boundingBoxes.get(RandomUtil.randIntBetween(0, this.boundingBoxes.size()-1));
-            BoundingBox innerShell = randomBox.inflatedBy(-1); //TODO cheating
-
-            int randX = RandomUtil.randIntBetween(innerShell.minX(), innerShell.maxX());
-            int randZ = RandomUtil.randIntBetween(innerShell.minZ(), innerShell.maxZ());
-
-            for (int y = innerShell.minY(); y < innerShell.maxY(); y++) {
-                mutableBlockPos.set(randX, y, randZ);
-                if (level.getBlockState(mutableBlockPos) == Blocks.AIR.defaultBlockState()) {
-                    mutableBlockPos.set(randX, y + 1, randZ);
-                    if (level.getBlockState(mutableBlockPos) == Blocks.AIR.defaultBlockState()) {
-                        result.add(mutableBlockPos.below());
-                        break;
-                    }
-                }
-            }
-            tries--;
-        }
-
-        return result.isEmpty() ? spawnPoint == null ? Collections.singletonList(this.boundingBoxes.getFirst().getCenter()) : Collections.singletonList(spawnPoint) : result;
-    }
-
-    public void processDataMarkers(){
-        if (this.getTemplate().dataMarkers().isEmpty()) return;
-        this.getTemplate().dataMarkers().forEach(marker -> {
-            BlockPos pos = TemplateHelper.transform(marker.pos(), this);
-            assert marker.nbt() != null;//we null check when we register the template
-            processDataMarker(pos, marker.nbt().getString("metadata"));
-        });
-    }
-
-    public void processDataMarker(BlockPos pos, String metadata){
-        //override this with the specific handling for each room
     }
 
     public void processLootBlocks() {
@@ -384,181 +464,46 @@ public class DungeonRoom {
         });
     }
 
-    public List<ConnectionPoint> getValidExitPoints(ConnectionPoint entrancePoint) {
-        List<ConnectionPoint> exitPoints = new ArrayList<>();
-        for (ConnectionPoint point : connectionPoints) {
-            point.setRoom(this);
-            if (ConnectionPoint.arePointsCompatible(entrancePoint, point)) {
-                exitPoints.add(point);
-            }
-        }
-
-        return exitPoints;
-    }
-
-    public void handleChunkMap() {
-        Set<ChunkPos> chunkPosSet = getChunkPos(this.boundingBoxes);
-
-        chunkPosSet.forEach(pos -> {
-            getBranch().getFloor().getChunkMap().computeIfAbsent(pos, k -> new ArrayList<>()).add(new Vector2i(getBranch().getIndex(), this.getIndex()));
+    public void processDataMarkers(){
+        if (this.getTemplate().dataMarkers().isEmpty()) return;
+        this.getTemplate().dataMarkers().forEach(marker -> {
+            BlockPos pos = TemplateHelper.transform(marker.pos(), this);
+            assert marker.nbt() != null;//we null check when we register the template
+            processDataMarker(pos, marker.nbt().getString("metadata"));
         });
     }
 
-    public static @NotNull Set<ChunkPos> getChunkPos(List<BoundingBox> boundingBoxes) {
-        Set<ChunkPos> chunkPosSet = new HashSet<>();
-        for (BoundingBox box : boundingBoxes) {
-            ChunkPos min = new ChunkPos(new BlockPos(box.minX(), box.minY(), box.minZ()));
-            ChunkPos max = new ChunkPos(new BlockPos(box.maxX(), box.maxY(), box.maxZ()));
+    public void processDataMarker(BlockPos pos, String metadata) {}
 
-            for (int x = min.x; x <= max.x; x++) {
-                for (int z = min.z; z <= max.z; z++) {
-                    ChunkPos newPos = new ChunkPos(x, z);
-                    chunkPosSet.add(newPos);
-                }
-            }
-        }
-        return chunkPosSet;
+    public BlockPos getSpawnPoint(ServerLevel level) {
+        return this.spawnPoint == null ? this.sampleSpawnablePositions(level, 1, -1).getFirst() : this.spawnPoint;
     }
 
-    public void destroy() {
-        destroyEntities();
-
-        if (this.getProperty(HAS_BEDROCK_SHELL)) this.surroundWith(Blocks.AIR.defaultBlockState());
-
-        this.boundingBoxes.forEach(box -> {
-            removeBlocks(this.getBranch().getFloor(), box);
-        });
-
-        unsetAttachedPoints();
-
-        Set<ChunkPos> chunkPosSet = getChunkPos(this.boundingBoxes);
-        getBranch().getFloor().getChunkMap().forEach((key, value) -> {
-            value.removeIf(v -> chunkPosSet.contains(key) && v.x == getBranch().getIndex() && v.y == this.getIndex());
-        });
-
-        fixContactedShells(this.getBranch().getFloor(), this.boundingBoxes, this.getBranch().getIndex());
-    }
-
-    public static void fixContactedShells(DungeonFloor floor, List<BoundingBox> boundingBoxes) {
-        fixContactedShells(floor, boundingBoxes, -1);
-    }
-
-    public static void fixContactedShells(DungeonFloor floor, List<BoundingBox> boundingBoxes, int branchToIgnore) {
-        Set<ChunkPos> chunkPosSet = getChunkPos(boundingBoxes);
-
-        floor.getChunkMap().forEach((key, value) -> {
-            if (chunkPosSet.contains(key)) {
-                value.forEach(v -> {
-                    if (v.x == branchToIgnore) return;
-                    DungeonRoom otherRoom = floor.getBranches().get(v.x).getRooms().get(v.y);
-                    otherRoom.processShell();
-                });
-            }
-        });
-    }
-
-
-    public static void removeBlocks(DungeonFloor floor, BoundingBox box) {
+    public List<BlockPos> sampleSpawnablePositions(ServerLevel level, int count, int inflation) {
+        List<BlockPos> result = new ArrayList<>();
+        int tries = count*10;
         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
-        for (int x = box.minX(); x <= box.maxX(); x++) {
-            for (int y = box.minY(); y <= box.maxY(); y++) {
-                for (int z = box.minZ(); z <= box.maxZ(); z++) {
-                    mutableBlockPos.set(x, y, z);
-                    floor.getLevel().setBlock(mutableBlockPos, Blocks.AIR.defaultBlockState(), 130);
-                }
-            }
-        }
-    }
+        while (result.size() < count && tries > 0) {
+            BoundingBox randomBox = this.boundingBoxes.get(RandomUtil.randIntBetween(0, this.boundingBoxes.size()-1));
+            BoundingBox innerShell = randomBox.inflatedBy(-1); //TODO cheating
 
-    private void destroyEntities() {
-        offeringUUIDs.forEach(uuid -> {
-            Offering offering = (Offering) this.getBranch().getFloor().getLevel().getEntity(UUID.fromString(uuid));
-            if (offering != null) offering.remove(Entity.RemovalReason.DISCARDED);
-        });
-        riftUUIDs.forEach(uuid -> {
-            Offering rift = (Offering) this.getBranch().getFloor().getLevel().getEntity(UUID.fromString(uuid));
-            if (rift != null) rift.remove(Entity.RemovalReason.DISCARDED);
-        });
-        offeringUUIDs.clear();
-        riftUUIDs.clear();
-    }
+            int randX = RandomUtil.randIntBetween(innerShell.minX(), innerShell.maxX());
+            int randZ = RandomUtil.randIntBetween(innerShell.minZ(), innerShell.maxZ());
 
-    public boolean isPosInsideShell(BlockPos pos) {
-        for (BoundingBox box : this.boundingBoxes) {
-            if (box.isInside(pos)) {
-                if (box.inflatedBy(-1).isInside(pos)) {
-                    return true;
-                }
-                for (BoundingBox otherBox : this.boundingBoxes) {
-                    if (otherBox == box) continue;
-                    boolean xConnected = otherBox.inflatedBy(1, 0, 0).isInside(pos);
-                    boolean yConnected = otherBox.inflatedBy(0, 1, 0).isInside(pos);
-                    boolean zConnected = otherBox.inflatedBy(0, 0, 1).isInside(pos);
-
-                    //Only one axis is connected, indicating it's adjacent to another box, but not a corner
-                    if ((xConnected ? 1 : 0) + (yConnected ? 1 : 0) + (zConnected ? 1 : 0) == 1) {
-                        if (box.inflatedBy(xConnected ? 0 : -1, yConnected ? 0 : -1, zConnected ? 0 : -1).isInside(pos)) {
-                            return true;
-                        }
+            for (int y = innerShell.minY(); y < innerShell.maxY(); y++) {
+                mutableBlockPos.set(randX, y, randZ);
+                if (level.getBlockState(mutableBlockPos) == Blocks.AIR.defaultBlockState()) {
+                    mutableBlockPos.set(randX, y + 1, randZ);
+                    if (level.getBlockState(mutableBlockPos) == Blocks.AIR.defaultBlockState()) {
+                        result.add(mutableBlockPos.below());
+                        break;
                     }
                 }
             }
-        }
-        return false;
-    }
-
-    public void onGenerate() {
-    }
-    public void onEnter(WDPlayer player) {
-        WildDungeons.getLogger().info("ENTERING ROOM {} OF CLASS {}", this.getTemplate().name(), this.getClass().getSimpleName());
-        playerStatuses.computeIfAbsent(player.getUUID(), key -> {
-            getSession().getStats(key).roomsFound += 1;
-            return true;
-        });
-        this.playerStatuses.put(player.getUUID(), true);
-        player.setSoundScape(this.getProperty(SOUNDSCAPE), this.getProperty(INTENSITY), false);
-    }
-
-    public void onFloorEnter(WDPlayer player) {
-    }
-
-    public void onBranchEnter(WDPlayer player) {
-        if (!lootGenerated){
-            this.processLootBlocks();
-            lootGenerated = true;
-        }
-    }
-
-    public void onFloorComplete(){
-    }
-
-    public void onBranchComplete(){
-        processDataMarkers();
-    }
-
-    public void onExit(WDPlayer player) {
-        this.playerStatuses.put(player.getUUID(), false);
-    }
-
-    public void onClear() {
-        this.clear = true;
-        if (this.getProperty(DESTRUCTION_RULE) == DungeonRoomTemplate.DestructionRule.SHELL_CLEAR) {
-            CompletableFuture.runAsync(() -> {
-                this.removeProtectedShell(Blocks.AIR.defaultBlockState());
-            });
+            tries--;
         }
 
-    }
-
-    public void reset() {}
-    public void tick() {}
-
-    public void unsetAttachedPoints() {
-        getConnectionPoints().forEach(connectionPoint -> {
-            if (connectionPoint.isConnected()) {
-                connectionPoint.getConnectedPoint().unSetConnectedPoint();
-            }
-        });
+        return result.isEmpty() ? spawnPoint == null ? Collections.singletonList(this.boundingBoxes.getFirst().getCenter()) : Collections.singletonList(spawnPoint) : result;
     }
 
     public BlockPos calculateFurthestPoint(List<BlockPos> validPoints, int maxDistance) {
@@ -597,5 +542,42 @@ public class DungeonRoom {
     }
 
     public ResourceLocation getDecalTexture() {return null;}
+
     public int getDecalColor() {return 0xFFFFFFFF;}
+
+    public void onGenerate() {}
+
+    public void onEnter(WDPlayer player) {
+        WildDungeons.getLogger().info("ENTERING ROOM {} OF CLASS {}", this.getTemplate().name(), this.getClass().getSimpleName());
+        playersInside.computeIfAbsent(player.getUUID(), key -> {
+            getSession().getStats(key).roomsFound += 1;
+            return true;
+        });
+        this.playersInside.put(player.getUUID(), true);
+        player.setSoundScape(this.getProperty(SOUNDSCAPE), this.getProperty(INTENSITY), false);
+    }
+
+    public void onBranchEnter(WDPlayer player) {
+        if (!lootGenerated){
+            this.processLootBlocks();
+            lootGenerated = true;
+        }
+    }
+
+    public void onBranchComplete(){
+        processDataMarkers();
+    }
+
+    public void onExit(WDPlayer player) {
+        this.playersInside.put(player.getUUID(), false);
+    }
+
+    public void onClear() {
+        this.clear = true;
+        if (this.getProperty(DESTRUCTION_RULE) == DungeonRoomTemplate.DestructionRule.SHELL_CLEAR) CompletableFuture.runAsync(() -> this.setProtected(false));
+    }
+
+    public void reset() {}
+
+    public void tick() {}
 }

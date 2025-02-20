@@ -21,6 +21,10 @@ public final class DungeonFloorTemplate implements DungeonRegistration.DungeonCo
         return new DungeonFloorTemplate().setName(name).set(HierarchicalProperty.DIFFICULTY_MODIFIER, 1.0);
     }
 
+//    public DungeonFloor calculateLayout(DungeonSession session, BlockPos position) {
+//        //TODO the big one.
+//    }
+
     public DungeonFloor placeInWorld(DungeonSession session, BlockPos position) {
         WildDungeons.getLogger().info("PLACING FLOOR: {}", this.name());
         DungeonFloor newFloor = new DungeonFloor(this.name, session.getSessionKey(), position);

@@ -247,10 +247,10 @@ public class DungeonFloor {
                     entities.forEach(entity -> entity.remove(Entity.RemovalReason.DISCARDED));
                 });
 
-                DungeonRoom.fillShellWith(this, null, this.getLevel(), box, Blocks.AIR.defaultBlockState(), 1, DungeonRoom.isSafeForBoundingBoxes());
+                DungeonRoom.fillShellWith(this, null, box, Blocks.AIR.defaultBlockState(), 1, DungeonRoom.isSafeForBoundingBoxes());
                 DungeonRoom.removeBlocks(this, box);
             });
-            DungeonRoom.fixContactedShells(this, halfGeneratedRooms);
+            DungeonRoom.fixContactedShells(this, halfGeneratedRooms, -1);
             halfGeneratedRooms.clear();
         }
     }
