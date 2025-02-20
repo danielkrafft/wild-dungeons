@@ -564,14 +564,6 @@ public class DungeonRoom {
         });
     }
 
-    public void unsetConnectedPoints() {
-        getConnectionPoints().forEach(connectionPoint -> {
-            if (connectionPoint.isConnected() && connectionPoint.getConnectedBranchIndex() == this.getIndex()) {
-                connectionPoint.unSetConnectedPoint();
-            }
-        });
-    }
-
     public BlockPos calculateFurthestPoint(List<BlockPos> validPoints, int maxDistance) {
         return validPoints.stream().map(pos -> {
             int score = 0;

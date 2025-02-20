@@ -24,7 +24,7 @@ public final class DungeonFloorTemplate implements DungeonRegistration.DungeonCo
     public DungeonFloor placeInWorld(DungeonSession session, BlockPos position) {
         WildDungeons.getLogger().info("PLACING FLOOR: {}", this.name());
         DungeonFloor newFloor = new DungeonFloor(this.name, session.getSessionKey(), position);
-        newFloor.generateBranches();
+        newFloor.asyncGenerateBranches();
         return newFloor;
     }
 

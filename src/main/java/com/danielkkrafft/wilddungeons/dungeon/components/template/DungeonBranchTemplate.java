@@ -32,7 +32,7 @@ public final class DungeonBranchTemplate implements DungeonRegistration.DungeonC
     public DungeonBranch placeInWorld(DungeonFloor floor, BlockPos origin) {
         DungeonBranch newBranch = new DungeonBranch(this.name, floor, origin);
         int tries = 0;
-        while (tries < 2) {
+        while (tries < 4) {
             try {
                 if (newBranch.generateDungeonBranch()) {
                     return newBranch;

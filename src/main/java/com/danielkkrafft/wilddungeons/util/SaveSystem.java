@@ -169,9 +169,9 @@ public class SaveSystem {
                         branch.addRoom(room);
                     });
                     branch.sortRooms();
-                    floor.addBranch(branch);
+                    floor.getBranches().add(branch);
                 });
-                floor.sortBranches();
+                floor.getBranches().sort(Comparator.comparingInt(DungeonBranch::getIndex));
                 session.getFloors().add(floor);
             });
             if (session.getFloors() != null) session.getFloors().sort(Comparator.comparingInt(DungeonFloor::getIndex));

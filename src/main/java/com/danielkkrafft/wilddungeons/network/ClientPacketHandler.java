@@ -20,7 +20,13 @@ import java.util.HashSet;
 
 public class ClientPacketHandler {
     public enum Packets {
-        REMOVE_DECAL, ADD_DECAL, SYNC_DECALS, SWITCH_SOUNDSCAPE, PLAY_DYNAMIC_SOUND, POST_DUNGEON_SCREEN, LOADING_SCREEN, NULL_SCREEN, OPEN_CONNECTION_BLOCK_UI, UPDATE_WD_PLAYER
+        REMOVE_DECAL, ADD_DECAL, SYNC_DECALS, SWITCH_SOUNDSCAPE, PLAY_DYNAMIC_SOUND, POST_DUNGEON_SCREEN, LOADING_SCREEN, NULL_SCREEN, OPEN_CONNECTION_BLOCK_UI, UPDATE_WD_PLAYER;
+
+        public CompoundTag asTag() {
+            CompoundTag tag = new CompoundTag();
+            tag.putString("packet", this.toString());
+            return tag;
+        }
     }
 
     public static HashSet<Integer> loopingSounds = new HashSet<>();

@@ -8,19 +8,14 @@ import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.network.ClientPacketHandler;
 import com.danielkkrafft.wilddungeons.network.SimplePacketManager;
-import com.danielkkrafft.wilddungeons.player.SavedTransform;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.danielkkrafft.wilddungeons.registry.WDDimensions;
-import com.danielkkrafft.wilddungeons.util.CommandUtil;
-import com.danielkkrafft.wilddungeons.util.FileUtil;
 import com.danielkkrafft.wilddungeons.util.Serializer;
-import com.danielkkrafft.wilddungeons.util.debug.WDProfiler;
 import com.danielkkrafft.wilddungeons.world.dimension.EmptyGenerator;
 import com.danielkkrafft.wilddungeons.world.dimension.tools.InfiniverseAPI;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
@@ -31,7 +26,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.joml.Vector2i;
 
@@ -45,8 +39,8 @@ import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonFloorRegi
 import static com.danielkkrafft.wilddungeons.registry.WDDimensions.WILDDUNGEON;
 
 public class DungeonFloor {
-    @Serializer.IgnoreSerialization
-    private List<DungeonBranch> dungeonBranches = new ArrayList<>();
+
+    @Serializer.IgnoreSerialization private final List<DungeonBranch> dungeonBranches = new ArrayList<>();
     private final String templateKey;
     private final BlockPos origin;
     private final ResourceKey<Level> LEVEL_KEY;
@@ -54,7 +48,7 @@ public class DungeonFloor {
     private final String sessionKey;
     private final int index;
     private final HashMap<ChunkPos, ArrayList<Vector2i>> chunkMap = new HashMap<>();
-    private final HashMap<String, Boolean> playerStatuses = new HashMap<>();
+    private final HashMap<String, Boolean> playersInside = new HashMap<>();
 
     public DungeonFloorTemplate getTemplate() {return DUNGEON_FLOOR_REGISTRY.get(this.templateKey);}
     public DungeonSession getSession() {return DungeonSessionManager.getInstance().getDungeonSession(this.sessionKey);}
@@ -63,12 +57,8 @@ public class DungeonFloor {
     public ServerLevel getLevel() {
         return DungeonSessionManager.getInstance().server.levels.get(this.LEVEL_KEY);
     }
-    public List<WDPlayer> getActivePlayers() {return this.playerStatuses.entrySet().stream().map(e -> {
-        if (e.getValue()) return WDPlayerManager.getInstance().getOrCreateServerWDPlayer(e.getKey());
-        return null;
-    }).filter(Objects::nonNull).toList();}
+    public List<WDPlayer> getActivePlayers() {return this.playersInside.entrySet().stream().map(e -> e.getValue() ? WDPlayerManager.getInstance().getOrCreateServerWDPlayer(e.getKey()) : null).filter(Objects::nonNull).toList();}
     public List<DungeonBranch> getBranches() {return this.dungeonBranches;}
-    public String getTemplateKey() {return this.templateKey;}
     public BlockPos getOrigin() {return this.origin;}
     public ResourceKey<Level> getLevelKey() {return this.LEVEL_KEY;}
     public BlockPos getSpawnPoint() {return this.spawnPoint;}
@@ -76,10 +66,9 @@ public class DungeonFloor {
     public int getIndex() {return this.index;}
     public HashMap<ChunkPos, ArrayList<Vector2i>> getChunkMap() {return this.chunkMap;}
     public List<BoundingBox> halfGeneratedRooms = new ArrayList<>();
-    @Serializer.IgnoreSerialization
-    public List<CompletableFuture<Void>> generationFutures = new ArrayList<>();
-    List<WDPlayer> playersWaitingToEnter = new ArrayList<>();
-    public boolean unsafeForPlayer = true;
+    @Serializer.IgnoreSerialization public List<CompletableFuture<Void>> generationFutures = new ArrayList<>();
+    private final List<WDPlayer> playersWaitingToEnter = new ArrayList<>();
+    public static ResourceKey<Level> buildFloorLevelKey(DungeonFloor floor) { return ResourceKey.create(Registries.DIMENSION, WildDungeons.rl(DungeonSessionManager.buildDungeonSessionKey(floor.getSession().getEntranceUUID()) + "___" + floor.getTemplate().name() + "___" + floor.index)); }
 
     public DungeonFloor(String templateKey, String sessionKey, BlockPos origin) {
         this.sessionKey = sessionKey;
@@ -90,192 +79,61 @@ public class DungeonFloor {
         this.LEVEL_KEY = buildFloorLevelKey(this);
         InfiniverseAPI.get().getOrCreateLevel(DungeonSessionManager.getInstance().server, LEVEL_KEY, () -> WDDimensions.createLevel(WILDDUNGEON));
         this.origin = this.getTemplate().origin() == null ? origin : this.getTemplate().origin();
-        WDProfiler.INSTANCE.logTimestamp("DungeonFloor::new");
     }
 
-
-
-    public void attemptEnter(WDPlayer wdPlayer){
-        if (this.unsafeForPlayer) {
-            playersWaitingToEnter.add(wdPlayer);
-            return;
+    /**
+     * Called when a player attempts to enter this floor. Adds players to a "waiting list" if there aren't enough rooms to explore yet.
+     *
+     * @param wdPlayer The player to handle entry for
+     */
+    public void attemptEnter(WDPlayer wdPlayer) {
+        if (getBranches().stream().mapToInt(b -> b.getRooms().size()).sum() <= 10) {
+            playersWaitingToEnter.add(wdPlayer); return;
         }
         onEnter(wdPlayer);
     }
 
+    /**
+     * Called when the player is actually being moved to this floor.
+     *
+     * @param wdPlayer The player to handle entry for
+     */
     public void onEnter(WDPlayer wdPlayer) {
-        playerStatuses.computeIfAbsent(wdPlayer.getUUID(), key -> {
+        playersInside.computeIfAbsent(wdPlayer.getUUID(), key -> {
             getSession().getStats(key).floorsFound += 1;
             return true;
         });
-        this.playerStatuses.put(wdPlayer.getUUID(), true);
+        this.playersInside.put(wdPlayer.getUUID(), true);
         wdPlayer.setCurrentDungeon(getSession());
         wdPlayer.travelToFloor(wdPlayer, wdPlayer.getCurrentFloor(), this);
         wdPlayer.getServerPlayer().setGameMode(wdPlayer.getLastGameMode());
-        CompoundTag tag = new CompoundTag();
-        tag.putString("packet", ClientPacketHandler.Packets.NULL_SCREEN.toString());
-        PacketDistributor.sendToPlayer(wdPlayer.getServerPlayer(), new SimplePacketManager.ClientboundTagPacket(tag));
-        WDPlayerManager.syncAll(this.playerStatuses.keySet().stream().toList());
+        PacketDistributor.sendToPlayer(wdPlayer.getServerPlayer(), new SimplePacketManager.ClientboundTagPacket(ClientPacketHandler.Packets.NULL_SCREEN.asTag()));
+        WDPlayerManager.syncAll(this.playersInside.keySet().stream().toList());
         wdPlayer.setSoundScape(this.getProperty(SOUNDSCAPE), this.getProperty(INTENSITY), true);
     }
 
+    /**
+     * Called when the player is being removed from this floor. Actual removal logic is handled at the session level
+     *
+     * @param wdPlayer The player to handle removal for
+     */
     public void onExit(WDPlayer wdPlayer) {
-        this.playerStatuses.put(wdPlayer.getUUID(), false);
+        this.playersInside.put(wdPlayer.getUUID(), false);
     }
 
+    /**
+     * Called every server tick
+     */
     public void tick() {
         if (this.getLevel() == null) return;
-        if (playerStatuses.values().stream().anyMatch(v -> v)) dungeonBranches.forEach(DungeonBranch::tick);
+        if (playersInside.values().stream().anyMatch(v -> v)) dungeonBranches.forEach(DungeonBranch::tick);
     }
 
-    public void addBranch(DungeonBranch branch) {
-        if (this.dungeonBranches == null) this.dungeonBranches = new ArrayList<>();
-        this.dungeonBranches.add(branch);
-    }
-
-    public void sortBranches() {
-        if (this.dungeonBranches != null)
-            this.dungeonBranches.sort(Comparator.comparingInt(DungeonBranch::getIndex));
-    }
-
-    public void removedHalfGeneratedBranch() {
-        if (!halfGeneratedRooms.isEmpty()) {
-            halfGeneratedRooms.forEach(box -> {
-                DungeonSessionManager.getInstance().server.execute(() -> {
-                    List<Entity> entities = getLevel().getEntitiesOfClass(Entity.class, AABB.of(box));
-                    entities.removeIf(livingEntity -> livingEntity instanceof ServerPlayer);
-                    entities.forEach(entity -> entity.remove(Entity.RemovalReason.DISCARDED));
-                });
-
-                DungeonRoom.fillShellWith(this, null, this.getLevel(), box, Blocks.AIR.defaultBlockState(), 1, DungeonRoom.isSafeForBoundingBoxes());
-                DungeonRoom.removeBlocks(this, box);
-            });
-            DungeonRoom.fixContactedShells(this, halfGeneratedRooms);
-            halfGeneratedRooms.clear();
-        }
-    }
-
-    @Serializer.IgnoreSerialization
-    private int branchGenAttempts = 0;
-    public void generateBranches() {
-        DungeonFloorTemplate template = this.getTemplate();
-        int branchTemplateCount = template.branchTemplates().size();
-        if (generationFutures == null) generationFutures = new ArrayList<>();
-        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
-            int branchCount = this.dungeonBranches.size();
-            while (branchCount < branchTemplateCount && this.getLevel()!=null) {
-                WildDungeons.getLogger().info("Generating branch {} of {}", branchCount, branchTemplateCount-1);
-                try {
-                    generateSpecificBranch(branchCount);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                branchCount = this.dungeonBranches.size();
-            }
-        }).handle((result, throwable) -> {
-            if (throwable != null) {
-                WildDungeons.getLogger().error("Error generating branches", throwable);
-            }
-            LockSupport.unpark(Thread.currentThread());
-            return null;
-        });
-        generationFutures.add(future);
-    }
-
-    private void generateSpecificBranch(int branchIndex) {
-        checkForInvalidPlayersInBranch(branchIndex);
-
-        DungeonBranchTemplate nextBranch = getTemplate().branchTemplates().get(branchIndex).getRandom();
-        DungeonBranch newBranch = nextBranch.placeInWorld(this, origin);
-        if (newBranch == null) {
-            branchGenAttempts++;
-            if (branchGenAttempts > 2) {
-                WildDungeons.getLogger().info("Failed to generate branch {} after 4 total attempts", branchIndex);
-                if (branchIndex > 0) {
-                    int index = nextBranch.rootOriginBranchIndex() == -1 ? 1 : branchIndex - nextBranch.rootOriginBranchIndex();
-                    for (int i = 1; i <= index; i++) {
-                        DungeonBranch previousBranch = this.dungeonBranches.get(branchIndex - i);
-                        if (previousBranch.getIndex() == 0) continue;
-                        checkForPlayersInBranch(branchIndex - i);
-                        previousBranch.destroy();
-                        this.dungeonBranches.remove(previousBranch);
-                    }
-                }
-            }
-            return;
-        }
-        branchGenAttempts = 0;
-        if (branchIndex == 0)
-            this.spawnPoint = this.dungeonBranches.getFirst().getSpawnPoint();
-        onSequentialBranchGenerationComplete();
-    }
-
-    private void onSequentialBranchGenerationComplete() {
-        if (!playersWaitingToEnter.isEmpty() && getBranches().stream().mapToInt(b -> b.getRooms().size()).sum() > 10) {
-            spawnPlayers();
-        }
-    }
-
-    private void spawnPlayers(){
-        DungeonSessionManager.getInstance().server.execute(() -> {
-            for (WDPlayer wdPlayer : playersWaitingToEnter) {
-                onEnter(wdPlayer);
-            }
-            playersWaitingToEnter.clear();
-            unsafeForPlayer = false;
-        });
-    }
-
-    private void checkForInvalidPlayersInBranch(int branchIndex) {
-        this.playerStatuses.forEach((k, v) -> {
-            WDPlayer player = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(k);
-            if (player.getCurrentDungeon() == this.getSession() && player.getCurrentFloor() == this) {
-                if (player.getCurrentBranch() == null && player.getCurrentBranchIndex() == branchIndex) {
-                    TeleportPlayerToBranch(branchIndex-1, player);
-                }
-            }
-        });
-    }
-
-    private void checkForPlayersInBranch(int branchIndex){
-        this.playerStatuses.forEach((k, v) -> {
-            WDPlayer player = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(k);
-            if (player.getCurrentDungeon() == this.getSession() && player.getCurrentFloor() == this) {
-                if (player.getCurrentBranchIndex() == branchIndex) {
-                    TeleportPlayerToBranch(branchIndex-1, player);
-                    //send a message to the players who got teleported
-                    player.getServerPlayer().sendSystemMessage(Component.literal("BRANCH FAILED - RESPAWNING"), true);
-                }
-            }
-        });
-    }
-
-    private void TeleportPlayerToBranch(int branchIndex, WDPlayer player) {
-        BlockPos blockPos = this.dungeonBranches.get(branchIndex).getSpawnPoint();
-        Vec3 pos = new Vec3(blockPos.getX(), blockPos.getY(), blockPos.getZ());
-        SavedTransform savedTransform = new SavedTransform(pos, 0, 0, this.getLevelKey());
-        ServerPlayer serverPlayer = player.getServerPlayer();
-        if (serverPlayer != null)
-            CommandUtil.executeTeleportCommand(serverPlayer, savedTransform);
-    }
-
-
-    public void cancelGenerations() {
-        if (generationFutures!=null)
-            generationFutures.forEach(future -> {
-                future.cancel(true);
-            });
-    }
-    public void shutdown() {
-        InfiniverseAPI.get().markDimensionForUnregistration(DungeonSessionManager.getInstance().server, this.LEVEL_KEY);
-        FileUtil.deleteDirectoryContents(FileUtil.getWorldPath().resolve("dimensions").resolve(WildDungeons.MODID).resolve(this.LEVEL_KEY.location().getPath()), true);
-    }
-
-
-    public static ResourceKey<Level> buildFloorLevelKey(DungeonFloor floor) {
-        return ResourceKey.create(Registries.DIMENSION, WildDungeons.rl(DungeonSessionManager.buildDungeonSessionKey(floor.getSession().getEntranceUUID()) + "___" + floor.getTemplate().name() + "___" + floor.index));
-    }
-
+    /**
+     * Checks a list of proposed BoundingBoxes to make sure none of them will overlap with the existing BoundingBoxes in the chunkMap or go out of bounds.
+     *
+     * @param proposedBoxes The list of BoundingBoxes to check. If any are found to overlap with existing boxes, we return false.
+     */
     protected boolean isBoundingBoxValid(List<BoundingBox> proposedBoxes) {
         HashMap<ChunkPos, ArrayList<Vector2i>> chunkMap = getChunkMap();
         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
@@ -311,5 +169,109 @@ public class DungeonFloor {
             }
         }
         return true;
+    }
+
+    /**
+     * Called upon initial Floor creation, and during validation. Creates a CompletableFuture which attempts to place branches until the amount required by DungeonLayout is met.
+     */
+    public void asyncGenerateBranches() {
+        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+            int totalBranchCount = getTemplate().branchTemplates().size();
+            int currentBranchCount = this.dungeonBranches.size();
+
+            while (currentBranchCount < totalBranchCount && this.getLevel() != null) {
+                WildDungeons.getLogger().info("Generating branch {} of {}", currentBranchCount, totalBranchCount-1);
+
+                try { tryGenerateBranch(currentBranchCount);
+                } catch (Exception e) { e.printStackTrace(); }
+
+                currentBranchCount = this.dungeonBranches.size();
+            }
+        }).handle((result, throwable) -> {
+            if (throwable != null) WildDungeons.getLogger().error("Error generating branches", throwable);
+            LockSupport.unpark(Thread.currentThread());
+            return null;
+        });
+        generationFutures.add(future);
+    }
+
+    /**
+     * Attempts to generate a DungeonBranch at the specified branchIndex. If it fails to place, it will delete itself and the previous branch. Retries are handled in generateBranches.
+     *
+     * @param branchIndex The index of the branch to place. Handled linearly.
+     */
+    private void tryGenerateBranch(int branchIndex) {
+        evictPlayersFromInvalidBranch(branchIndex);
+        DungeonBranchTemplate nextBranch = getTemplate().branchTemplates().get(branchIndex).getRandom();
+        DungeonBranch newBranch = nextBranch.placeInWorld(this, origin);
+
+        if (newBranch == null) {
+            if (branchIndex <= 0) return;
+            int index = nextBranch.rootOriginBranchIndex() == -1 ? 1 : branchIndex - nextBranch.rootOriginBranchIndex();
+
+            for (int i = 1; i <= index; i++) {
+                DungeonBranch previousBranch = this.dungeonBranches.get(branchIndex - i);
+                if (previousBranch.getIndex() == 0) continue;
+                evictPlayersFromInvalidBranch(branchIndex - i);
+                previousBranch.destroy();
+                this.dungeonBranches.remove(previousBranch);
+            }
+            return;
+        }
+
+        if (branchIndex == 0) this.spawnPoint = this.dungeonBranches.getFirst().getSpawnPoint();
+        onBranchComplete();
+    }
+
+    /**
+     * Called every time a branch is completed. Checks if players on the "waiting list" can be entered depending on whether enough rooms have been generated.
+     */
+    private void onBranchComplete() {
+        if (!playersWaitingToEnter.isEmpty() && getBranches().stream().mapToInt(b -> b.getRooms().size()).sum() > 10) {
+            DungeonSessionManager.getInstance().server.execute(() -> {
+                playersWaitingToEnter.forEach(this::onEnter);
+                playersWaitingToEnter.clear();
+            });
+        }
+    }
+
+    /**
+     * Deletes all blocks and entities associated with rooms which weren't finished generating upon quit. Also repairs adjacent bedrock shells.
+     */
+    public void removeInvalidRooms() {
+        if (!halfGeneratedRooms.isEmpty()) {
+            halfGeneratedRooms.forEach(box -> {
+                DungeonSessionManager.getInstance().server.execute(() -> {
+                    List<Entity> entities = getLevel().getEntitiesOfClass(Entity.class, AABB.of(box));
+                    entities.removeIf(livingEntity -> livingEntity instanceof ServerPlayer);
+                    entities.forEach(entity -> entity.remove(Entity.RemovalReason.DISCARDED));
+                });
+
+                DungeonRoom.fillShellWith(this, null, this.getLevel(), box, Blocks.AIR.defaultBlockState(), 1, DungeonRoom.isSafeForBoundingBoxes());
+                DungeonRoom.removeBlocks(this, box);
+            });
+            DungeonRoom.fixContactedShells(this, halfGeneratedRooms);
+            halfGeneratedRooms.clear();
+        }
+    }
+
+    /**
+     * Called when a branch is generated. Removes any players still in that branch.
+     *
+     * @param branchIndex The branch being generated.
+     */
+    private void evictPlayersFromInvalidBranch(int branchIndex) {
+        this.getActivePlayers().forEach(wdPlayer -> {
+            if (wdPlayer.getCurrentBranchIndex() != branchIndex) return;
+            this.getBranches().get(branchIndex - 1).respawn(wdPlayer);
+            wdPlayer.getServerPlayer().sendSystemMessage(Component.literal("BRANCH FAILED - RESPAWNING"), true);
+        });
+    }
+
+    /**
+     * Called on shutdown and on quit. Stops all CompletableFutures associated with this floor.
+     */
+    public void cancelGenerations() {
+        generationFutures.forEach(future -> future.cancel(true));
     }
 }

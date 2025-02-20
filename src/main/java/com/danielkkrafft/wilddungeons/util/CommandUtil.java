@@ -27,8 +27,9 @@ public class CommandUtil {
     }
 
     public static void executeTeleportCommand(ServerPlayer player, SavedTransform transform) {
-        String command;
+        if (player == null) return;
 
+        String command;
         String targetDim = transform.getDimension().location().toString();
         double targetX = transform.getX();
         double targetY = transform.getY();

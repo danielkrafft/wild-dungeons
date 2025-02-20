@@ -7,15 +7,19 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalPr
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
+import com.danielkkrafft.wilddungeons.player.SavedTransform;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
+import com.danielkkrafft.wilddungeons.util.CommandUtil;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import com.danielkkrafft.wilddungeons.util.Serializer;
 import com.danielkkrafft.wilddungeons.util.debug.WDProfiler;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.*;
 
@@ -297,6 +301,12 @@ public class DungeonBranch {
             }
         }
         WDProfiler.INSTANCE.logTimestamp("DungeonBranch::setupBoundingBox");
+    }
+
+    public void respawn(WDPlayer wdPlayer) {
+        Vec3 pos = new Vec3(getSpawnPoint().getX(), getSpawnPoint().getY(), getSpawnPoint().getZ());
+        SavedTransform savedTransform = new SavedTransform(pos, 0, 0, this.getFloor().getLevelKey());
+        CommandUtil.executeTeleportCommand(wdPlayer.getServerPlayer(), savedTransform);
     }
 
     public void onEnter(WDPlayer player) {

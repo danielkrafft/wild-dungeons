@@ -1,5 +1,6 @@
 package com.danielkkrafft.wilddungeons.dungeon.session;
 
+import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonPerk;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonPerkTemplate;
@@ -10,8 +11,10 @@ import com.danielkkrafft.wilddungeons.network.ClientPacketHandler;
 import com.danielkkrafft.wilddungeons.network.SimplePacketManager;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
+import com.danielkkrafft.wilddungeons.util.FileUtil;
 import com.danielkkrafft.wilddungeons.util.SaveSystem;
 import com.danielkkrafft.wilddungeons.util.Serializer;
+import com.danielkkrafft.wilddungeons.world.dimension.tools.InfiniverseAPI;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -24,7 +27,6 @@ import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRegistry.DUNGEON_REGISTRY;
 
@@ -82,8 +84,8 @@ public class DungeonSession {
      */
     public void validate() {
         floors.forEach(dungeonFloor -> {
-            dungeonFloor.removedHalfGeneratedBranch();
-            dungeonFloor.generateBranches();
+            dungeonFloor.removeInvalidRooms();
+            dungeonFloor.asyncGenerateBranches();
         });
     }
 
@@ -115,6 +117,7 @@ public class DungeonSession {
     public void onExit(WDPlayer wdPlayer) {
         if (!this.playersInside.containsKey(wdPlayer.getUUID()) || !this.playersInside.get(wdPlayer.getUUID())) return;
         playersInside.put(wdPlayer.getUUID(), false);
+        wdPlayer.getCurrentFloor().onExit(wdPlayer);
         wdPlayer.rootRespawn(wdPlayer.getServerPlayer().getServer());
         wdPlayer.setRiftCooldown(100);
         wdPlayer.setSoundScape(null, 0, true);
@@ -125,7 +128,7 @@ public class DungeonSession {
      * Run every server tick
      */
     public void tick() {
-        if (playersInside.values().stream().noneMatch(v -> v) && !floors.isEmpty() && floors.stream().noneMatch(dungeonFloor -> dungeonFloor.unsafeForPlayer)) {shutdownTimer -= 1;}
+        if (playersInside.values().stream().noneMatch(v -> v) && !floors.isEmpty()) {shutdownTimer -= 1;}
         if (shutdownTimer == 0) { shutdown(); return; }
         if (playersInside.values().stream().anyMatch(v -> v)) floors.forEach(DungeonFloor::tick);
         playersInside.keySet().forEach(uuid -> {
@@ -216,7 +219,10 @@ public class DungeonSession {
     public void shutdown() {
         floors.forEach(DungeonFloor::cancelGenerations);
         getPlayers().forEach(this::onExit);
-        floors.forEach(DungeonFloor::shutdown);
+        floors.forEach(floor -> {
+            InfiniverseAPI.get().markDimensionForUnregistration(DungeonSessionManager.getInstance().server, floor.getLevelKey());
+            FileUtil.deleteDirectoryContents(FileUtil.getWorldPath().resolve("dimensions").resolve(WildDungeons.MODID).resolve(floor.getLevelKey().location().getPath()), true);
+        });
         SaveSystem.DeleteSession(this);
         markedForShutdown = true;
     }
