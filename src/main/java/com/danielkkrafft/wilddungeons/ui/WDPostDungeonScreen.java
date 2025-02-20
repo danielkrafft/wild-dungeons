@@ -113,17 +113,17 @@ public class WDPostDungeonScreen extends Screen {
         defaultSkin = Minecraft.getInstance().getSkinManager().getInsecureSkin(Minecraft.getInstance().getGameProfile()).texture();
 
         DungeonSession.DungeonStatsHolder holder = Serializer.fromCompoundTag(data);
-        this.stats = holder == null ? null : holder.playerStats;
-        this.title = holder == null ? "WAIT OF THE WORLD" : holder.title;
-        this.icon = holder == null ? "1-4" : holder.icon;
-        this.primaryColor = holder == null ? 0xFFFF0000 : holder.primaryColor;
-        this.secondaryColor = holder == null ? 0xFFFF0000 : holder.secondaryColor;
+        this.stats = holder == null ? null : holder.playerStats();
+        this.title = holder == null ? "WAIT OF THE WORLD" : holder.title();
+        this.icon = holder == null ? "1-4" : holder.icon();
+        this.primaryColor = holder == null ? 0xFFFF0000 : holder.primaryColor();
+        this.secondaryColor = holder == null ? 0xFFFF0000 : holder.secondaryColor();
         int alpha = (primaryColor >> 24) & 0xFF;
         alpha /= 2;
         progressColor = (alpha << 24) | (primaryColor & 0x00FFFFFF);
-        this.targetTime = holder == null ? 1200 : holder.targetTime;
-        this.targetDeaths = holder == null ? 0 : holder.targetDeaths;
-        this.targetScore = holder == null ? 1000 : holder.targetScore;
+        this.targetTime = holder == null ? 1200 : holder.targetTime();
+        this.targetDeaths = holder == null ? 0 : holder.targetDeaths();
+        this.targetScore = holder == null ? 1000 : holder.targetScore();
 
         clearTicks = stats == null ? 300 : this.stats.values().stream().sorted(Comparator.comparingInt(o -> o.time)).toList().getLast().time;
         clearSeconds = Mth.floor((clearTicks / 20) % 60);

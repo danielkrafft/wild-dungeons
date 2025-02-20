@@ -22,7 +22,6 @@ public class DungeonSessionManager {
     private DungeonSessionManager(){}
 
     public static void ValidateSessions() {
-//        WildDungeons.getLogger().info("Validating Sessions");
         INSTANCE.sessions.forEach((key, session) -> session.validate());
     }
 
@@ -79,7 +78,7 @@ public class DungeonSessionManager {
 
     public static void onShutdown(){
         INSTANCE.sessions.forEach((key, session) -> {
-            session.cancelGenerations();
+            session.getFloors().forEach(DungeonFloor::cancelGenerations);
         });
     }
 }

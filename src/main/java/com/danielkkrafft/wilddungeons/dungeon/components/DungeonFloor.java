@@ -54,7 +54,7 @@ public class DungeonFloor {
     private final String sessionKey;
     private final int index;
     private final HashMap<ChunkPos, ArrayList<Vector2i>> chunkMap = new HashMap<>();
-    private final HashMap<String, DungeonSession.PlayerStatus> playerStatuses = new HashMap<>();
+    private final HashMap<String, Boolean> playerStatuses = new HashMap<>();
 
     public DungeonFloorTemplate getTemplate() {return DUNGEON_FLOOR_REGISTRY.get(this.templateKey);}
     public DungeonSession getSession() {return DungeonSessionManager.getInstance().getDungeonSession(this.sessionKey);}
@@ -64,7 +64,7 @@ public class DungeonFloor {
         return DungeonSessionManager.getInstance().server.levels.get(this.LEVEL_KEY);
     }
     public List<WDPlayer> getActivePlayers() {return this.playerStatuses.entrySet().stream().map(e -> {
-        if (e.getValue().inside) return WDPlayerManager.getInstance().getOrCreateServerWDPlayer(e.getKey());
+        if (e.getValue()) return WDPlayerManager.getInstance().getOrCreateServerWDPlayer(e.getKey());
         return null;
     }).filter(Objects::nonNull).toList();}
     public List<DungeonBranch> getBranches() {return this.dungeonBranches;}
@@ -106,9 +106,9 @@ public class DungeonFloor {
     public void onEnter(WDPlayer wdPlayer) {
         playerStatuses.computeIfAbsent(wdPlayer.getUUID(), key -> {
             getSession().getStats(key).floorsFound += 1;
-            return new DungeonSession.PlayerStatus();
+            return true;
         });
-        this.playerStatuses.get(wdPlayer.getUUID()).inside = true;
+        this.playerStatuses.put(wdPlayer.getUUID(), true);
         wdPlayer.setCurrentDungeon(getSession());
         wdPlayer.travelToFloor(wdPlayer, wdPlayer.getCurrentFloor(), this);
         wdPlayer.getServerPlayer().setGameMode(wdPlayer.getLastGameMode());
@@ -120,12 +120,12 @@ public class DungeonFloor {
     }
 
     public void onExit(WDPlayer wdPlayer) {
-        this.playerStatuses.get(wdPlayer.getUUID()).inside = false;
+        this.playerStatuses.put(wdPlayer.getUUID(), false);
     }
 
     public void tick() {
         if (this.getLevel() == null) return;
-        if (playerStatuses.values().stream().anyMatch(v -> v.inside)) dungeonBranches.forEach(DungeonBranch::tick);
+        if (playerStatuses.values().stream().anyMatch(v -> v)) dungeonBranches.forEach(DungeonBranch::tick);
     }
 
     public void addBranch(DungeonBranch branch) {
@@ -140,7 +140,6 @@ public class DungeonFloor {
 
     public void removedHalfGeneratedBranch() {
         if (!halfGeneratedRooms.isEmpty()) {
-            WildDungeons.getLogger().info("Removing half generated rooms {}", halfGeneratedRooms.size());
             halfGeneratedRooms.forEach(box -> {
                 DungeonSessionManager.getInstance().server.execute(() -> {
                     List<Entity> entities = getLevel().getEntitiesOfClass(Entity.class, AABB.of(box));
@@ -155,6 +154,7 @@ public class DungeonFloor {
             halfGeneratedRooms.clear();
         }
     }
+
     @Serializer.IgnoreSerialization
     private int branchGenAttempts = 0;
     public void generateBranches() {

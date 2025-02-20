@@ -63,7 +63,6 @@ public class Serializer
         addCustom(SaveSystem.DungeonBranchFile.class);
         addCustom(SaveSystem.DungeonRoomFile.class);
         addCustom(DungeonSession.DungeonStats.class);
-        addCustom(DungeonSession.PlayerStatus.class);
         addCustom(DungeonPerk.class);
         addCustom(DungeonTarget.class);
         addCustom(Pair.class);

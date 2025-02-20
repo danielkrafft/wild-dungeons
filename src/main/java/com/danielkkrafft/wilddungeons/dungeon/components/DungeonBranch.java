@@ -35,7 +35,7 @@ public class DungeonBranch {
     private int openConnections = 0;
     private int index;
     private BoundingBox boundingBox;
-    private HashMap<String, DungeonSession.PlayerStatus> playerStatuses = new HashMap<>();
+    private final HashMap<String, Boolean> playerStatuses = new HashMap<>();
     private boolean fullyGenerated = false;
 
     @Serializer.IgnoreSerialization
@@ -55,7 +55,7 @@ public class DungeonBranch {
         return (this.getFloor().getDifficulty() * this.getProperty(HierarchicalProperty.DIFFICULTY_MODIFIER) * Math.max(Math.pow(this.getProperty(HierarchicalProperty.DIFFICULTY_SCALING), totalBranches), 1));
     }
     public List<WDPlayer> getActivePlayers() {return this.playerStatuses.entrySet().stream().map(e -> {
-        if (e.getValue().inside) return WDPlayerManager.getInstance().getOrCreateServerWDPlayer(e.getKey());
+        if (e.getValue()) return WDPlayerManager.getInstance().getOrCreateServerWDPlayer(e.getKey());
         return null;
     }).filter(Objects::nonNull).toList();}
     public List<DungeonRoom> getRooms() {return this.branchRooms;}
@@ -235,7 +235,6 @@ public class DungeonBranch {
                         }
                     }
                     if (placedRooms > limitedRoom.getSecond()) {
-//                        WildDungeons.getLogger().info("OVERPLACED LIMITED ROOM: {}", nextRoom.name());
                         nextRoom = getTemplate().roomTemplates().get(getRooms().size()).getRandom();
                         overPlaced = true;
                         break;
@@ -302,20 +301,19 @@ public class DungeonBranch {
 
     public void onEnter(WDPlayer player) {
         WildDungeons.getLogger().info("PLAYER ENTERED BRANCH: {}", this.getTemplate().name());
-        playerStatuses.computeIfAbsent(player.getUUID(), key -> {getSession().getStats(key).branchesFound += 1; return new DungeonSession.PlayerStatus();});
-        this.playerStatuses.get(player.getUUID()).inside = true;
+        playerStatuses.computeIfAbsent(player.getUUID(), key -> {getSession().getStats(key).branchesFound += 1; return true;});
+        this.playerStatuses.put(player.getUUID(), true);
         for (DungeonRoom room : this.getRooms()) {
             room.onBranchEnter(player);
         }
     }
 
     public void onExit(WDPlayer player) {
-        this.playerStatuses.get(player.getUUID()).inside = false;
-        this.playerStatuses.get(player.getUUID()).insideShell = false;
+        this.playerStatuses.put(player.getUUID(), false);
     }
 
     public void tick() {
-        if (this.playerStatuses.values().stream().anyMatch(v -> v.inside)) getRooms().forEach(DungeonRoom::tick);
+        if (this.playerStatuses.values().stream().anyMatch(v -> v)) getRooms().forEach(DungeonRoom::tick);
     }
 
     public void addRoom(DungeonRoom room) {

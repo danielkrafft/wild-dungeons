@@ -234,7 +234,7 @@ public class WDEvents {
             if (wdPlayer.getCurrentDungeon() == null) return;
             WildDungeons.getLogger().info("FOUND BLOCK BREAK");
             event.setCanceled(WDPlayerManager.isProtectedBlock(serverPlayer, event.getPos(), serverLevel));
-            wdPlayer.getCurrentDungeon().getStats(wdPlayer).blocksBroken += 1;
+            wdPlayer.getCurrentDungeon().getStats(wdPlayer.getUUID()).blocksBroken += 1;
 
             if (wdPlayer.getCurrentRoom() instanceof TargetPurgeRoom enemyPurgeRoom) {
                 if (event.getLevel().getBlockState(event.getPos()).is(Blocks.SPAWNER)) {
@@ -250,7 +250,7 @@ public class WDEvents {
             WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer.getStringUUID());
             if (wdPlayer.getCurrentDungeon() == null) return;
             event.setCanceled(WDPlayerManager.isProtectedBlock(serverPlayer, event.getPos(), serverLevel));
-            wdPlayer.getCurrentDungeon().getStats(wdPlayer).blocksPlaced += 1;
+            wdPlayer.getCurrentDungeon().getStats(wdPlayer.getUUID()).blocksPlaced += 1;
         }
     }
 
@@ -297,7 +297,7 @@ public class WDEvents {
 
                 wdPlayer.setRiftCooldown(140);
                 player.teleportTo(respawnPoint.getX(), respawnPoint.getY(), respawnPoint.getZ());
-                wdPlayer.getCurrentDungeon().getStats(wdPlayer).deaths += 1;
+                wdPlayer.getCurrentDungeon().getStats(wdPlayer.getUUID()).deaths += 1;
                 wdPlayer.getCurrentDungeon().offsetLives(-1);
             } else {
                 wdPlayer.getCurrentDungeon().offsetLives(-1);
@@ -315,7 +315,7 @@ public class WDEvents {
             WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer);
 
             if (wdPlayer.getCurrentDungeon() == null) return;
-            wdPlayer.getCurrentDungeon().getStats(wdPlayer).mobsKilled += 1;
+            wdPlayer.getCurrentDungeon().getStats(wdPlayer.getUUID()).mobsKilled += 1;
             if (wdPlayer.getCurrentRoom() instanceof TargetPurgeRoom room) room.discardByUUID(event.getEntity().getStringUUID());
         }
     }
@@ -325,7 +325,7 @@ public class WDEvents {
         if (event.getSource().getEntity() instanceof ServerPlayer serverPlayer) {
             WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer);
             if (wdPlayer.getCurrentDungeon() == null || event.getSource().typeHolder().equals(DamageTypes.GENERIC_KILL)) return;
-            wdPlayer.getCurrentDungeon().getStats(wdPlayer).damageDealt += event.getNewDamage();
+            wdPlayer.getCurrentDungeon().getStats(wdPlayer.getUUID()).damageDealt += event.getNewDamage();
         }
     }
 
@@ -334,7 +334,7 @@ public class WDEvents {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
             WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer);
             if (wdPlayer.getCurrentDungeon() == null) return;
-            wdPlayer.getCurrentDungeon().getStats(wdPlayer).damageTaken += event.getNewDamage();
+            wdPlayer.getCurrentDungeon().getStats(wdPlayer.getUUID()).damageTaken += event.getNewDamage();
         }
     }
 

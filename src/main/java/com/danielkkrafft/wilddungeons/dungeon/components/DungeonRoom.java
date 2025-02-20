@@ -43,7 +43,6 @@ import org.joml.Vector2i;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Stream;
 
 import static com.danielkkrafft.wilddungeons.block.WDBedrockBlock.MIMIC;
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.*;
@@ -67,7 +66,7 @@ public class DungeonRoom {
     private final String materialKey;
     private int index;
     private boolean clear = false;
-    private final HashMap<String, DungeonSession.PlayerStatus> playerStatuses = new HashMap<>();
+    private final HashMap<String, Boolean> playerStatuses = new HashMap<>();
     private final Set<BlockPos> alwaysBreakable = new HashSet<>();
     private boolean lootGenerated = false;
 
@@ -89,7 +88,7 @@ public class DungeonRoom {
     public int getIndex() {return this.index;}
     public void setIndex(int index) {this.index = index;}
     public List<WDPlayer> getActivePlayers() {return this.playerStatuses.entrySet().stream().map(e -> {
-        if (e.getValue().inside) return WDPlayerManager.getInstance().getOrCreateServerWDPlayer(e.getKey());
+        if (e.getValue()) return WDPlayerManager.getInstance().getOrCreateServerWDPlayer(e.getKey());
         return null;
     }).filter(Objects::nonNull).toList();}
     public boolean isClear() {return this.clear;}
@@ -517,9 +516,9 @@ public class DungeonRoom {
         WildDungeons.getLogger().info("ENTERING ROOM {} OF CLASS {}", this.getTemplate().name(), this.getClass().getSimpleName());
         playerStatuses.computeIfAbsent(player.getUUID(), key -> {
             getSession().getStats(key).roomsFound += 1;
-            return new DungeonSession.PlayerStatus();
+            return true;
         });
-        this.playerStatuses.get(player.getUUID()).inside = true;
+        this.playerStatuses.put(player.getUUID(), true);
         player.setSoundScape(this.getProperty(SOUNDSCAPE), this.getProperty(INTENSITY), false);
     }
 
@@ -528,14 +527,9 @@ public class DungeonRoom {
 
     public void onBranchEnter(WDPlayer player) {
         if (!lootGenerated){
-            //DungeonSessionManager.getInstance().server.execute(this::processLootBlocks);
             this.processLootBlocks();
             lootGenerated = true;
         }
-    }
-
-    public void onEnterInner(WDPlayer player) {
-
     }
 
     public void onFloorComplete(){
@@ -546,8 +540,7 @@ public class DungeonRoom {
     }
 
     public void onExit(WDPlayer player) {
-        this.playerStatuses.get(player.getUUID()).inside = false;
-        this.playerStatuses.get(player.getUUID()).insideShell = false;
+        this.playerStatuses.put(player.getUUID(), false);
     }
 
     public void onClear() {
@@ -560,22 +553,8 @@ public class DungeonRoom {
 
     }
 
-    public void reset() {
-    }
-
-    public void tick() {
-        if (this.playerStatuses.values().stream().noneMatch(v -> v.inside)) return;
-        playerStatuses.forEach((key, value) -> {
-            if (!value.insideShell) {
-                WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(key);
-                ServerPlayer player = wdPlayer.getServerPlayer();
-                if (player != null && this.isPosInsideShell(player.blockPosition())) {
-                    value.insideShell = true;
-                    this.onEnterInner(wdPlayer);
-                }
-            }
-        });
-    }
+    public void reset() {}
+    public void tick() {}
 
     public void unsetAttachedPoints() {
         getConnectionPoints().forEach(connectionPoint -> {

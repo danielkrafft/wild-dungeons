@@ -172,9 +172,9 @@ public class SaveSystem {
                     floor.addBranch(branch);
                 });
                 floor.sortBranches();
-                session.addFloor(floor);
+                session.getFloors().add(floor);
             });
-            session.sortFloors();
+            if (session.getFloors() != null) session.getFloors().sort(Comparator.comparingInt(DungeonFloor::getIndex));
             sessions.put(session.getSessionKey(), session);
         });
         WDPlayerManager.getInstance().setServerPlayers(players);
