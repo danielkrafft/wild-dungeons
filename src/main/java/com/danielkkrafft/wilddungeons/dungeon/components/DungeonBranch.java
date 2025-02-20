@@ -91,6 +91,7 @@ public class DungeonBranch {
         }
 
         this.getRooms().forEach(room -> {
+            room.actuallyPlaceInWorld();
             room.processConnectionPoints(floor);
             room.processShell();
             room.onBranchComplete();

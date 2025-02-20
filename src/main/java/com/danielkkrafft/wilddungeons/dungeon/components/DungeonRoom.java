@@ -113,16 +113,6 @@ public class DungeonRoom {
         this.floorIndex = branch.getFloor().getIndex();
         this.boundingBoxes = this.getTemplate().getBoundingBoxes(settings, position);
 
-        getTemplate().templates().forEach(template -> {
-            BlockPos newOffset = StructureTemplate.transform(template.getSecond(), settings.getMirror(), settings.getRotation(), TemplateHelper.EMPTY_BLOCK_POS);
-            BlockPos newPosition = position.offset(newOffset);
-            TemplateHelper.placeInWorld(template.getFirst(),  this.getMaterial(), level, newPosition, template.getSecond(), settings, 130);
-        });
-
-        this.processRifts();
-
-        if (!(this instanceof TargetPurgeRoom)) this.processOfferings();
-
         if (getTemplate().spawnPoint() != null) {
             this.spawnPoint = TemplateHelper.transform(getTemplate().spawnPoint(), this);
             getTemplate().spawnPoints().forEach(spawnPoint -> {
@@ -135,13 +125,31 @@ public class DungeonRoom {
         });
     }
 
+    public void actuallyPlaceInWorld() {
+        getTemplate().templates().forEach(template -> {
+            BlockPos newOffset = StructureTemplate.transform(template.getSecond(), getSettings().getMirror(), getSettings().getRotation(), TemplateHelper.EMPTY_BLOCK_POS);
+            BlockPos newPosition = position.offset(newOffset);
+            TemplateHelper.placeInWorld(template.getFirst(),  this.getMaterial(), getBranch().getFloor().getLevel(), newPosition, template.getSecond(), getSettings(), 130);
+        });
+
+        this.processRifts();
+
+        if (!(this instanceof TargetPurgeRoom)) this.processOfferings();
+
+        if (getTemplate().spawnPoint() != null) {
+            getTemplate().spawnPoints().forEach(spawnPoint -> {
+                getBranch().getFloor().getLevel().setBlock(TemplateHelper.transform(spawnPoint, this), Blocks.AIR.defaultBlockState(), 130);
+            });
+        }
+    }
+
     /**
      * Returns all connection points in this room which are compatible with the input entrance point.
      *
      * @param entrancePoint The ConnectionPoint to test compatibility with.
      */
     public List<ConnectionPoint> getValidExitPoints(ConnectionPoint entrancePoint) {
-        return this.connectionPoints.stream().filter(point -> ConnectionPoint.arePointsCompatible(entrancePoint, point)).toList();
+        return this.connectionPoints.stream().filter(point -> ConnectionPoint.arePointsCompatible(entrancePoint, point)).toList().stream().map(point -> {point.setRoom(this); return point;}).toList();
     }
 
     /**
