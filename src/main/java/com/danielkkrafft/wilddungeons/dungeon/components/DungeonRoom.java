@@ -20,7 +20,9 @@ import com.danielkkrafft.wilddungeons.util.debug.WDProfiler;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -33,6 +35,7 @@ import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
@@ -120,7 +123,7 @@ public class DungeonRoom {
             });
         } else {this.spawnPoint = null;}
 
-        getChunkPosSet(this.boundingBoxes).forEach(pos -> {
+        getChunkPosSet(this.boundingBoxes, 0).forEach(pos -> {
             getBranch().getFloor().getChunkMap().computeIfAbsent(pos, k -> new ArrayList<>()).add(new Vector2i(getBranch().getIndex(), this.getIndex()));
         });
     }
@@ -129,7 +132,7 @@ public class DungeonRoom {
         getTemplate().templates().forEach(template -> {
             BlockPos newOffset = StructureTemplate.transform(template.getSecond(), getSettings().getMirror(), getSettings().getRotation(), TemplateHelper.EMPTY_BLOCK_POS);
             BlockPos newPosition = position.offset(newOffset);
-            TemplateHelper.placeInWorld(template.getFirst(),  this.getMaterial(), getBranch().getFloor().getLevel(), newPosition, template.getSecond(), getSettings(), 130);
+            TemplateHelper.placeInWorld(template.getFirst(),  this.getMaterial(), getBranch().getFloor().getLevel(), newPosition, template.getSecond(), getSettings(), 128);
         });
 
         this.processRifts();
@@ -138,8 +141,23 @@ public class DungeonRoom {
 
         if (getTemplate().spawnPoint() != null) {
             getTemplate().spawnPoints().forEach(spawnPoint -> {
-                getBranch().getFloor().getLevel().setBlock(TemplateHelper.transform(spawnPoint, this), Blocks.AIR.defaultBlockState(), 130);
+                getBranch().getFloor().getLevel().setBlock(TemplateHelper.transform(spawnPoint, this), Blocks.AIR.defaultBlockState(), 128);
             });
+        }
+        this.processConnectionPoints(getBranch().getFloor());
+        this.processShell();
+        this.onBranchComplete();
+
+        getChunkPosSet(this.boundingBoxes, 1).forEach(chunkPos -> forceUpdateChunk(getBranch().getFloor().getLevel(), chunkPos));
+    }
+
+    public static void forceUpdateChunk(ServerLevel level, ChunkPos chunkPos) {
+        LevelChunk chunk = level.getChunk(chunkPos.x, chunkPos.z);
+        if (chunk == null) return;
+
+        ChunkMap chunkMap = level.getChunkSource().chunkMap;
+        for (ServerPlayer player : chunkMap.getPlayers(chunkPos, false)) {
+            player.connection.send(new ClientboundLevelChunkWithLightPacket(chunk, level.getLightEngine(), null, null));
         }
     }
 
@@ -212,7 +230,7 @@ public class DungeonRoom {
                         case 4, 5 -> mutableBlockPos.set(wallOffset[i], y, x);
                     }
 
-                    if (predicate.apply(floor, room, mutableBlockPos) && !floor.getLevel().getServer().isShutdown()) floor.getLevel().setBlock(mutableBlockPos, blockState, 130);
+                    if (predicate.apply(floor, room, mutableBlockPos) && !floor.getLevel().getServer().isShutdown()) floor.getLevel().setBlock(mutableBlockPos, blockState, 128);
                 }
             }
         }
@@ -241,7 +259,7 @@ public class DungeonRoom {
             if (!room.isPosInsideShell(blockPos)) {
                 Block block = floor.getLevel().getBlockState(blockPos).getBlock();
                 if (block != WDBlocks.WD_BEDROCK.get() && block != Blocks.AIR) {
-                    floor.getLevel().setBlock(blockPos, WDBedrockBlock.of(floor.getLevel().getBlockState(blockPos).getBlock()), 130);
+                    floor.getLevel().setBlock(blockPos, WDBedrockBlock.of(floor.getLevel().getBlockState(blockPos).getBlock()), 128);
                 }
             }
             return false;
@@ -256,24 +274,10 @@ public class DungeonRoom {
         return (floor, room, blockPos) -> {
             if (!room.isPosInsideShell(blockPos)) {
                 BlockState blockState = floor.getLevel().getBlockState(blockPos);
-                if (blockState.hasProperty(MIMIC)) floor.getLevel().setBlock(blockPos, BuiltInRegistries.BLOCK.byId(floor.getLevel().getBlockState(blockPos).getValue(MIMIC)).defaultBlockState(), 130);
+                if (blockState.hasProperty(MIMIC)) floor.getLevel().setBlock(blockPos, BuiltInRegistries.BLOCK.byId(floor.getLevel().getBlockState(blockPos).getValue(MIMIC)).defaultBlockState(), 128);
             }
             return false;
         };
-    }
-
-    public static void fixContactedShells(DungeonFloor floor, List<BoundingBox> boundingBoxes, int branchToIgnore) {
-        Set<ChunkPos> chunkPosSet = getChunkPosSet(boundingBoxes);
-
-        floor.getChunkMap().forEach((key, value) -> {
-            if (chunkPosSet.contains(key)) {
-                value.forEach(v -> {
-                    if (v.x == branchToIgnore) return;
-                    DungeonRoom otherRoom = floor.getBranches().get(v.x).getRooms().get(v.y);
-                    otherRoom.processShell();
-                });
-            }
-        });
     }
 
     public boolean isPosInsideShell(BlockPos pos) {
@@ -300,11 +304,12 @@ public class DungeonRoom {
         return false;
     }
 
-    public static @NotNull Set<ChunkPos> getChunkPosSet(List<BoundingBox> boundingBoxes) {
+    public static @NotNull Set<ChunkPos> getChunkPosSet(List<BoundingBox> boundingBoxes, int inflation) {
         Set<ChunkPos> chunkPosSet = new HashSet<>();
         for (BoundingBox box : boundingBoxes) {
-            ChunkPos min = new ChunkPos(new BlockPos(box.minX(), box.minY(), box.minZ()));
-            ChunkPos max = new ChunkPos(new BlockPos(box.maxX(), box.maxY(), box.maxZ()));
+            BoundingBox inflatedBox = box.inflatedBy(inflation);
+            ChunkPos min = new ChunkPos(new BlockPos(inflatedBox.minX(), inflatedBox.minY(), inflatedBox.minZ()));
+            ChunkPos max = new ChunkPos(new BlockPos(inflatedBox.maxX(), inflatedBox.maxY(), inflatedBox.maxZ()));
 
             for (int x = min.x; x <= max.x; x++) {
                 for (int z = min.z; z <= max.z; z++) {
@@ -318,7 +323,7 @@ public class DungeonRoom {
 
     public void destroy() {
         unsetAttachedPoints();
-        Set<ChunkPos> chunkPosSet = getChunkPosSet(this.boundingBoxes);
+        Set<ChunkPos> chunkPosSet = getChunkPosSet(this.boundingBoxes, 0);
         getBranch().getFloor().getChunkMap().forEach((key, value) -> {
             value.removeIf(v -> chunkPosSet.contains(key) && v.x == getBranch().getIndex() && v.y == this.getIndex());
         });

@@ -116,7 +116,6 @@ public class WDEvents {
     @SubscribeEvent
     public static void onServerStart(ServerStartedEvent event) {
         DungeonSessionManager.getInstance().server = event.getServer();
-        asyncLoad.thenAccept((v) -> DungeonSessionManager.ValidateSessions());
     }
 
     @SubscribeEvent

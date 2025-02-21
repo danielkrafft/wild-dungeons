@@ -79,17 +79,6 @@ public class DungeonSession {
     }
 
     /**
-     * Run on server start. Branches set a flag when they are completely generated.
-     * This removes any partially generated branches, and then regenerates the floor from that point onward.
-     */
-    public void validate() {
-        floors.forEach(dungeonFloor -> {
-            dungeonFloor.removeInvalidRooms();
-            dungeonFloor.asyncGenerateBranches();
-        });
-    }
-
-    /**
      * Handles adding a player to any floor inside this DungeonSession, including cases where the player is moving in between floors.
      * DungeonFloor objects may not exist when a player is attempting to reach them, so logic is handled here instead.
      *
@@ -228,9 +217,29 @@ public class DungeonSession {
     }
 
     /**
-     * For sending data to the Post-Dungeon screen
-     */
-    public record DungeonStatsHolder(HashMap<String, DungeonStats> playerStats, String title, String icon, int primaryColor, int secondaryColor, int targetTime, int targetDeaths, int targetScore) { }
+         * For sending data to the Post-Dungeon screen
+         */
+        public static final class DungeonStatsHolder {
+        public final HashMap<String, DungeonStats> playerStats;
+        public final String title;
+        public final String icon;
+        public final int primaryColor;
+        public final int secondaryColor;
+        public final int targetTime;
+        public final int targetDeaths;
+        public final int targetScore;
+
+        public DungeonStatsHolder(HashMap<String, DungeonStats> playerStats, String title, String icon, int primaryColor, int secondaryColor, int targetTime, int targetDeaths, int targetScore) {
+            this.playerStats = playerStats;
+            this.title = title;
+            this.icon = icon;
+            this.primaryColor = primaryColor;
+            this.secondaryColor = secondaryColor;
+            this.targetTime = targetTime;
+            this.targetDeaths = targetDeaths;
+            this.targetScore = targetScore;
+        }
+    }
 
     /**
      * For tracking dungeon-specific player statistics

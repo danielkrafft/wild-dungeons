@@ -19,6 +19,8 @@ public class SaveSystem {
     private boolean loading = false;
     private boolean loaded = false;
 
+    //TODO the rewrite probably broke the save system
+
     public static void Save(){
         INSTANCE.save();
     }

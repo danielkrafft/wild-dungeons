@@ -176,6 +176,7 @@ public class DungeonFloor {
      * Called upon initial Floor creation, and during validation. Creates a CompletableFuture which attempts to place branches until the amount required by DungeonLayout is met.
      */
     public void asyncGenerateBranches() {
+
         CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
             int totalBranchCount = getTemplate().branchTemplates().size();
             int currentBranchCount = this.dungeonBranches.size();
@@ -190,7 +191,6 @@ public class DungeonFloor {
             }
 
             this.dungeonBranches.forEach(DungeonBranch::actuallyPlaceInWorld);
-
         }).handle((result, throwable) -> {
             if (throwable != null) WildDungeons.getLogger().error("Error generating branches", throwable);
             LockSupport.unpark(Thread.currentThread());
@@ -235,26 +235,6 @@ public class DungeonFloor {
                 playersWaitingToEnter.forEach(this::onEnter);
                 playersWaitingToEnter.clear();
             });
-        }
-    }
-
-    /**
-     * Deletes all blocks and entities associated with rooms which weren't finished generating upon quit. Also repairs adjacent bedrock shells.
-     */
-    public void removeInvalidRooms() {
-        if (!halfGeneratedRooms.isEmpty()) {
-            halfGeneratedRooms.forEach(box -> {
-                DungeonSessionManager.getInstance().server.execute(() -> {
-                    List<Entity> entities = getLevel().getEntitiesOfClass(Entity.class, AABB.of(box));
-                    entities.removeIf(livingEntity -> livingEntity instanceof ServerPlayer);
-                    entities.forEach(entity -> entity.remove(Entity.RemovalReason.DISCARDED));
-                });
-
-                DungeonRoom.fillShellWith(this, null, box, Blocks.AIR.defaultBlockState(), 1, DungeonRoom.isSafeForBoundingBoxes());
-                DungeonRoom.removeBlocks(this, box);
-            });
-            DungeonRoom.fixContactedShells(this, halfGeneratedRooms, -1);
-            halfGeneratedRooms.clear();
         }
     }
 

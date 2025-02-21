@@ -21,10 +21,6 @@ public class DungeonSessionManager {
 
     private DungeonSessionManager(){}
 
-    public static void ValidateSessions() {
-        INSTANCE.sessions.forEach((key, session) -> session.validate());
-    }
-
     public DungeonSession getDungeonSession(String key) {
         return sessions.getOrDefault(key, null);
     }

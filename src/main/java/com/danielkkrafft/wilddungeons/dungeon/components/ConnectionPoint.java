@@ -251,7 +251,6 @@ public class ConnectionPoint {
 
     public void unBlock(ServerLevel level) {
         unBlockedBlockStates.forEach((pos, blockState) -> level.setBlock(pos, TemplateHelper.fixBlockStateProperties(blockStateFromString(blockState), this.getRoom().getSettings()), 2));
-        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::unBlock");
     }
 
     public void loadingBlock(ServerLevel level) {
@@ -299,8 +298,7 @@ public class ConnectionPoint {
     }
 
     public void unSetConnectedPoint() {
-        this.block(this.getRoom().getBranch().getFloor().getLevel());
-        this.removeDecal(this.getRoom().getDecalTexture(), this.getRoom().getDecalColor());
+        if (this.getRoom().getDecalTexture() != null) this.removeDecal(this.getRoom().getDecalTexture(), this.getRoom().getDecalColor());
         this.connectedPointIndex = -1;
         this.connectedBranchIndex = -1;
         this.connectedRoomIndex = -1;
