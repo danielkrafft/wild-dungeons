@@ -67,21 +67,21 @@ public final class DungeonRoomTemplate implements DungeonRegistration.DungeonCom
                 .set(HierarchicalProperty.DIFFICULTY_MODIFIER, 1.0);
     }
 
-    public List<BoundingBox> getBoundingBoxes(StructurePlaceSettings settings, BlockPos position) {
+    public List<BoundingBox> getBoundingBoxes(TemplateOrientation orientation, BlockPos position) {
         List<BoundingBox> boundingBoxes = new ArrayList<>();
         templates.forEach(template -> {
-            BlockPos newOffset = StructureTemplate.transform(template.getSecond(), settings.getMirror(), settings.getRotation(), TemplateHelper.EMPTY_BLOCK_POS);
+            BlockPos newOffset = StructureTemplate.transform(template.getSecond(), orientation.getMirror(), orientation.getRotation(), TemplateHelper.EMPTY_BLOCK_POS);
             BlockPos newPosition = position.offset(newOffset);
-            boundingBoxes.add(template.getFirst().getBoundingBox(settings, newPosition));
+            boundingBoxes.add(template.getFirst().getBoundingBox(new StructurePlaceSettings().setMirror(orientation.getMirror()).setRotation(orientation.getRotation()), newPosition));
         });
         return boundingBoxes;
     }
 
 
-    public DungeonRoom placeInWorld(DungeonBranch branch, BlockPos position, StructurePlaceSettings settings) {
+    public DungeonRoom placeInWorld(DungeonBranch branch, BlockPos position, TemplateOrientation orientation) {
         try {
-            return (DungeonRoom) this.getClazz().getDeclaredConstructor(DungeonBranch.class, String.class, BlockPos.class, StructurePlaceSettings.class)
-                    .newInstance(branch, this.name, position, settings);
+            return (DungeonRoom) this.getClazz().getDeclaredConstructor(DungeonBranch.class, String.class, BlockPos.class, TemplateOrientation.class)
+                    .newInstance(branch, this.name, position, orientation);
         } catch (Exception e) {
             WildDungeons.getLogger().error("Failed to create instance of DungeonRoom class for room template: {}", this.name);
             e.printStackTrace();

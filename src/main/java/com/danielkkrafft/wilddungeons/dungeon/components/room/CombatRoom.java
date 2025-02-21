@@ -7,6 +7,7 @@ import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonTarget;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateOrientation;
 import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import net.minecraft.core.BlockPos;
@@ -29,8 +30,8 @@ public class CombatRoom extends TargetPurgeRoom {
 
     public int totalSpawns = 0;
 
-    public CombatRoom(DungeonBranch branch, String templateKey, BlockPos position, StructurePlaceSettings settings) {
-        super(branch, templateKey, position, settings);
+    public CombatRoom(DungeonBranch branch, String templateKey, BlockPos position, TemplateOrientation orientation) {
+        super(branch, templateKey, position, orientation);
     }
 
     @Override

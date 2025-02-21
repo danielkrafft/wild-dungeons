@@ -5,6 +5,7 @@ import com.danielkkrafft.wilddungeons.block.WDBedrockBlock;
 import com.danielkkrafft.wilddungeons.dungeon.components.ConnectionPoint;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateOrientation;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
@@ -24,8 +25,8 @@ public class LockableEventRoom extends DungeonRoom {
     public boolean started = false;
     public boolean generated = false;
 
-    public LockableEventRoom(DungeonBranch branch, String templateKey, BlockPos position, StructurePlaceSettings settings) {
-        super(branch, templateKey, position, settings);
+    public LockableEventRoom(DungeonBranch branch, String templateKey, BlockPos position, TemplateOrientation orientation) {
+        super(branch, templateKey, position, orientation);
     }
 
     public void start() {

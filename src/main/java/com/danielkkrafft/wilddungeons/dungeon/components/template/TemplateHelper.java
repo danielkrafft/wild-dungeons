@@ -19,7 +19,6 @@ import net.minecraft.world.Clearable;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -49,9 +48,9 @@ public class TemplateHelper {
 
         templates.forEach(template -> {
 
-            BoundingBox boundingBox = template.getFirst().getBoundingBox(new StructurePlaceSettings(), template.getSecond());
+            BoundingBox boundingBox = template.getFirst().getBoundingBox(EMPTY_DUNGEON_SETTINGS, template.getSecond());
 
-            List<StructureTemplate.StructureBlockInfo> CONNECTION_BLOCKS = template.getFirst().filterBlocks(template.getSecond(), new StructurePlaceSettings(), WDBlocks.CONNECTION_BLOCK.get());
+            List<StructureTemplate.StructureBlockInfo> CONNECTION_BLOCKS = template.getFirst().filterBlocks(template.getSecond(), EMPTY_DUNGEON_SETTINGS, WDBlocks.CONNECTION_BLOCK.get());
             for (StructureTemplate.StructureBlockInfo block : CONNECTION_BLOCKS) {
 
                 Direction blockDirection;
@@ -73,8 +72,8 @@ public class TemplateHelper {
 
                 ConnectionPoint targetPoint = null;
                 for (ConnectionPoint point : connectionPoints) {
-                    if (point.getDirection(EMPTY_DUNGEON_SETTINGS) != blockDirection) continue;
-                    if (point.getPositions(EMPTY_DUNGEON_SETTINGS, EMPTY_BLOCK_POS).stream().noneMatch(pos -> block.pos().closerThan(pos, 2.0))) continue;
+                    if (point.getDirection(TemplateOrientation.EMPTY) != blockDirection) continue;
+                    if (point.getPositions(TemplateOrientation.EMPTY, EMPTY_BLOCK_POS).stream().noneMatch(pos -> block.pos().closerThan(pos, 2.0))) continue;
                     targetPoint = point;
                 }
 
@@ -96,7 +95,7 @@ public class TemplateHelper {
     public static List<StructureTemplate.StructureBlockInfo> locateDataMarkers(List<Pair<StructureTemplate, BlockPos>> templates) {
         List<StructureTemplate.StructureBlockInfo> result = new ArrayList<>();
         templates.forEach(template -> {
-            result.addAll(template.getFirst().filterBlocks(template.getSecond(), new StructurePlaceSettings(), Blocks.STRUCTURE_BLOCK));
+            result.addAll(template.getFirst().filterBlocks(template.getSecond(), EMPTY_DUNGEON_SETTINGS, Blocks.STRUCTURE_BLOCK));
             result.removeIf(block -> {
                 if (block.state().getValue(StructureBlock.MODE) != StructureMode.DATA) return true;
                 CompoundTag nbt = block.nbt();
@@ -116,6 +115,7 @@ public class TemplateHelper {
                 if (direction == Direction.NORTH || direction == Direction.SOUTH) {return direction.getOpposite();}
                 break;
         }
+        WDProfiler.INSTANCE.logTimestamp("TemplateHelper::mirrorDirection");
         return direction;
     }
 
@@ -129,25 +129,27 @@ public class TemplateHelper {
         };
     }
 
-    public static StructurePlaceSettings handleRoomTransformation(ConnectionPoint entrancePoint, ConnectionPoint exitPoint) {
-        StructurePlaceSettings settings = new StructurePlaceSettings();
+    public static TemplateOrientation handleRoomTransformation(ConnectionPoint entrancePoint, ConnectionPoint exitPoint) {
+        TemplateOrientation orientation = new TemplateOrientation();
 
-        if (entrancePoint.getDirection(settings).getAxis() == Direction.Axis.Y) {
-            settings.setMirror(exitPoint.getRoom().getSettings().getMirror());
-            settings.setRotation(exitPoint.getRoom().getSettings().getRotation());
-            return settings;
+        if (entrancePoint.getDirection(orientation).getAxis() == Direction.Axis.Y) {
+            orientation.setMirror(exitPoint.getRoom().getSettings().getMirror());
+            orientation.setRotation(exitPoint.getRoom().getSettings().getRotation());
+            WDProfiler.INSTANCE.logTimestamp("TemplateHelper::handleRoomTransformation");
+            return orientation;
         }
 
-        settings.setMirror(RandomUtil.randomFromList(Arrays.stream(Mirror.values()).toList()));
-        if (exitPoint.getDirection(exitPoint.getRoom().getSettings()) == entrancePoint.getDirection(settings)) {
-            settings.setRotation(Rotation.CLOCKWISE_180);
-        } else if (exitPoint.getDirection(exitPoint.getRoom().getSettings()) == entrancePoint.getDirection(settings).getClockWise()) {
-            settings.setRotation(Rotation.COUNTERCLOCKWISE_90);
-        } else if (exitPoint.getDirection(exitPoint.getRoom().getSettings()) == entrancePoint.getDirection(settings).getCounterClockWise()) {
-            settings.setRotation(Rotation.CLOCKWISE_90);
+        orientation.setMirror(RandomUtil.randomFromList(Arrays.stream(Mirror.values()).toList()));
+        if (exitPoint.getDirection(exitPoint.getRoom().getOrientation()) == entrancePoint.getDirection(orientation)) {
+            orientation.setRotation(Rotation.CLOCKWISE_180);
+        } else if (exitPoint.getDirection(exitPoint.getRoom().getOrientation()) == entrancePoint.getDirection(orientation).getClockWise()) {
+            orientation.setRotation(Rotation.COUNTERCLOCKWISE_90);
+        } else if (exitPoint.getDirection(exitPoint.getRoom().getOrientation()) == entrancePoint.getDirection(orientation).getCounterClockWise()) {
+            orientation.setRotation(Rotation.CLOCKWISE_90);
         }
 
-        return settings;
+        WDProfiler.INSTANCE.logTimestamp("TemplateHelper::handleRoomTransformation");
+        return orientation;
     }
 
     public static BlockPos transform(BlockPos input, DungeonRoom room) {
@@ -163,6 +165,7 @@ public class TemplateHelper {
         SPAWN_BLOCKS.forEach(block -> {
             result.add(block.pos());
         });
+
         return SPAWN_BLOCKS.isEmpty() ? null : result;
     }
 
@@ -372,6 +375,7 @@ public class TemplateHelper {
                 });
             }
         }
+        WDProfiler.INSTANCE.logTimestamp("TemplateHelper::addEntitiesToWorld");
 
     }
 

@@ -6,6 +6,7 @@ import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonTarget;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateOrientation;
 import com.danielkkrafft.wilddungeons.dungeon.registries.OfferingTemplateTableRegistry;
 import com.danielkkrafft.wilddungeons.entity.Offering;
 import net.minecraft.core.BlockPos;
@@ -18,8 +19,8 @@ import java.util.List;
 
 public class LootRoom extends TargetPurgeRoom {
 
-    public LootRoom(DungeonBranch branch, String templateKey, BlockPos position, StructurePlaceSettings settings) {
-        super(branch, templateKey, position, settings);
+    public LootRoom(DungeonBranch branch, String templateKey, BlockPos position, TemplateOrientation orientation) {
+        super(branch, templateKey, position, orientation);
     }
 
     @Override

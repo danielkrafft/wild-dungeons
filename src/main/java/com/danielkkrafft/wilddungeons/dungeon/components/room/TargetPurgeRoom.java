@@ -4,6 +4,7 @@ import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.components.ConnectionPoint;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonTarget;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateOrientation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 
@@ -18,8 +19,8 @@ public class TargetPurgeRoom extends LockableEventRoom {
     public List<DungeonTarget> targets = new ArrayList<>();
     public int checkTimer = SET_PURGE_INTERVAL;
 
-    public TargetPurgeRoom(DungeonBranch branch, String templateKey, BlockPos position, StructurePlaceSettings settings) {
-        super(branch, templateKey, position, settings);
+    public TargetPurgeRoom(DungeonBranch branch, String templateKey, BlockPos position, TemplateOrientation orientation) {
+        super(branch, templateKey, position, orientation);
     }
 
     @Override

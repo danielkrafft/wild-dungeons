@@ -5,6 +5,7 @@ import com.danielkkrafft.wilddungeons.block.WDBedrockBlock;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateOrientation;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.entity.blockentity.ConnectionBlockEntity;
 import com.danielkkrafft.wilddungeons.network.ClientPacketHandler;
@@ -55,10 +56,11 @@ public class ConnectionPoint {
     private String direction;
 
     private BoundingBox boundingBox;
+    @Serializer.IgnoreSerialization private BoundingBox cachedBoundingBox = null;
     private HashMap<BlockPos, String> unBlockedBlockStates = new HashMap<>();
 
     @Serializer.IgnoreSerialization private DungeonRoom room = null;
-    @Serializer.IgnoreSerialization public StructurePlaceSettings tempSettings = null;
+    @Serializer.IgnoreSerialization public TemplateOrientation tempOrientation = null;
 
     public String getType() {return this.type;}
     public void setType(String type) {this.type = type;}
@@ -82,23 +84,30 @@ public class ConnectionPoint {
         this.connectedPointIndex = connectedPoint.index;
         this.connectedRoomIndex = connectedPoint.getRoom().getIndex();
         this.connectedBranchIndex = connectedPoint.getRoom().getBranch().getIndex();}
-    public BlockPos getOrigin(StructurePlaceSettings settings, BlockPos position) {BoundingBox transBox = getBoundingBox(settings, position); return new BlockPos(transBox.minX(), transBox.minY(), transBox.minZ());}
+    public BlockPos getOrigin(TemplateOrientation orientation, BlockPos position) {BoundingBox transBox = getBoundingBox(orientation, position); return new BlockPos(transBox.minX(), transBox.minY(), transBox.minZ());}
     public void addPosition(BlockPos pos) {this.boundingBox.encapsulate(pos);}
     public void setIndex(int index) {this.index = index;}
     public int getIndex() {return this.index;}
     private ConnectionPoint() {}
 
-    public BoundingBox getBoundingBox(StructurePlaceSettings settings, BlockPos position) {
-        BlockPos min = StructureTemplate.transform(new BlockPos(this.boundingBox.minX(), this.boundingBox.minY(), this.boundingBox.minZ()), settings.getMirror(), settings.getRotation(), TemplateHelper.EMPTY_BLOCK_POS);
-        BlockPos max = StructureTemplate.transform(new BlockPos(this.boundingBox.maxX(), this.boundingBox.maxY(), this.boundingBox.maxZ()), settings.getMirror(), settings.getRotation(), TemplateHelper.EMPTY_BLOCK_POS);
+    public BoundingBox getBoundingBox(TemplateOrientation orientation, BlockPos position) {
+        BlockPos min = StructureTemplate.transform(new BlockPos(this.boundingBox.minX(), this.boundingBox.minY(), this.boundingBox.minZ()), orientation.getMirror(), orientation.getRotation(), TemplateHelper.EMPTY_BLOCK_POS);
+        BlockPos max = StructureTemplate.transform(new BlockPos(this.boundingBox.maxX(), this.boundingBox.maxY(), this.boundingBox.maxZ()), orientation.getMirror(), orientation.getRotation(), TemplateHelper.EMPTY_BLOCK_POS);
 
         BoundingBox result = new BoundingBox(Math.min(min.getX(), max.getX()) + position.getX(), Math.min(min.getY(), max.getY()) + position.getY(), Math.min(min.getZ(), max.getZ()) + position.getZ(), Math.max(max.getX(), min.getX()) + position.getX(), Math.max(max.getY(), min.getY()) + position.getY(), Math.max(max.getZ(), min.getZ()) + position.getZ());
+        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::getBoundingBox");
         return result;
     }
 
-    public List<BlockPos> getPositions(StructurePlaceSettings settings, BlockPos position) {
+    public BoundingBox getRealBoundingBox() {
+        if (cachedBoundingBox == null) cachedBoundingBox = getBoundingBox(getRoom().getOrientation(), getRoom().getPosition());
+        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::getRealBoundingBox");
+        return cachedBoundingBox;
+    }
+
+    public List<BlockPos> getPositions(TemplateOrientation orientation, BlockPos position) {
         List<BlockPos> result = new ArrayList<>();
-        BoundingBox transBox = getBoundingBox(settings, position);
+        BoundingBox transBox = getBoundingBox(orientation, position);
         for (int x = transBox.minX(); x <= transBox.maxX(); x++) {
             for (int y = transBox.minY(); y <= transBox.maxY(); y++) {
                 for (int z = transBox.minZ(); z <= transBox.maxZ(); z++) {
@@ -106,14 +115,21 @@ public class ConnectionPoint {
                 }
             }
         }
+        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::getPositions");
         return result;
     }
 
-    public Direction getDirection(StructurePlaceSettings settings) {
-        Direction direction;
-        direction = TemplateHelper.mirrorDirection(Direction.byName(this.direction), settings.getMirror());
-        direction = TemplateHelper.rotateDirection(Direction.byName(direction.getName()), settings.getRotation());
-        return direction;
+    @Serializer.IgnoreSerialization private HashMap<TemplateOrientation, Direction> cachedDirections = new HashMap<>();
+    public Direction getDirection(TemplateOrientation orientation) {
+        cachedDirections.computeIfAbsent(orientation, o -> {
+            Direction direction;
+            direction = TemplateHelper.mirrorDirection(Direction.byName(this.direction), orientation.getMirror());
+            direction = TemplateHelper.rotateDirection(Direction.byName(direction.getName()), orientation.getRotation());
+            return direction;
+        });
+
+        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::getDirection");
+        return cachedDirections.get(orientation);
     }
 
     public static ConnectionPoint create(BlockPos position, Direction direction) {
@@ -129,14 +145,20 @@ public class ConnectionPoint {
         CompoundTag oldTag = Serializer.toCompoundTag(oldPoint);
         ConnectionPoint newPoint = Serializer.fromCompoundTag(oldTag);
         newPoint.room = oldPoint.room;
+        newPoint.cachedDirections = oldPoint.cachedDirections;
+        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::copy");
         return newPoint;
     }
 
+    public static final HashMap<String, BlockState> STRINGS_TO_BLOCKSTATES = new HashMap<>();
+
     public static BlockState blockStateFromString(String state) {
-        BlockState blockState;
-        try { blockState = BlockStateParser.parseForBlock(BuiltInRegistries.BLOCK.asLookup(), state, true).blockState();
-        } catch (CommandSyntaxException e) { blockState = Blocks.AIR.defaultBlockState();}
-        return blockState;
+        STRINGS_TO_BLOCKSTATES.computeIfAbsent(state, key -> {
+            try { return BlockStateParser.parseForBlock(BuiltInRegistries.BLOCK.asLookup(), key, true).blockState();
+            } catch (CommandSyntaxException e) { return Blocks.AIR.defaultBlockState();}
+        });
+        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::blockStateFromString");
+        return STRINGS_TO_BLOCKSTATES.get(state);
     }
 
     public static String toString(BlockState state) {
@@ -148,8 +170,8 @@ public class ConnectionPoint {
                 !ex.isConnected(),
                 !Objects.equals(ex.type, "entrance"),
                 Objects.equals(en.pool, ex.pool),
-                en.getDirection(TemplateHelper.EMPTY_DUNGEON_SETTINGS).getAxis() != Direction.Axis.Y || ex.getDirection(ex.getRoom().getSettings()).getName().equals(en.getDirection(TemplateHelper.EMPTY_DUNGEON_SETTINGS).getOpposite().getName()),
-                en.getSize(TemplateHelper.EMPTY_DUNGEON_SETTINGS, TemplateHelper.EMPTY_BLOCK_POS).equals(ex.getSize(ex.getRoom().getSettings(), ex.getRoom().getPosition()))
+                en.getDirection(TemplateOrientation.EMPTY).getAxis() != Direction.Axis.Y || ex.getDirection(TemplateOrientation.EMPTY).getName().equals(en.getDirection(TemplateOrientation.EMPTY).getOpposite().getName()),
+                en.getSize(TemplateOrientation.EMPTY, TemplateHelper.EMPTY_BLOCK_POS).equals(ex.getSize(ex.getRoom().getOrientation(), ex.getRoom().getPosition()))
         );
 
         WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::arePointsCompatible");
@@ -157,47 +179,49 @@ public class ConnectionPoint {
     }
 
     public static ConnectionPoint selectBestPoint(List<ConnectionPoint> pointPool, DungeonBranch branch, int yTarget, double branchWeight, double floorWeight, double heightWeight, double randomWeight) {
-        int totalBranchDistance = pointPool.stream().mapToInt(point -> branch.getRooms().isEmpty() ? 0 : point.getOrigin(point.getRoom().getSettings(), point.getRoom().getPosition()).distManhattan(branch.getRooms().getFirst().getPosition())).sum();
-        int totalFloorDistance = pointPool.stream().mapToInt(point -> point.getOrigin(point.getRoom().getSettings(), point.getRoom().getPosition()).distManhattan(branch.getFloor().getOrigin())).sum();
-        int totalHeightDistance = pointPool.stream().mapToInt(point -> Math.abs(point.getOrigin(point.getRoom().getSettings(), point.getRoom().getPosition()).getY() - yTarget)).sum();
+        int totalBranchDistance = pointPool.stream().mapToInt(point -> branch.getRooms().isEmpty() ? 0 : point.getOrigin(point.getRoom().getOrientation(), point.getRoom().getPosition()).distManhattan(branch.getRooms().getFirst().getPosition())).sum();
+        int totalFloorDistance = pointPool.stream().mapToInt(point -> point.getOrigin(point.getRoom().getOrientation(), point.getRoom().getPosition()).distManhattan(branch.getFloor().getOrigin())).sum();
+        int totalHeightDistance = pointPool.stream().mapToInt(point -> Math.abs(point.getOrigin(point.getRoom().getOrientation(), point.getRoom().getPosition()).getY() - yTarget)).sum();
 
         return pointPool.stream().map(point -> {
-            int distanceToBranchOrigin = branch.getRooms().isEmpty() ? 0 : point.getOrigin(point.getRoom().getSettings(), point.getRoom().getPosition()).distManhattan(branch.getRooms().getFirst().getPosition());
-            int distanceToFloorOrigin = point.getOrigin(point.getRoom().getSettings(), point.getRoom().getPosition()).distManhattan(branch.getFloor().getOrigin());
-            int distanceToYTarget = Math.abs(point.getOrigin(point.getRoom().getSettings(), point.getRoom().getPosition()).getY() - yTarget);
+            int distanceToBranchOrigin = branch.getRooms().isEmpty() ? 0 : point.getOrigin(point.getRoom().getOrientation(), point.getRoom().getPosition()).distManhattan(branch.getRooms().getFirst().getPosition());
+            int distanceToFloorOrigin = point.getOrigin(point.getRoom().getOrientation(), point.getRoom().getPosition()).distManhattan(branch.getFloor().getOrigin());
+            int distanceToYTarget = Math.abs(point.getOrigin(point.getRoom().getOrientation(), point.getRoom().getPosition()).getY() - yTarget);
 
             int score = 0;
             score += (int) (branchWeight * distanceToBranchOrigin / totalBranchDistance);
             score += (int) (floorWeight * distanceToFloorOrigin / totalFloorDistance);
             score += (int) (heightWeight * distanceToYTarget / totalHeightDistance);
             score += (int) (randomWeight * Math.random());
-
+            WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::selectBestPoint");
             return new Pair<>(point, score);
         }).max(Comparator.comparingInt(Pair::getSecond)).map(Pair::getFirst).orElse(null);
     }
 
-    public static BlockPos getOffset(StructurePlaceSettings settings, BlockPos position, ConnectionPoint en, ConnectionPoint ex) {
-        BoundingBox enTransBox = en.getBoundingBox(settings, position);
-        BoundingBox exTransBox = ex.getBoundingBox(ex.room.getSettings(), ex.room.getPosition());
+    public static BlockPos getOffset(TemplateOrientation orientation, BlockPos position, ConnectionPoint en, ConnectionPoint ex) {
+        BoundingBox enTransBox = en.getBoundingBox(orientation, position);
+        BoundingBox exTransBox = ex.getBoundingBox(ex.room.getOrientation(), ex.room.getPosition());
+        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::getOffset");
         return new BlockPos(exTransBox.minX() - enTransBox.minX(), exTransBox.minY() - enTransBox.minY(), exTransBox.minZ() - enTransBox.minZ());
     }
 
-    public Vector2i getSize(StructurePlaceSettings settings, BlockPos position) {
-        int x = this.getBoundingBox(settings, position).getXSpan();
-        int y = this.getBoundingBox(settings, position).getYSpan();
-        int z = this.getBoundingBox(settings, position).getZSpan();
+    public Vector2i getSize(TemplateOrientation orientation, BlockPos position) {
+        int x = this.getBoundingBox(orientation, position).getXSpan();
+        int y = this.getBoundingBox(orientation, position).getYSpan();
+        int z = this.getBoundingBox(orientation, position).getZSpan();
 
-        Vector2i result = switch (getDirection(settings)) {
+        Vector2i result = switch (getDirection(orientation)) {
             case UP, DOWN -> new Vector2i(x, z);
             case NORTH, SOUTH -> new Vector2i(x, y);
             case EAST, WEST -> new Vector2i(z, y);
         };
 
+        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::getSize");
         return result;
     }
 
-    public void setupBlockstates(StructurePlaceSettings settings, BlockPos position, ServerLevel level) {
-        for (BlockPos pos : this.getPositions(settings, position)) {
+    public void setupBlockstates(TemplateOrientation orientation, BlockPos position, ServerLevel level) {
+        for (BlockPos pos : this.getPositions(orientation, position)) {
             BlockEntity blockEntity = level.getChunkAt(pos).getBlockEntity(pos, LevelChunk.EntityCreationType.IMMEDIATE);
 
             if (blockEntity instanceof ConnectionBlockEntity connectionBlockEntity) {
@@ -214,9 +238,9 @@ public class ConnectionPoint {
     public void block(ServerLevel level, int flags) {
         this.getRoom().getActivePlayers().forEach(wdPlayer -> {
             ServerPlayer player = wdPlayer.getServerPlayer();
-            if (player!=null && this.getBoundingBox(this.getRoom().getSettings(), this.getRoom().getPosition()).isInside(player.blockPosition())) {
+            if (player!=null && this.getRealBoundingBox().isInside(player.blockPosition())) {
                 Vec3 position = wdPlayer.getServerPlayer().position();
-                Vec3i normal = this.getConnectedPoint().getDirection(this.getConnectedPoint().getRoom().getSettings()).getNormal();
+                Vec3i normal = this.getConnectedPoint().getDirection(this.getConnectedPoint().getRoom().getOrientation()).getNormal();
                 WildDungeons.getLogger().info("CONNECTED POINT NORMAL: {}", normal);
                 Vec3 newPosition = new Vec3(
                         position.get(Direction.Axis.X) + normal.getX() * 1.5f,
@@ -226,7 +250,7 @@ public class ConnectionPoint {
                 wdPlayer.getServerPlayer().moveTo(newPosition);
             }
         });
-        getPositions(this.getRoom().getSettings(), this.getRoom().getPosition()).forEach((pos) -> {
+        getPositions(this.getRoom().getOrientation(), this.getRoom().getPosition()).forEach((pos) -> {
             if (this.getRoom().getProperty(HierarchicalProperty.DESTRUCTION_RULE).equals(DungeonRoomTemplate.DestructionRule.SHELL) || (this.getRoom().getProperty(HierarchicalProperty.DESTRUCTION_RULE).equals(DungeonRoomTemplate.DestructionRule.SHELL_CLEAR) && !this.getRoom().isClear())) {
                 level.setBlock(pos, WDBedrockBlock.of(this.getRoom().getMaterial().getBasic(getRoom().getProperty(HierarchicalProperty.BLOCKING_MATERIAL_INDEX)).getBlock()), flags);
             } else {
@@ -237,24 +261,19 @@ public class ConnectionPoint {
     }
 
     public Vector3f getAveragePosition() {
-        BoundingBox box = this.getBoundingBox(this.getRoom().getSettings(), this.getRoom().getPosition());
+        BoundingBox box = this.getRealBoundingBox();
+        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::getAveragePosition");
         return new Vector3f(box.minX() + (float) box.getXSpan() /2, box.minY() + (float) box.getYSpan() /2, box.minZ() + (float) box.getZSpan() /2);
     }
 
-    public void complete() {
-        this.room = null;
-    }
-
     public void hide(ServerLevel level) {
-        getPositions(this.getRoom().getSettings(), this.getRoom().getPosition()).forEach((pos) -> level.setBlock(pos, this.getRoom().getMaterial().getHidden(0), 2));
+        getPositions(this.getRoom().getOrientation(), this.getRoom().getPosition()).forEach((pos) -> level.setBlock(pos, this.getRoom().getMaterial().getHidden(0), 2));
+        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::hide");
     }
 
     public void unBlock(ServerLevel level) {
         unBlockedBlockStates.forEach((pos, blockState) -> level.setBlock(pos, TemplateHelper.fixBlockStateProperties(blockStateFromString(blockState), this.getRoom().getSettings()), 2));
-    }
-
-    public void loadingBlock(ServerLevel level) {
-        unBlockedBlockStates.forEach((pos, blockState) -> level.setBlock(pos, WDBedrockBlock.of(Blocks.REDSTONE_BLOCK), 2));
+        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::unBlock");
     }
 
     public void addDecal(ResourceLocation texture, int color) {
@@ -263,6 +282,7 @@ public class ConnectionPoint {
         tag.putString("packet", ClientPacketHandler.Packets.ADD_DECAL.toString());
         tag.put("decal", Serializer.toCompoundTag(this.getDecal(texture, color)));
         PacketDistributor.sendToAllPlayers(new SimplePacketManager.ClientboundTagPacket(tag));
+        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::addDecal");
     }
 
     public void removeDecal(ResourceLocation texture, int color) {
@@ -271,13 +291,14 @@ public class ConnectionPoint {
         tag.putString("packet", ClientPacketHandler.Packets.REMOVE_DECAL.toString());
         tag.put("decal", Serializer.toCompoundTag(this.getDecal(texture, color)));
         PacketDistributor.sendToAllPlayers(new SimplePacketManager.ClientboundTagPacket(tag));
+        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::removeDecal");
     }
 
     public DecalRenderer.Decal getDecal(ResourceLocation texture, int color) {
         if (texture == null) return null;
         Vector3f avgPosition = this.getAveragePosition();
-        BoundingBox box = this.getBoundingBox(this.getRoom().getSettings(), this.getRoom().getPosition());
-        Direction.Axis axis = this.getDirection(this.getRoom().getSettings()).getAxis();
+        BoundingBox box = this.getRealBoundingBox();
+        Direction.Axis axis = this.getDirection(this.getRoom().getOrientation()).getAxis();
         float width = 1.0f;
         float height = 1.0f;
         switch (axis) {
@@ -294,6 +315,7 @@ public class ConnectionPoint {
                 height = box.getYSpan();
             }
         }
+        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::getDecal");
         return new DecalRenderer.Decal(texture, avgPosition.x, avgPosition.y, avgPosition.z, Math.min(width, height) * 0.75f, Math.min(width, height) * 0.75f, axis, color, this.getRoom().getBranch().getFloor().getLevelKey());
     }
 
@@ -302,9 +324,6 @@ public class ConnectionPoint {
         this.connectedPointIndex = -1;
         this.connectedBranchIndex = -1;
         this.connectedRoomIndex = -1;
-    }
-
-    public int getConnectedBranchIndex() {
-        return this.connectedBranchIndex;
+        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::unSetConnectedPoint");
     }
 }
