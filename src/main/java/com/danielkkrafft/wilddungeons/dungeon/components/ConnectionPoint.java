@@ -206,9 +206,10 @@ public class ConnectionPoint {
     }
 
     public Vector2i getSize(TemplateOrientation orientation, BlockPos position) {
-        int x = this.getBoundingBox(orientation, position).getXSpan();
-        int y = this.getBoundingBox(orientation, position).getYSpan();
-        int z = this.getBoundingBox(orientation, position).getZSpan();
+        BoundingBox box = this.getBoundingBox(orientation, position);
+        int x = box.getXSpan();
+        int y = box.getYSpan();
+        int z = box.getZSpan();
 
         Vector2i result = switch (getDirection(orientation)) {
             case UP, DOWN -> new Vector2i(x, z);
