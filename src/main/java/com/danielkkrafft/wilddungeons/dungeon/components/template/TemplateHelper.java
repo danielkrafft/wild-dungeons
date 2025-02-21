@@ -302,7 +302,7 @@ public class TemplateHelper {
                         if (structuretemplate$structureblockinfo.nbt() != null) {
                             BlockEntity blockentity = serverLevel.getBlockEntity(structuretemplate$structureblockinfo.pos());
                             Clearable.tryClear(blockentity);
-                            serverLevel.setBlock(structuretemplate$structureblockinfo.pos(), Blocks.BARRIER.defaultBlockState(), 20);
+                            serverLevel.setBlock(structuretemplate$structureblockinfo.pos(), Blocks.BARRIER.defaultBlockState(), 0);
                         }
 
                         if (serverLevel.setBlock(structuretemplate$structureblockinfo.pos(), blockstate, flags)) {

@@ -116,7 +116,6 @@ public class DecalRenderer {
         public ResourceKey<Level> dimension;
 
         public Decal(ResourceLocation texture, float originX, float originY, float originZ, float width, float height, Direction.Axis axis, int color, ResourceKey<Level> dimension) {
-            WildDungeons.getLogger().info("BUILDING NEW DECAL AT ORIGIN {}, {}, {} with texture {} and color {}", originX, originY, originZ, texture, color);
             this.texture = texture;
             this.dimension = dimension;
             this.chunkPos = new ChunkPos(new BlockPos((int) originX, (int) originY, (int) originZ));

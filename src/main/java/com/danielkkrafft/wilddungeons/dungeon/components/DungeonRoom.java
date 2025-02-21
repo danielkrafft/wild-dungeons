@@ -25,7 +25,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Block;
@@ -124,15 +123,18 @@ public class DungeonRoom {
         } else {this.spawnPoint = null;}
 
         getChunkPosSet(this.boundingBoxes, 0).forEach(pos -> {
-            getBranch().getFloor().getChunkMap().computeIfAbsent(pos, k -> new ArrayList<>()).add(new Vector2i(getBranch().getIndex(), this.getIndex()));
+            getBranch().getFloor().getChunkMap().putIfAbsent(pos, new ArrayList<>());
+            getBranch().getFloor().getChunkMap().get(pos).add(new Vector2i(getBranch().getIndex(), this.getIndex()));
         });
+        WildDungeons.getLogger().info("FINISHED ROOM: {}", getTemplate().name());
     }
 
     public void actuallyPlaceInWorld() {
+        WildDungeons.getLogger().info("PLACING ROOM IN WORLD: {} AT INDEX {}, {}", getTemplate().name(), this.getBranch().getIndex(), this.getIndex());
         getTemplate().templates().forEach(template -> {
             BlockPos newOffset = StructureTemplate.transform(template.getSecond(), getSettings().getMirror(), getSettings().getRotation(), TemplateHelper.EMPTY_BLOCK_POS);
             BlockPos newPosition = position.offset(newOffset);
-            TemplateHelper.placeInWorld(template.getFirst(),  this.getMaterial(), getBranch().getFloor().getLevel(), newPosition, template.getSecond(), getSettings(), 128);
+            TemplateHelper.placeInWorld(template.getFirst(),  this.getMaterial(), getBranch().getFloor().getLevel(), newPosition, template.getSecond(), getSettings(), 0);
         });
 
         this.processRifts();
@@ -141,7 +143,7 @@ public class DungeonRoom {
 
         if (getTemplate().spawnPoint() != null) {
             getTemplate().spawnPoints().forEach(spawnPoint -> {
-                getBranch().getFloor().getLevel().setBlock(TemplateHelper.transform(spawnPoint, this), Blocks.AIR.defaultBlockState(), 128);
+                getBranch().getFloor().getLevel().setBlock(TemplateHelper.transform(spawnPoint, this), Blocks.AIR.defaultBlockState(), 0);
             });
         }
         this.processConnectionPoints(getBranch().getFloor());
@@ -149,6 +151,7 @@ public class DungeonRoom {
         this.onBranchComplete();
 
         getChunkPosSet(this.boundingBoxes, 1).forEach(chunkPos -> forceUpdateChunk(getBranch().getFloor().getLevel(), chunkPos));
+        WildDungeons.getLogger().info("FINISHED ROOM: {}", getTemplate().name());
     }
 
     public static void forceUpdateChunk(ServerLevel level, ChunkPos chunkPos) {
@@ -236,6 +239,8 @@ public class DungeonRoom {
         }
     }
 
+    //TODO rooms are still eating themselves and branches are still dead sometimes
+
     /**
      * Used as a predicate for fillShellWith.
      * Tests whether the suggested blockPos will conflict with any existing BoundingBoxes
@@ -259,7 +264,7 @@ public class DungeonRoom {
             if (!room.isPosInsideShell(blockPos)) {
                 Block block = floor.getLevel().getBlockState(blockPos).getBlock();
                 if (block != WDBlocks.WD_BEDROCK.get() && block != Blocks.AIR) {
-                    floor.getLevel().setBlock(blockPos, WDBedrockBlock.of(floor.getLevel().getBlockState(blockPos).getBlock()), 128);
+                    floor.getLevel().setBlock(blockPos, WDBedrockBlock.of(floor.getLevel().getBlockState(blockPos).getBlock()), 0);
                 }
             }
             return false;
@@ -274,7 +279,7 @@ public class DungeonRoom {
         return (floor, room, blockPos) -> {
             if (!room.isPosInsideShell(blockPos)) {
                 BlockState blockState = floor.getLevel().getBlockState(blockPos);
-                if (blockState.hasProperty(MIMIC)) floor.getLevel().setBlock(blockPos, BuiltInRegistries.BLOCK.byId(floor.getLevel().getBlockState(blockPos).getValue(MIMIC)).defaultBlockState(), 128);
+                if (blockState.hasProperty(MIMIC)) floor.getLevel().setBlock(blockPos, BuiltInRegistries.BLOCK.byId(floor.getLevel().getBlockState(blockPos).getValue(MIMIC)).defaultBlockState(), 0);
             }
             return false;
         };
@@ -324,21 +329,9 @@ public class DungeonRoom {
     public void destroy() {
         unsetAttachedPoints();
         Set<ChunkPos> chunkPosSet = getChunkPosSet(this.boundingBoxes, 0);
-        getBranch().getFloor().getChunkMap().forEach((key, value) -> {
-            value.removeIf(v -> chunkPosSet.contains(key) && v.x == getBranch().getIndex() && v.y == this.getIndex());
+        chunkPosSet.forEach(chunkPos -> {
+            getBranch().getFloor().getChunkMap().get(chunkPos).remove(new Vector2i(this.getBranch().getIndex(), this.getIndex()));
         });
-    }
-
-    public static void removeBlocks(DungeonFloor floor, BoundingBox box) {
-        BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
-        for (int x = box.minX(); x <= box.maxX(); x++) {
-            for (int y = box.minY(); y <= box.maxY(); y++) {
-                for (int z = box.minZ(); z <= box.maxZ(); z++) {
-                    mutableBlockPos.set(x, y, z);
-                    floor.getLevel().setBlock(mutableBlockPos, Blocks.AIR.defaultBlockState(), 130);
-                }
-            }
-        }
     }
 
     public void unsetAttachedPoints() {
@@ -358,7 +351,7 @@ public class DungeonRoom {
                 point.getConnectedPoint().unBlock(floor.getLevel());
             }
             if (!point.isConnected()) {
-                point.block(floor.getLevel());
+                point.block(floor.getLevel(), 0);
                 point.removeDecal(this.getDecalTexture(), this.getDecalColor());
             }
             point.complete();

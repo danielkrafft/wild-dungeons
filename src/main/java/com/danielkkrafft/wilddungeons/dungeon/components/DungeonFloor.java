@@ -177,20 +177,22 @@ public class DungeonFloor {
      */
     public void asyncGenerateBranches() {
 
+        int totalBranchCount = getTemplate().branchTemplates().size();
+        int currentBranchCount = this.dungeonBranches.size();
+
+        while (currentBranchCount < totalBranchCount && this.getLevel() != null) {
+            WildDungeons.getLogger().info("Generating branch {} of {}", currentBranchCount, totalBranchCount-1);
+
+            try { tryGenerateBranch(currentBranchCount);
+            } catch (Exception e) { e.printStackTrace(); }
+
+            currentBranchCount = this.dungeonBranches.size();
+        }
+
+        this.dungeonBranches.forEach(DungeonBranch::actuallyPlaceInWorld);
+
         CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
-            int totalBranchCount = getTemplate().branchTemplates().size();
-            int currentBranchCount = this.dungeonBranches.size();
 
-            while (currentBranchCount < totalBranchCount && this.getLevel() != null) {
-                WildDungeons.getLogger().info("Generating branch {} of {}", currentBranchCount, totalBranchCount-1);
-
-                try { tryGenerateBranch(currentBranchCount);
-                } catch (Exception e) { e.printStackTrace(); }
-
-                currentBranchCount = this.dungeonBranches.size();
-            }
-
-            this.dungeonBranches.forEach(DungeonBranch::actuallyPlaceInWorld);
         }).handle((result, throwable) -> {
             if (throwable != null) WildDungeons.getLogger().error("Error generating branches", throwable);
             LockSupport.unpark(Thread.currentThread());

@@ -217,9 +217,9 @@ public class DungeonSession {
     }
 
     /**
-         * For sending data to the Post-Dungeon screen
-         */
-        public static final class DungeonStatsHolder {
+     * For sending data to the Post-Dungeon screen
+     */
+    public static final class DungeonStatsHolder {
         public final HashMap<String, DungeonStats> playerStats;
         public final String title;
         public final String icon;

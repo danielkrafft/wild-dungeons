@@ -211,7 +211,7 @@ public class ConnectionPoint {
         WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::setupBlockstates");
     }
 
-    public void block(ServerLevel level) {
+    public void block(ServerLevel level, int flags) {
         this.getRoom().getActivePlayers().forEach(wdPlayer -> {
             ServerPlayer player = wdPlayer.getServerPlayer();
             if (player!=null && this.getBoundingBox(this.getRoom().getSettings(), this.getRoom().getPosition()).isInside(player.blockPosition())) {
@@ -228,9 +228,9 @@ public class ConnectionPoint {
         });
         getPositions(this.getRoom().getSettings(), this.getRoom().getPosition()).forEach((pos) -> {
             if (this.getRoom().getProperty(HierarchicalProperty.DESTRUCTION_RULE).equals(DungeonRoomTemplate.DestructionRule.SHELL) || (this.getRoom().getProperty(HierarchicalProperty.DESTRUCTION_RULE).equals(DungeonRoomTemplate.DestructionRule.SHELL_CLEAR) && !this.getRoom().isClear())) {
-                level.setBlock(pos, WDBedrockBlock.of(this.getRoom().getMaterial().getBasic(getRoom().getProperty(HierarchicalProperty.BLOCKING_MATERIAL_INDEX)).getBlock()), 130);
+                level.setBlock(pos, WDBedrockBlock.of(this.getRoom().getMaterial().getBasic(getRoom().getProperty(HierarchicalProperty.BLOCKING_MATERIAL_INDEX)).getBlock()), flags);
             } else {
-                level.setBlock(pos, this.getRoom().getMaterial().getBasic(getRoom().getProperty(HierarchicalProperty.BLOCKING_MATERIAL_INDEX)), 130);
+                level.setBlock(pos, this.getRoom().getMaterial().getBasic(getRoom().getProperty(HierarchicalProperty.BLOCKING_MATERIAL_INDEX)), flags);
             }
         });
         WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::block");
