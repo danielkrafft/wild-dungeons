@@ -74,7 +74,7 @@ public class TemplateHelper {
 
                 ConnectionPoint targetPoint = null;
                 for (ConnectionPoint point : connectionPoints) {
-                    if (point.getDirection(TemplateOrientation.EMPTY) != blockDirection) continue;
+                    if (point.getEmptyDirection() != blockDirection) continue;
                     if (point.getPositions(TemplateOrientation.EMPTY, EMPTY_BLOCK_POS).stream().noneMatch(pos -> block.pos().closerThan(pos, 2.0))) continue;
                     targetPoint = point;
                 }
@@ -117,7 +117,6 @@ public class TemplateHelper {
                 if (direction == Direction.NORTH || direction == Direction.SOUTH) {return direction.getOpposite();}
                 break;
         }
-        WDProfiler.INSTANCE.logTimestamp("TemplateHelper::mirrorDirection");
         return direction;
     }
 
@@ -138,7 +137,6 @@ public class TemplateHelper {
         if (enDirection.getAxis() == Direction.Axis.Y) {
             orientation.setMirror(exitPoint.getRoom().getOrientation().getMirror());
             orientation.setRotation(exitPoint.getRoom().getOrientation().getRotation());
-            WDProfiler.INSTANCE.logTimestamp("TemplateHelper::handleRoomTransformation");
             return orientation;
         }
 
@@ -153,7 +151,6 @@ public class TemplateHelper {
             orientation.setRotation(Rotation.CLOCKWISE_90);
         }
 
-        WDProfiler.INSTANCE.logTimestamp("TemplateHelper::handleRoomTransformation");
         return orientation;
     }
 
@@ -270,8 +267,6 @@ public class TemplateHelper {
 
             if (input.hasProperty(BlockStateProperties.STAIRS_SHAPE) && stairsShape != null) input = input.setValue(BlockStateProperties.STAIRS_SHAPE, stairsShape);
 
-
-            WDProfiler.INSTANCE.logTimestamp("TemplateHelper::fixBlockStateProperties");
             return input.hasProperty(BlockStateProperties.FACING) ?
                     input.setValue(BlockStateProperties.FACING, facing) :
                     input.setValue(BlockStateProperties.HORIZONTAL_FACING, facing);
@@ -281,19 +276,17 @@ public class TemplateHelper {
 
     public static boolean placeInWorld(DungeonRoom room, StructureTemplate template, DungeonMaterial material, ServerLevelAccessor serverLevel, BlockPos offset, BlockPos pos, StructurePlaceSettings settings, int flags) {
         if (template.palettes.isEmpty()) return false;
+        BoundingBox innerBox = template.getBoundingBox(settings, pos).inflatedBy(-1);
 
         List<StructureTemplate.StructureBlockInfo> list = settings.getRandomPalette(template.palettes, offset).blocks();
         if ((!list.isEmpty() || !settings.isIgnoreEntities() && !template.entityInfoList.isEmpty()) && template.size.getX() >= 1 && template.size.getY() >= 1 && template.size.getZ() >= 1) {
-            List<BlockPos> list1 = Lists.newArrayListWithCapacity(settings.shouldApplyWaterlogging() ? list.size() : 0);
-            List<BlockPos> list2 = Lists.newArrayListWithCapacity(settings.shouldApplyWaterlogging() ? list.size() : 0);
-            List<Pair<BlockPos, CompoundTag>> list3 = Lists.newArrayListWithCapacity(list.size());
 
             for (StructureTemplate.StructureBlockInfo structuretemplate$structureblockinfo : StructureTemplate.processBlockInfos(serverLevel, offset, pos, settings, list, template)) {
                 BlockState blockstate = structuretemplate$structureblockinfo.state();
                 if (blockstate.equals(Blocks.AIR.defaultBlockState())) continue;
 
                 if (room.getProperty(DESTRUCTION_RULE) == DungeonRoomTemplate.DestructionRule.SHELL || room.getProperty(DESTRUCTION_RULE) == DungeonRoomTemplate.DestructionRule.SHELL_CLEAR) {
-                    if (blockstate == WDBlocks.WD_BASIC.get().defaultBlockState() || blockstate == WDBlocks.WD_BASIC_2.get().defaultBlockState() || blockstate == WDBlocks.WD_BASIC_3.get().defaultBlockState() || blockstate == WDBlocks.WD_BASIC_4.get().defaultBlockState()) {
+                    if (!innerBox.isInside(structuretemplate$structureblockinfo.pos()) && (blockstate == WDBlocks.WD_BASIC.get().defaultBlockState() || blockstate == WDBlocks.WD_BASIC_2.get().defaultBlockState() || blockstate == WDBlocks.WD_BASIC_3.get().defaultBlockState() || blockstate == WDBlocks.WD_BASIC_4.get().defaultBlockState())) {
                         if (!room.isPosInsideShell(structuretemplate$structureblockinfo.pos())) {
                             blockstate = material.replace(structuretemplate$structureblockinfo.state().mirror(settings.getMirror()).rotate(settings.getRotation()));
                             serverLevel.setBlock(structuretemplate$structureblockinfo.pos(), WDBedrockBlock.of(blockstate.getBlock()), 0);
@@ -315,7 +308,6 @@ public class TemplateHelper {
                 }
 
                 if (serverLevel.setBlock(structuretemplate$structureblockinfo.pos(), blockstate, flags)) {
-                    list3.add(Pair.of(structuretemplate$structureblockinfo.pos(), structuretemplate$structureblockinfo.nbt()));
                     if (structuretemplate$structureblockinfo.nbt() != null) {
                         BlockEntity blockentity1 = serverLevel.getBlockEntity(structuretemplate$structureblockinfo.pos());
                         if (blockentity1 != null) {
@@ -326,12 +318,8 @@ public class TemplateHelper {
                     FluidState fluidstate = settings.shouldApplyWaterlogging() ? serverLevel.getFluidState(structuretemplate$structureblockinfo.pos()) : null;
                     if (fluidstate != null) {
                         if (blockstate.getFluidState().isSource()) {
-                            list2.add(structuretemplate$structureblockinfo.pos());
                         } else if (blockstate.getBlock() instanceof LiquidBlockContainer) {
                             ((LiquidBlockContainer) blockstate.getBlock()).placeLiquid(serverLevel, structuretemplate$structureblockinfo.pos(), blockstate, fluidstate);
-                            if (!fluidstate.isSource()) {
-                                list1.add(structuretemplate$structureblockinfo.pos());
-                            }
                         }
                     }
                 }
@@ -341,10 +329,8 @@ public class TemplateHelper {
                 addEntitiesToWorld(template, serverLevel, offset, settings);
             }
 
-            WDProfiler.INSTANCE.logTimestamp("TemplateHelper::placeInWorld");
             return true;
         } else {
-            WDProfiler.INSTANCE.logTimestamp("TemplateHelper::placeInWorld");
             return false;
         }
     }
@@ -374,7 +360,6 @@ public class TemplateHelper {
                 });
             }
         }
-        WDProfiler.INSTANCE.logTimestamp("TemplateHelper::addEntitiesToWorld");
 
     }
 

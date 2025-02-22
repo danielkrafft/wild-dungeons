@@ -126,7 +126,6 @@ public class DungeonRoom {
             getBranch().getFloor().getChunkMap().get(pos).add(new Vector2i(getBranch().getIndex(), this.getIndex()));
         });
         WildDungeons.getLogger().info("FINISHED ROOM: {}", getTemplate().name());
-        WDProfiler.INSTANCE.logTimestamp("DungeonRoom::new");
     }
 
     public void actuallyPlaceInWorld() {
@@ -151,7 +150,6 @@ public class DungeonRoom {
 
         getChunkPosSet(this.boundingBoxes, 1).forEach(chunkPos -> forceUpdateChunk(getBranch().getFloor().getLevel(), chunkPos));
         WildDungeons.getLogger().info("FINISHED ROOM: {}", getTemplate().name());
-        WDProfiler.INSTANCE.logTimestamp("DungeonRoom::actuallyPlaceInWorld");
     }
 
     public static void forceUpdateChunk(ServerLevel level, ChunkPos chunkPos) {
@@ -162,7 +160,6 @@ public class DungeonRoom {
         for (ServerPlayer player : chunkMap.getPlayers(chunkPos, false)) {
             player.connection.send(new ClientboundLevelChunkWithLightPacket(chunk, level.getLightEngine(), null, null));
         }
-        WDProfiler.INSTANCE.logTimestamp("DungeonRoom::forceUpdateChunk");
     }
 
     /**
@@ -171,7 +168,6 @@ public class DungeonRoom {
      * @param entrancePoint The ConnectionPoint to test compatibility with.
      */
     public List<ConnectionPoint> getValidExitPoints(ConnectionPoint entrancePoint) {
-        WDProfiler.INSTANCE.logTimestamp("DungeonRoom::getValidExitPoints");
         return this.connectionPoints.stream().filter(point -> ConnectionPoint.arePointsCompatible(entrancePoint, point)).toList().stream().map(point -> {point.setRoom(this); return point;}).toList();
     }
 
@@ -180,7 +176,6 @@ public class DungeonRoom {
      */
     public void processShell() {
         if (this.getProperty(HAS_BEDROCK_SHELL)) this.surroundWith(Blocks.BEDROCK.defaultBlockState());
-        WDProfiler.INSTANCE.logTimestamp("DungeonRoom::processShell");
     }
 
     /**
@@ -190,7 +185,6 @@ public class DungeonRoom {
      */
     public void surroundWith(BlockState blockState) {
         this.boundingBoxes.forEach(box -> fillShellWith(this.getBranch().getFloor(), this, box, blockState, 1, (floor, room, pos) -> true));
-        WDProfiler.INSTANCE.logTimestamp("DungeonRoom::surroundWith");
     }
 
     /**
@@ -198,7 +192,6 @@ public class DungeonRoom {
      */
     public void removeProtection() {
         this.getBoundingBoxes().forEach(box -> fillShellWith(this.getBranch().getFloor(), this, box, WDBedrockBlock.of(Blocks.DIAMOND_BLOCK), 0, handleRemoveProtectedShell()));
-        WDProfiler.INSTANCE.logTimestamp("DungeonRoom::removeProtection");
     }
 
     /**
@@ -234,7 +227,6 @@ public class DungeonRoom {
                 }
             }
         }
-        WDProfiler.INSTANCE.logTimestamp("DungeonRoom::fillShellWith");
     }
 
     /**
@@ -247,7 +239,6 @@ public class DungeonRoom {
             floor.getChunkMap().getOrDefault(new ChunkPos(blockPos), new ArrayList<>()).forEach(vector2i -> {
                 potentialConflicts.addAll(floor.getBranches().get(vector2i.x).getRooms().get(vector2i.y).getBoundingBoxes());
             });
-            WDProfiler.INSTANCE.logTimestamp("DungeonRoom::isSafeForBoundingBoxes");
             return potentialConflicts.stream().noneMatch(potentialConflict -> potentialConflict.isInside(blockPos));
         };
     }
@@ -260,7 +251,6 @@ public class DungeonRoom {
         return (floor, room, blockPos) -> {
             BlockState blockState = floor.getLevel().getBlockState(blockPos);
             if (blockState.hasProperty(MIMIC)) floor.getLevel().setBlock(blockPos, BuiltInRegistries.BLOCK.byId(blockState.getValue(MIMIC)).defaultBlockState(), 0);
-            WDProfiler.INSTANCE.logTimestamp("DungeonRoom::handleRemoveProtectedShell");
             return false;
         };
     }
@@ -269,7 +259,6 @@ public class DungeonRoom {
         for (BoundingBox box : this.boundingBoxes) {
             if (!box.isInside(pos)) continue;
             if (pos.getX() >= box.minX() + 1 && pos.getX() <= box.maxX() - 1 && pos.getZ() >= box.minZ() + 1 && pos.getZ() <= box.maxZ() - 1 && pos.getY() >= box.minY() + 1 && pos.getY() <= box.maxY() - 1) {
-                WDProfiler.INSTANCE.logTimestamp("DungeonRoom::simplePosCheck");
                 return true;
             }
             for (BoundingBox otherBox : this.boundingBoxes) {
@@ -281,13 +270,11 @@ public class DungeonRoom {
                 //Only one axis is connected, indicating it's adjacent to another box, but not a corner
                 if ((xConnected ? 1 : 0) + (yConnected ? 1 : 0) + (zConnected ? 1 : 0) == 1) {
                     if (box.inflatedBy(xConnected ? 0 : -1, yConnected ? 0 : -1, zConnected ? 0 : -1).isInside(pos)) {
-                        WDProfiler.INSTANCE.logTimestamp("DungeonRoom::isPosInsideShell");
                         return true;
                     }
                 }
             }
         }
-        WDProfiler.INSTANCE.logTimestamp("DungeonRoom::isPosInsideShell");
         return false;
     }
 
@@ -305,7 +292,6 @@ public class DungeonRoom {
                 }
             }
         }
-        WDProfiler.INSTANCE.logTimestamp("DungeonRoom::getChunkPosSet");
         return chunkPosSet;
     }
 
@@ -315,7 +301,6 @@ public class DungeonRoom {
         chunkPosSet.forEach(chunkPos -> {
             getBranch().getFloor().getChunkMap().get(chunkPos).remove(new Vector2i(this.getBranch().getIndex(), this.getIndex()));
         });
-        WDProfiler.INSTANCE.logTimestamp("DungeonRoom::destroy");
     }
 
     public void unsetAttachedPoints() {
@@ -324,7 +309,6 @@ public class DungeonRoom {
                 connectionPoint.getConnectedPoint().unSetConnectedPoint();
             }
         });
-        WDProfiler.INSTANCE.logTimestamp("DungeonRoom::unsetAttachedPoints");
     }
 
     public void processConnectionPoints(DungeonFloor floor) {
@@ -340,12 +324,10 @@ public class DungeonRoom {
                 point.removeDecal(this.getDecalTexture(), this.getDecalColor());
             }
         }
-        WDProfiler.INSTANCE.logTimestamp("DungeonRoom::processConnectionPoints");
     }
 
     public void templateBasedUnblock(DungeonFloor floor, ConnectionPoint point) {
         point.unBlock(floor.getLevel());
-        WDProfiler.INSTANCE.logTimestamp("DungeonRoom::templateBasedUnblock");
     }
 
     public void processRifts() {
@@ -365,14 +347,12 @@ public class DungeonRoom {
             this.getBranch().getFloor().getLevel().addFreshEntity(rift);
             this.riftUUIDs.add(rift.getStringUUID());
         });
-        WDProfiler.INSTANCE.logTimestamp("DungeonRoom::processRifts");
     }
 
     public void processOfferings() {
         List<DungeonRegistration.OfferingTemplate> entries = BASIC_SHOP_TABLE.randomResults(this.getTemplate().offerings().size(), (int) this.getDifficulty() * this.getTemplate().offerings().size(), 1.2f);
         getTemplate().offerings().forEach(pos -> {
             if (entries.isEmpty()) {
-                WDProfiler.INSTANCE.logTimestamp("DungeonRoom::processOfferings");
                 return;
             }
             Offering next = entries.removeFirst().asOffering(this.getBranch().getFloor().getLevel());
@@ -382,12 +362,10 @@ public class DungeonRoom {
             this.getBranch().getFloor().getLevel().addFreshEntity(next);
             this.offeringUUIDs.add(next.getStringUUID());
         });
-        WDProfiler.INSTANCE.logTimestamp("DungeonRoom::processOfferings");
     }
 
     public void processLootBlocks() {
         if (this.getTemplate().lootBlocks().isEmpty()) {
-            WDProfiler.INSTANCE.logTimestamp("DungeonRoom::processLootBlocks");
             return;
         }
         //get all loot blocks from template
@@ -399,7 +377,6 @@ public class DungeonRoom {
         //remove all null entities and entities that are not loot blocks, just in case
         lootBlockEntities.removeIf(entity -> Objects.isNull(entity) || !(entity instanceof BaseContainerBlockEntity));
         if (lootBlockEntities.isEmpty()) {
-            WDProfiler.INSTANCE.logTimestamp("DungeonRoom::processLootBlocks");
             return;
         }
         //get a random number, between 1 and the number of loot blocks, but not more than 5
@@ -440,12 +417,10 @@ public class DungeonRoom {
             int slot = emptySlots.get(RandomUtil.randIntBetween(0, emptySlots.size() - 1));
             lootBlock.setItem(slot, lootStack);
         });
-        WDProfiler.INSTANCE.logTimestamp("DungeonRoom::processLootBlocks");
     }
 
     public void processDataMarkers(){
         if (this.getTemplate().dataMarkers().isEmpty()) {
-            WDProfiler.INSTANCE.logTimestamp("DungeonRoom::processDataMarkers");
             return;
         }
         this.getTemplate().dataMarkers().forEach(marker -> {
@@ -453,7 +428,6 @@ public class DungeonRoom {
             assert marker.nbt() != null;//we null check when we register the template
             processDataMarker(pos, marker.nbt().getString("metadata"));
         });
-        WDProfiler.INSTANCE.logTimestamp("DungeonRoom::processDataMarkers");
     }
 
     public void processDataMarker(BlockPos pos, String metadata) {}
@@ -464,7 +438,7 @@ public class DungeonRoom {
 
     public List<BlockPos> sampleSpawnablePositions(ServerLevel level, int count, int inflation) {
         List<BlockPos> result = new ArrayList<>();
-        int tries = count*10;
+        int tries = count*4;
         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
         while (result.size() < count && tries > 0) {
             BoundingBox randomBox = this.boundingBoxes.get(RandomUtil.randIntBetween(0, this.boundingBoxes.size()-1));
@@ -485,7 +459,6 @@ public class DungeonRoom {
             }
             tries--;
         }
-        WDProfiler.INSTANCE.logTimestamp("DungeonRoom::sampleSpawnablePositions");
         return result.isEmpty() ? spawnPoint == null ? Collections.singletonList(this.boundingBoxes.getFirst().getCenter()) : Collections.singletonList(spawnPoint) : result;
     }
 

@@ -90,7 +90,6 @@ public class DungeonFloor {
      */
     public void attemptEnter(WDPlayer wdPlayer) {
         if (getBranches().stream().mapToInt(b -> b.getRooms().size()).sum() <= 10) {
-            WDProfiler.INSTANCE.logTimestamp("DungeonFloor::attemptEnter");
             playersWaitingToEnter.add(wdPlayer); return;
         }
         onEnter(wdPlayer);
@@ -104,7 +103,6 @@ public class DungeonFloor {
     public void onEnter(WDPlayer wdPlayer) {
         playersInside.computeIfAbsent(wdPlayer.getUUID(), key -> {
             getSession().getStats(key).floorsFound += 1;
-            WDProfiler.INSTANCE.logTimestamp("DungeonFloor::onEnter");
             return true;
         });
         this.playersInside.put(wdPlayer.getUUID(), true);
@@ -114,7 +112,6 @@ public class DungeonFloor {
         PacketDistributor.sendToPlayer(wdPlayer.getServerPlayer(), new SimplePacketManager.ClientboundTagPacket(ClientPacketHandler.Packets.NULL_SCREEN.asTag()));
         WDPlayerManager.syncAll(this.playersInside.keySet().stream().toList());
         wdPlayer.setSoundScape(this.getProperty(SOUNDSCAPE), this.getProperty(INTENSITY), true);
-        WDProfiler.INSTANCE.logTimestamp("DungeonFloor::onEnter");
     }
 
     /**
@@ -124,7 +121,6 @@ public class DungeonFloor {
      */
     public void onExit(WDPlayer wdPlayer) {
         this.playersInside.put(wdPlayer.getUUID(), false);
-        WDProfiler.INSTANCE.logTimestamp("DungeonFloor::onExit");
     }
 
     /**
@@ -167,7 +163,6 @@ public class DungeonFloor {
                     for (DungeonRoom room : roomsInChunk) {
                         for (BoundingBox box : room.getBoundingBoxes()) {
                             if (proposedBox.intersects(box)) {
-                                WDProfiler.INSTANCE.logTimestamp("DungeonFloor::areBoundingBoxesValid");
                                 return false;
                             }
                         }
@@ -175,7 +170,6 @@ public class DungeonFloor {
                 }
             }
         }
-        WDProfiler.INSTANCE.logTimestamp("DungeonFloor::areBoundingBoxesValid");
         return true;
     }
 
@@ -183,7 +177,6 @@ public class DungeonFloor {
      * Called upon initial Floor creation, and during validation. Creates a CompletableFuture which attempts to place branches until the amount required by DungeonLayout is met.
      */
     public void asyncGenerateBranches() {
-        WDProfiler.INSTANCE.start();
 
         int totalBranchCount = getTemplate().branchTemplates().size();
         int currentBranchCount = this.dungeonBranches.size();
@@ -209,8 +202,6 @@ public class DungeonFloor {
 //        });
 //        generationFutures.add(future);
 
-        WDProfiler.INSTANCE.logTimestamp("DungeonFloor::asyncGenerateBranches");
-        WDProfiler.INSTANCE.end();
     }
 
     /**
@@ -224,7 +215,6 @@ public class DungeonFloor {
 
         if (newBranch == null) {
             if (branchIndex <= 0) {
-                WDProfiler.INSTANCE.logTimestamp("DungeonFloor::tryGenerateBranch");
                 return;
             }
             int index = nextBranch.rootOriginBranchIndex() == -1 ? 1 : branchIndex - nextBranch.rootOriginBranchIndex();
@@ -235,12 +225,10 @@ public class DungeonFloor {
                 previousBranch.destroyRooms();
                 this.dungeonBranches.remove(previousBranch);
             }
-            WDProfiler.INSTANCE.logTimestamp("DungeonFloor::tryGenerateBranch");
             return;
         }
 
         if (branchIndex == 0) this.spawnPoint = this.dungeonBranches.getFirst().getSpawnPoint();
-        WDProfiler.INSTANCE.logTimestamp("DungeonFloor::tryGenerateBranch");
     }
 
     /**
@@ -255,7 +243,6 @@ public class DungeonFloor {
                 playersWaitingToEnter.clear();
             });
         }
-        WDProfiler.INSTANCE.logTimestamp("DungeonFloor::onBranchComplete");
     }
 
     /**

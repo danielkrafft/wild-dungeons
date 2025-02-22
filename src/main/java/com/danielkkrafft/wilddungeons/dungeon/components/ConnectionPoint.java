@@ -95,13 +95,11 @@ public class ConnectionPoint {
         BlockPos max = StructureTemplate.transform(new BlockPos(this.boundingBox.maxX(), this.boundingBox.maxY(), this.boundingBox.maxZ()), orientation.getMirror(), orientation.getRotation(), TemplateHelper.EMPTY_BLOCK_POS);
 
         BoundingBox result = new BoundingBox(Math.min(min.getX(), max.getX()) + position.getX(), Math.min(min.getY(), max.getY()) + position.getY(), Math.min(min.getZ(), max.getZ()) + position.getZ(), Math.max(max.getX(), min.getX()) + position.getX(), Math.max(max.getY(), min.getY()) + position.getY(), Math.max(max.getZ(), min.getZ()) + position.getZ());
-        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::getBoundingBox");
         return result;
     }
 
     public BoundingBox getRealBoundingBox() {
         if (cachedBoundingBox == null) cachedBoundingBox = getBoundingBox(getRoom().getOrientation(), getRoom().getPosition());
-        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::getRealBoundingBox");
         return cachedBoundingBox;
     }
 
@@ -115,7 +113,6 @@ public class ConnectionPoint {
                 }
             }
         }
-        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::getPositions");
         return result;
     }
 
@@ -128,16 +125,16 @@ public class ConnectionPoint {
             return direction;
         });
 
-        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::getDirection");
         return cachedDirections.get(orientation);
     }
+
+    public Direction getEmptyDirection() {return Direction.byName(this.direction);}
 
     public static ConnectionPoint create(BlockPos position, Direction direction) {
         ConnectionPoint newPoint = new ConnectionPoint();
         newPoint.direction = direction.getName();
         newPoint.boundingBox = new BoundingBox(position);
 
-        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::create");
         return newPoint;
     }
 
@@ -146,7 +143,6 @@ public class ConnectionPoint {
         ConnectionPoint newPoint = Serializer.fromCompoundTag(oldTag);
         newPoint.room = oldPoint.room;
         newPoint.cachedDirections = oldPoint.cachedDirections;
-        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::copy");
         return newPoint;
     }
 
@@ -157,7 +153,6 @@ public class ConnectionPoint {
             try { return BlockStateParser.parseForBlock(BuiltInRegistries.BLOCK.asLookup(), key, true).blockState();
             } catch (CommandSyntaxException e) { return Blocks.AIR.defaultBlockState();}
         });
-        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::blockStateFromString");
         return STRINGS_TO_BLOCKSTATES.get(state);
     }
 
@@ -170,11 +165,10 @@ public class ConnectionPoint {
                 !ex.isConnected(),
                 !Objects.equals(ex.type, "entrance"),
                 Objects.equals(en.pool, ex.pool),
-                en.getDirection(TemplateOrientation.EMPTY).getAxis() != Direction.Axis.Y || ex.getDirection(TemplateOrientation.EMPTY).getName().equals(en.getDirection(TemplateOrientation.EMPTY).getOpposite().getName()),
+                en.getEmptyDirection().getAxis() != Direction.Axis.Y || ex.getEmptyDirection().getName().equals(en.getEmptyDirection().getOpposite().getName()),
                 en.getSize(TemplateOrientation.EMPTY, TemplateHelper.EMPTY_BLOCK_POS).equals(ex.getSize(ex.getRoom().getOrientation(), ex.getRoom().getPosition()))
         );
 
-        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::arePointsCompatible");
         return conditions.stream().allMatch(condition -> condition);
     }
 
@@ -193,7 +187,6 @@ public class ConnectionPoint {
             score += (int) (floorWeight * distanceToFloorOrigin / totalFloorDistance);
             score += (int) (heightWeight * distanceToYTarget / totalHeightDistance);
             score += (int) (randomWeight * Math.random());
-            WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::selectBestPoint");
             return new Pair<>(point, score);
         }).max(Comparator.comparingInt(Pair::getSecond)).map(Pair::getFirst).orElse(null);
     }
@@ -201,7 +194,6 @@ public class ConnectionPoint {
     public static BlockPos getOffset(TemplateOrientation orientation, BlockPos position, ConnectionPoint en, ConnectionPoint ex) {
         BoundingBox enTransBox = en.getBoundingBox(orientation, position);
         BoundingBox exTransBox = ex.getRealBoundingBox();
-        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::getOffset");
         return new BlockPos(exTransBox.minX() - enTransBox.minX(), exTransBox.minY() - enTransBox.minY(), exTransBox.minZ() - enTransBox.minZ());
     }
 
@@ -217,7 +209,6 @@ public class ConnectionPoint {
             case EAST, WEST -> new Vector2i(z, y);
         };
 
-        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::getSize");
         return result;
     }
 
@@ -233,7 +224,6 @@ public class ConnectionPoint {
             }
         }
 
-        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::setupBlockstates");
     }
 
     public void block(ServerLevel level, int flags) {
@@ -242,12 +232,10 @@ public class ConnectionPoint {
             if (player!=null && this.getRealBoundingBox().isInside(player.blockPosition())) {
                 Vec3 position = wdPlayer.getServerPlayer().position();
                 Vec3i normal = this.getConnectedPoint().getDirection(this.getConnectedPoint().getRoom().getOrientation()).getNormal();
-                WildDungeons.getLogger().info("CONNECTED POINT NORMAL: {}", normal);
                 Vec3 newPosition = new Vec3(
                         position.get(Direction.Axis.X) + normal.getX() * 1.5f,
                         position.get(Direction.Axis.Y) + normal.getY() * 1.5f,
                         position.get(Direction.Axis.Z) + normal.getZ() * 1.5f);
-                WildDungeons.getLogger().info("MOVING FROM {} TO {}", position, newPosition);
                 wdPlayer.getServerPlayer().moveTo(newPosition);
             }
         });
@@ -258,23 +246,19 @@ public class ConnectionPoint {
                 level.setBlock(pos, this.getRoom().getMaterial().getBasic(getRoom().getProperty(HierarchicalProperty.BLOCKING_MATERIAL_INDEX)), flags);
             }
         });
-        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::block");
     }
 
     public Vector3f getAveragePosition() {
         BoundingBox box = this.getRealBoundingBox();
-        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::getAveragePosition");
         return new Vector3f(box.minX() + (float) box.getXSpan() /2, box.minY() + (float) box.getYSpan() /2, box.minZ() + (float) box.getZSpan() /2);
     }
 
     public void hide(ServerLevel level) {
         getPositions(this.getRoom().getOrientation(), this.getRoom().getPosition()).forEach((pos) -> level.setBlock(pos, this.getRoom().getMaterial().getHidden(0), 2));
-        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::hide");
     }
 
     public void unBlock(ServerLevel level) {
         unBlockedBlockStates.forEach((pos, blockState) -> level.setBlock(pos, TemplateHelper.fixBlockStateProperties(blockStateFromString(blockState), this.getRoom().getSettings()), 2));
-        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::unBlock");
     }
 
     public void addDecal(ResourceLocation texture, int color) {
@@ -283,7 +267,6 @@ public class ConnectionPoint {
         tag.putString("packet", ClientPacketHandler.Packets.ADD_DECAL.toString());
         tag.put("decal", Serializer.toCompoundTag(this.getDecal(texture, color)));
         PacketDistributor.sendToAllPlayers(new SimplePacketManager.ClientboundTagPacket(tag));
-        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::addDecal");
     }
 
     public void removeDecal(ResourceLocation texture, int color) {
@@ -292,7 +275,6 @@ public class ConnectionPoint {
         tag.putString("packet", ClientPacketHandler.Packets.REMOVE_DECAL.toString());
         tag.put("decal", Serializer.toCompoundTag(this.getDecal(texture, color)));
         PacketDistributor.sendToAllPlayers(new SimplePacketManager.ClientboundTagPacket(tag));
-        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::removeDecal");
     }
 
     public DecalRenderer.Decal getDecal(ResourceLocation texture, int color) {
@@ -316,7 +298,6 @@ public class ConnectionPoint {
                 height = box.getYSpan();
             }
         }
-        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::getDecal");
         return new DecalRenderer.Decal(texture, avgPosition.x, avgPosition.y, avgPosition.z, Math.min(width, height) * 0.75f, Math.min(width, height) * 0.75f, axis, color, this.getRoom().getBranch().getFloor().getLevelKey());
     }
 
@@ -325,6 +306,5 @@ public class ConnectionPoint {
         this.connectedPointIndex = -1;
         this.connectedBranchIndex = -1;
         this.connectedRoomIndex = -1;
-        WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::unSetConnectedPoint");
     }
 }

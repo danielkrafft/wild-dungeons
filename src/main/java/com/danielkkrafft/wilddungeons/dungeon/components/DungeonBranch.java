@@ -64,7 +64,6 @@ public class DungeonBranch {
             totalBranches += this.getFloor().getSession().getFloors().get(i).getBranches().size();
         }
         totalBranches += this.getIndex();
-        WDProfiler.INSTANCE.logTimestamp("DungeonBranch::getDifficulty");
         return (this.getFloor().getDifficulty() * this.getProperty(HierarchicalProperty.DIFFICULTY_MODIFIER) * Math.max(Math.pow(this.getProperty(HierarchicalProperty.DIFFICULTY_SCALING), totalBranches), 1)); //TODO the difficulty scaling thing doesn't work, it's just another multiplier.. but exponential
     }
 
@@ -83,12 +82,10 @@ public class DungeonBranch {
         if (getRooms().size() < getTemplate().roomTemplates().size()) {
             WildDungeons.getLogger().info("FAILED TO GENERATE ALL ROOMS. RESETTING BRANCH #{}", this.index);
             destroyRooms();
-            WDProfiler.INSTANCE.logTimestamp("DungeonBranch::generateDungeonBranch");
             return false;
         }
 
         this.spawnPoint = floor.getBranches().size() == 1 ? this.getRooms().getFirst().getSpawnPoint(floor.getLevel()) : getFloor().getBranches().getLast().getRooms().getLast().getSpawnPoint(floor.getLevel());
-        WDProfiler.INSTANCE.logTimestamp("DungeonBranch::generateDungeonBranch");
         return true;
     }
 
@@ -100,7 +97,6 @@ public class DungeonBranch {
         this.getRooms().forEach(DungeonRoom::actuallyPlaceInWorld);
         fullyGenerated = true;
         getFloor().onBranchComplete(this);
-        WDProfiler.INSTANCE.logTimestamp("DungeonBranch::actuallyPlaceInWorld");
     }
 
     /**
@@ -124,7 +120,6 @@ public class DungeonBranch {
         if (getRooms().isEmpty() && getFloor().getBranches().size() == 1) {
             DungeonRoom room = getTemplate().roomTemplates().getLast().getRandom().placeInWorld(this, this.getFloor().getOrigin(), TemplateOrientation.EMPTY);
             if (room != null) openConnections += room.getConnectionPoints().size();
-            WDProfiler.INSTANCE.logTimestamp("DungeonBranch::populateNextRoom");
             return true;
         }
 
@@ -169,7 +164,6 @@ public class DungeonBranch {
 
             ConnectionPoint exitPoint = ConnectionPoint.selectBestPoint(validPoints, this, Y_TARGET, 70.0, 200.0, 200.0, 30.0);
             placeRoom(exitPoint, entrancePoint, nextRoom);
-            WDProfiler.INSTANCE.logTimestamp("DungeonBranch::populateNextRoom");
             return true;
         }
         return false;
@@ -186,7 +180,6 @@ public class DungeonBranch {
 
             double probability = (double) (entry.getValue() - placedRooms) / (getTemplate().roomTemplates().size() - getRooms().size());
             if (RandomUtil.randFloatBetween(0, 1) < probability) {
-                WDProfiler.INSTANCE.logTimestamp("DungeonBranch::selectNextRoom");
                 return entry.getKey();
             }
         }
@@ -199,7 +192,6 @@ public class DungeonBranch {
             if (placedRooms > getTemplate().limitedRooms().get(nextRoom)) nextRoom = getTemplate().roomTemplates().get(getRooms().size()).getRandom();
         }
 
-        WDProfiler.INSTANCE.logTimestamp("DungeonBranch::selectNextRoom");
         return nextRoom;
     }
 
@@ -211,7 +203,6 @@ public class DungeonBranch {
     private List<ConnectionPoint> getValidExitPoints(ConnectionPoint entrancePoint) {
         List<ConnectionPoint> exitPoints = new ArrayList<>();
         getRooms().forEach(room -> exitPoints.addAll(room.getValidExitPoints(entrancePoint)));
-        WDProfiler.INSTANCE.logTimestamp("DungeonBranch::getValidExitPoints");
         return exitPoints;
     }
 
@@ -226,7 +217,6 @@ public class DungeonBranch {
         BlockPos position = ConnectionPoint.getOffset(exitPoint.tempOrientation, TemplateHelper.EMPTY_BLOCK_POS, entrancePoint, exitPoint).offset(exitPoint.getDirection(exitPoint.getRoom().getOrientation()).getNormal().multiply(1));
         DungeonRoom room = nextRoom.placeInWorld(this, position, exitPoint.tempOrientation);
         if (room == null) {
-            WDProfiler.INSTANCE.logTimestamp("DungeonBranch::placeRoom");
             return;
         }
 
@@ -237,7 +227,6 @@ public class DungeonBranch {
         exitPoint.unBlock(getFloor().getLevel());
         openConnections += nextRoom.connectionPoints().size() - 2;
         room.onGenerate();
-        WDProfiler.INSTANCE.logTimestamp("DungeonBranch::placeRoom");
     }
 
     /**
@@ -247,7 +236,6 @@ public class DungeonBranch {
         branchRooms.forEach(DungeonRoom::destroy);
         branchRooms.clear();
         openConnections = 0;
-        WDProfiler.INSTANCE.logTimestamp("DungeonBranch::destroyRooms");
     }
 
     /**
@@ -271,7 +259,6 @@ public class DungeonBranch {
         for (DungeonRoom room : this.getRooms()) {
             room.onBranchEnter(player);
         }
-        WDProfiler.INSTANCE.logTimestamp("DungeonBranch::onEnter");
     }
 
     /**
@@ -281,7 +268,6 @@ public class DungeonBranch {
      */
     public void onExit(WDPlayer player) {
         this.playersInside.put(player.getUUID(), false);
-        WDProfiler.INSTANCE.logTimestamp("DungeonBranch::onExit");
     }
 
     /**
