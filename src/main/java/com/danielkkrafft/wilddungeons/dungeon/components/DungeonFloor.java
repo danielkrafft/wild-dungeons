@@ -238,10 +238,8 @@ public class DungeonFloor {
     public void onBranchComplete(DungeonBranch branch) {
         totalRooms += branch.getRooms().size();
         if (!playersWaitingToEnter.isEmpty() && totalRooms > 10) {
-            DungeonSessionManager.getInstance().server.execute(() -> {
-                playersWaitingToEnter.forEach(this::onEnter);
-                playersWaitingToEnter.clear();
-            });
+            playersWaitingToEnter.forEach(this::onEnter);
+            playersWaitingToEnter.clear();
         }
     }
 

@@ -194,10 +194,10 @@ public class DungeonSession {
      */
     public void handleExitBehavior() {
         switch (this.getTemplate().get(HierarchicalProperty.EXIT_BEHAVIOR)) {
-            case DESTROY -> DungeonSessionManager.getInstance().server.execute(() -> {
+            case DESTROY ->  {
                 Entity entity = DungeonSessionManager.getInstance().server.getLevel(this.getEntranceLevel().dimension()).getEntity(UUID.fromString(this.getEntranceUUID()));
                 if (entity != null) entity.discard(); //TODO this doesn't always delete the rift
-            });
+            }
         }
         this.shutdown();
     }

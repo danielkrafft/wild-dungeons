@@ -137,7 +137,6 @@ public class DungeonRoom {
         });
 
         this.processRifts();
-
         if (!(this instanceof TargetPurgeRoom)) this.processOfferings();
 
         if (getTemplate().spawnPoint() != null) {
@@ -250,7 +249,7 @@ public class DungeonRoom {
     public static TriFunction<DungeonFloor, DungeonRoom, BlockPos, Boolean> handleRemoveProtectedShell() {
         return (floor, room, blockPos) -> {
             BlockState blockState = floor.getLevel().getBlockState(blockPos);
-            if (blockState.hasProperty(MIMIC)) floor.getLevel().setBlock(blockPos, BuiltInRegistries.BLOCK.byId(blockState.getValue(MIMIC)).defaultBlockState(), 0);
+            if (blockState.hasProperty(MIMIC)) floor.getLevel().setBlock(blockPos, BuiltInRegistries.BLOCK.byId(blockState.getValue(MIMIC)).defaultBlockState(), 128);
             return false;
         };
     }
@@ -530,7 +529,7 @@ public class DungeonRoom {
 
     public void onClear() {
         this.clear = true;
-        if (this.getProperty(DESTRUCTION_RULE) == DungeonRoomTemplate.DestructionRule.SHELL_CLEAR) this.removeProtection();
+        if (this.getProperty(DESTRUCTION_RULE) == DungeonRoomTemplate.DestructionRule.SHELL_CLEAR) CompletableFuture.runAsync(() -> this.removeProtection());
     }
 
     public void reset() {}
