@@ -200,7 +200,7 @@ public class ConnectionPoint {
 
     public static BlockPos getOffset(TemplateOrientation orientation, BlockPos position, ConnectionPoint en, ConnectionPoint ex) {
         BoundingBox enTransBox = en.getBoundingBox(orientation, position);
-        BoundingBox exTransBox = ex.getBoundingBox(ex.room.getOrientation(), ex.room.getPosition());
+        BoundingBox exTransBox = ex.getRealBoundingBox();
         WDProfiler.INSTANCE.logTimestamp("ConnectionPoint::getOffset");
         return new BlockPos(exTransBox.minX() - enTransBox.minX(), exTransBox.minY() - enTransBox.minY(), exTransBox.minZ() - enTransBox.minZ());
     }

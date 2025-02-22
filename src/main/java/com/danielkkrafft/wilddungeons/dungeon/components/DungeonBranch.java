@@ -96,10 +96,6 @@ public class DungeonBranch {
         this.getRooms().forEach(DungeonRoom::processShell);
     }
 
-    public void processProtection() {
-        this.getRooms().forEach(DungeonRoom::processProtection);
-    }
-
     public void actuallyPlaceInWorld() {
         this.getRooms().forEach(DungeonRoom::actuallyPlaceInWorld);
         fullyGenerated = true;

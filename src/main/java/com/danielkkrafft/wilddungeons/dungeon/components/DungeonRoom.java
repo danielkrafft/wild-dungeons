@@ -183,15 +183,6 @@ public class DungeonRoom {
         WDProfiler.INSTANCE.logTimestamp("DungeonRoom::processShell");
     }
 
-    public void processProtection() {
-        if (this.getProperty(DESTRUCTION_RULE) == DungeonRoomTemplate.DestructionRule.SHELL || this.getProperty(DESTRUCTION_RULE) == DungeonRoomTemplate.DestructionRule.SHELL_CLEAR) {
-            this.setProtected(true);
-            for (ConnectionPoint point : this.connectionPoints) {
-                if (point.isConnected()) point.unBlock(this.getBranch().getFloor().getLevel());
-            }
-        }
-    }
-
     /**
      * Surrounds the entire room with 1 layer of a specified blockstate
      *
@@ -204,12 +195,10 @@ public class DungeonRoom {
 
     /**
      * Toggles the protective bedrock shell which safeguards rooms from griefing and cheating
-     *
-     * @param protect True will place the bedrock shell, False will remove it
      */
-    public void setProtected(boolean protect) {
-        this.getBoundingBoxes().forEach(box -> fillShellWith(this.getBranch().getFloor(), this, box, WDBedrockBlock.of(Blocks.DIAMOND_BLOCK), 0, protect ? handlePlaceProtectedShell() : handleRemoveProtectedShell()));
-        WDProfiler.INSTANCE.logTimestamp("DungeonRoom::setProtected");
+    public void removeProtection() {
+        this.getBoundingBoxes().forEach(box -> fillShellWith(this.getBranch().getFloor(), this, box, WDBedrockBlock.of(Blocks.DIAMOND_BLOCK), 0, handleRemoveProtectedShell()));
+        WDProfiler.INSTANCE.logTimestamp("DungeonRoom::removeProtection");
     }
 
     /**
@@ -241,7 +230,7 @@ public class DungeonRoom {
                         case 4, 5 -> mutableBlockPos.set(wallOffset[i], y, x);
                     }
 
-                    if (predicate.apply(floor, room, mutableBlockPos) && !floor.getLevel().getServer().isShutdown()) floor.getLevel().setBlock(mutableBlockPos, blockState, 128);
+                    if (predicate.apply(floor, room, mutableBlockPos) && !floor.getLevel().getServer().isShutdown()) floor.getLevel().setBlock(mutableBlockPos, blockState, 0);
                 }
             }
         }
@@ -265,24 +254,6 @@ public class DungeonRoom {
 
     /**
      * Used as a predicate for fillShellWith.
-     * Always returns false, skips the regular shell creation in order to match the Bedrock blockstate to the existing blockstate.
-     */
-    public static TriFunction<DungeonFloor, DungeonRoom, BlockPos, Boolean> handlePlaceProtectedShell() {
-        return (floor, room, blockPos) -> {
-            Block block = floor.getLevel().getBlockState(blockPos).getBlock();
-            if (block == WDBlocks.WD_BEDROCK.get() || block == Blocks.AIR) return false;
-
-            if (!room.isPosInsideShell(blockPos)) {
-                floor.getLevel().setBlock(blockPos, WDBedrockBlock.of(block), 0);
-            }
-
-            WDProfiler.INSTANCE.logTimestamp("DungeonRoom::handlePlaceProtectedShell");
-            return false;
-        };
-    }
-
-    /**
-     * Used as a predicate for fillShellWith.
      * Always returns false, skips the regular shell creation in order to match the new blockstate to the Bedrock blockstate which is being removed.
      */
     public static TriFunction<DungeonFloor, DungeonRoom, BlockPos, Boolean> handleRemoveProtectedShell() {
@@ -298,7 +269,7 @@ public class DungeonRoom {
         for (BoundingBox box : this.boundingBoxes) {
             if (!box.isInside(pos)) continue;
             if (pos.getX() >= box.minX() + 1 && pos.getX() <= box.maxX() - 1 && pos.getZ() >= box.minZ() + 1 && pos.getZ() <= box.maxZ() - 1 && pos.getY() >= box.minY() + 1 && pos.getY() <= box.maxY() - 1) {
-                WDProfiler.INSTANCE.logTimestamp("DungeonRoom::isPosInsideShell");
+                WDProfiler.INSTANCE.logTimestamp("DungeonRoom::simplePosCheck");
                 return true;
             }
             for (BoundingBox otherBox : this.boundingBoxes) {
@@ -586,7 +557,7 @@ public class DungeonRoom {
 
     public void onClear() {
         this.clear = true;
-        if (this.getProperty(DESTRUCTION_RULE) == DungeonRoomTemplate.DestructionRule.SHELL_CLEAR) this.setProtected(false);
+        if (this.getProperty(DESTRUCTION_RULE) == DungeonRoomTemplate.DestructionRule.SHELL_CLEAR) this.removeProtection();
     }
 
     public void reset() {}

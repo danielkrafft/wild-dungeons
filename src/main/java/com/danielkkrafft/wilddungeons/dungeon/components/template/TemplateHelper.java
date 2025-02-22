@@ -133,20 +133,23 @@ public class TemplateHelper {
 
     public static TemplateOrientation handleRoomTransformation(ConnectionPoint entrancePoint, ConnectionPoint exitPoint) {
         TemplateOrientation orientation = new TemplateOrientation();
+        Direction enDirection = entrancePoint.getDirection(orientation);
 
-        if (entrancePoint.getDirection(orientation).getAxis() == Direction.Axis.Y) {
-            orientation.setMirror(exitPoint.getRoom().getSettings().getMirror());
-            orientation.setRotation(exitPoint.getRoom().getSettings().getRotation());
+        if (enDirection.getAxis() == Direction.Axis.Y) {
+            orientation.setMirror(exitPoint.getRoom().getOrientation().getMirror());
+            orientation.setRotation(exitPoint.getRoom().getOrientation().getRotation());
             WDProfiler.INSTANCE.logTimestamp("TemplateHelper::handleRoomTransformation");
             return orientation;
         }
 
+        Direction exDirection = exitPoint.getDirection(exitPoint.getRoom().getOrientation());
+
         orientation.setMirror(RandomUtil.randomFromList(Arrays.stream(Mirror.values()).toList()));
-        if (exitPoint.getDirection(exitPoint.getRoom().getOrientation()) == entrancePoint.getDirection(orientation)) {
+        if (exDirection == enDirection) {
             orientation.setRotation(Rotation.CLOCKWISE_180);
-        } else if (exitPoint.getDirection(exitPoint.getRoom().getOrientation()) == entrancePoint.getDirection(orientation).getClockWise()) {
+        } else if (exDirection == enDirection.getClockWise()) {
             orientation.setRotation(Rotation.COUNTERCLOCKWISE_90);
-        } else if (exitPoint.getDirection(exitPoint.getRoom().getOrientation()) == entrancePoint.getDirection(orientation).getCounterClockWise()) {
+        } else if (exDirection == enDirection.getCounterClockWise()) {
             orientation.setRotation(Rotation.CLOCKWISE_90);
         }
 
