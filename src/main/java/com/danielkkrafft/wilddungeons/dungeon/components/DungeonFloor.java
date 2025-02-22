@@ -200,14 +200,14 @@ public class DungeonFloor {
         this.dungeonBranches.forEach(DungeonBranch::processShell);
         this.dungeonBranches.forEach(DungeonBranch::actuallyPlaceInWorld);
 
-        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
-
-        }).handle((result, throwable) -> {
-            if (throwable != null) WildDungeons.getLogger().error("Error generating branches", throwable);
-            LockSupport.unpark(Thread.currentThread());
-            return null;
-        });
-        generationFutures.add(future);
+//        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+//
+//        }).handle((result, throwable) -> {
+//            if (throwable != null) WildDungeons.getLogger().error("Error generating branches", throwable);
+//            LockSupport.unpark(Thread.currentThread());
+//            return null;
+//        });
+//        generationFutures.add(future);
 
         WDProfiler.INSTANCE.logTimestamp("DungeonFloor::asyncGenerateBranches");
         WDProfiler.INSTANCE.end();

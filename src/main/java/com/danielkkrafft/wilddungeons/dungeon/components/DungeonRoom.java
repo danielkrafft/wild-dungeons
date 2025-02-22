@@ -134,7 +134,7 @@ public class DungeonRoom {
         getTemplate().templates().forEach(template -> {
             BlockPos newOffset = StructureTemplate.transform(template.getSecond(), getSettings().getMirror(), getSettings().getRotation(), TemplateHelper.EMPTY_BLOCK_POS);
             BlockPos newPosition = position.offset(newOffset);
-            TemplateHelper.placeInWorld(template.getFirst(), this.getMaterial(), getBranch().getFloor().getLevel(), newPosition, template.getSecond(), getSettings(), 0);
+            TemplateHelper.placeInWorld(this, template.getFirst(), this.getMaterial(), getBranch().getFloor().getLevel(), newPosition, template.getSecond(), getSettings(), 0);
         });
 
         this.processRifts();
@@ -180,13 +180,16 @@ public class DungeonRoom {
      */
     public void processShell() {
         if (this.getProperty(HAS_BEDROCK_SHELL)) this.surroundWith(Blocks.BEDROCK.defaultBlockState());
+        WDProfiler.INSTANCE.logTimestamp("DungeonRoom::processShell");
+    }
+
+    public void processProtection() {
         if (this.getProperty(DESTRUCTION_RULE) == DungeonRoomTemplate.DestructionRule.SHELL || this.getProperty(DESTRUCTION_RULE) == DungeonRoomTemplate.DestructionRule.SHELL_CLEAR) {
             this.setProtected(true);
             for (ConnectionPoint point : this.connectionPoints) {
                 if (point.isConnected()) point.unBlock(this.getBranch().getFloor().getLevel());
             }
         }
-        WDProfiler.INSTANCE.logTimestamp("DungeonRoom::processShell");
     }
 
     /**
@@ -266,12 +269,13 @@ public class DungeonRoom {
      */
     public static TriFunction<DungeonFloor, DungeonRoom, BlockPos, Boolean> handlePlaceProtectedShell() {
         return (floor, room, blockPos) -> {
+            Block block = floor.getLevel().getBlockState(blockPos).getBlock();
+            if (block == WDBlocks.WD_BEDROCK.get() || block == Blocks.AIR) return false;
+
             if (!room.isPosInsideShell(blockPos)) {
-                Block block = floor.getLevel().getBlockState(blockPos).getBlock();
-                if (block != WDBlocks.WD_BEDROCK.get() && block != Blocks.AIR) {
-                    floor.getLevel().setBlock(blockPos, WDBedrockBlock.of(block), 0);
-                }
+                floor.getLevel().setBlock(blockPos, WDBedrockBlock.of(block), 0);
             }
+
             WDProfiler.INSTANCE.logTimestamp("DungeonRoom::handlePlaceProtectedShell");
             return false;
         };
@@ -283,10 +287,8 @@ public class DungeonRoom {
      */
     public static TriFunction<DungeonFloor, DungeonRoom, BlockPos, Boolean> handleRemoveProtectedShell() {
         return (floor, room, blockPos) -> {
-            if (!room.isPosInsideShell(blockPos)) {
-                BlockState blockState = floor.getLevel().getBlockState(blockPos);
-                if (blockState.hasProperty(MIMIC)) floor.getLevel().setBlock(blockPos, BuiltInRegistries.BLOCK.byId(blockState.getValue(MIMIC)).defaultBlockState(), 0);
-            }
+            BlockState blockState = floor.getLevel().getBlockState(blockPos);
+            if (blockState.hasProperty(MIMIC)) floor.getLevel().setBlock(blockPos, BuiltInRegistries.BLOCK.byId(blockState.getValue(MIMIC)).defaultBlockState(), 0);
             WDProfiler.INSTANCE.logTimestamp("DungeonRoom::handleRemoveProtectedShell");
             return false;
         };
@@ -584,7 +586,7 @@ public class DungeonRoom {
 
     public void onClear() {
         this.clear = true;
-        if (this.getProperty(DESTRUCTION_RULE) == DungeonRoomTemplate.DestructionRule.SHELL_CLEAR) CompletableFuture.runAsync(() -> this.setProtected(false));
+        if (this.getProperty(DESTRUCTION_RULE) == DungeonRoomTemplate.DestructionRule.SHELL_CLEAR) this.setProtected(false);
     }
 
     public void reset() {}
