@@ -41,7 +41,7 @@ import static com.danielkkrafft.wilddungeons.registry.WDDimensions.WILDDUNGEON;
 
 public class DungeonFloor {
 
-    @Serializer.IgnoreSerialization private final List<DungeonBranch> dungeonBranches = new ArrayList<>();
+    @Serializer.IgnoreSerialization private List<DungeonBranch> dungeonBranches = new ArrayList<>();
     private final String templateKey;
     private final BlockPos origin;
     private final ResourceKey<Level> LEVEL_KEY;
@@ -59,7 +59,7 @@ public class DungeonFloor {
         return DungeonSessionManager.getInstance().server.levels.get(this.LEVEL_KEY);
     }
     public List<WDPlayer> getActivePlayers() {return this.playersInside.entrySet().stream().map(e -> e.getValue() ? WDPlayerManager.getInstance().getOrCreateServerWDPlayer(e.getKey()) : null).filter(Objects::nonNull).toList();}
-    public List<DungeonBranch> getBranches() {return this.dungeonBranches == null ? new ArrayList<>() : this.dungeonBranches;}//we need to null check, because these are not serialized in the save file and will always null pointer when loading a save
+    public List<DungeonBranch> getBranches() {return this.dungeonBranches;}//we need to null check, because these are not serialized in the save file and will always null pointer when loading a save
     public BlockPos getOrigin() {return this.origin;}
     public ResourceKey<Level> getLevelKey() {return this.LEVEL_KEY;}
     public BlockPos getSpawnPoint() {return this.spawnPoint;}
@@ -248,5 +248,15 @@ public class DungeonFloor {
      */
     public void cancelGenerations() {
         generationFutures.forEach(future -> future.cancel(true));
+    }
+    /**
+     * Called from the SaveSystem to add branches to the floor when loading a save
+     * Null checks and then adds a branch to the dungeonBranches list
+     */
+    public void addBranchFromSave(DungeonBranch branch) {
+        //we need to null check, because these are not serialized in the save file and will always null pointer when loading a save
+        //we shouldn't inline this because there are 40+ calls to that method and it kept causing knock-on errors
+        if (this.dungeonBranches == null) this.dungeonBranches = new ArrayList<>();
+        this.dungeonBranches.add(branch);
     }
 }

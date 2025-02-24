@@ -168,13 +168,13 @@ public class SaveSystem {
                             return;
                         }
                         DungeonRoom room = roomFile.room;
-                        branch.getRooms().add(room);
+                        branch.addRoomFromSave(room);
                     });
                     branch.getRooms().sort(Comparator.comparingInt(DungeonRoom::getIndex));
-                    floor.getBranches().add(branch);
+                    floor.addBranchFromSave(branch);
                 });
                 floor.getBranches().sort(Comparator.comparingInt(DungeonBranch::getIndex));
-                session.getFloors().add(floor);
+                session.addFloorFromSave(floor);
             });
             session.getFloors().sort(Comparator.comparingInt(DungeonFloor::getIndex));
             sessions.put(session.getSessionKey(), session);

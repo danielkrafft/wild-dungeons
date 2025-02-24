@@ -41,7 +41,7 @@ public class DungeonSession {
     private final HashMap<String, Boolean> playersInside = new HashMap<>();
     private final HashMap<String, DungeonStats> playerStats = new HashMap<>();
     private final HashMap<String, DungeonPerk> perks = new HashMap<>();
-    @Serializer.IgnoreSerialization private final List<DungeonFloor> floors = new ArrayList<>();
+    @Serializer.IgnoreSerialization private List<DungeonFloor> floors = new ArrayList<>();
     private final String template;
     private int shutdownTimer = SHUTDOWN_TIME;
     private int lives = 0;
@@ -120,7 +120,7 @@ public class DungeonSession {
     public void tick() {
         if (playersInside.values().stream().noneMatch(v -> v) && !getFloors().isEmpty()) {shutdownTimer -= 1;}
         if (shutdownTimer == 0) { shutdown(); return; }
-        if (playersInside.values().stream().anyMatch(v -> v)) floors.forEach(DungeonFloor::tick);
+        if (playersInside.values().stream().anyMatch(v -> v)) getFloors().forEach(DungeonFloor::tick);
         playersInside.keySet().forEach(uuid -> {
             if (this.playerStats.containsKey(uuid)) {
                 this.playerStats.get(uuid).time++;
@@ -264,5 +264,16 @@ public class DungeonSession {
         public int getScore() {
             return (int) Math.max(0, (damageDealt * 1) + (mobsKilled * 100) + (deaths * -1000));
         }
+    }
+
+    /**
+     * Called from the SaveSystem to add floors to the dungeon session from a save file
+     * Adds a floor to the dungeon session from a save file
+     */
+    public void addFloorFromSave(DungeonFloor floor) {
+        //we need to null check, because these are not serialized in the save file and will always null pointer when loading a save
+        //we shouldn't inline this because there are 40+ calls to that method and it kept causing knock-on errors
+        if (this.floors == null) this.floors = new ArrayList<>();
+        this.floors.add(floor);
     }
 }
