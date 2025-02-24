@@ -140,9 +140,6 @@ public class DungeonSession {
             WDPlayer player = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(entry.getKey());
             if (entry.getValue()) player.setCurrentLives(this.lives);
         }
-        if (this.lives <= 0 && this.playersInside.values().stream().anyMatch(v -> v)) {
-//            this.fail();
-        }
         WDPlayerManager.syncAll(this.playersInside.keySet().stream().toList());
     }
 

@@ -259,19 +259,19 @@ public class WDEvents {
             WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(player);
             if (wdPlayer.getCurrentDungeon() == null) return;
 
-            WildDungeons.getLogger().info("TESTING DEATH WITH DUNGEON LIVES: {}", wdPlayer.getCurrentDungeon().getLives());
+            CriteriaTriggers.USED_TOTEM.trigger(player, new ItemStack(Items.TOTEM_OF_UNDYING));
+            player.gameEvent(GameEvent.ITEM_INTERACT_FINISH);
+            player.removeEffectsCuredBy(EffectCures.PROTECTED_BY_TOTEM);
+            player.setHealth(1.0f);
+            player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 900, 1));
+            player.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 100, 1));
+            player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 800, 0));
+            player.level().broadcastEntityEvent(player, (byte)35);
+            wdPlayer.getCurrentDungeon().offsetLives(-1);
 
+            WildDungeons.getLogger().info("TESTING DEATH WITH DUNGEON LIVES: {}", wdPlayer.getCurrentDungeon().getLives());
             if (wdPlayer.getCurrentDungeon().getLives() > 0) {
 
-                CriteriaTriggers.USED_TOTEM.trigger(player, new ItemStack(Items.TOTEM_OF_UNDYING));
-                player.gameEvent(GameEvent.ITEM_INTERACT_FINISH);
-
-                player.setHealth(1.0f);
-                player.removeEffectsCuredBy(EffectCures.PROTECTED_BY_TOTEM);
-                player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 900, 1));
-                player.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 100, 1));
-                player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 800, 0));
-                player.level().broadcastEntityEvent(player, (byte)35);
                 BlockPos respawnPoint;
                 DungeonRoom room = wdPlayer.getCurrentRoom();
 
@@ -297,14 +297,10 @@ public class WDEvents {
                 wdPlayer.setRiftCooldown(140);
                 player.teleportTo(respawnPoint.getX(), respawnPoint.getY(), respawnPoint.getZ());
                 wdPlayer.getCurrentDungeon().getStats(wdPlayer.getUUID()).deaths += 1;
-                wdPlayer.getCurrentDungeon().offsetLives(-1);
             } else {
-                wdPlayer.getCurrentDungeon().offsetLives(-1);
                 wdPlayer.getCurrentDungeon().fail();
             }
-
             event.setCanceled(true);
-
         }
     }
 
