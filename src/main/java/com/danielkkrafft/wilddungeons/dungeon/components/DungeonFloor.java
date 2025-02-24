@@ -59,7 +59,7 @@ public class DungeonFloor {
         return DungeonSessionManager.getInstance().server.levels.get(this.LEVEL_KEY);
     }
     public List<WDPlayer> getActivePlayers() {return this.playersInside.entrySet().stream().map(e -> e.getValue() ? WDPlayerManager.getInstance().getOrCreateServerWDPlayer(e.getKey()) : null).filter(Objects::nonNull).toList();}
-    public List<DungeonBranch> getBranches() {return this.dungeonBranches;}
+    public List<DungeonBranch> getBranches() {return this.dungeonBranches == null ? new ArrayList<>() : this.dungeonBranches;}//we need to null check, because these are not serialized in the save file and will always null pointer when loading a save
     public BlockPos getOrigin() {return this.origin;}
     public ResourceKey<Level> getLevelKey() {return this.LEVEL_KEY;}
     public BlockPos getSpawnPoint() {return this.spawnPoint;}

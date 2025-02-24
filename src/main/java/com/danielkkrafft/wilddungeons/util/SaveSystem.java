@@ -176,7 +176,7 @@ public class SaveSystem {
                 floor.getBranches().sort(Comparator.comparingInt(DungeonBranch::getIndex));
                 session.getFloors().add(floor);
             });
-            if (session.getFloors() != null) session.getFloors().sort(Comparator.comparingInt(DungeonFloor::getIndex));
+            session.getFloors().sort(Comparator.comparingInt(DungeonFloor::getIndex));
             sessions.put(session.getSessionKey(), session);
         });
         WDPlayerManager.getInstance().setServerPlayers(players);

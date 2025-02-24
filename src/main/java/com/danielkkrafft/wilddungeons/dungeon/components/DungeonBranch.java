@@ -39,7 +39,7 @@ public class DungeonBranch {
     public DungeonFloor getFloor() {return floor != null ? floor : getSession().getFloors().get(this.floorIndex);}
     public <T> T getProperty(HierarchicalProperty<T> property) { return this.getTemplate().get(property) == null ? this.getFloor().getProperty(property) : this.getTemplate().get(property); }
     public List<WDPlayer> getActivePlayers() {return this.playersInside.entrySet().stream().map(e -> e.getValue() ? WDPlayerManager.getInstance().getOrCreateServerWDPlayer(e.getKey()) : null).filter(Objects::nonNull).toList();}
-    public List<DungeonRoom> getRooms() {return this.branchRooms;}
+    public List<DungeonRoom> getRooms() {return this.branchRooms == null? new ArrayList<>() : this.branchRooms;}//we need to null check, because these are not serialized in the save file and will always null pointer when loading a save
     public BlockPos getSpawnPoint() {return this.spawnPoint;}
     public int getIndex() {return this.index;}
     public void setIndex(int index) {this.index = index;}

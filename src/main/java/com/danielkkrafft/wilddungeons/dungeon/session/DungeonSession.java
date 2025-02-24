@@ -27,6 +27,7 @@ import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRegistry.DUNGEON_REGISTRY;
 
@@ -48,7 +49,7 @@ public class DungeonSession {
 
     public ServerLevel getEntranceLevel() {return DungeonSessionManager.getInstance().server.getLevel(this.entranceLevelKey);}
     public String getEntranceUUID() {return this.entranceUUID;}
-    public List<DungeonFloor> getFloors() {return this.floors;}
+    public List<DungeonFloor> getFloors() {return this.floors == null ? new ArrayList<>() : this.floors;}//we need to null check, because these are not serialized in the save file and will always null pointer when loading a save
     public DungeonTemplate getTemplate() {return DUNGEON_REGISTRY.get(this.template);}
     public int getLives() {return this.lives;}
     public boolean isMarkedForShutdown() {return this.markedForShutdown;}
@@ -140,7 +141,7 @@ public class DungeonSession {
             if (entry.getValue()) player.setCurrentLives(this.lives);
         }
         if (this.lives <= 0 && this.playersInside.values().stream().anyMatch(v -> v)) {
-            this.fail();
+//            this.fail();
         }
         WDPlayerManager.syncAll(this.playersInside.keySet().stream().toList());
     }
@@ -195,8 +196,18 @@ public class DungeonSession {
     public void handleExitBehavior() {
         switch (this.getTemplate().get(HierarchicalProperty.EXIT_BEHAVIOR)) {
             case DESTROY ->  {
-                Entity entity = DungeonSessionManager.getInstance().server.getLevel(this.getEntranceLevel().dimension()).getEntity(UUID.fromString(this.getEntranceUUID()));
-                if (entity != null) entity.discard(); //TODO this doesn't always delete the rift
+                UUID uuid = UUID.fromString(this.getEntranceUUID());
+                ServerLevel level = this.getEntranceLevel();
+                AtomicReference<Entity> entity = new AtomicReference<>();
+                if (level != null) {
+                    DungeonSessionManager.getInstance().server.execute(() -> {
+                        entity.set(level.getEntity(uuid));
+                    });
+//                    entity.set(level.getEntity(uuid));//todo this returns null for some reason
+                }
+                if (entity.get() != null) {
+                    entity.get().discard();
+                }
             }
         }
         this.shutdown();
