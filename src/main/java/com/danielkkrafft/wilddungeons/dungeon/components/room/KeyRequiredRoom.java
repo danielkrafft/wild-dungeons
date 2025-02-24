@@ -25,7 +25,7 @@ public class KeyRequiredRoom extends TargetPurgeRoom {
     }
 
     @Override
-    public void onGenerate() {
+    public void onBranchComplete() {
         //find all LockableBlocks in the room
         getBoundingBoxes().forEach(box -> {
             for (int x = box.minX(); x < box.maxX(); x++) {
@@ -33,7 +33,6 @@ public class KeyRequiredRoom extends TargetPurgeRoom {
                     for (int z = box.minZ(); z < box.maxZ(); z++) {
                         BlockPos pos = new BlockPos(x, y, z);
                         if (getBranch().getFloor().getLevel().getBlockState(pos).getBlock() instanceof LockableBlock) {
-//                            WildDungeons.getLogger().info("Found LockableBlock at {}", pos);
                             lockableBlocks.add(pos);
                             DungeonTarget target = new DungeonTarget(pos);
                             targets.add(target);
@@ -42,7 +41,7 @@ public class KeyRequiredRoom extends TargetPurgeRoom {
                 }
             }
         });
-        super.onGenerate();
+        super.onBranchComplete();
     }
 
     @Override
