@@ -1,5 +1,6 @@
 package com.danielkkrafft.wilddungeons.util;
 
+import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.util.Mth;
@@ -25,20 +26,21 @@ public class WeightedTable<T> implements DungeonRegistration.DungeonComponent {
         int qualityTarget = quality;
         deviance = Math.max(1, deviance);
 
-        while (quality > qualityTarget * 0.2 || quantity > 0) {
+        while (quality > qualityTarget * 0.2 && quantity > 0) {
             double ratio = (double) quality / quantity;
-            int selectedQuality = RandomUtil.randIntBetween(Mth.floor(ratio / deviance), Mth.floor(ratio * deviance));
+            int lowerBound = Mth.floor(ratio / deviance);
+            int upperBound = Mth.floor(ratio * deviance);
+            int selectedQuality = RandomUtil.randIntBetween(lowerBound,upperBound);
 
             Pair<Integer, WeightedPool<T>> selectedPool = weightMap.getFirst();
             for (Pair<Integer, WeightedPool<T>> pair : weightMap) {
                 if (pair.getFirst() <= selectedQuality) selectedPool = pair;
             }
 
-            result.add(selectedPool.getSecond().getRandom());
+            T selected = selectedPool.getSecond().getRandom();
+            result.add(selected);
             quality -= selectedPool.getFirst();
             quantity -= 1;
-
-
         }
 
         return result;
