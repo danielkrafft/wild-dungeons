@@ -86,7 +86,7 @@ public class CombatRoom extends TargetPurgeRoom {
         DungeonRegistration.OfferingTemplate offeringTemplate = getTemplate().roomClearOffering();
         if (offeringTemplate == null) return;
         Offering offering = offeringTemplate.asOffering(this.getBranch().getFloor().getLevel());
-        List<BlockPos> validPoints = sampleSpawnablePositions(getBranch().getFloor().getLevel(), 5, -Mth.ceil(Math.max(offering.getBoundingBox().getXsize(), offering.getBoundingBox().getZsize())));
+        List<BlockPos> validPoints = sampleSpawnablePositions(getBranch().getFloor().getLevel(), 5, Mth.ceil(Math.max(offering.getBoundingBox().getXsize(), offering.getBoundingBox().getZsize())));
         BlockPos finalPos = calculateClosestPoint(validPoints,5);
         offering.setPos(Vec3.atCenterOf(finalPos));
         this.getBranch().getFloor().getLevel().addFreshEntity(offering);

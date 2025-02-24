@@ -25,7 +25,7 @@ public class BossRoom extends CombatRoom {
     }
 
     @Override
-    public List<BlockPos> sampleSpawnablePositions(ServerLevel level, int count, int inflation) {
+    public List<BlockPos> sampleSpawnablePositions(ServerLevel level, int count, int deflation) {
         return List.of((TemplateHelper.transform(BlockPos.containing(this.getProperty(HierarchicalProperty.BOSS_SPAWN_POS)), this)));
     }
 }
