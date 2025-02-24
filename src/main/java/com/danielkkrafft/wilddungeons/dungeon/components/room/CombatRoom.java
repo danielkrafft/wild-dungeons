@@ -49,7 +49,11 @@ public class CombatRoom extends TargetPurgeRoom {
     }
 
     public List<DungeonRegistration.TargetTemplate> getTargetTemplates() {
-        return this.getProperty(HierarchicalProperty.ENEMY_TABLE).randomResults(Mth.ceil(RandomUtil.randFloatBetween(this.getProperty(HierarchicalProperty.WAVE_SIZE) / QUANTITY_VARIANCE, this.getProperty(HierarchicalProperty.WAVE_SIZE) * QUANTITY_VARIANCE)), (int) (BASE_DIFFICULTY * this.getDifficulty()), 2);
+        float lowerWaveSize = this.getProperty(HierarchicalProperty.WAVE_SIZE) / QUANTITY_VARIANCE;
+        float upperWaveSize = this.getProperty(HierarchicalProperty.WAVE_SIZE) * QUANTITY_VARIANCE;
+        int quantity = Mth.ceil(RandomUtil.randFloatBetween(lowerWaveSize, upperWaveSize));
+        int quality = (int) (BASE_DIFFICULTY * this.getDifficulty());
+        return this.getProperty(HierarchicalProperty.ENEMY_TABLE).randomResults(quantity, quality, 2);
     }
 
     public void spawnNext() {
