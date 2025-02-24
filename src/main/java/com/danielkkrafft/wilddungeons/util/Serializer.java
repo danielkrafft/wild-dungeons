@@ -3,6 +3,7 @@ package com.danielkkrafft.wilddungeons.util;
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.components.*;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.*;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateOrientation;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.player.SavedTransform;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
@@ -23,6 +24,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
@@ -32,6 +34,8 @@ public class Serializer
 {
     public static final HashMap<String, Class<?>> ACCEPTABLE_CLASS_REFERENCES = new HashMap<>();
     private static final HashMap<String, List<Field>> CLASS_FIELDS = new HashMap<>();
+    private static final ReflectionFactory REFLECTION_FACTORY = ReflectionFactory.getReflectionFactory();
+    private static final Map<Class<?>, Constructor<?>> CLASS_CONSTRUCTORS = new HashMap<>();
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)
@@ -71,21 +75,27 @@ public class Serializer
         addCustom(BossRoom.class);
         addCustom(DecalRenderer.Decal.class);
         addCustom(DecalRenderer.Decal.Vertex.class);
+        addCustom(TemplateOrientation.class);
     }
 
     private static void addCustom(Class<?> clazz) {
-        while (clazz != null) {
-            if (clazz.isEnum()) break;
-            List<Field> fields = new ArrayList<>();
-            ACCEPTABLE_CLASS_REFERENCES.put(clazz.getName(), clazz);
-            for (Field field : clazz.getDeclaredFields()) {
-                if (Modifier.isStatic(field.getModifiers())) continue;
-                if (field.isAnnotationPresent(IgnoreSerialization.class)) continue;
-                field.setAccessible(true);
-                fields.add(field);
+        try {
+            CLASS_CONSTRUCTORS.put(clazz, REFLECTION_FACTORY.newConstructorForSerialization(clazz, Object.class.getDeclaredConstructor()));
+            while (clazz != null) {
+                if (clazz.isEnum()) break;
+                List<Field> fields = new ArrayList<>();
+                ACCEPTABLE_CLASS_REFERENCES.put(clazz.getName(), clazz);
+                for (Field field : clazz.getDeclaredFields()) {
+                    if (Modifier.isStatic(field.getModifiers())) continue;
+                    if (field.isAnnotationPresent(IgnoreSerialization.class)) continue;
+                    field.setAccessible(true);
+                    fields.add(field);
+                }
+                CLASS_FIELDS.put(clazz.getName(), fields);
+                clazz = clazz.getSuperclass();
             }
-            CLASS_FIELDS.put(clazz.getName(), fields);
-            clazz = clazz.getSuperclass();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
         }
     }
 
@@ -341,8 +351,7 @@ public class Serializer
                     return null;
                 }
 
-                ReflectionFactory rf = ReflectionFactory.getReflectionFactory();
-                Object instance = clazz.cast(rf.newConstructorForSerialization(clazz, Object.class.getDeclaredConstructor()).newInstance());
+                Object instance = clazz.cast(CLASS_CONSTRUCTORS.get(clazz).newInstance());
                 while (clazz != null) {
                     for (Field field : CLASS_FIELDS.get(clazz.getName())) {
                         field.set(instance, deserialize(field.getName(), nestedTag));

@@ -32,6 +32,7 @@ public class DungeonFloorRegistry {
                     .addSimple(OVERWORLD_SPRAWL_1)
                     .addSimple(OVERWORLD_FREE_STUFF_BRANCH_1)
                     .addSimple(OVERWORLD_SPRAWL_2)
+                    .add(new WeightedPool<DungeonBranchTemplate>().add(OVERWORLD_SPRAWL_2, 1), 30)
                     .addSimple(OVERWORLD_FREE_STUFF_BRANCH_2)
                     .addSimple(OVERWORLD_ENDING_BRANCH))
             .setOrigin(new BlockPos(0, 150, 0));

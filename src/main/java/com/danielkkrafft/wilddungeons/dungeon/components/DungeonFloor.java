@@ -12,6 +12,7 @@ import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.danielkkrafft.wilddungeons.registry.WDDimensions;
 import com.danielkkrafft.wilddungeons.util.Serializer;
+import com.danielkkrafft.wilddungeons.util.debug.WDProfiler;
 import com.danielkkrafft.wilddungeons.world.dimension.EmptyGenerator;
 import com.danielkkrafft.wilddungeons.world.dimension.tools.InfiniverseAPI;
 import net.minecraft.core.BlockPos;
@@ -177,26 +178,30 @@ public class DungeonFloor {
      */
     public void asyncGenerateBranches() {
 
-        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
-            int totalBranchCount = getTemplate().branchTemplates().size();
-            int currentBranchCount = this.dungeonBranches.size();
+        int totalBranchCount = getTemplate().branchTemplates().size();
+        int currentBranchCount = this.dungeonBranches.size();
 
-            while (currentBranchCount < totalBranchCount && this.getLevel() != null) {
-                WildDungeons.getLogger().info("Generating branch {} of {}", currentBranchCount, totalBranchCount-1);
+        while (currentBranchCount < totalBranchCount && this.getLevel() != null) {
+            WildDungeons.getLogger().info("Generating branch {} of {}", currentBranchCount, totalBranchCount-1);
 
-                try { tryGenerateBranch(currentBranchCount);
-                } catch (Exception e) { e.printStackTrace(); }
+            try { tryGenerateBranch(currentBranchCount);
+            } catch (Exception e) { e.printStackTrace(); }
 
-                currentBranchCount = this.dungeonBranches.size();
-            }
+            currentBranchCount = this.dungeonBranches.size();
+        }
 
-            this.dungeonBranches.forEach(DungeonBranch::actuallyPlaceInWorld);
-        }).handle((result, throwable) -> {
-            if (throwable != null) WildDungeons.getLogger().error("Error generating branches", throwable);
-            LockSupport.unpark(Thread.currentThread());
-            return null;
-        });
-        generationFutures.add(future);
+        this.dungeonBranches.forEach(DungeonBranch::processShell);
+        this.dungeonBranches.forEach(DungeonBranch::actuallyPlaceInWorld);
+
+//        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+//
+//        }).handle((result, throwable) -> {
+//            if (throwable != null) WildDungeons.getLogger().error("Error generating branches", throwable);
+//            LockSupport.unpark(Thread.currentThread());
+//            return null;
+//        });
+//        generationFutures.add(future);
+
     }
 
     /**
@@ -206,10 +211,12 @@ public class DungeonFloor {
      */
     private void tryGenerateBranch(int branchIndex) {
         DungeonBranchTemplate nextBranch = getTemplate().branchTemplates().get(branchIndex).getRandom();
-        DungeonBranch newBranch = nextBranch.placeInWorld(this, origin);
+        DungeonBranch newBranch = nextBranch.placeInWorld(this);
 
         if (newBranch == null) {
-            if (branchIndex <= 0) return;
+            if (branchIndex <= 0) {
+                return;
+            }
             int index = nextBranch.rootOriginBranchIndex() == -1 ? 1 : branchIndex - nextBranch.rootOriginBranchIndex();
 
             for (int i = 1; i <= index; i++) {
@@ -231,24 +238,9 @@ public class DungeonFloor {
     public void onBranchComplete(DungeonBranch branch) {
         totalRooms += branch.getRooms().size();
         if (!playersWaitingToEnter.isEmpty() && totalRooms > 10) {
-            DungeonSessionManager.getInstance().server.execute(() -> {
-                playersWaitingToEnter.forEach(this::onEnter);
-                playersWaitingToEnter.clear();
-            });
+            playersWaitingToEnter.forEach(this::onEnter);
+            playersWaitingToEnter.clear();
         }
-    }
-
-    /**
-     * Called when a branch is generated. Removes any players still in that branch.
-     *
-     * @param branchIndex The branch being generated.
-     */
-    private void evictPlayersFromInvalidBranch(int branchIndex) {
-        this.getActivePlayers().forEach(wdPlayer -> {
-            if (wdPlayer.getCurrentBranchIndex() != branchIndex) return;
-            this.getBranches().get(branchIndex - 1).respawn(wdPlayer);
-            wdPlayer.getServerPlayer().sendSystemMessage(Component.literal("BRANCH FAILED - RESPAWNING"), true);
-        });
     }
 
     /**

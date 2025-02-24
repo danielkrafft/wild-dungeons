@@ -3,6 +3,7 @@ package com.danielkkrafft.wilddungeons.dungeon.components.room;
 import com.danielkkrafft.wilddungeons.dungeon.components.ConnectionPoint;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateOrientation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 
@@ -10,8 +11,8 @@ import java.util.List;
 
 public class SecretRoom extends DungeonRoom {
 
-    public SecretRoom(DungeonBranch branch, String templateKey, BlockPos position, StructurePlaceSettings settings) {
-        super(branch, templateKey, position, settings);
+    public SecretRoom(DungeonBranch branch, String templateKey, BlockPos position, TemplateOrientation orientation) {
+        super(branch, templateKey, position, orientation);
     }
 
     @Override
@@ -26,7 +27,7 @@ public class SecretRoom extends DungeonRoom {
         }
         if (entryPoint != null) {
             entryPoint.getConnectedPoint().hide(super.getBranch().getFloor().getLevel());
-            entryPoint.getConnectedPoint().getRoom().getAlwaysBreakable().addAll(entryPoint.getConnectedPoint().getPositions(entryPoint.getConnectedPoint().getRoom().getSettings(), entryPoint.getConnectedPoint().getRoom().getPosition()));
+            entryPoint.getConnectedPoint().getRoom().getAlwaysBreakable().addAll(entryPoint.getConnectedPoint().getPositions(entryPoint.getConnectedPoint().getRoom().getOrientation(), entryPoint.getConnectedPoint().getRoom().getPosition()));
         }
     }
 }

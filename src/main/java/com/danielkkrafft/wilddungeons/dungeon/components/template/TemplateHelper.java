@@ -1,6 +1,7 @@
 package com.danielkkrafft.wilddungeons.dungeon.components.template;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.block.WDBedrockBlock;
 import com.danielkkrafft.wilddungeons.block.WDBlocks;
 import com.danielkkrafft.wilddungeons.dungeon.components.ConnectionPoint;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonMaterial;
@@ -19,7 +20,6 @@ import net.minecraft.world.Clearable;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -38,6 +38,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.DESTRUCTION_RULE;
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.*;
 
 public class TemplateHelper {
@@ -49,9 +50,9 @@ public class TemplateHelper {
 
         templates.forEach(template -> {
 
-            BoundingBox boundingBox = template.getFirst().getBoundingBox(new StructurePlaceSettings(), template.getSecond());
+            BoundingBox boundingBox = template.getFirst().getBoundingBox(EMPTY_DUNGEON_SETTINGS, template.getSecond());
 
-            List<StructureTemplate.StructureBlockInfo> CONNECTION_BLOCKS = template.getFirst().filterBlocks(template.getSecond(), new StructurePlaceSettings(), WDBlocks.CONNECTION_BLOCK.get());
+            List<StructureTemplate.StructureBlockInfo> CONNECTION_BLOCKS = template.getFirst().filterBlocks(template.getSecond(), EMPTY_DUNGEON_SETTINGS, WDBlocks.CONNECTION_BLOCK.get());
             for (StructureTemplate.StructureBlockInfo block : CONNECTION_BLOCKS) {
 
                 Direction blockDirection;
@@ -73,8 +74,8 @@ public class TemplateHelper {
 
                 ConnectionPoint targetPoint = null;
                 for (ConnectionPoint point : connectionPoints) {
-                    if (point.getDirection(EMPTY_DUNGEON_SETTINGS) != blockDirection) continue;
-                    if (point.getPositions(EMPTY_DUNGEON_SETTINGS, EMPTY_BLOCK_POS).stream().noneMatch(pos -> block.pos().closerThan(pos, 2.0))) continue;
+                    if (point.getEmptyDirection() != blockDirection) continue;
+                    if (point.getPositions(TemplateOrientation.EMPTY, EMPTY_BLOCK_POS).stream().noneMatch(pos -> block.pos().closerThan(pos, 2.0))) continue;
                     targetPoint = point;
                 }
 
@@ -96,7 +97,7 @@ public class TemplateHelper {
     public static List<StructureTemplate.StructureBlockInfo> locateDataMarkers(List<Pair<StructureTemplate, BlockPos>> templates) {
         List<StructureTemplate.StructureBlockInfo> result = new ArrayList<>();
         templates.forEach(template -> {
-            result.addAll(template.getFirst().filterBlocks(template.getSecond(), new StructurePlaceSettings(), Blocks.STRUCTURE_BLOCK));
+            result.addAll(template.getFirst().filterBlocks(template.getSecond(), EMPTY_DUNGEON_SETTINGS, Blocks.STRUCTURE_BLOCK));
             result.removeIf(block -> {
                 if (block.state().getValue(StructureBlock.MODE) != StructureMode.DATA) return true;
                 CompoundTag nbt = block.nbt();
@@ -129,25 +130,28 @@ public class TemplateHelper {
         };
     }
 
-    public static StructurePlaceSettings handleRoomTransformation(ConnectionPoint entrancePoint, ConnectionPoint exitPoint) {
-        StructurePlaceSettings settings = new StructurePlaceSettings();
+    public static TemplateOrientation handleRoomTransformation(ConnectionPoint entrancePoint, ConnectionPoint exitPoint) {
+        TemplateOrientation orientation = new TemplateOrientation();
+        Direction enDirection = entrancePoint.getDirection(orientation);
 
-        if (entrancePoint.getDirection(settings).getAxis() == Direction.Axis.Y) {
-            settings.setMirror(exitPoint.getRoom().getSettings().getMirror());
-            settings.setRotation(exitPoint.getRoom().getSettings().getRotation());
-            return settings;
+        if (enDirection.getAxis() == Direction.Axis.Y) {
+            orientation.setMirror(exitPoint.getRoom().getOrientation().getMirror());
+            orientation.setRotation(exitPoint.getRoom().getOrientation().getRotation());
+            return orientation;
         }
 
-        settings.setMirror(RandomUtil.randomFromList(Arrays.stream(Mirror.values()).toList()));
-        if (exitPoint.getDirection(exitPoint.getRoom().getSettings()) == entrancePoint.getDirection(settings)) {
-            settings.setRotation(Rotation.CLOCKWISE_180);
-        } else if (exitPoint.getDirection(exitPoint.getRoom().getSettings()) == entrancePoint.getDirection(settings).getClockWise()) {
-            settings.setRotation(Rotation.COUNTERCLOCKWISE_90);
-        } else if (exitPoint.getDirection(exitPoint.getRoom().getSettings()) == entrancePoint.getDirection(settings).getCounterClockWise()) {
-            settings.setRotation(Rotation.CLOCKWISE_90);
+        Direction exDirection = exitPoint.getDirection(exitPoint.getRoom().getOrientation());
+
+        orientation.setMirror(RandomUtil.randomFromList(Arrays.stream(Mirror.values()).toList()));
+        if (exDirection == enDirection) {
+            orientation.setRotation(Rotation.CLOCKWISE_180);
+        } else if (exDirection == enDirection.getClockWise()) {
+            orientation.setRotation(Rotation.COUNTERCLOCKWISE_90);
+        } else if (exDirection == enDirection.getCounterClockWise()) {
+            orientation.setRotation(Rotation.CLOCKWISE_90);
         }
 
-        return settings;
+        return orientation;
     }
 
     public static BlockPos transform(BlockPos input, DungeonRoom room) {
@@ -163,6 +167,7 @@ public class TemplateHelper {
         SPAWN_BLOCKS.forEach(block -> {
             result.add(block.pos());
         });
+
         return SPAWN_BLOCKS.isEmpty() ? null : result;
     }
 
@@ -262,8 +267,6 @@ public class TemplateHelper {
 
             if (input.hasProperty(BlockStateProperties.STAIRS_SHAPE) && stairsShape != null) input = input.setValue(BlockStateProperties.STAIRS_SHAPE, stairsShape);
 
-
-            WDProfiler.INSTANCE.logTimestamp("TemplateHelper::fixBlockStateProperties");
             return input.hasProperty(BlockStateProperties.FACING) ?
                     input.setValue(BlockStateProperties.FACING, facing) :
                     input.setValue(BlockStateProperties.HORIZONTAL_FACING, facing);
@@ -271,79 +274,64 @@ public class TemplateHelper {
         return input;
     }
 
-    public static boolean placeInWorld(StructureTemplate template, DungeonMaterial material, ServerLevelAccessor serverLevel, BlockPos offset, BlockPos pos, StructurePlaceSettings settings, int flags) {
-        if (template.palettes.isEmpty()) {
-            return false;
-        } else {
-            List<StructureTemplate.StructureBlockInfo> list = settings.getRandomPalette(template.palettes, offset).blocks();
-            if ((!list.isEmpty() || !settings.isIgnoreEntities() && !template.entityInfoList.isEmpty()) && template.size.getX() >= 1 && template.size.getY() >= 1 && template.size.getZ() >= 1) {
-                BoundingBox boundingbox = settings.getBoundingBox();
-                List<BlockPos> list1 = Lists.newArrayListWithCapacity(settings.shouldApplyWaterlogging() ? list.size() : 0);
-                List<BlockPos> list2 = Lists.newArrayListWithCapacity(settings.shouldApplyWaterlogging() ? list.size() : 0);
-                List<Pair<BlockPos, CompoundTag>> list3 = Lists.newArrayListWithCapacity(list.size());
-                int i = Integer.MAX_VALUE;
-                int j = Integer.MAX_VALUE;
-                int k = Integer.MAX_VALUE;
-                int l = Integer.MIN_VALUE;
-                int i1 = Integer.MIN_VALUE;
-                int j1 = Integer.MIN_VALUE;
+    public static boolean placeInWorld(DungeonRoom room, StructureTemplate template, DungeonMaterial material, ServerLevelAccessor serverLevel, BlockPos offset, BlockPos pos, StructurePlaceSettings settings, int flags) {
+        if (template.palettes.isEmpty()) return false;
+        BoundingBox innerBox = template.getBoundingBox(settings, pos).inflatedBy(-1);
 
-                for(StructureTemplate.StructureBlockInfo structuretemplate$structureblockinfo : StructureTemplate.processBlockInfos(serverLevel, offset, pos, settings, list, template)) {
-                    if (structuretemplate$structureblockinfo.state().equals(Blocks.AIR.defaultBlockState())) continue;
-                    if (boundingbox == null || boundingbox.isInside(structuretemplate$structureblockinfo.pos())) {
-                        FluidState fluidstate = settings.shouldApplyWaterlogging() ? serverLevel.getFluidState(structuretemplate$structureblockinfo.pos()) : null;
-                        BlockState blockstate = structuretemplate$structureblockinfo.state();
-                        if (blockstate.hasProperty(STAIRS_SHAPE)){
-                          blockstate = TemplateHelper.fixBlockStateProperties(material.replace(structuretemplate$structureblockinfo.state()), settings);
-                        } else {
-                          blockstate = material.replace(structuretemplate$structureblockinfo.state().mirror(settings.getMirror()).rotate(settings.getRotation()));
-                        }
+        List<StructureTemplate.StructureBlockInfo> list = settings.getRandomPalette(template.palettes, offset).blocks();
+        if ((!list.isEmpty() || !settings.isIgnoreEntities() && !template.entityInfoList.isEmpty()) && template.size.getX() >= 1 && template.size.getY() >= 1 && template.size.getZ() >= 1) {
 
-                        if (structuretemplate$structureblockinfo.nbt() != null) {
-                            BlockEntity blockentity = serverLevel.getBlockEntity(structuretemplate$structureblockinfo.pos());
-                            Clearable.tryClear(blockentity);
-                            serverLevel.setBlock(structuretemplate$structureblockinfo.pos(), Blocks.BARRIER.defaultBlockState(), 20);
-                        }
+            for (StructureTemplate.StructureBlockInfo structuretemplate$structureblockinfo : StructureTemplate.processBlockInfos(serverLevel, offset, pos, settings, list, template)) {
+                BlockState blockstate = structuretemplate$structureblockinfo.state();
+                //if (blockstate.equals(Blocks.AIR.defaultBlockState())) continue;
 
-                        if (serverLevel.setBlock(structuretemplate$structureblockinfo.pos(), blockstate, flags)) {
-                            i = Math.min(i, structuretemplate$structureblockinfo.pos().getX());
-                            j = Math.min(j, structuretemplate$structureblockinfo.pos().getY());
-                            k = Math.min(k, structuretemplate$structureblockinfo.pos().getZ());
-                            l = Math.max(l, structuretemplate$structureblockinfo.pos().getX());
-                            i1 = Math.max(i1, structuretemplate$structureblockinfo.pos().getY());
-                            j1 = Math.max(j1, structuretemplate$structureblockinfo.pos().getZ());
-                            list3.add(Pair.of(structuretemplate$structureblockinfo.pos(), structuretemplate$structureblockinfo.nbt()));
-                            if (structuretemplate$structureblockinfo.nbt() != null) {
-                                BlockEntity blockentity1 = serverLevel.getBlockEntity(structuretemplate$structureblockinfo.pos());
-                                if (blockentity1 != null) {
-                                    blockentity1.loadWithComponents(structuretemplate$structureblockinfo.nbt(), serverLevel.registryAccess());
-                                }
-                            }
-
-                            if (fluidstate != null) {
-                                if (blockstate.getFluidState().isSource()) {
-                                    list2.add(structuretemplate$structureblockinfo.pos());
-                                } else if (blockstate.getBlock() instanceof LiquidBlockContainer) {
-                                    ((LiquidBlockContainer)blockstate.getBlock()).placeLiquid(serverLevel, structuretemplate$structureblockinfo.pos(), blockstate, fluidstate);
-                                    if (!fluidstate.isSource()) {
-                                        list1.add(structuretemplate$structureblockinfo.pos());
-                                    }
-                                }
-                            }
+                if (room.getProperty(DESTRUCTION_RULE) == DungeonRoomTemplate.DestructionRule.SHELL || room.getProperty(DESTRUCTION_RULE) == DungeonRoomTemplate.DestructionRule.SHELL_CLEAR) {
+                    if ((blockstate == WDBlocks.WD_BASIC.get().defaultBlockState() || blockstate == WDBlocks.WD_BASIC_2.get().defaultBlockState() || blockstate == WDBlocks.WD_BASIC_3.get().defaultBlockState() || blockstate == WDBlocks.WD_BASIC_4.get().defaultBlockState()) && !innerBox.isInside(structuretemplate$structureblockinfo.pos())) {
+                        if (!room.isPosInsideShell(structuretemplate$structureblockinfo.pos())) {
+                            blockstate = material.replace(structuretemplate$structureblockinfo.state().mirror(settings.getMirror()).rotate(settings.getRotation()));
+                            serverLevel.setBlock(structuretemplate$structureblockinfo.pos(), WDBedrockBlock.of(blockstate.getBlock()), 0);
+                            continue;
                         }
                     }
                 }
 
-                if (!settings.isIgnoreEntities()) {
-                    addEntitiesToWorld(template, serverLevel, offset, settings);
+                if (blockstate.hasProperty(STAIRS_SHAPE)) {
+                    blockstate = TemplateHelper.fixBlockStateProperties(material.replace(structuretemplate$structureblockinfo.state()), settings);
+                } else {
+                    blockstate = material.replace(structuretemplate$structureblockinfo.state().mirror(settings.getMirror()).rotate(settings.getRotation()));
                 }
 
-                WDProfiler.INSTANCE.logTimestamp("TemplateHelper::placeInWorld");
-                return true;
-            } else {
-                WDProfiler.INSTANCE.logTimestamp("TemplateHelper::placeInWorld");
-                return false;
+                if (structuretemplate$structureblockinfo.nbt() != null) {
+                    BlockEntity blockentity = serverLevel.getBlockEntity(structuretemplate$structureblockinfo.pos());
+                    Clearable.tryClear(blockentity);
+                    serverLevel.setBlock(structuretemplate$structureblockinfo.pos(), Blocks.BARRIER.defaultBlockState(), 0);
+                }
+
+                if (serverLevel.setBlock(structuretemplate$structureblockinfo.pos(), blockstate, flags)) {
+                    if (structuretemplate$structureblockinfo.nbt() != null) {
+                        BlockEntity blockentity1 = serverLevel.getBlockEntity(structuretemplate$structureblockinfo.pos());
+                        if (blockentity1 != null) {
+                            blockentity1.loadWithComponents(structuretemplate$structureblockinfo.nbt(), serverLevel.registryAccess());
+                        }
+                    }
+
+                    FluidState fluidstate = settings.shouldApplyWaterlogging() ? serverLevel.getFluidState(structuretemplate$structureblockinfo.pos()) : null;
+                    if (fluidstate != null) {
+                        if (blockstate.getFluidState().isSource()) {
+                        } else if (blockstate.getBlock() instanceof LiquidBlockContainer) {
+                            ((LiquidBlockContainer) blockstate.getBlock()).placeLiquid(serverLevel, structuretemplate$structureblockinfo.pos(), blockstate, fluidstate);
+                        }
+                    }
+                }
             }
+
+            if (!settings.isIgnoreEntities()) {
+                addEntitiesToWorld(template, serverLevel, offset, settings);
+            }
+
+            return true;
+        } else {
+            return false;
         }
     }
 

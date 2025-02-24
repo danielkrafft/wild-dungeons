@@ -30,6 +30,12 @@ public class DebugItem extends Item {
         if (!(player instanceof ServerPlayer serverPlayer)) return InteractionResultHolder.fail(player.getItemInHand(usedHand));
         WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer.getStringUUID());
 
+        WildDungeons.getLogger().info("DUNGEON CONTENTS:");
+        wdPlayer.getCurrentFloor().getBranches().forEach(branch -> {
+            WildDungeons.getLogger().info("BRANCH #{} CONTAINS {} ROOMS", branch.getIndex(), branch.getRooms().size());
+        });
+
+
         //logNonDungeonStuff(wdPlayer);
         //logDungeonStuff((ServerLevel) level, wdPlayer);
 

@@ -5,6 +5,7 @@ import com.danielkkrafft.wilddungeons.block.WDBedrockBlock;
 import com.danielkkrafft.wilddungeons.dungeon.components.ConnectionPoint;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateOrientation;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
@@ -24,8 +25,8 @@ public class LockableEventRoom extends DungeonRoom {
     public boolean started = false;
     public boolean generated = false;
 
-    public LockableEventRoom(DungeonBranch branch, String templateKey, BlockPos position, StructurePlaceSettings settings) {
-        super(branch, templateKey, position, settings);
+    public LockableEventRoom(DungeonBranch branch, String templateKey, BlockPos position, TemplateOrientation orientation) {
+        super(branch, templateKey, position, orientation);
     }
 
     public void start() {
@@ -36,7 +37,7 @@ public class LockableEventRoom extends DungeonRoom {
 
         this.getConnectionPoints().forEach(point -> {
             if (point.isConnected()) {
-                point.block(this.getBranch().getFloor().getLevel());
+                point.block(this.getBranch().getFloor().getLevel(), 2);
                 point.removeDecal(this.getDecalTexture(), this.getDecalColor());
             }
         });
@@ -112,7 +113,7 @@ public class LockableEventRoom extends DungeonRoom {
                 //this code only works when the *next* branch is generated too
                 if (point.getConnectedPoint().getBranchIndex() > this.getBranch().getIndex() ||
                         (point.getConnectedPoint().getRoom().getIndex() > this.getIndex() && point.getConnectedPoint().getBranchIndex() == this.getBranch().getIndex())) {
-                    point.block(this.getBranch().getFloor().getLevel());
+                    point.block(this.getBranch().getFloor().getLevel(), 2);
                     point.removeDecal(this.getDecalTexture(), this.getDecalColor());
                 } else {
                     this.templateBasedUnblock(getBranch().getFloor(), point);
