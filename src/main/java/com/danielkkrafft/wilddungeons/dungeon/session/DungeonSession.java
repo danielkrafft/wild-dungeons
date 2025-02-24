@@ -118,7 +118,7 @@ public class DungeonSession {
      * Run every server tick
      */
     public void tick() {
-        if (playersInside.values().stream().noneMatch(v -> v) && !floors.isEmpty()) {shutdownTimer -= 1;}
+        if (playersInside.values().stream().noneMatch(v -> v) && !getFloors().isEmpty()) {shutdownTimer -= 1;}
         if (shutdownTimer == 0) { shutdown(); return; }
         if (playersInside.values().stream().anyMatch(v -> v)) floors.forEach(DungeonFloor::tick);
         playersInside.keySet().forEach(uuid -> {
@@ -195,15 +195,12 @@ public class DungeonSession {
             case DESTROY ->  {
                 UUID uuid = UUID.fromString(this.getEntranceUUID());
                 ServerLevel level = this.getEntranceLevel();
-                AtomicReference<Entity> entity = new AtomicReference<>();
+                Entity entity = null;
                 if (level != null) {
-                    DungeonSessionManager.getInstance().server.execute(() -> {
-                        entity.set(level.getEntity(uuid));
-                    });
-//                    entity.set(level.getEntity(uuid));//todo this returns null for some reason
+                    entity = level.getEntity(uuid);//todo this returns null for some reason
                 }
-                if (entity.get() != null) {
-                    entity.get().discard();
+                if (entity != null) {
+                    entity.discard();
                 }
             }
         }
