@@ -442,9 +442,9 @@ public class DungeonRoom {
         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
         while (result.size() < count && tries > 0) {
             BoundingBox randomBox = this.boundingBoxes.get(RandomUtil.randIntBetween(0, this.boundingBoxes.size()-1));
-            deflation = Math.min(deflation, randomBox.getXSpan());
-            deflation = Math.min(deflation, randomBox.getYSpan());
-            deflation = Math.min(deflation, randomBox.getZSpan());
+            deflation = Math.min(deflation, randomBox.getXSpan()/2-1);
+            deflation = Math.min(deflation, randomBox.getYSpan()/2-1);
+            deflation = Math.min(deflation, randomBox.getZSpan()/2-1);
             BoundingBox innerShell = randomBox.inflatedBy(-deflation); //TODO cheating
 
             int randX = RandomUtil.randIntBetween(innerShell.minX(), innerShell.maxX());
