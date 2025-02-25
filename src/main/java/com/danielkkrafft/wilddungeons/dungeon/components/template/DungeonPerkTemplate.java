@@ -17,11 +17,5 @@ public class DungeonPerkTemplate implements DungeonRegistration.DungeonComponent
     @Override
     public String name() {return this.name;}
 
-    public static void onPerk(String perkId, DungeonSession session) {
-        switch (perkId) {
-            case "EXTRA_LIFE" -> session.offsetLives(1);
-        }
-    }
-
     public Vector2i getTexCoords() {return texCoords;}
 }

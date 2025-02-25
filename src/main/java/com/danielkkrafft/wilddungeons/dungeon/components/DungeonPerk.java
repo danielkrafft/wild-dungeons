@@ -5,6 +5,7 @@ import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.item.AxeItem;
@@ -25,7 +26,8 @@ public class DungeonPerk {
         this.sessionKey = sessionKey;
     }
 
-    public void onCollect() {
+    public void onCollect(DungeonSession session) {
+        session.getPlayers().forEach(player -> player.getServerPlayer().sendSystemMessage(Component.translatable("dungeon.perk." + this.name), true));
         if (this.name.equals("EXTRA_LIFE")) {getSession().offsetLives(1);}
     }
 

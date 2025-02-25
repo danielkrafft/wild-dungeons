@@ -156,7 +156,7 @@ public class DungeonSession {
 
         perk.count++;
         this.getPerks().put(perkTemplate.name(), perk);
-        perk.onCollect();
+        perk.onCollect(this);
     }
 
     /**
@@ -184,7 +184,7 @@ public class DungeonSession {
      */
     public void fail() {
         for (WDPlayer wdPlayer : getPlayers()) {
-            wdPlayer.getServerPlayer().sendSystemMessage(Component.literal("DUNGEON FAILED - RESPAWNING"), true);
+            wdPlayer.getServerPlayer().sendSystemMessage(Component.translatable("dungeon.failed"), true);
             this.onExit(wdPlayer);
         }
         triggerExitBehaviorDelay();
