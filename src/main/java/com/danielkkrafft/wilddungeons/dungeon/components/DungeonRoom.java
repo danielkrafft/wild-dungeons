@@ -153,6 +153,13 @@ public class DungeonRoom {
         WildDungeons.getLogger().info("FINISHED ROOM: {}", getTemplate().name());
     }
 
+    public static void forceUpdateChunkForPlayer(ServerLevel level,ServerPlayer player, ChunkPos chunkPos) {
+        LevelChunk chunk = level.getChunk(chunkPos.x, chunkPos.z);
+        if (chunk == null) return;
+        WildDungeons.getLogger().info("FORCING CHUNK {} UPDATE FOR PLAYER {}",chunkPos, player.getName().getString());
+        player.connection.send(new ClientboundLevelChunkWithLightPacket(chunk, level.getLightEngine(), null, null));
+    }
+
     public static void forceUpdateChunk(ServerLevel level, ChunkPos chunkPos) {
         LevelChunk chunk = level.getChunk(chunkPos.x, chunkPos.z);
         if (chunk == null) return;
@@ -529,6 +536,7 @@ public class DungeonRoom {
             this.processLootBlocks();
             lootGenerated = true;
         }
+        getChunkPosSet(this.boundingBoxes, 1).forEach(chunkPos -> forceUpdateChunkForPlayer(this.getBranch().getFloor().getLevel(), player.getServerPlayer(), chunkPos));
     }
 
     public void onBranchComplete(){
