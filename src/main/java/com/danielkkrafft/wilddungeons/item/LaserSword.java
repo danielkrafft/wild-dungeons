@@ -14,11 +14,24 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Vector2f;
+import org.joml.Vector2i;
 
 public class LaserSword extends WDWeapon {
 
     public static final String NAME = "laser_sword";
     public enum AnimationList { idle, gun_transform, charging_up, fully_charged, shoot, sword_transform }
+
+    private final int chargingUpSeconds = 5;//5
+    private final int maxChargeSeconds = 15;//15
+    private final int cooldownSeconds = 3;
+    private final int laserEntityChargeSeconds = 1;
+    private final Vector2i blastLevelRange = new Vector2i(1, 5);
+    private final Vector2f damageRange = new Vector2f(0.75f, 20f);
+    private final Vector2f laserRadiusRange = new Vector2f(0.1f, 1.0f);
+    private final Vector2f laserDistanceRange = new Vector2f(15, 160);
+    private final Vector2i explosionRadiusRange = new Vector2i(1, 30);
+
 
     public LaserSword() {
         super(NAME);
@@ -42,8 +55,8 @@ public class LaserSword extends WDWeapon {
             int charge = getUseDuration(stack, livingEntity) - remainingUseDuration;
 
             if (charge == 0) setAnimation(AnimationList.gun_transform.toString(), stack, player, player.level());
-            if (charge == 100) setAnimation(AnimationList.charging_up.toString(), stack, player, player.level());
-            if (charge == (15*20) + 100) setAnimation(AnimationList.fully_charged.toString(), stack, player, player.level());
+            if (charge == chargingUpSeconds*20) setAnimation(AnimationList.charging_up.toString(), stack, player, player.level());
+            if (charge == (maxChargeSeconds*20)+chargingUpSeconds*20) setAnimation(AnimationList.fully_charged.toString(), stack, player, player.level());
         }
     }
 
@@ -51,21 +64,21 @@ public class LaserSword extends WDWeapon {
     public void releaseUsing(@NotNull ItemStack stack, @NotNull Level level, @NotNull LivingEntity livingEntity, int count) {
 
         if (!(livingEntity instanceof Player player)) return;
-        int charge = getUseDuration(stack, player) - count - 100;
+        int charge = getUseDuration(stack, player) - count - chargingUpSeconds*20;
         if (charge <= 0) return;
 
-        float ratio = Math.clamp((float) charge / (15*20), 0.0f, 1.0f);
+        float ratio = Math.clamp((float) charge / (maxChargeSeconds*20), 0.0f, 1.0f);
 
-        int blastLevel = Mth.lerpInt(ratio, 1, 5);
-        float damage = Mth.lerp(ratio, 0.75f, 20f);
-        float laserRadius = Mth.lerp(ratio, 0.1f, 1.0f);
-        float range = Mth.lerp(ratio, 15, 160);
-        float explosionRadius = Mth.lerpInt(ratio, 1, 30);
+        int blastLevel = Mth.lerpInt(ratio, blastLevelRange.x, blastLevelRange.y);
+        float damage = Mth.lerp(ratio, damageRange.x, damageRange.y);
+        float laserRadius = Mth.lerp(ratio, laserRadiusRange.x, laserRadiusRange.y);
+        float range = Mth.lerp(ratio, laserDistanceRange.x,laserDistanceRange.y);
+        float explosionRadius = Mth.lerpInt(ratio, explosionRadiusRange.x, explosionRadiusRange.y);
         boolean explosion = ratio > 0.4f;
         boolean debris = ratio > 0.6f;
 
         if (!player.isCreative()) stack.setDamageValue(stack.getDamageValue()+blastLevel);
-        player.getCooldowns().addCooldown(this,charge * 3);
+        player.getCooldowns().addCooldown(this,cooldownSeconds*20);//used to be 3x the total charge time, which would be up to 60s
         shoot(blastLevel, level, player, damage, laserRadius, range, explosion, explosionRadius, debris);
         setAnimation(AnimationList.shoot.toString(), stack, player, level);
     }
@@ -74,7 +87,7 @@ public class LaserSword extends WDWeapon {
     {
         float yaw = player.getYRot(), pitch = player.getXRot();
         Vec3 vec = MathUtil.displaceVector(0.5f, player.getEyePosition(), yaw, pitch);
-        level.addFreshEntity(new Laserbeam(player, vec, yaw, pitch, damage, radius, range, explosion, explosionradius, debris));
+        level.addFreshEntity(new Laserbeam(player, vec, yaw, pitch, damage, radius, range, explosion, explosionradius, debris,laserEntityChargeSeconds));
         Vec3 oppositeLook = MathUtil.velocity3d(1, yaw + 180, -pitch);
 
         float ratio = Math.clamp((float) blastLevel / 5, 0.0f, 1.0f);
