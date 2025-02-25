@@ -27,7 +27,6 @@ import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRegistry.DUNGEON_REGISTRY;
 
@@ -176,7 +175,7 @@ public class DungeonSession {
             PacketDistributor.sendToPlayer(wdPlayer.getServerPlayer(), new SimplePacketManager.ClientboundTagPacket(tag));
             wdPlayer.getServerPlayer().setGameMode(GameType.SPECTATOR);
         }
-        triggerRiftDestructionDelay();
+        triggerExitBehaviorDelay();
     }
 
     /**
@@ -188,13 +187,13 @@ public class DungeonSession {
             wdPlayer.getServerPlayer().sendSystemMessage(Component.literal("DUNGEON FAILED - RESPAWNING"), true);
             this.onExit(wdPlayer);
         }
-        triggerRiftDestructionDelay();
+        triggerExitBehaviorDelay();
     }
 
     /**
      * called in placed of handleExitBehavior() when the rift is destroyed to ensure the containing level has time to load before trying to get the rift entity
      */
-    public void triggerRiftDestructionDelay() {
+    public void triggerExitBehaviorDelay() {
         ticksToExit = 5;
     }
 
