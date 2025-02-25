@@ -58,7 +58,7 @@
   "dungeon.perk.EXTRA_LIFE": "Extra Life: +1 Respawn",
   "dungeon.perk.SWORD_DAMAGE": "Sword Damage: +10% Sword Damage",
   "dungeon.perk.BOW_DAMAGE": "Bow Damage: +10% Bow Damage",
-  "dungeon.perk.AXE_DAMAGE": "Bow Damage: +10% Axe Damage",
+  "dungeon.perk.AXE_DAMAGE": "Axe Damage: +10% Axe Damage",
 
   "dungeon.failed": "DUNGEON FAILED - RESPAWNING"
 }
