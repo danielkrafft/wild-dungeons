@@ -44,6 +44,7 @@ public class DungeonSession {
     @Serializer.IgnoreSerialization private List<DungeonFloor> floors = new ArrayList<>();
     private final String template;
     private int shutdownTimer = SHUTDOWN_TIME;
+    private int ticksToExit = -1;
     private int lives = 0;
     private boolean markedForShutdown = false;
 
@@ -118,6 +119,9 @@ public class DungeonSession {
      * Run every server tick
      */
     public void tick() {
+        if (ticksToExit > -1 && --ticksToExit == 0) {
+            handleExitBehavior();
+        }
         if (playersInside.values().stream().noneMatch(v -> v) && !getFloors().isEmpty()) {shutdownTimer -= 1;}
         if (shutdownTimer == 0) { shutdown(); return; }
         if (playersInside.values().stream().anyMatch(v -> v)) getFloors().forEach(DungeonFloor::tick);
@@ -172,7 +176,7 @@ public class DungeonSession {
             PacketDistributor.sendToPlayer(wdPlayer.getServerPlayer(), new SimplePacketManager.ClientboundTagPacket(tag));
             wdPlayer.getServerPlayer().setGameMode(GameType.SPECTATOR);
         }
-        this.handleExitBehavior();
+        triggerRiftDestructionDelay();
     }
 
     /**
@@ -184,7 +188,14 @@ public class DungeonSession {
             wdPlayer.getServerPlayer().sendSystemMessage(Component.literal("DUNGEON FAILED - RESPAWNING"), true);
             this.onExit(wdPlayer);
         }
-        this.handleExitBehavior();
+        triggerRiftDestructionDelay();
+    }
+
+    /**
+     * called in placed of handleExitBehavior() when the rift is destroyed to ensure the containing level has time to load before trying to get the rift entity
+     */
+    public void triggerRiftDestructionDelay() {
+        ticksToExit = 5;
     }
 
     /**
