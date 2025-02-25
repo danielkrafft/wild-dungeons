@@ -46,6 +46,14 @@ public class WDSoundEvents {
     public static final Holder<SoundEvent> NETHER_MELODY = SOUND_EVENTS.register("soundscape.music.nether_melody", SoundEvent::createVariableRangeEvent);
     public static final Holder<SoundEvent> NETHER_BEAT = SOUND_EVENTS.register("soundscape.music.nether_beat", SoundEvent::createVariableRangeEvent);
 
+    public static final Holder<SoundEvent> CAVE_02 = SOUND_EVENTS.register("soundscape.ambient.cave_02", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> MEGA_DUNGEON_MELODY = SOUND_EVENTS.register("soundscape.music.mega_dungeon_melody", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> MEGA_DUNGEON_BEAT = SOUND_EVENTS.register("soundscape.music.mega_dungeon_beat", SoundEvent::createVariableRangeEvent);
+
+    public static final Holder<SoundEvent> JAZZ = SOUND_EVENTS.register("soundscape.music.jazz", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> MOONLIGHT_SONATA_1ST = SOUND_EVENTS.register("soundscape.music.moonlight_sonata_1st", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> MOONLIGHT_SONATA_3RD = SOUND_EVENTS.register("soundscape.music.moonlight_sonata_3rd", SoundEvent::createVariableRangeEvent);
+
     public static final Holder<SoundEvent> UI_BEEP = SOUND_EVENTS.register("ui.misc.beep", SoundEvent::createVariableRangeEvent);
 
     public static final Holder<SoundEvent> MEATHOOK_HIT = SOUND_EVENTS.register("entity.meathook.hit", SoundEvent::createVariableRangeEvent);

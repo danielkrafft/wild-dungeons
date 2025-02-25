@@ -32,6 +32,8 @@ public class OfferingTemplateRegistry {
     public static final OfferingTemplate COAL = create("COAL",ItemTemplateRegistry.COAL, XP_LEVEL, 2, 1.5f);
 
     public static final OfferingTemplate FREE_AMOGUS_STAFF = create("FREE_AMOGUS_STAFF", ItemTemplateRegistry.AMOGUS_STAFF, XP_LEVEL, 0, 1.0f).setRenderScale(2.0f);
+    public static final OfferingTemplate FREE_LASER_SWORD = create("FREE_LASER_SWORD", ItemTemplateRegistry.LASER_SWORD, XP_LEVEL, 0, 1.0f).setRenderScale(2.0f);
+    public static final OfferingTemplate FREE_FIREWORK_GUN = create("FREE_FIREWORK_GUN", ItemTemplateRegistry.FIREWORK_GUN, XP_LEVEL, 0, 1.0f).setRenderScale(2.0f);
     public static final OfferingTemplate FREE_MEATHOOK = create("FREE_MEATHOOK", ItemTemplateRegistry.MEATHOOK, XP_LEVEL, 0, 1.0f).setRenderScale(2.0f);
     public static final OfferingTemplate DUNGEON_KEY = create("DUNGEON_KEY", ItemTemplateRegistry.DUNGEON_KEY, XP_LEVEL, 0, 1.0f).setRenderScale(2.0f).setSoundLoop(WDSoundEvents.SHIMMER.value());
 

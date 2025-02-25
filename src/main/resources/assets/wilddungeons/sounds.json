@@ -215,6 +215,42 @@
       "stream": true}
     ]
   },
+  "soundscape.ambient.cave_02": {
+    "sounds": [
+      {"name": "wilddungeons:soundscape/ambient/cave_02",
+        "stream": true}
+    ]
+  },
+  "soundscape.music.mega_dungeon_melody": {
+    "sounds": [
+      {"name": "wilddungeons:soundscape/music/mega_dungeon_melody",
+        "stream": true}
+    ]
+  },
+  "soundscape.music.mega_dungeon_beat": {
+    "sounds": [
+      {"name": "wilddungeons:soundscape/music/mega_dungeon_beat",
+        "stream": true}
+    ]
+  },
+  "soundscape.music.jazz": {
+    "sounds": [
+      {"name": "wilddungeons:soundscape/music/jazz",
+        "stream": true}
+    ]
+  },
+  "soundscape.music.moonlight_sonata_1st": {
+    "sounds": [
+      {"name": "wilddungeons:soundscape/music/moonlight_sonata_1st",
+        "stream": true}
+    ]
+  },
+  "soundscape.music.moonlight_sonata_3rd": {
+    "sounds": [
+      {"name": "wilddungeons:soundscape/music/moonlight_sonata_3rd",
+        "stream": true}
+    ]
+  },
   "entity.shimmer": {
     "sounds": [
       {"name": "wilddungeons:entity/shimmer"}

@@ -2,8 +2,12 @@ package com.danielkkrafft.wilddungeons.dungeon.registries;
 
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.DungeonLayout;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonMaterial;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonBranchTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
+import com.danielkkrafft.wilddungeons.util.WeightedPool;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +47,8 @@ public class DungeonBranchRegistry {
     public static final DungeonBranchTemplate OVERWORLD_STARTER_BRANCH = create("OVERWORLD_STARTER_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .addSimple(OVERWORLD_START))
-            .set(MATERIAL, OVERWORLD_MATERIAL_POOL_0);
+            .set(MATERIAL, OVERWORLD_MATERIAL_POOL_0)
+            .set(INTENSITY, 0);
 
     public static final DungeonBranchTemplate OVERWORLD_FREE_STUFF_BRANCH_0 = create("OVERWORLD_FREE_STUFF_BRANCH_0")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
@@ -51,7 +56,8 @@ public class DungeonBranchRegistry {
                     .add(OVERWORLD_SHOP_ROOM_POOL, 1)
                     .addSimple(OVERWORLD_TRANSITION_ROOM))
             .set(MATERIAL, OVERWORLD_MATERIAL_POOL_0)
-            .set(DIFFICULTY_SCALING, 1.0);
+            .set(DIFFICULTY_SCALING, 1.0)
+            .set(SOUNDSCAPE, SoundscapeTemplateRegistry.PEACEFUL);
     public static final DungeonBranchTemplate OVERWORLD_FREE_STUFF_BRANCH_1 = copyOf(OVERWORLD_FREE_STUFF_BRANCH_0,"OVERWORLD_FREE_STUFF_BRANCH_1")
             .set(MATERIAL, OVERWORLD_MATERIAL_POOL_1)
             .set(DIFFICULTY_SCALING, 1.0);
@@ -67,6 +73,21 @@ public class DungeonBranchRegistry {
             .set(MATERIAL, OVERWORLD_MATERIAL_POOL_1);
     public static final DungeonBranchTemplate OVERWORLD_SPRAWL_2 = copyOf(OVERWORLD_SPRAWL_0,"OVERWORLD_SPRAWL_2")
             .set(MATERIAL, OVERWORLD_MATERIAL_POOL_2);
+    public static final DungeonBranchTemplate OVERWORLD_TRIAL_BRANCH = create("OVERWORLD_TRIAL")
+            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
+                    .addSimple(TRIAL_ENTRY)
+                    .addSimple(TRIAL_TRANSITION)
+                    .add(new WeightedPool<DungeonRoomTemplate>().add(TRIAL_HALL, 1), 5)
+                    .addSimple(TRIAL_SIDE_LOOT)
+                    .add(new WeightedPool<DungeonRoomTemplate>().add(TRIAL_SIDE_LOOT_PIECE, 1), 4)
+                    .addSimple(TRIAL_BOSS_ENTRY)
+                    .addSimple(TRIAL_BOSS)
+            )
+            .set(MATERIAL, new WeightedPool<DungeonMaterial>().add(DungeonMaterialRegistry.TRIAL_MATERIAL, 1))
+            .set(SOUNDSCAPE, SoundscapeTemplateRegistry.MOONLIGHT_SONATA_1ST);
+    public static final DungeonBranchTemplate OVERWORLD_TRIAL_EXIT_BRANCH = create("OVERWORLD_TRIAL_EXIT")
+            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
+                    .addSimple(TRIAL_EXIT));
     public static final DungeonBranchTemplate OVERWORLD_ENDING_BRANCH = create("OVERWORLD_ENDING_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .addSimple(OVERWORLD_EXIT_ROOM))

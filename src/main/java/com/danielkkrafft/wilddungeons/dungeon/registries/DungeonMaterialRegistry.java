@@ -90,6 +90,22 @@ public class DungeonMaterialRegistry {
             new WeightedPool<BlockState>()
                     .add(BIRCH_PLANKS.defaultBlockState(), 1));
 
+    public static final DungeonMaterial TRIAL_MATERIAL = create(
+            "TRIAL_MATERIAL",
+            new WeightedPool<BlockState>()
+                    .add(TUFF_BRICKS.defaultBlockState(), 1),
+            new WeightedPool<BlockState>()
+                    .add(TUFF_BRICK_STAIRS.defaultBlockState(), 1),
+            new WeightedPool<BlockState>()
+                    .add(TUFF_BRICK_SLAB.defaultBlockState(), 1),
+            new WeightedPool<BlockState>()
+                    .add(TUFF_BRICK_WALL.defaultBlockState(), 1),
+            new WeightedPool<BlockState>()
+                    .add(COPPER_BULB.defaultBlockState(), 1),
+            new WeightedPool<BlockState>()
+                    .add(CHISELED_TUFF_BRICKS.defaultBlockState(), 1)
+    );
+
     public static final DungeonMaterial OVERWORLD_MATERIAL_0 = create(
             "OVERWORLD_MATERIAL_0",
                     new WeightedPool<BlockState>()

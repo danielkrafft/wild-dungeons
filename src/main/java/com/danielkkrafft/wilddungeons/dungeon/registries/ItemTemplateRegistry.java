@@ -63,6 +63,8 @@ public class ItemTemplateRegistry {
     public static ItemTemplate RABBIT_FOOT = create("rabbit_foot_2", Items.RABBIT_FOOT, 2);
 
     public static ItemTemplate AMOGUS_STAFF = create("amogus_staff", WDItems.AMOGUS_STAFF.get(), 1);
+    public static ItemTemplate LASER_SWORD = create("laser_sword", WDItems.LASER_SWORD_ITEM.get(), 1);
+    public static ItemTemplate FIREWORK_GUN = create("firework_gun", WDItems.FIREWORK_GUN_ITEM.get(), 1);
     public static ItemTemplate MEATHOOK = create("meathook", WDItems.MEATHOOK_ITEM.get(), 1);
 
     public static ItemTemplate DUNGEON_KEY = create("dungeon_key", WDItems.WD_DUNGEON_KEY.get(), 1);

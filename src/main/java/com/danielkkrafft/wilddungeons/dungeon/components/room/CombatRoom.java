@@ -19,6 +19,9 @@ import net.minecraft.world.phys.Vec3;
 import java.util.List;
 import java.util.Optional;
 
+import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.INTENSITY;
+import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.SOUNDSCAPE;
+
 public class CombatRoom extends TargetPurgeRoom {
 
     public static final int SPAWN_INTERVAL = 200;
@@ -44,6 +47,9 @@ public class CombatRoom extends TargetPurgeRoom {
             DungeonTarget enemy = template.asEnemy();
             targets.add(enemy);
             totalSpawns += 1;
+        });
+        this.getActivePlayers().forEach(player -> {
+            player.setSoundScape(this.getProperty(SOUNDSCAPE), this.getProperty(INTENSITY)+1, false);
         });
         super.start();
     }
@@ -87,6 +93,9 @@ public class CombatRoom extends TargetPurgeRoom {
     @Override
     public void onClear() {
         super.onClear();
+        this.getActivePlayers().forEach(player -> {
+            player.setSoundScape(this.getProperty(SOUNDSCAPE), this.getProperty(INTENSITY), false);
+        });
         DungeonRegistration.OfferingTemplate offeringTemplate = getTemplate().roomClearOffering();
         if (offeringTemplate == null) return;
         Offering offering = offeringTemplate.asOffering(this.getBranch().getFloor().getLevel());

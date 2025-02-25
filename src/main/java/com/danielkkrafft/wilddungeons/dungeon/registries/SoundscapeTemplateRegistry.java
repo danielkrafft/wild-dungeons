@@ -17,6 +17,23 @@ public class SoundscapeTemplateRegistry {
             .addSound(WDSoundEvents.NETHER_BASS, 3)
             .addSound(WDSoundEvents.NETHER_BEAT, 4);
 
+    public static final SoundscapeTemplate MEGA_DUNGEON = create("MEGA_DUNGEON")
+            .addSound(WDSoundEvents.CAVE_02, 0)
+            .addSound(WDSoundEvents.MEGA_DUNGEON_MELODY, 1)
+            .addSound(WDSoundEvents.MEGA_DUNGEON_BEAT, 2);
+
+    public static final SoundscapeTemplate PEACEFUL = create("PEACEFUL")
+            .addSound(WDSoundEvents.CAVE_02, 0)
+            .addSound(WDSoundEvents.JAZZ, 1);
+
+    public static final SoundscapeTemplate MOONLIGHT_SONATA_1ST = create("MOONLIGHT_SONATA_1ST")
+            .addSound(WDSoundEvents.CAVE_02, 0)
+            .addSound(WDSoundEvents.MOONLIGHT_SONATA_1ST, 1);
+
+    public static final SoundscapeTemplate MOONLIGHT_SONATA_3RD = create("MOONLIGHT_SONATA_3RD")
+            .addSound(WDSoundEvents.CAVE_02, 0)
+            .addSound(WDSoundEvents.MOONLIGHT_SONATA_3RD, 1);
+
     public static SoundscapeTemplate create(String name){
         SoundscapeTemplate soundscape = new SoundscapeTemplate(name);
         soundscapes.add(soundscape);

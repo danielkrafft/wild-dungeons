@@ -48,7 +48,8 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
                     of("stone/boss_comp_2", new BlockPos(0, 0, 48)),
                     of("stone/boss_comp_3", new BlockPos(20, 20, -16))
             ));
-    public static final DungeonRoomTemplate SECRET_1 = createSimple("secret/1").setClazz(SecretRoom.class);
+    public static final DungeonRoomTemplate SECRET_1 = createSimple("secret/1").setClazz(SecretRoom.class)
+            .set(SHOP_TABLE, OfferingTemplateTableRegistry.FREE_CUSTOM_WEAPON_TABLE);
     public static final DungeonRoomTemplate SHOP_1 = createSimple("shop/1");
     public static final DungeonRoomTemplate LOOT_1 = create(
             "loot",
@@ -73,9 +74,15 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate OVERWORLD_BASIC_3 = createSimple("overworld/sprawl/basic_3");
     public static final DungeonRoomTemplate OVERWORLD_BASIC_4 = createSimple("overworld/sprawl/basic_4");
     public static final DungeonRoomTemplate OVERWORLD_BASIC_5 = createSimple("overworld/sprawl/basic_5");
+    public static final DungeonRoomTemplate OVERWORLD_BASIC_6 = createSimple("overworld/sprawl/basic_6");
+    public static final DungeonRoomTemplate OVERWORLD_BASIC_7 = createSimple("overworld/sprawl/basic_7");
+    public static final DungeonRoomTemplate OVERWORLD_PARKOUR = createSimple("overworld/sprawl/parkour");
+    public static final DungeonRoomTemplate OVERWORLD_SECRET = createSimple("overworld/sprawl/secret").setClazz(SecretRoom.class);
+    public static final DungeonRoomTemplate OVERWORLD_SMELTER_ROOM = createSimple("overworld/sprawl/smelter");
     public static final DungeonRoomTemplate OVERWORLD_COMBAT_1 = copyOf(OVERWORLD_BASIC_3, "overworld_combat_1").set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR).setClazz(CombatRoom.class);
     public static final DungeonRoomTemplate OVERWORLD_COMBAT_2 = copyOf(OVERWORLD_BASIC_4, "overworld_combat_2").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR).set(WAVE_SIZE, 5).set(DIFFICULTY_MODIFIER, 0.5);
     public static final DungeonRoomTemplate OVERWORLD_COMBAT_3 = copyOf(OVERWORLD_BASIC_5, "overworld_combat_3").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR).set(WAVE_SIZE, 7).set(DIFFICULTY_MODIFIER, 0.75);
+    public static final DungeonRoomTemplate OVERWORLD_COMBAT_4 = copyOf(OVERWORLD_BASIC_7, "overworld_combat_4").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR).set(WAVE_SIZE, 7).set(DIFFICULTY_MODIFIER, 0.75);
     public static final DungeonRoomTemplate OVERWORLD_CHEST_ROOM = createSimple("overworld/sprawl/chest_room");
     public static final DungeonRoomTemplate OVERWORLD_STAIRCASE = createSimple("overworld/sprawl/stair_room");
     public static final DungeonRoomTemplate OVERWORLD_STAIRWAY_1 = createSimple("overworld/sprawl/stairway_1");
@@ -91,7 +98,32 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
             List.of(
                     of("overworld/transition", EMPTY_BLOCK_POS),
                     of("overworld/transition2", new BlockPos(7, -13, 3))
-            ));
+            ))
+            .set(INTENSITY, 0);
+    public static final DungeonRoomTemplate TRIAL_ENTRY = create(
+            "trial_entry",
+            List.of(
+                    of("overworld/trial/entry_1", EMPTY_BLOCK_POS),
+                    of("overworld/trial/entry_2", new BlockPos(6, 0, 14))
+            ))
+            .set(INTENSITY, 0);
+    public static final DungeonRoomTemplate TRIAL_TRANSITION = createSimple("overworld/trial/transition");
+    public static final DungeonRoomTemplate TRIAL_HALL = createSimple("overworld/trial/hall");
+    public static final DungeonRoomTemplate TRIAL_BOSS_ENTRY = createSimple("overworld/trial/boss_entry");
+    public static final DungeonRoomTemplate TRIAL_BOSS = createSimple("overworld/trial/boss").setClazz(BossRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR).set(BOSS_SPAWN_POS, new Vec3(15, 10, 15))
+            .set(ENEMY_TABLE, EnemyTableRegistry.BREEZE_GOLEM_ARENA)
+            .set(SOUNDSCAPE, SoundscapeTemplateRegistry.MOONLIGHT_SONATA_3RD)
+            .set(INTENSITY, 0);
+    public static final DungeonRoomTemplate TRIAL_SIDE_LOOT = createSimple("overworld/trial/side_loot");
+    public static final DungeonRoomTemplate TRIAL_SIDE_LOOT_PIECE = createSimple("overworld/trial/side_loot_piece");
+    public static final DungeonRoomTemplate TRIAL_EXIT = create(
+            "trial_exit",
+            List.of(
+                    of("overworld/trial/exit_1", EMPTY_BLOCK_POS),
+                    of("overworld/trial/exit_2", new BlockPos(-4, -7, -27))
+            ))
+            .set(INTENSITY, 0)
+            .set(SHOP_TABLE, OfferingTemplateTableRegistry.FREE_CUSTOM_WEAPON_TABLE);
     public static final DungeonRoomTemplate VILLAGE_1 = createSimple("village/village_1");
     public static final DungeonRoomTemplate VILLAGE_FORGE = createSimple("village/village_forge");
     public static final DungeonRoomTemplate VILLAGE_PATH_1 = createSimple("village/village_path_1");
@@ -191,7 +223,6 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
             .setRoomClearOffering(OfferingTemplateRegistry.EXIT_RIFT)
             .set(ENEMY_TABLE, EnemyTableRegistry.NETHER_DRAGON_ARENA)
             .set(BOSS_SPAWN_POS, new Vec3(3.0, 40.0, 3.0));
-
 
 
     public static DungeonRoomTemplate copyOf(DungeonRoomTemplate template, String name) {

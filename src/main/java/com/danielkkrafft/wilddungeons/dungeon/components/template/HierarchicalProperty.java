@@ -3,6 +3,7 @@ package com.danielkkrafft.wilddungeons.dungeon.components.template;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonMaterial;
 import com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialPoolRegistry;
+import com.danielkkrafft.wilddungeons.dungeon.registries.OfferingTemplateTableRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.registries.SoundscapeTemplateRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
@@ -35,6 +36,7 @@ public class HierarchicalProperty<T> {
     public static final HierarchicalProperty<Integer> INTENSITY = new HierarchicalProperty<>(new TypeToken<>() {}, 0);
     public static final HierarchicalProperty<DungeonRegistration.SoundscapeTemplate> SOUNDSCAPE = new HierarchicalProperty<>(new TypeToken<>() {}, SoundscapeTemplateRegistry.NETHER_CAVES);
     public static final HierarchicalProperty<Vec3> BOSS_SPAWN_POS = new HierarchicalProperty<>(new TypeToken<>() {}, Vec3.ZERO);
+    public static final HierarchicalProperty<WeightedTable<DungeonRegistration.OfferingTemplate>> SHOP_TABLE = new HierarchicalProperty<>(new TypeToken<>() {}, OfferingTemplateTableRegistry.BASIC_SHOP_TABLE);
 
 
     private final TypeToken<T> type;

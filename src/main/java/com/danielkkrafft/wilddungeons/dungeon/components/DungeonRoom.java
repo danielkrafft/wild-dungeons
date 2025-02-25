@@ -250,7 +250,7 @@ public class DungeonRoom {
     public static TriFunction<DungeonFloor, DungeonRoom, BlockPos, Boolean> handleRemoveProtectedShell() {
         return (floor, room, blockPos) -> {
             BlockState blockState = floor.getLevel().getBlockState(blockPos);
-            if (blockState.hasProperty(MIMIC)) floor.getLevel().setBlock(blockPos, BuiltInRegistries.BLOCK.byId(blockState.getValue(MIMIC)).defaultBlockState(), 128);
+            if (blockState.hasProperty(MIMIC)) floor.getLevel().setBlock(blockPos, BuiltInRegistries.BLOCK.byId(blockState.getValue(MIMIC)).defaultBlockState(), 130);
             return false;
         };
     }
@@ -350,7 +350,7 @@ public class DungeonRoom {
     }
 
     public void processOfferings() {
-        List<DungeonRegistration.OfferingTemplate> entries = BASIC_SHOP_TABLE.randomResults(this.getTemplate().offerings().size(), (int) this.getDifficulty() * this.getTemplate().offerings().size(), 1.2f);
+        List<DungeonRegistration.OfferingTemplate> entries = this.getProperty(SHOP_TABLE).randomResults(this.getTemplate().offerings().size(), (int) this.getDifficulty() * this.getTemplate().offerings().size(), 1.2f);
         getTemplate().offerings().forEach(pos -> {
             if (entries.isEmpty()) {
                 return;
