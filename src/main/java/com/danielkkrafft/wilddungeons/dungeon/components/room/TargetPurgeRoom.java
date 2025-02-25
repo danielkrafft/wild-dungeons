@@ -24,12 +24,6 @@ public class TargetPurgeRoom extends LockableEventRoom {
     }
 
     @Override
-    public void actuallyPlaceInWorld() {
-        super.actuallyPlaceInWorld();
-        this.processOfferings();
-    }
-
-    @Override
     public void tick() {
         super.tick();
         if (!this.started || this.isClear() || this.getActivePlayers().isEmpty()) return;

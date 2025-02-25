@@ -56,7 +56,7 @@ public class DungeonBranch {
     }
 
     /**
-     * Calculates this branch's difficulty using floor multiplier * branch multiplier * totalBranches^difficulty scaling
+     * Calculates this branch's difficulty using floor multiplier * branch multiplier * difficulty scaling^totalBranches
      */
     public double getDifficulty() {
         int totalBranches = 0;

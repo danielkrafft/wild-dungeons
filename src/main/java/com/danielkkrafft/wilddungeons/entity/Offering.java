@@ -263,7 +263,6 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
         if (player instanceof ServerPlayer serverPlayer) {
             WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer);
             attemptPurchase(wdPlayer);
-            WildDungeons.getLogger().info("Player {} touched Offering with UUID {}", wdPlayer, this.getUUID());
         }
     }
 
