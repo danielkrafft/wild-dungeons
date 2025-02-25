@@ -16,8 +16,8 @@ public class SecretRoom extends DungeonRoom {
     }
 
     @Override
-    public void onGenerate() {
-        super.onGenerate();
+    public void onBranchComplete() {
+        super.onBranchComplete();
         ConnectionPoint entryPoint = null;
         for (ConnectionPoint point : super.getConnectionPoints()) {
             if (point.isConnected()) {
