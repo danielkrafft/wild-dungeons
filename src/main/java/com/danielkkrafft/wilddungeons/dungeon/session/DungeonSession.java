@@ -1,6 +1,7 @@
 package com.danielkkrafft.wilddungeons.dungeon.session;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.dungeon.components.ConnectionPoint;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonPerk;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonPerkTemplate;
@@ -11,6 +12,7 @@ import com.danielkkrafft.wilddungeons.network.ClientPacketHandler;
 import com.danielkkrafft.wilddungeons.network.SimplePacketManager;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
+import com.danielkkrafft.wilddungeons.render.DecalRenderer;
 import com.danielkkrafft.wilddungeons.util.FileUtil;
 import com.danielkkrafft.wilddungeons.util.SaveSystem;
 import com.danielkkrafft.wilddungeons.util.Serializer;
@@ -224,9 +226,11 @@ public class DungeonSession {
         floors.forEach(DungeonFloor::cancelGenerations);
         getPlayers().forEach(this::onExit);
         floors.forEach(floor -> {
+            floor.getBranches().forEach(dungeonBranch -> dungeonBranch.getRooms().forEach(dungeonRoom -> dungeonRoom.getConnectionPoints().forEach(ConnectionPoint::removeServerDecal)));
             InfiniverseAPI.get().markDimensionForUnregistration(DungeonSessionManager.getInstance().server, floor.getLevelKey());
             FileUtil.deleteDirectoryContents(FileUtil.getWorldPath().resolve("dimensions").resolve(WildDungeons.MODID).resolve(floor.getLevelKey().location().getPath()), true);
         });
+        DecalRenderer.syncAllClientDecals();
         SaveSystem.DeleteSession(this);
         markedForShutdown = true;
     }

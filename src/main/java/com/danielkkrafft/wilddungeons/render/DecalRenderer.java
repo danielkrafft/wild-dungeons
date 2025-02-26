@@ -1,6 +1,9 @@
 package com.danielkkrafft.wilddungeons.render;
 
-import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.network.ClientPacketHandler;
+import com.danielkkrafft.wilddungeons.network.SimplePacketManager;
+import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
+import com.danielkkrafft.wilddungeons.util.Serializer;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Camera;
@@ -10,14 +13,17 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.*;
 
@@ -107,6 +113,31 @@ public class DecalRenderer {
         Set<Decal> decalsInThisChunk = decalsInThisLevel.get(decal.chunkPos);
 
         decalsInThisChunk.remove(decal);
+    }
+
+    public static void syncClientDecals(ServerPlayer player){
+        CompoundTag tag = new CompoundTag();
+        tag.putString("packet", ClientPacketHandler.Packets.SYNC_DECALS.toString());
+        tag.put("decal", Serializer.toCompoundTag(SERVER_DECALS_MAP));
+        player.connection.send(new SimplePacketManager.ClientboundTagPacket(tag));
+    }
+
+    public static void syncAllClientDecals() {
+        WDPlayerManager.getInstance().getServerPlayers().forEach((s, wdPlayer) -> syncClientDecals(wdPlayer.getServerPlayer()));
+    }
+
+    public static void sendClientRemovalPacket(Decal decal) {
+        CompoundTag tag = new CompoundTag();
+        tag.putString("packet", ClientPacketHandler.Packets.REMOVE_DECAL.toString());
+        tag.put("decal", Serializer.toCompoundTag(decal));
+        PacketDistributor.sendToAllPlayers(new SimplePacketManager.ClientboundTagPacket(tag));
+    }
+
+    public static void sendClientAdditionPacket(Decal decal) {
+        CompoundTag tag = new CompoundTag();
+        tag.putString("packet", ClientPacketHandler.Packets.ADD_DECAL.toString());
+        tag.put("decal", Serializer.toCompoundTag(decal));
+        PacketDistributor.sendToAllPlayers(new SimplePacketManager.ClientboundTagPacket(tag));
     }
 
     public static class Decal {

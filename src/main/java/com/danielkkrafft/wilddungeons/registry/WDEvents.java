@@ -16,6 +16,7 @@ import com.danielkkrafft.wilddungeons.network.ClientPacketHandler;
 import com.danielkkrafft.wilddungeons.network.SimplePacketManager;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
+import com.danielkkrafft.wilddungeons.render.DecalRenderer;
 import com.danielkkrafft.wilddungeons.util.FileUtil;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import com.danielkkrafft.wilddungeons.util.SaveSystem;
@@ -110,6 +111,7 @@ public class WDEvents {
             tag.putString("packet", ClientPacketHandler.Packets.UPDATE_WD_PLAYER.toString());
             tag.put("player", Serializer.toCompoundTag(wdPlayer));
             PacketDistributor.sendToPlayer(serverPlayer, new SimplePacketManager.ClientboundTagPacket(tag));
+            DecalRenderer.syncClientDecals(serverPlayer);
         }
     }
 

@@ -39,7 +39,7 @@ public class ClientPacketHandler {
                 DecalRenderer.addClientDecal(Serializer.fromCompoundTag(data.getCompound("decal")));
             }
             case SYNC_DECALS -> {
-                DecalRenderer.CLIENT_DECALS_MAP = Serializer.fromCompoundTag(data);
+                DecalRenderer.CLIENT_DECALS_MAP = Serializer.fromCompoundTag(data.getCompound("decal"));
             }
             case SWITCH_SOUNDSCAPE -> {
                 SoundscapeHandler.handleSwitchSoundscape(SoundscapeTemplateRegistry.SOUNDSCAPE_TEMPLATE_REGISTRY.get(data.getString("sound_key")), data.getInt("intensity"), data.getBoolean("reset"));

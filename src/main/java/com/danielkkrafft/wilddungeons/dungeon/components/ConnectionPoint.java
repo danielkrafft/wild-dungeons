@@ -8,11 +8,9 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateOrientation;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.entity.blockentity.ConnectionBlockEntity;
-import com.danielkkrafft.wilddungeons.network.ClientPacketHandler;
-import com.danielkkrafft.wilddungeons.network.SimplePacketManager;
 import com.danielkkrafft.wilddungeons.render.DecalRenderer;
+import com.danielkkrafft.wilddungeons.render.DecalRenderer.Decal;
 import com.danielkkrafft.wilddungeons.util.Serializer;
-import com.danielkkrafft.wilddungeons.util.debug.WDProfiler;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
@@ -29,10 +27,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 
@@ -226,9 +222,14 @@ public class ConnectionPoint {
 
     }
 
-    public void blockAndRemoveDecal(int flags){
-        block(flags);
-        if (this.getRoom().getDecalTexture() != null) this.removeDecal(this.getRoom().getDecalTexture(), this.getRoom().getDecalColor());
+    public Vector3f getAveragePosition() {
+        BoundingBox box = this.getRealBoundingBox();
+        return new Vector3f(box.minX() + (float) box.getXSpan() /2, box.minY() + (float) box.getYSpan() /2, box.minZ() + (float) box.getZSpan() /2);
+    }
+
+    public void hide() {
+        ServerLevel level = this.getRoom().getBranch().getFloor().getLevel();
+        getPositions(this.getRoom().getOrientation(), this.getRoom().getPosition()).forEach((pos) -> level.setBlock(pos, this.getRoom().getMaterial().getHidden(0), 2));
     }
 
     public void block( int flags) {
@@ -254,14 +255,9 @@ public class ConnectionPoint {
         });
     }
 
-    public Vector3f getAveragePosition() {
-        BoundingBox box = this.getRealBoundingBox();
-        return new Vector3f(box.minX() + (float) box.getXSpan() /2, box.minY() + (float) box.getYSpan() /2, box.minZ() + (float) box.getZSpan() /2);
-    }
-
-    public void hide() {
-        ServerLevel level = this.getRoom().getBranch().getFloor().getLevel();
-        getPositions(this.getRoom().getOrientation(), this.getRoom().getPosition()).forEach((pos) -> level.setBlock(pos, this.getRoom().getMaterial().getHidden(0), 2));
+    public void blockAndRemoveDecal(int flags){
+        block(flags);
+        removeDecal();
     }
 
     public void unBlock() {
@@ -271,26 +267,37 @@ public class ConnectionPoint {
 
     public void unBlockAndAddDecal() {
         unBlock();
-        if (this.getRoom().getDecalTexture() != null) this.addDecal(this.getRoom().getDecalTexture(), this.getRoom().getDecalColor());
+        addDecal();
     }
 
-    public void addDecal(ResourceLocation texture, int color) {
-        DecalRenderer.addServerDecal(this.getDecal(texture, color));
-        CompoundTag tag = new CompoundTag();
-        tag.putString("packet", ClientPacketHandler.Packets.ADD_DECAL.toString());
-        tag.put("decal", Serializer.toCompoundTag(this.getDecal(texture, color)));
-        PacketDistributor.sendToAllPlayers(new SimplePacketManager.ClientboundTagPacket(tag));
+    public void addDecal(){
+        Decal decal = this.getDecal();
+        if (decal != null) {
+            DecalRenderer.addServerDecal(decal);
+            DecalRenderer.sendClientAdditionPacket(decal);
+        }
     }
 
-    public void removeDecal(ResourceLocation texture, int color) {
-        DecalRenderer.removeServerDecal(this.getDecal(texture, color));
-        CompoundTag tag = new CompoundTag();
-        tag.putString("packet", ClientPacketHandler.Packets.REMOVE_DECAL.toString());
-        tag.put("decal", Serializer.toCompoundTag(this.getDecal(texture, color)));
-        PacketDistributor.sendToAllPlayers(new SimplePacketManager.ClientboundTagPacket(tag));
+    public void removeDecal(){
+        Decal decal = this.getDecal();
+        if (decal != null) {
+            DecalRenderer.removeServerDecal(decal);
+            DecalRenderer.sendClientRemovalPacket(decal);
+        }
     }
 
-    public DecalRenderer.Decal getDecal(ResourceLocation texture, int color) {
+    public void removeServerDecal() {
+        Decal decal = this.getDecal();
+        if (decal != null) {
+            DecalRenderer.removeServerDecal(decal);
+        }
+    }
+
+    public Decal getDecal() {
+        return this.getDecal(this.getRoom().getDecalTexture(), this.getRoom().getDecalColor());
+    }
+
+    public Decal getDecal(ResourceLocation texture, int color) {
         if (texture == null) return null;
         Vector3f avgPosition = this.getAveragePosition();
         BoundingBox box = this.getRealBoundingBox();
@@ -311,11 +318,11 @@ public class ConnectionPoint {
                 height = box.getYSpan();
             }
         }
-        return new DecalRenderer.Decal(texture, avgPosition.x, avgPosition.y, avgPosition.z, Math.min(width, height) * 0.75f, Math.min(width, height) * 0.75f, axis, color, this.getRoom().getBranch().getFloor().getLevelKey());
+        return new Decal(texture, avgPosition.x, avgPosition.y, avgPosition.z, Math.min(width, height) * 0.75f, Math.min(width, height) * 0.75f, axis, color, this.getRoom().getBranch().getFloor().getLevelKey());
     }
 
     public void unSetConnectedPoint() {
-        if (this.getRoom().getDecalTexture() != null) this.removeDecal(this.getRoom().getDecalTexture(), this.getRoom().getDecalColor());
+        removeDecal();
         this.connectedPointIndex = -1;
         this.connectedBranchIndex = -1;
         this.connectedRoomIndex = -1;
