@@ -29,114 +29,62 @@
 		},
 		"animation.laser_sword.gun_transform": {
 			"loop": "hold_on_last_frame",
-			"animation_length": 5.04167,
+			"animation_length": 2,
 			"bones": {
 				"rightguard": {
 					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"2.0": {
-							"vector": [0, 0, 20],
-							"easing": "easeOutBack"
-						}
+						"0.0": [0, 0, 0],
+						"2.0": [0, 0, 20]
 					}
 				},
 				"rightblademiddle": {
 					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"2.0": {
-							"vector": [0, 0, -40],
-							"easing": "easeOutBack"
-						}
+						"0.0": [0, 0, 0],
+						"2.0": [0, 0, -40]
 					}
 				},
 				"rightbladeend": {
 					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"1.0": {
-							"vector": [0, 0, 20],
-							"easing": "easeOutBack",
-							"easingArgs": [0.5]
-						},
-						"2.0": {
-							"vector": [0, 0, 20],
-							"easing": "easeOutBack"
-						}
+						"0.0": [0, 0, 0],
+						"1.0": [0, 0, 20],
+						"2.0": [0, 0, 20]
 					}
 				},
 				"leftguard": {
 					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"2.0": {
-							"vector": [0, 0, -20],
-							"easing": "easeOutBack"
-						}
+						"0.0": [0, 0, 0],
+						"2.0": [0, 0, -20]
 					}
 				},
 				"leftblademiddle": {
 					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"2.0": {
-							"vector": [0, 0, 40],
-							"easing": "easeOutBack"
-						}
+						"0.0": [0, 0, 0],
+						"2.0": [0, 0, 40]
 					}
 				},
 				"leftbladeend": {
 					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"1.0": {
-							"vector": [0, 0, -20],
-							"easing": "easeOutBack",
-							"easingArgs": [null]
-						},
-						"2.0": {
-							"vector": [0, 0, -20],
-							"easing": "easeOutBack"
-						}
+						"0.0": [0, 0, 0],
+						"1.0": [0, 0, -20],
+						"2.0": [0, 0, -20]
 					}
 				},
 				"core": {
 					"scale": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"2.0": {
-							"vector": [0, 0, 0]
-						}
+						"0.0": [0, 0, 0],
+						"2.0": [0, 0, 0]
 					}
 				},
 				"runes": {
 					"scale": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"2.0": {
-							"vector": [0, 0, 0]
-						}
+						"0.0": [0, 0, 0],
+						"2.0": [0, 0, 0]
 					}
 				},
 				"laser_sword": {
 					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0],
-							"easing": "easeInBack"
-						},
-						"5.0417": {
-							"vector": [0, 0, -90],
-							"easing": "easeInOutBack"
-						}
+						"0.0": [0, 0, 0],
+						"2.0": [0, 0, -90]
 					}
 				}
 			}
@@ -1061,121 +1009,62 @@
 		},
 		"animation.laser_sword.sword_transform": {
 			"loop": "hold_on_last_frame",
-			"animation_length": 5,
+			"animation_length": 2,
 			"bones": {
 				"rightguard": {
 					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 20],
-							"easing": "easeOutBack"
-						},
-						"2.0": {
-							"vector": [0, 0, 0],
-							"easing": "easeOutBack"
-						}
+						"0.0": [0, 0, 20],
+						"2.0": [0, 0, 0]
 					}
 				},
 				"rightblademiddle": {
 					"rotation": {
-						"0.0": {
-							"vector": [0, 0, -40],
-							"easing": "easeOutBack"
-						},
-						"2.0": {
-							"vector": [0, 0, 0],
-							"easing": "easeOutBack"
-						}
+						"0.0": [0, 0, -40],
+						"2.0": [0, 0, 0]
 					}
 				},
 				"rightbladeend": {
 					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 20],
-							"easing": "easeOutBack"
-						},
-						"0.125": {
-							"vector": [0, 0, 20],
-							"easing": "easeInBack",
-							"easingArgs": [0.5]
-						},
-						"2.0": {
-							"vector": [0, 0, 0],
-							"easing": "easeOutBack"
-						}
+						"0.0": [0, 0, 20],
+						"0.125": [0, 0, 20],
+						"2.0": [0, 0, 0]
 					}
 				},
 				"leftguard": {
 					"rotation": {
-						"0.0": {
-							"vector": [0, 0, -20],
-							"easing": "easeOutBack"
-						},
-						"2.0": {
-							"vector": [0, 0, 0],
-							"easing": "easeOutBack"
-						}
+						"0.0": [0, 0, -20],
+						"2.0": [0, 0, 0]
 					}
 				},
 				"leftblademiddle": {
 					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 40],
-							"easing": "easeOutBack"
-						},
-						"2.0": {
-							"vector": [0, 0, 0],
-							"easing": "easeOutBack"
-						}
+						"0.0": [0, 0, 40],
+						"2.0": [0, 0, 0]
 					}
 				},
 				"leftbladeend": {
 					"rotation": {
-						"0.0": {
-							"vector": [0, 0, -20],
-							"easing": "easeOutBack"
-						},
-						"0.125": {
-							"vector": [0, 0, -20],
-							"easing": "easeOutBack",
-							"easingArgs": [0.5]
-						},
-						"2.0": {
-							"vector": [0, 0, 0],
-							"easing": "easeOutBack",
-							"easingArgs": [1]
-						}
+						"0.0": [0, 0, -20],
+						"0.125": [0, 0, -20],
+						"2.0": [0, 0, 0]
 					}
 				},
 				"core": {
 					"scale": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"2.0": {
-							"vector": [0, 0, 0]
-						}
+						"0.0": [0, 0, 0],
+						"2.0": [0, 0, 0]
 					}
 				},
 				"runes": {
 					"scale": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"2.0": {
-							"vector": [0, 0, 0]
-						}
+						"0.0": [0, 0, 0],
+						"2.0": [0, 0, 0]
 					}
 				},
 				"laser_sword": {
 					"rotation": {
-						"0.0": {
-							"vector": [0, 0, -90],
-							"easing": "easeInOutBack"
-						},
-						"5.0": {
-							"vector": [0, 0, 0],
-							"easing": "easeInOutBack"
-						}
+						"0.0": [0, 0, -90],
+						"2.0": [0, 0, 0]
 					}
 				}
 			}

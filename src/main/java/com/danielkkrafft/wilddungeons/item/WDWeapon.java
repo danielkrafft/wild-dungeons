@@ -1,6 +1,7 @@
 package com.danielkkrafft.wilddungeons.item;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -32,9 +33,10 @@ import java.util.function.Consumer;
 
 public abstract class WDWeapon extends Item implements GeoAnimatable, GeoItem {
 
-    public final String name;
+    public String name = "default";
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    private final ArrayList<RawAnimation> animations = new ArrayList<>();
+    private final ArrayList<Pair<RawAnimation,Float>> animations = new ArrayList<>();
+    public AnimationController<GeoAnimatable> controller = new AnimationController<>(this, WildDungeons.rl(this.name).toString(), 1,state -> PlayState.CONTINUE);
 
     public WDWeapon(String name) {
         super(new Item.Properties()
@@ -47,9 +49,15 @@ public abstract class WDWeapon extends Item implements GeoAnimatable, GeoItem {
     /**
      *  The first animation added to the list will be treated as the "idle", default animation
      */
-    public void addAnimation(String animName) { animations.add(RawAnimation.begin().thenPlay("animation." + this.name + "." + animName)); }
-    public void addLoopingAnimation(String animName) { animations.add(RawAnimation.begin().thenLoop("animation." + this.name + "." + animName)); }
-    public String getAnimationName(int index) { return this.animations.get(index).getAnimationStages().getFirst().animationName(); }
+    public void addAnimation(String animName) {addAnimation(animName,1);}
+    public void addAnimation(String animName, float animationSpeed) { animations.add(Pair.of(RawAnimation.begin().thenPlay("animation." + this.name + "." + animName),animationSpeed)); }
+    public void addLoopingAnimation(String animName) { addLoopingAnimation(animName, 1); }
+    public void addLoopingAnimation(String animName, float animationSpeed) { animations.add(Pair.of(RawAnimation.begin().thenLoop("animation." + this.name + "." + animName),animationSpeed)); }
+    public void addHoldingAnimation(String animName) { addHoldingAnimation(animName, 1); }
+    public void addHoldingAnimation(String animName, float animationSpeed) { animations.add(Pair.of(RawAnimation.begin().thenPlayAndHold("animation." + this.name + "." + animName),animationSpeed)); }
+    public void addThenPlayAnimation(String animName, String nextAnimName) { addThenPlayAnimation(animName, nextAnimName, 1); }
+    public void addThenPlayAnimation(String animName, String nextAnimName, float animationSpeed) { animations.add(Pair.of(RawAnimation.begin().thenPlay("animation." + this.name + "." + animName).thenPlay("animation." + this.name + "." + nextAnimName),animationSpeed)); }
+    public String getAnimationName(int index) { return this.animations.get(index).getFirst().getAnimationStages().getFirst().animationName(); }
 
     @Override
     public void createGeoRenderer(Consumer<GeoRenderProvider> consumer) {
@@ -62,9 +70,9 @@ public abstract class WDWeapon extends Item implements GeoAnimatable, GeoItem {
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        AnimationController<GeoAnimatable> controller = new AnimationController<>(this, WildDungeons.rl(this.name).toString(), 1, state -> PlayState.CONTINUE);
+        controller = new AnimationController<>(this, WildDungeons.rl(this.name).toString(), 1, state -> PlayState.CONTINUE);
         this.animations.forEach(rawAnimation -> {
-           controller.triggerableAnim(rawAnimation.getAnimationStages().getFirst().animationName(), rawAnimation);
+           controller.triggerableAnim(rawAnimation.getFirst().getAnimationStages().getFirst().animationName(), rawAnimation.getFirst());
         });
         controllers.add(controller);
     }
@@ -86,6 +94,7 @@ public abstract class WDWeapon extends Item implements GeoAnimatable, GeoItem {
         if(level instanceof ServerLevel serverLevel) {
             String finalName = Objects.equals(animName.split("\\.")[0], "animation") ? animName : "animation." + this.name + "." + animName;
             this.triggerAnim(player, GeoItem.getOrAssignId(stack, serverLevel), WildDungeons.rl(this.name).toString(), finalName);
+            controller.setAnimationSpeed(animations.stream().filter(pair -> pair.getFirst().getAnimationStages().getFirst().animationName().equals(finalName)).findFirst().get().getSecond());
         }
     }
 

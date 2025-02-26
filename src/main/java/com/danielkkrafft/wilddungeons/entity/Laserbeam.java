@@ -38,7 +38,7 @@ public class Laserbeam extends Projectile {
             DAMAGE = SynchedEntityData.defineId(Laserbeam.class, EntityDataSerializers.FLOAT),
             RANGE = SynchedEntityData.defineId(Laserbeam.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Integer>
-            COUNTER = SynchedEntityData.defineId(Laserbeam.class, EntityDataSerializers.INT),
+            LIFETIMEAFTERHIT = SynchedEntityData.defineId(Laserbeam.class, EntityDataSerializers.INT),
             CHARGETIME = SynchedEntityData.defineId(Laserbeam.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean>
             HIT = SynchedEntityData.defineId(Laserbeam.class, EntityDataSerializers.BOOLEAN),
@@ -77,7 +77,7 @@ public class Laserbeam extends Projectile {
         builder.define(LENGTH, 0f);
         builder.define(DAMAGE, 0f);
         builder.define(RANGE, 0f);
-        builder.define(COUNTER, 0);
+        builder.define(LIFETIMEAFTERHIT, 0);
         builder.define(HIT, false);
         builder.define(EXPLOSION, false);
         builder.define(FIRE_DEBRIS, false);
@@ -95,7 +95,7 @@ public class Laserbeam extends Projectile {
         if (tag.contains("BeamLength")) getEntityData().set(LENGTH, tag.getFloat("BeamLength"));
         if (tag.contains("BeamDamage")) getEntityData().set(DAMAGE, tag.getFloat("BeamDamage"));
         if (tag.contains("BeamRange")) getEntityData().set(RANGE, tag.getFloat("BeamRange"));
-        if (tag.contains("BeamCounter")) getEntityData().set(COUNTER, tag.getInt("BeamCounter"));
+        if (tag.contains("BeamCounter")) getEntityData().set(LIFETIMEAFTERHIT, tag.getInt("BeamCounter"));
         if (tag.contains("Explosion")) getEntityData().set(EXPLOSION, tag.getBoolean("Explosion"));
         if (tag.contains("FireDebris")) getEntityData().set(FIRE_DEBRIS, tag.getBoolean("FireDebris"));
         if (tag.contains("ExplosionRadius")) getEntityData().set(EXPLOSION_RADIUS, tag.getFloat("ExplosionRadius"));
@@ -112,7 +112,7 @@ public class Laserbeam extends Projectile {
         tag.putFloat("BeamLength", getEntityData().get(LENGTH));
         tag.putFloat("BeamDamage", getEntityData().get(DAMAGE));
         tag.putFloat("BeamRange", getEntityData().get(RANGE));
-        tag.putInt("BeamCounter", getEntityData().get(COUNTER));
+        tag.putInt("BeamCounter", getEntityData().get(LIFETIMEAFTERHIT));
         tag.putBoolean("Explosion", getEntityData().get(EXPLOSION));
         tag.putBoolean("FireDebris", getEntityData().get(FIRE_DEBRIS));
         tag.putFloat("ExplosionRadius", getEntityData().get(EXPLOSION_RADIUS));
@@ -190,8 +190,8 @@ public class Laserbeam extends Projectile {
                     }
                 }
                 if (getHit()) {
-                    if (getCounter() >= 30) discard();
-                    else setCounter(getCounter() + 1);
+                    if (getLifetimeAfterHit() >= getMaxLifetimeAfterHit()) discard();
+                    else setLifetimeAfterHit(getLifetimeAfterHit() + 1);
                 } else {
                     setLength(getLength() + distanceStep);
                     if (getLength() >= getRange()) setHit(true);
@@ -284,12 +284,12 @@ public class Laserbeam extends Projectile {
         return getEntityData().get(RANGE);
     }
 
-    public void setCounter(int i) {
-        getEntityData().set(COUNTER, i);
+    public void setLifetimeAfterHit(int i) {
+        getEntityData().set(LIFETIMEAFTERHIT, i);
     }
 
-    public int getCounter() {
-        return getEntityData().get(COUNTER);
+    public int getLifetimeAfterHit() {
+        return getEntityData().get(LIFETIMEAFTERHIT);
     }
 
     public void setHit(boolean b) {
@@ -330,5 +330,9 @@ public class Laserbeam extends Projectile {
 
     public int getChargeTime() {
         return getEntityData().get(CHARGETIME);
+    }
+
+    public int getMaxLifetimeAfterHit() {
+        return 30;
     }
 }
