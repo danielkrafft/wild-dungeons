@@ -289,7 +289,7 @@ public class TemplateHelper {
                     if ((blockstate == WDBlocks.WD_BASIC.get().defaultBlockState() || blockstate == WDBlocks.WD_BASIC_2.get().defaultBlockState() || blockstate == WDBlocks.WD_BASIC_3.get().defaultBlockState() || blockstate == WDBlocks.WD_BASIC_4.get().defaultBlockState()) && !innerBox.isInside(structuretemplate$structureblockinfo.pos())) {
                         if (!room.isPosInsideShell(structuretemplate$structureblockinfo.pos())) {
                             blockstate = material.replace(structuretemplate$structureblockinfo.state().mirror(settings.getMirror()).rotate(settings.getRotation()), room);
-                            serverLevel.setBlock(structuretemplate$structureblockinfo.pos(), WDBedrockBlock.of(blockstate.getBlock()), 0);
+                            serverLevel.setBlock(structuretemplate$structureblockinfo.pos(), WDBedrockBlock.of(blockstate.getBlock()), 2);
                             continue;
                         }
                     }
@@ -304,7 +304,7 @@ public class TemplateHelper {
                 if (structuretemplate$structureblockinfo.nbt() != null) {
                     BlockEntity blockentity = serverLevel.getBlockEntity(structuretemplate$structureblockinfo.pos());
                     Clearable.tryClear(blockentity);
-                    serverLevel.setBlock(structuretemplate$structureblockinfo.pos(), Blocks.BARRIER.defaultBlockState(), 0);
+                    serverLevel.setBlock(structuretemplate$structureblockinfo.pos(), Blocks.BARRIER.defaultBlockState(), 2);
                 }
 
                 if (serverLevel.setBlock(structuretemplate$structureblockinfo.pos(), blockstate, flags)) {

@@ -128,21 +128,21 @@ public class DungeonRoom {
         getTemplate().templates().forEach(template -> {
             BlockPos newOffset = StructureTemplate.transform(template.getSecond(), getSettings().getMirror(), getSettings().getRotation(), TemplateHelper.EMPTY_BLOCK_POS);
             BlockPos newPosition = position.offset(newOffset);
-            TemplateHelper.placeInWorld(this, template.getFirst(), this.getMaterial(), getBranch().getFloor().getLevel(), newPosition, template.getSecond(), getSettings(), 0);
+            TemplateHelper.placeInWorld(this, template.getFirst(), this.getMaterial(), getBranch().getFloor().getLevel(), newPosition, template.getSecond(), getSettings(), 2);
         });
 
         this.processRifts();
 
         if (getTemplate().spawnPoint() != null) {
             getTemplate().spawnPoints().forEach(spawnPoint -> {
-                getBranch().getFloor().getLevel().setBlock(TemplateHelper.transform(spawnPoint, this), Blocks.AIR.defaultBlockState(), 0);
+                getBranch().getFloor().getLevel().setBlock(TemplateHelper.transform(spawnPoint, this), Blocks.AIR.defaultBlockState(), 2);
             });
         }
         this.processConnectionPoints(getBranch().getFloor());
         this.onBranchComplete();
         this.processOfferings();
 
-        getChunkPosSet(this.boundingBoxes, 1).forEach(chunkPos -> forceUpdateChunk(getBranch().getFloor().getLevel(), chunkPos));
+//        getChunkPosSet(this.boundingBoxes, 1).forEach(chunkPos -> forceUpdateChunk(getBranch().getFloor().getLevel(), chunkPos));
         WildDungeons.getLogger().info("FINISHED ROOM: {}", getTemplate().name());
     }
 
@@ -224,7 +224,7 @@ public class DungeonRoom {
                         case 4, 5 -> mutableBlockPos.set(wallOffset[i], y, x);
                     }
 
-                    if (predicate.apply(floor, room, mutableBlockPos) && !floor.getLevel().getServer().isShutdown()) floor.getLevel().setBlock(mutableBlockPos, blockState, 0);
+                    if (predicate.apply(floor, room, mutableBlockPos) && !floor.getLevel().getServer().isShutdown()) floor.getLevel().setBlock(mutableBlockPos, blockState, 2);
                 }
             }
         }
@@ -322,7 +322,7 @@ public class DungeonRoom {
                 point.getConnectedPoint().unBlock();
             }
             if (!point.isConnected()) {
-                point.blockAndRemoveDecal(0);
+                point.blockAndRemoveDecal(2);
             }
         }
     }
@@ -525,7 +525,8 @@ public class DungeonRoom {
             this.processLootBlocks();
             lootGenerated = true;
         }
-        getChunkPosSet(this.boundingBoxes, 1).forEach(chunkPos -> forceUpdateChunkForPlayer(this.getBranch().getFloor().getLevel(), player.getServerPlayer(), chunkPos));
+        //doesn't actually help
+//        getChunkPosSet(this.boundingBoxes, 1).forEach(chunkPos -> forceUpdateChunkForPlayer(this.getBranch().getFloor().getLevel(), player.getServerPlayer(), chunkPos));
     }
 
     public void onBranchComplete(){
