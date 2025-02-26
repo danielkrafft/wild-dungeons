@@ -11,6 +11,9 @@ import com.danielkkrafft.wilddungeons.network.ClientPacketHandler;
 import com.danielkkrafft.wilddungeons.network.SimplePacketManager;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
+import com.danielkkrafft.wilddungeons.registry.WDItems;
+import it.unimi.dsi.fastutil.ints.IntList;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
@@ -27,6 +30,9 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.FireworkExplosion;
+import net.minecraft.world.item.component.Fireworks;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -35,6 +41,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import org.joml.Vector3f;
 
 import java.awt.*;
+import java.util.List;
 
 import static com.danielkkrafft.wilddungeons.dungeon.registries.PerkRegistry.DUNGEON_PERK_REGISTRY;
 
@@ -295,7 +302,15 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
 
                 if (this.getOfferingType() == Type.ITEM) {
                     this.remove(RemovalReason.DISCARDED);
-                    player.getServerPlayer().addItem(this.getItemStack());
+                    ItemStack itemStack = this.getItemStack();
+                    boolean isFireworkGun = itemStack.is(WDItems.FIREWORK_GUN_ITEM.get());//this is temporary for the video but maybe we should leave it? :D
+                    player.getServerPlayer().addItem(itemStack);
+                    if (isFireworkGun) {//after giving the item so the ammo doesn't get put in before the gun
+                        ItemStack firework = new ItemStack(Items.FIREWORK_ROCKET);
+                        firework.set(DataComponents.FIREWORKS, new Fireworks(1, List.of(new FireworkExplosion(FireworkExplosion.Shape.CREEPER, IntList.of(Color.GREEN.getRGB()), IntList.of(Color.RED.getRGB()), true, true))));
+                        firework.setCount(64);
+                        player.getServerPlayer().addItem(firework);
+                    }
                 }
 
                 if (this.getOfferingType() == Type.PERK) {
