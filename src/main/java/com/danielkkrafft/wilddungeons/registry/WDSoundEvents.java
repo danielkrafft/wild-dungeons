@@ -42,13 +42,20 @@ public class WDSoundEvents {
 
     public static final Holder<SoundEvent> CAVE_01 = SOUND_EVENTS.register("soundscape.ambient.cave_01", SoundEvent::createVariableRangeEvent);
     public static final Holder<SoundEvent> NETHER_BASS = SOUND_EVENTS.register("soundscape.music.nether_bass", SoundEvent::createVariableRangeEvent);
-    public static final Holder<SoundEvent> NETHER_BACKING = SOUND_EVENTS.register("soundscape.music.nether_backing", SoundEvent::createVariableRangeEvent);
     public static final Holder<SoundEvent> NETHER_MELODY = SOUND_EVENTS.register("soundscape.music.nether_melody", SoundEvent::createVariableRangeEvent);
     public static final Holder<SoundEvent> NETHER_BEAT = SOUND_EVENTS.register("soundscape.music.nether_beat", SoundEvent::createVariableRangeEvent);
+
+    public static final Holder<SoundEvent> FACTORY_MELODY = SOUND_EVENTS.register("soundscape.music.factory_melody", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> FACTORY_BASS = SOUND_EVENTS.register("soundscape.music.factory_bass", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> FACTORY_BEAT = SOUND_EVENTS.register("soundscape.music.factory_beat", SoundEvent::createVariableRangeEvent);
 
     public static final Holder<SoundEvent> CAVE_02 = SOUND_EVENTS.register("soundscape.ambient.cave_02", SoundEvent::createVariableRangeEvent);
     public static final Holder<SoundEvent> MEGA_DUNGEON_MELODY = SOUND_EVENTS.register("soundscape.music.mega_dungeon_melody", SoundEvent::createVariableRangeEvent);
     public static final Holder<SoundEvent> MEGA_DUNGEON_BEAT = SOUND_EVENTS.register("soundscape.music.mega_dungeon_beat", SoundEvent::createVariableRangeEvent);
+
+    public static final Holder<SoundEvent> HORRIFIC_SCREAMING = SOUND_EVENTS.register("soundscape.ambient.horrific_screaming", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> NETHER_DRAGON = SOUND_EVENTS.register("soundscape.music.nether_dragon", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> NETHER_DRAGON_BASS = SOUND_EVENTS.register("soundscape.music.nether_dragon_bass", SoundEvent::createVariableRangeEvent);
 
     public static final Holder<SoundEvent> JAZZ = SOUND_EVENTS.register("soundscape.music.jazz", SoundEvent::createVariableRangeEvent);
     public static final Holder<SoundEvent> MOONLIGHT_SONATA_1ST = SOUND_EVENTS.register("soundscape.music.moonlight_sonata_1st", SoundEvent::createVariableRangeEvent);

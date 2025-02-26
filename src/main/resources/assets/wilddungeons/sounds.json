@@ -197,12 +197,6 @@
         "stream": true}
     ]
   },
-  "soundscape.music.nether_backing": {
-    "sounds": [
-      {"name": "wilddungeons:soundscape/music/nether_backing",
-        "stream": true}
-    ]
-  },
   "soundscape.music.nether_melody": {
     "sounds": [
       {"name": "wilddungeons:soundscape/music/nether_melody",
@@ -251,9 +245,57 @@
         "stream": true}
     ]
   },
-  "entity.shimmer": {
+  "soundscape.music.factory_melody": {
     "sounds": [
-      {"name": "wilddungeons:entity/shimmer"}
+      {"name": "wilddungeons:soundscape/music/factory_melody",
+        "stream": true}
     ]
+  },
+  "soundscape.music.factory_bass": {
+    "sounds": [
+      {
+        "name": "wilddungeons:soundscape/music/factory_bass",
+        "stream": true
+      }
+    ],
+    "soundscape.music.factory_beat": {
+      "sounds": [
+        {
+          "name": "wilddungeons:soundscape/music/factory_beat",
+          "stream": true
+        }
+      ]
+    },
+    "soundscape.ambient.horrific_screaming": {
+      "sounds": [
+        {
+          "name": "wilddungeons:soundscape/ambient/horrific_screaming",
+          "stream": true
+        }
+      ]
+    },
+    "soundscape.music.nether_dragon": {
+      "sounds": [
+        {
+          "name": "wilddungeons:soundscape/music/nether_dragon",
+          "stream": true
+        }
+      ]
+    },
+    "soundscape.music.nether_dragon_bass": {
+      "sounds": [
+        {
+          "name": "wilddungeons:soundscape/music/nether_dragon_bass",
+          "stream": true
+        }
+      ]
+    },
+    "entity.shimmer": {
+      "sounds": [
+        {
+          "name": "wilddungeons:entity/shimmer"
+        }
+      ]
+    }
   }
 }

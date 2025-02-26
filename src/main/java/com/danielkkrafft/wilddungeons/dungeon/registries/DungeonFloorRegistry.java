@@ -66,6 +66,8 @@ public class DungeonFloorRegistry {
                     .addSimple(PIGLIN_FACTORY_START_BRANCH)
                     .addSimple(PIGLIN_FACTORY_CAVE_BRANCH)
                     .addSimple(PIGLIN_FACTORY_CAVE_END_BRANCH)
+                    .addSimple(PIGLIN_FACTORY_PIPEWORKS_FREE_PERK_BRANCH)
+                    .addSimple(PIGLIN_FACTORY_PIPEWORKS_FREE_CHEST_BRANCH)
                     .addSimple(PIGLIN_FACTORY_PIPEWORKS_BRANCH)
                     .addSimple(PIGLIN_FACTORY_BRANCH)
                     .addSimple(PIGLIN_FACTORY_SIDE_BRANCH)

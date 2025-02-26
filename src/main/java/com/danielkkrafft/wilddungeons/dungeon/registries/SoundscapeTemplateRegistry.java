@@ -13,14 +13,26 @@ public class SoundscapeTemplateRegistry {
     public static final SoundscapeTemplate NETHER_CAVES = create("NETHER_CAVES")
             .addSound(WDSoundEvents.CAVE_01, 0)
             .addSound(WDSoundEvents.NETHER_MELODY, 1)
-            .addSound(WDSoundEvents.NETHER_BACKING, 2)
-            .addSound(WDSoundEvents.NETHER_BASS, 3)
-            .addSound(WDSoundEvents.NETHER_BEAT, 4);
+            .addSound(WDSoundEvents.NETHER_BASS, 2)
+            .addSound(WDSoundEvents.NETHER_BEAT, 3);
 
     public static final SoundscapeTemplate MEGA_DUNGEON = create("MEGA_DUNGEON")
             .addSound(WDSoundEvents.CAVE_02, 0)
             .addSound(WDSoundEvents.MEGA_DUNGEON_MELODY, 1)
             .addSound(WDSoundEvents.MEGA_DUNGEON_BEAT, 2);
+
+    public static final SoundscapeTemplate PIGLIN_FACTORY = create("PIGLIN_FACTORY")
+            .addSound(WDSoundEvents.CAVE_02, 0)
+            .addSound(WDSoundEvents.FACTORY_MELODY, 1)
+            .addSound(WDSoundEvents.FACTORY_BASS, 2)
+            .addSound(WDSoundEvents.FACTORY_BEAT, 3);
+
+    public static final SoundscapeTemplate NETHER_DRAGON_LEADUP = create("NETHER_DRAGON_LEADUP")
+            .addSound(WDSoundEvents.HORRIFIC_SCREAMING, 0)
+            .addSound(WDSoundEvents.NETHER_DRAGON_BASS, 1);
+
+    public static final SoundscapeTemplate NETHER_DRAGON = create("NETHER_DRAGON")
+            .addSound(WDSoundEvents.NETHER_DRAGON, 0);
 
     public static final SoundscapeTemplate PEACEFUL = create("PEACEFUL")
             .addSound(WDSoundEvents.CAVE_02, 0)
