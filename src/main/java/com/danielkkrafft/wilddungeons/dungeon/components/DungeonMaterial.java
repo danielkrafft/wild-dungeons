@@ -3,6 +3,7 @@ package com.danielkkrafft.wilddungeons.dungeon.components;
 
 import com.danielkkrafft.wilddungeons.block.WDBlocks;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import net.minecraft.world.level.block.Blocks;
@@ -53,7 +54,7 @@ public class DungeonMaterial implements DungeonRegistration.DungeonComponent {
     public BlockState getHangingLight(int index) {return index > hangingLightBlockStates.size()-1 ? hangingLightBlockStates.getFirst().getRandom() : hangingLightBlockStates.get(index).getRandom();}
     public BlockState getHidden(int index) {return index > hiddenBlockStates.size()-1 ? hiddenBlockStates.getFirst().getRandom() : hiddenBlockStates.get(index).getRandom();}
 
-    public BlockState replace(BlockState input) {
+    public BlockState replace(BlockState input, DungeonRoom room) {
         BlockState result = input;
 
         if (input.getBlock() == WDBlocks.WD_BASIC.get()) {result = getBasic(0);}
@@ -82,8 +83,8 @@ public class DungeonMaterial implements DungeonRegistration.DungeonComponent {
         else if (input.getBlock() == WDBlocks.WD_HANGING_LIGHT_4.get()) {result = getHangingLight(3).trySetValue(BlockStateProperties.HANGING,true);}
         else if (input.getBlock() == WDBlocks.WD_SECRET.get()) {result = getHidden(0);}
         //IMPORTANT: do NOT replace Trapped Chests as this will break some rooms
-        else if (input.getBlock() == Blocks.CHEST) {result = RandomUtil.randFloatBetween(0, 1) < chestChance ? Blocks.CHEST.defaultBlockState() : Blocks.AIR.defaultBlockState();}
-        else if (input.getBlock() == Blocks.BARREL) {result = RandomUtil.randFloatBetween(0, 1) < chestChance ? Blocks.BARREL.defaultBlockState() : Blocks.AIR.defaultBlockState();}
+        else if (input.getBlock() == Blocks.CHEST) {result = RandomUtil.randFloatBetween(0, 1) < room.getProperty(HierarchicalProperty.CHEST_SPAWN_CHANCE) ? Blocks.CHEST.defaultBlockState() : Blocks.AIR.defaultBlockState();}
+        else if (input.getBlock() == Blocks.BARREL) {result = RandomUtil.randFloatBetween(0, 1) < room.getProperty(HierarchicalProperty.CHEST_SPAWN_CHANCE) ? Blocks.BARREL.defaultBlockState() : Blocks.AIR.defaultBlockState();}
         else {return result;}
 
         for (Property<?> property : input.getProperties()) {

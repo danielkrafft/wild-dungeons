@@ -3,6 +3,7 @@ package com.danielkkrafft.wilddungeons.dungeon.registries;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.*;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
@@ -82,7 +83,7 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate OVERWORLD_COMBAT_1 = copyOf(OVERWORLD_BASIC_3, "overworld_combat_1").set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR).setClazz(CombatRoom.class);
     public static final DungeonRoomTemplate OVERWORLD_COMBAT_2 = copyOf(OVERWORLD_BASIC_4, "overworld_combat_2").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR).set(WAVE_SIZE, 5).set(DIFFICULTY_MODIFIER, 0.5);
     public static final DungeonRoomTemplate OVERWORLD_COMBAT_3 = copyOf(OVERWORLD_BASIC_5, "overworld_combat_3").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR).set(WAVE_SIZE, 7).set(DIFFICULTY_MODIFIER, 0.75);
-    public static final DungeonRoomTemplate OVERWORLD_COMBAT_4 = copyOf(OVERWORLD_BASIC_7, "overworld_combat_4").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR).set(WAVE_SIZE, 7).set(DIFFICULTY_MODIFIER, 0.75);
+    public static final DungeonRoomTemplate OVERWORLD_COMBAT_4 = copyOf(OVERWORLD_BASIC_7, "overworld_combat_4").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR).set(WAVE_SIZE, 7);
     public static final DungeonRoomTemplate OVERWORLD_CHEST_ROOM = createSimple("overworld/sprawl/chest_room");
     public static final DungeonRoomTemplate OVERWORLD_STAIRCASE = createSimple("overworld/sprawl/stair_room");
     public static final DungeonRoomTemplate OVERWORLD_STAIRWAY_1 = createSimple("overworld/sprawl/stairway_1");
@@ -135,11 +136,14 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate NETHER_CAVE_ENTRANCE_ROOM = createSimple("nether/cave/entrance");
     public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_1 = createSimple("nether/cave/sprawl_1");
     public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_2 = createSimple("nether/cave/sprawl_2");
+    public static final DungeonRoomTemplate NETHER_CAVE_COMBAT_2 = copyOf(NETHER_CAVE_SPRAWL_2, "nether_cave_combat_2").set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR).setClazz(CombatRoom.class).set(DIFFICULTY_MODIFIER, 0.5).set(WAVE_SIZE, 5);
     public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_3 = createSimple("nether/cave/sprawl_3");
     public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_4 = createSimple("nether/cave/sprawl_4");
     public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_5 = createSimple("nether/cave/sprawl_5");
     public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_6 = createSimple("nether/cave/sprawl_6");
     public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_7 = createSimple("nether/cave/sprawl_7");
+    public static final DungeonRoomTemplate NETHER_CAVE_COMBAT_1 = copyOf(NETHER_CAVE_SPRAWL_7, "nether_cave_combat_1").set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR).setClazz(CombatRoom.class);
+
     public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_8 = create(
             "nether_cave_sprawl_8",
             List.of(
@@ -163,7 +167,7 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
                     of("nether/cave/end_1", EMPTY_BLOCK_POS),
                     of("nether/cave/end_2", new BlockPos(48, 0, 0))
             ))
-            .set(INTENSITY, 4);
+            .set(INTENSITY, 3);
     public static final DungeonRoomTemplate NETHER_PIPEWORKS_BREAKOUT_ROOM = createSimple("nether/pipeworks/breakout").set(BLOCKING_MATERIAL_INDEX, 1);
     public static final DungeonRoomTemplate NETHER_PIPEWORKS_0 = createSimple("nether/pipeworks/breakout").set(BLOCKING_MATERIAL_INDEX, 1);
     public static final DungeonRoomTemplate NETHER_PIPEWORKS_1 = createSimple("nether/pipeworks/1").set(BLOCKING_MATERIAL_INDEX, 1);
@@ -172,9 +176,11 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate NETHER_PIPEWORKS_4 = createSimple("nether/pipeworks/4").set(BLOCKING_MATERIAL_INDEX, 1);
     public static final DungeonRoomTemplate NETHER_PIPEWORKS_5 = createSimple("nether/pipeworks/5").set(BLOCKING_MATERIAL_INDEX, 1);
     public static final DungeonRoomTemplate NETHER_PIPEWORKS_6 = createSimple("nether/pipeworks/6").set(BLOCKING_MATERIAL_INDEX, 1);
+    public static final DungeonRoomTemplate NETHER_PIPEWORKS_FREE_CHEST = createSimple("nether/pipeworks/free_chest").set(DIFFICULTY_MODIFIER, 4.0).set(CHEST_SPAWN_CHANCE, 1.0);
+    public static final DungeonRoomTemplate NETHER_PIPEWORKS_FREE_PERK = createSimple("nether/pipeworks/free_perk").set(SHOP_TABLE, OfferingTemplateTableRegistry.FREE_PERK_OFFERING_TABLE);
     public static final DungeonRoomTemplate NETHER_PIPEWORKS_LAVAFALLS = createSimple("nether/pipeworks/lava_falls").set(BLOCKING_MATERIAL_INDEX, 1);
     public static final DungeonRoomTemplate NETHER_PIPEWORKS_COMBAT_0 = copyOf(NETHER_PIPEWORKS_5, "nether_pipeworks_combat_0").setClazz(CombatRoom.class).setRoomClearOffering(OfferingTemplateRegistry.DUNGEON_KEY);
-    public static final DungeonRoomTemplate NETHER_PIPEWORKS_TO_FACTORY = createSimple("nether/pipeworks/pipe_to_factory").set(BLOCKING_MATERIAL_INDEX, 1).setClazz(KeyRequiredRoom.class).set(INTENSITY, 0);
+    public static final DungeonRoomTemplate NETHER_PIPEWORKS_TO_FACTORY = createSimple("nether/pipeworks/pipe_to_factory").set(BLOCKING_MATERIAL_INDEX, 1).setClazz(KeyRequiredRoom.class).set(INTENSITY, 1).set(SOUNDSCAPE, SoundscapeTemplateRegistry.PIGLIN_FACTORY);
     public static final DungeonRoomTemplate NETHER_FACTORY_PARKOUR_1 = createSimple("nether/factory/parkour1").set(BLOCKING_MATERIAL_INDEX, 1);
     public static final DungeonRoomTemplate NETHER_FACTORY_PARKOUR_2 = create(
             "nether_factory_parkour_2",
@@ -192,8 +198,11 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate NETHER_FACTORY_SPRAWL_4 = createSimple("nether/factory/sprawl4").set(BLOCKING_MATERIAL_INDEX, 1);
     public static final DungeonRoomTemplate NETHER_FACTORY_SPRAWL_5 = createSimple("nether/factory/sprawl5").set(BLOCKING_MATERIAL_INDEX, 1);
     public static final DungeonRoomTemplate NETHER_FACTORY_SPRAWL_6 = createSimple("nether/factory/sprawl6").set(BLOCKING_MATERIAL_INDEX, 1);
+    public static final DungeonRoomTemplate NETHER_FACTORY_RAIL_1 = createSimple("nether/factory/rail_1").set(BLOCKING_MATERIAL_INDEX, 1);
+    public static final DungeonRoomTemplate NETHER_FACTORY_RAIL_TRANSITION = createSimple("nether/factory/rail_transition").set(BLOCKING_MATERIAL_INDEX, 1);
     public static final DungeonRoomTemplate NETHER_FACTORY_TRAP_1 = createSimple("nether/factory/trap1").set(BLOCKING_MATERIAL_INDEX, 1);
     public static final DungeonRoomTemplate NETHER_FACTORY_COMBAT_1 = copyOf(NETHER_FACTORY_SPRAWL_3, "nether_factory_combat_1").setClazz(CombatRoom.class);
+    public static final DungeonRoomTemplate NETHER_FACTORY_COMBAT_2 = copyOf(NETHER_FACTORY_SPRAWL_2, "nether_factory_combat_2").setClazz(CombatRoom.class);
     public static final DungeonRoomTemplate NETHER_FACTORY_KEY_COMBAT = copyOf(NETHER_FACTORY_COMBAT_1, "nether_factory_key_combat").setRoomClearOffering(OfferingTemplateRegistry.DUNGEON_KEY);
     public static final DungeonRoomTemplate NETHER_FACTORY_TRI_BRANCH = create("nether_factory_tri_branch",
             List.of(
@@ -205,7 +214,8 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
             ))
             .setClazz(KeyRequiredRoom.class)
             .set(BLOCKING_MATERIAL_INDEX, 1)
-            .set(INTENSITY, 0);
+            .set(SOUNDSCAPE, SoundscapeTemplateRegistry.NETHER_DRAGON_LEADUP)
+            .set(INTENSITY, 1);
     public static final DungeonRoomTemplate NETHER_FACTORY_BOSS_ROOM = create("nether_factory_boss_room",
             List.of(
                     of("nether/factory/boss_1", EMPTY_BLOCK_POS),

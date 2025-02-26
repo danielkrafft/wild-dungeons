@@ -121,13 +121,27 @@ public class DungeonBranchRegistry {
 
     public static final DungeonBranchTemplate PIGLIN_FACTORY_CAVE_BRANCH = create("PIGLIN_FACTORY_CAVE_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
-                    .add(PIGLIN_FACTORY_CAVE_SPRAWL_ROOM_POOL, 7))
+                    .add(PIGLIN_FACTORY_CAVE_SPRAWL_ROOM_POOL, 8))
             .set(INTENSITY, 1);
     public static final DungeonBranchTemplate PIGLIN_FACTORY_CAVE_END_BRANCH = create("PIGLIN_FACTORY_CAVE_END_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
-                    .add(PIGLIN_FACTORY_CAVE_SPRAWL_ROOM_POOL, 5)
-                    .addSimple(NETHER_CAVE_END_ROOM))
-            .set(INTENSITY, 2);
+                    .add(PIGLIN_FACTORY_CAVE_SPRAWL_ROOM_POOL, 8)
+                    .addSimple(NETHER_CAVE_END_ROOM)
+            ).set(INTENSITY, 2);
+
+    public static final DungeonBranchTemplate PIGLIN_FACTORY_PIPEWORKS_FREE_CHEST_BRANCH = create("PIGLIN_FACTORY_PIPEWORKS_FREE_CHEST_BRANCH")
+            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
+                    .addSimple(NETHER_PIPEWORKS_FREE_CHEST)
+            ).setRootOriginBranchIndex(2)
+            .set(SOUNDSCAPE, SoundscapeTemplateRegistry.PEACEFUL)
+            .set(INTENSITY, 1);
+
+    public static final DungeonBranchTemplate PIGLIN_FACTORY_PIPEWORKS_FREE_PERK_BRANCH = create("PIGLIN_FACTORY_PIPEWORKS_FREE_PERK_BRANCH")
+            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
+                    .addSimple(NETHER_PIPEWORKS_FREE_PERK)
+            ).setRootOriginBranchIndex(2)
+            .set(SOUNDSCAPE, SoundscapeTemplateRegistry.PEACEFUL)
+            .set(INTENSITY, 1);
 
     public static final DungeonBranchTemplate PIGLIN_FACTORY_PIPEWORKS_BRANCH = create("PIGLIN_FACTORY_PIPEWORKS_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
@@ -136,35 +150,31 @@ public class DungeonBranchRegistry {
                     .addSimple(NETHER_PIPEWORKS_3)
                     .addSimple(NETHER_PIPEWORKS_TO_FACTORY)
             )
-            .set(INTENSITY, 3);
-
-    public static final DungeonBranchTemplate PIGLIN_FACTORY_PIPEWORKS_SIDE_BRANCH = create("PIGLIN_FACTORY_PIPEWORKS_SIDE_BRANCH")
-            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
-                    .add(PIGLIN_FACTORY_PIPEWORKS_ROOM_POOL, 5)
-                    .addSimple(NETHER_PIPEWORKS_COMBAT_0))
-            .setRootOriginBranchIndex(4)
-            .set(INTENSITY, 3);
+            .setRootOriginBranchIndex(2)
+            .set(INTENSITY, 2);
 
     public static final DungeonBranchTemplate PIGLIN_FACTORY_BRANCH = create("PIGLIN_FACTORY_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .add(PIGLIN_FACTORY_SPRAWL_ROOM_POOL, 20)
                     .addSimple(NETHER_FACTORY_TRI_BRANCH)
             )
-            .set(INTENSITY, 3);
+            .set(INTENSITY, 2)
+            .set(SOUNDSCAPE, SoundscapeTemplateRegistry.PIGLIN_FACTORY);
 
     public static final DungeonBranchTemplate PIGLIN_FACTORY_SIDE_BRANCH = create("PIGLIN_FACTORY_SIDE_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .add(PIGLIN_FACTORY_SPRAWL_ROOM_POOL, 10)
                     .addSimple(NETHER_FACTORY_KEY_COMBAT)
             )
-            .setRootOriginBranchIndex(4)
-            .set(INTENSITY, 3);
+            .setRootOriginBranchIndex(6)
+            .set(SOUNDSCAPE, SoundscapeTemplateRegistry.PIGLIN_FACTORY)
+            .set(INTENSITY, 2);
 
     public static final DungeonBranchTemplate NETHER_DRAGON_BOSS_BRANCH = create("NETHER_DRAGON_BOSS_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .addSimple(NETHER_FACTORY_BOSS_ROOM))
-            .setRootOriginBranchIndex(4)
-            .set(INTENSITY, 3);
+            .setRootOriginBranchIndex(6)
+            .set(SOUNDSCAPE, SoundscapeTemplateRegistry.NETHER_DRAGON);
 
     public static DungeonBranchTemplate copyOf(DungeonBranchTemplate branch, String name) {
         DungeonBranchTemplate copy = DungeonBranchTemplate.copyOf(branch, name);

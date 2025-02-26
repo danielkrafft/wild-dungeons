@@ -369,31 +369,63 @@ public class DungeonMaterialRegistry {
                             .add(GRAY_STAINED_GLASS.defaultBlockState(), 2)
                             .add(TINTED_GLASS.defaultBlockState(), 1)
             )
+            .addBasicBlockSet(
+                    new WeightedPool<BlockState>()
+                            .add(NETHER_BRICKS.defaultBlockState(), 5)
+                            .add(CRACKED_NETHER_BRICKS.defaultBlockState(), 2)
+                            .add(CHISELED_NETHER_BRICKS.defaultBlockState(), 2)
+                            .add(RED_NETHER_BRICKS.defaultBlockState(), 2)
+            )
+
             .addStairBlockSet(
                     new WeightedPool<BlockState>()
                             .add(BLACKSTONE_STAIRS.defaultBlockState(), 1)
                             .add(POLISHED_BLACKSTONE_BRICK_STAIRS.defaultBlockState(), 1)
                             .add(POLISHED_BLACKSTONE_STAIRS.defaultBlockState(), 1)
             )
+            .addStairBlockSet(
+                    new WeightedPool<BlockState>()
+                            .add(BLACKSTONE_STAIRS.defaultBlockState(), 1)
+            )
+            .addStairBlockSet(
+                    new WeightedPool<BlockState>()
+                            .add(NETHER_BRICK_STAIRS.defaultBlockState(), 5)
+                            .add(RED_NETHER_BRICK_STAIRS.defaultBlockState(), 1)
+            )
+
             .addSlabBlockSet(
                     new WeightedPool<BlockState>()
                             .add(BLACKSTONE_SLAB.defaultBlockState(), 1)
                             .add(POLISHED_BLACKSTONE_SLAB.defaultBlockState(), 1)
                             .add(POLISHED_BLACKSTONE_BRICK_SLAB.defaultBlockState(), 1)
             )
+            .addSlabBlockSet(
+                    new WeightedPool<BlockState>()
+                            .add(BLACKSTONE_SLAB.defaultBlockState(), 1)
+            )
+            .addSlabBlockSet(
+                    new WeightedPool<BlockState>()
+                            .add(NETHER_BRICK_SLAB.defaultBlockState(), 5)
+                            .add(RED_NETHER_BRICK_SLAB.defaultBlockState(), 1)
+            )
+
             .addWallBlockSet(
                     new WeightedPool<BlockState>()
                             .add(BLACKSTONE_WALL.defaultBlockState(), 1)
                             .add(POLISHED_BLACKSTONE_WALL.defaultBlockState(), 1)
                             .add(POLISHED_BLACKSTONE_BRICK_WALL.defaultBlockState(), 1)
             )
-            .addLightBlockSet(
+            .addWallBlockSet(
                     new WeightedPool<BlockState>()
-                            .add(SHROOMLIGHT.defaultBlockState(), 1)
+                            .add(BLACKSTONE_WALL.defaultBlockState(), 1)
             )
-            .setHangingLights(
+            .addWallBlockSet(
                     new WeightedPool<BlockState>()
-                            .add(SOUL_LANTERN.defaultBlockState(), 1)
+                            .add(NETHER_BRICK_WALL.defaultBlockState(), 5)
+                            .add(RED_NETHER_BRICK_WALL.defaultBlockState(), 1)
+            )
+            .addLightBlockSet(new WeightedPool<BlockState>().add(SHROOMLIGHT.defaultBlockState(), 1))
+            .setHangingLights(new WeightedPool<BlockState>().add(SOUL_LANTERN.defaultBlockState(), 1)
             );
 
 

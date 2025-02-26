@@ -27,6 +27,7 @@ public class HierarchicalProperty<T> {
     public static final HierarchicalProperty<WeightedTable<DungeonRegistration.TargetTemplate>> ENEMY_TABLE = new HierarchicalProperty<>(new TypeToken<>() {}, BASIC_ENEMY_TABLE);
     public static final HierarchicalProperty<Double> DIFFICULTY_MODIFIER = new HierarchicalProperty<>(new TypeToken<>() {}, 1.0);
     public static final HierarchicalProperty<Double> DIFFICULTY_SCALING = new HierarchicalProperty<>(new TypeToken<>() {}, 1.1);
+    public static final HierarchicalProperty<Double> CHEST_SPAWN_CHANCE = new HierarchicalProperty<>(new TypeToken<>() {}, 0.33);
     public static final HierarchicalProperty<DungeonSession.DungeonExitBehavior> EXIT_BEHAVIOR = new HierarchicalProperty<>(new TypeToken<>() {}, DungeonSession.DungeonExitBehavior.DESTROY);
     public static final HierarchicalProperty<WeightedPool<DungeonTemplate>> NEXT_DUNGEON = new HierarchicalProperty<>(new TypeToken<>() {}, null);
     public static final HierarchicalProperty<Boolean> HAS_BEDROCK_SHELL = new HierarchicalProperty<>(new TypeToken<>() {}, true);
