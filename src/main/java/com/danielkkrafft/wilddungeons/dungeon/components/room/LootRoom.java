@@ -40,9 +40,4 @@ public class LootRoom extends TargetPurgeRoom {
     @Override public ResourceLocation getDecalTexture() {return ConnectionPoint.CHEST_TEXTURE;}
     @Override public int getDecalColor() {return 0xFFffdd00;}
 
-    @Override
-    public void templateBasedUnblock(DungeonFloor floor, ConnectionPoint point) {
-        point.unBlock(floor.getLevel());
-        point.addDecal(this.getDecalTexture(), this.getDecalColor());
-    }
 }

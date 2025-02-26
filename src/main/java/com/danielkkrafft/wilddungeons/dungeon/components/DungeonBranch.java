@@ -224,7 +224,7 @@ public class DungeonBranch {
         newEntrancePoint.setRoom(room);
         exitPoint.setConnectedPoint(newEntrancePoint);
         newEntrancePoint.setConnectedPoint(exitPoint);
-        exitPoint.unBlock(getFloor().getLevel());
+        exitPoint.unBlock();
         openConnections += nextRoom.connectionPoints().size() - 2;
         room.onGenerate();
     }

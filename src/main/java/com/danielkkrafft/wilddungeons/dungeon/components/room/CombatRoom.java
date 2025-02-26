@@ -108,9 +108,4 @@ public class CombatRoom extends TargetPurgeRoom {
     @Override public ResourceLocation getDecalTexture() {return ConnectionPoint.SWORD_TEXTURE;}
     @Override public int getDecalColor() {return 0xFFFF0000;}
 
-    @Override
-    public void templateBasedUnblock(DungeonFloor floor, ConnectionPoint point) {
-        point.unBlock(floor.getLevel());
-        point.addDecal(this.getDecalTexture(), this.getDecalColor());
-    }
 }

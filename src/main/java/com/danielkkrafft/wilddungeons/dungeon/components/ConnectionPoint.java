@@ -226,7 +226,12 @@ public class ConnectionPoint {
 
     }
 
-    public void block(ServerLevel level, int flags) {
+    public void blockAndRemoveDecal(int flags){
+        block(flags);
+        if (this.getRoom().getDecalTexture() != null) this.removeDecal(this.getRoom().getDecalTexture(), this.getRoom().getDecalColor());
+    }
+
+    public void block( int flags) {
         this.getRoom().getActivePlayers().forEach(wdPlayer -> {
             ServerPlayer player = wdPlayer.getServerPlayer();
             if (player!=null && this.getRealBoundingBox().isInside(player.blockPosition())) {
@@ -239,6 +244,7 @@ public class ConnectionPoint {
                 wdPlayer.getServerPlayer().moveTo(newPosition);
             }
         });
+        ServerLevel level = this.getRoom().getBranch().getFloor().getLevel();
         getPositions(this.getRoom().getOrientation(), this.getRoom().getPosition()).forEach((pos) -> {
             if (this.getRoom().getProperty(HierarchicalProperty.DESTRUCTION_RULE).equals(DungeonRoomTemplate.DestructionRule.SHELL) || (this.getRoom().getProperty(HierarchicalProperty.DESTRUCTION_RULE).equals(DungeonRoomTemplate.DestructionRule.SHELL_CLEAR) && !this.getRoom().isClear())) {
                 level.setBlock(pos, WDBedrockBlock.of(this.getRoom().getMaterial().getBasic(getRoom().getProperty(HierarchicalProperty.BLOCKING_MATERIAL_INDEX)).getBlock()), flags);
@@ -253,12 +259,19 @@ public class ConnectionPoint {
         return new Vector3f(box.minX() + (float) box.getXSpan() /2, box.minY() + (float) box.getYSpan() /2, box.minZ() + (float) box.getZSpan() /2);
     }
 
-    public void hide(ServerLevel level) {
+    public void hide() {
+        ServerLevel level = this.getRoom().getBranch().getFloor().getLevel();
         getPositions(this.getRoom().getOrientation(), this.getRoom().getPosition()).forEach((pos) -> level.setBlock(pos, this.getRoom().getMaterial().getHidden(0), 2));
     }
 
-    public void unBlock(ServerLevel level) {
+    public void unBlock() {
+        ServerLevel level = this.getRoom().getBranch().getFloor().getLevel();
         unBlockedBlockStates.forEach((pos, blockState) -> level.setBlock(pos, TemplateHelper.fixBlockStateProperties(blockStateFromString(blockState), this.getRoom().getSettings()), 2));
+    }
+
+    public void unBlockAndAddDecal() {
+        unBlock();
+        if (this.getRoom().getDecalTexture() != null) this.addDecal(this.getRoom().getDecalTexture(), this.getRoom().getDecalColor());
     }
 
     public void addDecal(ResourceLocation texture, int color) {

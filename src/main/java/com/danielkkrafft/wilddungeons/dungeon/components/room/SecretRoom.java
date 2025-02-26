@@ -26,7 +26,7 @@ public class SecretRoom extends DungeonRoom {
             }
         }
         if (entryPoint != null) {
-            entryPoint.getConnectedPoint().hide(super.getBranch().getFloor().getLevel());
+            entryPoint.getConnectedPoint().hide();
             entryPoint.getConnectedPoint().getRoom().getAlwaysBreakable().addAll(entryPoint.getConnectedPoint().getPositions(entryPoint.getConnectedPoint().getRoom().getOrientation(), entryPoint.getConnectedPoint().getRoom().getPosition()));
         }
     }

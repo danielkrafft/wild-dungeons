@@ -37,8 +37,7 @@ public class LockableEventRoom extends DungeonRoom {
 
         this.getConnectionPoints().forEach(point -> {
             if (point.isConnected()) {
-                point.block(this.getBranch().getFloor().getLevel(), 2);
-                point.removeDecal(this.getDecalTexture(), this.getDecalColor());
+                point.blockAndRemoveDecal(2);
             }
         });
     }
@@ -78,7 +77,7 @@ public class LockableEventRoom extends DungeonRoom {
         this.getBranch().getFloor().getLevel().playSound(null, this.getPosition(), SoundEvents.IRON_DOOR_OPEN, SoundSource.BLOCKS, .5f, 1f);
         this.getConnectionPoints().forEach(point -> {
             if (point.isConnected()) {
-                point.unBlock(this.getBranch().getFloor().getLevel());
+                point.unBlock();
             }
         });
         processDataMarkers();
@@ -113,10 +112,9 @@ public class LockableEventRoom extends DungeonRoom {
                 //this code only works when the *next* branch is generated too
                 if (point.getConnectedPoint().getBranchIndex() > this.getBranch().getIndex() ||
                         (point.getConnectedPoint().getRoom().getIndex() > this.getIndex() && point.getConnectedPoint().getBranchIndex() == this.getBranch().getIndex())) {
-                    point.block(this.getBranch().getFloor().getLevel(), 2);
-                    point.removeDecal(this.getDecalTexture(), this.getDecalColor());
+                    point.blockAndRemoveDecal(2);
                 } else {
-                    this.templateBasedUnblock(getBranch().getFloor(), point);
+                    point.unBlockAndAddDecal();
                 }
             }
         });

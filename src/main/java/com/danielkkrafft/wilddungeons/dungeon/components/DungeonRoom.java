@@ -324,18 +324,13 @@ public class DungeonRoom {
         for (ConnectionPoint point : connectionPoints) {
             point.setupBlockstates(getOrientation(), getPosition(), this.getBranch().getFloor().getLevel());
             if (point.isConnected()) {
-                templateBasedUnblock(floor, point);
-                point.getConnectedPoint().unBlock(floor.getLevel());
+                point.unBlockAndAddDecal();
+                point.getConnectedPoint().unBlock();
             }
             if (!point.isConnected()) {
-                point.block(floor.getLevel(), 0);
-                point.removeDecal(this.getDecalTexture(), this.getDecalColor());
+                point.blockAndRemoveDecal(0);
             }
         }
-    }
-
-    public void templateBasedUnblock(DungeonFloor floor, ConnectionPoint point) {
-        point.unBlock(floor.getLevel());
     }
 
     public void processRifts() {
