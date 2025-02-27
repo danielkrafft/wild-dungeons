@@ -113,7 +113,7 @@ public class Meathook extends WDWeapon {
             if (i == CHARGE_DURATION) {
                 level.playSound(null, livingEntity.blockPosition(), loadMeathook(), SoundSource.PLAYERS, 1f, 1f);
                 if (livingEntity instanceof Player)
-                    setAnimation(AnimationList.hold.toString(), itemStack, (Player) livingEntity, level);
+                    setAnimation(AnimationList.charge.toString(), itemStack, (Player) livingEntity, level);
             }
             setCharged(itemStack, true);
         } else {
