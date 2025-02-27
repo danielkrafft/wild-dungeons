@@ -20,42 +20,50 @@ import org.jetbrains.annotations.NotNull;
  * {@link net.minecraft.client.renderer.entity.FishingHookRenderer}
  * @param <T>
  */
-public class GrapplingHookRenderer<T extends GrapplingHook> extends EntityRenderer<T>
-{
+public class GrapplingHookRenderer<T extends GrapplingHook> extends EntityRenderer<T> {
     private static final ResourceLocation HOOKS = WildDungeons.rl("textures/entity/grapplinghook_hooks.png");
     private static final ResourceLocation BODY = WildDungeons.rl("textures/entity/grapplinghook_body.png");
     private static final ResourceLocation CHAIN = WildDungeons.rl("textures/entity/grapplinghook_chain.png");
-    public GrapplingHookRenderer(EntityRendererProvider.Context c) {super(c);}
-    public void render(T en, float p_114081_, float deltaTime, PoseStack pose, MultiBufferSource buffer, int light)
-    {
-        Level world=en.level();
-        Player p=en.getPlayerOwner(world);
-        ItemStack it=en.lookForStack(p);
-        if(it!=null)
-        {
-            if(p.getItemInHand(InteractionHand.MAIN_HAND).equals(it)||p.getItemInHand(InteractionHand.OFF_HAND).equals(it))
-            {
-                Vec3 playerLocLerp=new Vec3(Mth.lerp(deltaTime,p.xo,p.getX()),Mth.lerp(deltaTime,p.yo,p.getY())+p.getEyeHeight(),Mth.lerp(deltaTime,p.zo,p.getZ())),
-                        hookLocLerp=new Vec3(Mth.lerp(deltaTime,en.xo,en.getX()),Mth.lerp(deltaTime,en.yo,en.getY()),Mth.lerp(deltaTime,en.zo,en.getZ()));
+    private static final float chainSegmentLength = 0.5f;
 
-                Vec3 disp=this.entityRenderDispatcher.camera.isDetached()? MathUtil.displaceVector(0.9,playerLocLerp.add(0,-0.97,0),(float)Mth.lerp((double) deltaTime,p.yBodyRotO,p.yBodyRot)+(p.getOffhandItem().equals(it)?-25:25),0):
-                        MathUtil.displaceVector(0.3,playerLocLerp.add(0,-0.3,0),(float)Mth.lerp((double) deltaTime,p.yHeadRotO,p.yHeadRot)+(p.getOffhandItem().equals(it)?-85:85),p.getXRot());
-                Vec3 chainDisp=MathUtil.displaceVector(-0.6,hookLocLerp,Mth.lerp(deltaTime,en.yRotO,en.getYRot()),Mth.lerp(deltaTime,en.xRotO,en.getXRot())).add(0,0.25,0);
-                float[]f=MathUtil.entitylookAtEntity(chainDisp,disp);
-                float d=(float) MathUtil.distance(chainDisp,disp);
+    public GrapplingHookRenderer(EntityRendererProvider.Context c) {
+        super(c);
+    }
 
-                CubeRenderer.cross(0,d,Vec3.ZERO,0.1f,CHAIN,pose,buffer,f[0],f[1],0,1,1,1,1);
+    public void render(T grapplingHookEntity, float p_114081_, float deltaTime, PoseStack pose, MultiBufferSource buffer, int light) {
+        Level world = grapplingHookEntity.level();
+        Player player = grapplingHookEntity.getPlayerOwner(world);
+        ItemStack meathook = grapplingHookEntity.lookForStack(player);
+        if (meathook != null) {
+            if (player.getItemInHand(InteractionHand.MAIN_HAND).equals(meathook) || player.getItemInHand(InteractionHand.OFF_HAND).equals(meathook)) {
+                Vec3 playerLocLerp = new Vec3(Mth.lerp(deltaTime, player.xo, player.getX()), Mth.lerp(deltaTime, player.yo, player.getY()) + player.getEyeHeight(), Mth.lerp(deltaTime, player.zo, player.getZ())),
+                        hookLocLerp = new Vec3(Mth.lerp(deltaTime, grapplingHookEntity.xo, grapplingHookEntity.getX()), Mth.lerp(deltaTime, grapplingHookEntity.yo, grapplingHookEntity.getY()), Mth.lerp(deltaTime, grapplingHookEntity.zo, grapplingHookEntity.getZ()));
+
+                Vec3 playerDisplacement = this.entityRenderDispatcher.camera.isDetached() ?
+                        MathUtil.displaceVector(0.9, playerLocLerp.add(0, -0.97, 0), (float) Mth.lerp((double) deltaTime, player.yBodyRotO, player.yBodyRot) + (player.getOffhandItem().equals(meathook) ? -25 : 25), 0) :
+                        MathUtil.displaceVector(0.3, playerLocLerp.add(0, -0.3, 0), (float) Mth.lerp((double) deltaTime, player.yHeadRotO, player.yHeadRot) + (player.getOffhandItem().equals(meathook) ? -85 : 85), player.getXRot());
+                Vec3 chainDisp = MathUtil.displaceVector(0, hookLocLerp, Mth.lerp(deltaTime, grapplingHookEntity.yRotO, grapplingHookEntity.getYRot()), Mth.lerp(deltaTime, grapplingHookEntity.xRotO, grapplingHookEntity.getXRot())).add(0, 0.25, 0);
+                float[] rotationAngles = MathUtil.entitylookAtEntity(chainDisp, playerDisplacement);
+                float distance = (float) MathUtil.distance(chainDisp, playerDisplacement);
+
+                for (float i = 0; i < distance; i += chainSegmentLength) {
+                    CubeRenderer.cross(i, chainSegmentLength, Vec3.ZERO, 0.1f, CHAIN, pose, buffer, rotationAngles[0], rotationAngles[1], 0, 1, 1, 1, 1);
+                }
             }
         }
-        float yawDisp=180f;
-        CubeRenderer.cube(0,0.6f,new Vec3(0,0.25,0),0.1f,BODY,pose,buffer,en.getYRot()+yawDisp,-en.getXRot(),0,1,1,1,1);
-        CubeRenderer.cube(0,0.3f,new Vec3(0,0.25,0),0.07f,HOOKS,pose,buffer,en.getYRot()+yawDisp,-en.getXRot()+45,0,1,1,1,1);
-        CubeRenderer.cube(0,0.3f,new Vec3(0,0.25,0),0.07f,HOOKS,pose,buffer,en.getYRot()+yawDisp,-en.getXRot()-45,0,1,1,1,1);
-        CubeRenderer.cube(0,0.3f,new Vec3(0,0.25,0),0.07f,HOOKS,pose,buffer,en.getYRot()+yawDisp+45,-en.getXRot(),0,1,1,1,1);
-        CubeRenderer.cube(0,0.3f,new Vec3(0,0.25,0),0.07f,HOOKS,pose,buffer,en.getYRot()+yawDisp-45,-en.getXRot(),0,1,1,1,1);
-        super.render(en, p_114081_, deltaTime, pose, buffer, light);
+        float yawDisp = 180f;
+        //draw the hook itself
+        CubeRenderer.cube(0, 0.6f, new Vec3(0, 0.25, 0), 0.1f, BODY, pose, buffer, grapplingHookEntity.getYRot() + yawDisp, -grapplingHookEntity.getXRot(), 0, 1, 1, 1, 1);
+        CubeRenderer.cube(0, 0.3f, new Vec3(0, 0.25, 0), 0.07f, HOOKS, pose, buffer, grapplingHookEntity.getYRot() + yawDisp, -grapplingHookEntity.getXRot() + 45, 0, 1, 1, 1, 1);
+        CubeRenderer.cube(0, 0.3f, new Vec3(0, 0.25, 0), 0.07f, HOOKS, pose, buffer, grapplingHookEntity.getYRot() + yawDisp, -grapplingHookEntity.getXRot() - 45, 0, 1, 1, 1, 1);
+        CubeRenderer.cube(0, 0.3f, new Vec3(0, 0.25, 0), 0.07f, HOOKS, pose, buffer, grapplingHookEntity.getYRot() + yawDisp + 45, -grapplingHookEntity.getXRot(), 0, 1, 1, 1, 1);
+        CubeRenderer.cube(0, 0.3f, new Vec3(0, 0.25, 0), 0.07f, HOOKS, pose, buffer, grapplingHookEntity.getYRot() + yawDisp - 45, -grapplingHookEntity.getXRot(), 0, 1, 1, 1, 1);
+        super.render(grapplingHookEntity, p_114081_, deltaTime, pose, buffer, light);
     }
+
     @Override
-    public @NotNull ResourceLocation getTextureLocation(@NotNull T g){return BODY;}
+    public @NotNull ResourceLocation getTextureLocation(@NotNull T g) {
+        return BODY;
+    }
     //@Override public boolean shouldRender(@NotNull T g, @NotNull Frustum p_114492_, double p_114493_, double p_114494_, double p_114495_) {return true;}
 }

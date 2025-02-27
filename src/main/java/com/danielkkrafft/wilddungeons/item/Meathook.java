@@ -28,14 +28,14 @@ public class Meathook extends WDWeapon {
 
     public enum AnimationList {idle, charge, hold, fire}
 
-    private static final int CHARGE_DURATION = 20;
+    private static final int chargeSeconds = 1;
 
     public Meathook() {
         super(NAME);
-        this.addLoopingAnimation(AnimationList.idle.toString());
-        this.addAnimation(AnimationList.charge.toString());
-        this.addLoopingAnimation(AnimationList.hold.toString());
-        this.addAnimation(AnimationList.fire.toString());
+        this.addLoopingAnimation(AnimationList.idle.toString());//0s long
+        this.addAnimation(AnimationList.charge.toString(), 2.13f / chargeSeconds);//2.13s long
+        this.addLoopingAnimation(AnimationList.hold.toString());//0s long
+        this.addAnimation(AnimationList.fire.toString());//0.25s long
     }
 
     @Override
@@ -109,8 +109,8 @@ public class Meathook extends WDWeapon {
     public void onUseTick(Level level, LivingEntity livingEntity, ItemStack itemStack, int remainingUseDuration) {
         int i = getUseDuration(itemStack, livingEntity) - remainingUseDuration;
 
-        if (i >= CHARGE_DURATION) {
-            if (i == CHARGE_DURATION) {
+        if (i >= chargeSeconds * 20) {
+            if (i == chargeSeconds * 20) {
                 level.playSound(null, livingEntity.blockPosition(), loadMeathook(), SoundSource.PLAYERS, 1f, 1f);
                 if (livingEntity instanceof Player)
                     setAnimation(AnimationList.charge.toString(), itemStack, (Player) livingEntity, level);
