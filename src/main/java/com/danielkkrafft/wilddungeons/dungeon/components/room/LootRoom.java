@@ -5,9 +5,11 @@ import com.danielkkrafft.wilddungeons.dungeon.components.ConnectionPoint;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonTarget;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonPerkTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateOrientation;
 import com.danielkkrafft.wilddungeons.dungeon.registries.OfferingTemplateTableRegistry;
+import com.danielkkrafft.wilddungeons.dungeon.registries.PerkRegistry;
 import com.danielkkrafft.wilddungeons.entity.Offering;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
@@ -15,7 +17,9 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlac
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class LootRoom extends TargetPurgeRoom {
 
@@ -26,6 +30,18 @@ public class LootRoom extends TargetPurgeRoom {
     @Override
     public void processOfferings() {
         List<DungeonRegistration.OfferingTemplate> entries = OfferingTemplateTableRegistry.FREE_PERK_OFFERING_TABLE.randomResults(this.getTemplate().offerings().size(), (int) this.getDifficulty() * this.getTemplate().offerings().size(), 1.2f);
+        Set<String> uniquePerks = new HashSet<>();
+
+        for (int i = 0; i < entries.size(); i++) {
+            DungeonRegistration.OfferingTemplate offeringTemplate = entries.get(i);
+            DungeonPerkTemplate perkEntry = PerkRegistry.DUNGEON_PERK_REGISTRY.get(offeringTemplate.id());
+            while (perkEntry != null && (perkEntry.isUnique() && (this.getSession().getPerks().containsKey(perkEntry.name()) || !uniquePerks.add(perkEntry.name())))) {
+                offeringTemplate = OfferingTemplateTableRegistry.FREE_PERK_OFFERING_TABLE.randomResults(1, (int) this.getDifficulty() * this.getTemplate().offerings().size(), 1.2f).getFirst();
+                entries.set(i, offeringTemplate);
+                perkEntry = PerkRegistry.DUNGEON_PERK_REGISTRY.get(offeringTemplate.id());
+            }
+        }
+
         getTemplate().offerings().forEach(pos -> {
             if (entries.isEmpty()) return;
             Offering next = entries.removeFirst().asOffering(this.getBranch().getFloor().getLevel());

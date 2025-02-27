@@ -140,7 +140,6 @@ public class DungeonRoom {
         }
         this.processConnectionPoints(getBranch().getFloor());
         this.onBranchComplete();
-        this.processOfferings();
 
         getChunkPosSet(this.boundingBoxes, 1).forEach(chunkPos -> forceUpdateChunk(getBranch().getFloor().getLevel(), chunkPos));
         WildDungeons.getLogger().info("FINISHED ROOM: {}", getTemplate().name());
@@ -348,13 +347,6 @@ public class DungeonRoom {
 
     public void processOfferings() {
         List<DungeonRegistration.OfferingTemplate> entries = this.getProperty(SHOP_TABLE).randomResults(this.getTemplate().offerings().size(), (int) this.getDifficulty() * this.getTemplate().offerings().size(), 1.2f);
-        if (this.getTemplate().name().contains("shop")){
-            WildDungeons.getLogger().info("SHOP ROOM: {}", this.getTemplate().name());
-            WildDungeons.getLogger().info("ENTRIES: {}", entries.size());
-            WildDungeons.getLogger().info("OFFERINGS: {}", this.getTemplate().offerings().size());
-            WildDungeons.getLogger().info("DIFFICULTY X OFFERINGS: {}", this.getDifficulty() * this.getTemplate().offerings().size());
-            WildDungeons.getLogger().info("DIFFICULTY: {}", this.getDifficulty());
-        }
         getTemplate().offerings().forEach(pos -> {
             if (entries.isEmpty()) {
                 return;
@@ -523,6 +515,7 @@ public class DungeonRoom {
     public void onBranchEnter(WDPlayer player) {
         if (!lootGenerated){
             this.processLootBlocks();
+            this.processOfferings();
             lootGenerated = true;
         }
         //doesn't actually help

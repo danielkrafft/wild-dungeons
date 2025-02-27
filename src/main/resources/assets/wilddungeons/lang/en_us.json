@@ -56,9 +56,15 @@
   "itemGroup.wilddungeons": "Wild Dungeons",
 
   "dungeon.perk.EXTRA_LIFE": "Extra Life: +1 Respawn",
-  "dungeon.perk.SWORD_DAMAGE": "Sword Damage: +10% Sword Damage",
-  "dungeon.perk.BOW_DAMAGE": "Bow Damage: +10% Bow Damage",
-  "dungeon.perk.AXE_DAMAGE": "Axe Damage: +10% Axe Damage",
+  "dungeon.perk.SWORD_DAMAGE": "+10% Sword Damage",
+  "dungeon.perk.BOW_DAMAGE": "+10% Bow Damage",
+  "dungeon.perk.AXE_DAMAGE": "+10% Axe Damage",
+  "dungeon.perk.FIRE_RESIST": "Permanent Fire Resistance",
+  "dungeon.perk.STRENGTH": "Permanent Strength",
+  "dungeon.perk.NIGHT_VISION": "Permanent Night Vision",
+  "dungeon.perk.HEALTH_BOOST": "Permanent Health Boost III",
+  "dungeon.perk.SPEED": "Permanent Speed",
+
 
   "dungeon.failed": "DUNGEON FAILED - RESPAWNING"
 }

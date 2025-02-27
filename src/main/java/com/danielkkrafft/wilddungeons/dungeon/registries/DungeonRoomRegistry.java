@@ -21,6 +21,7 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRegistration.DungeonComponentRegistry<DungeonRoomTemplate> DUNGEON_ROOM_REGISTRY = new DungeonRegistration.DungeonComponentRegistry<>();
     public static ArrayList<DungeonRoomTemplate> dungeonRooms = new ArrayList<>();
 
+    public static final DungeonRoomTemplate PERK_TEST = createSimple("loot/perk_tester").setClazz(LootRoom.class);
     public static final DungeonRoomTemplate SMALL_1 = createSimple("stone/small_1");
     public static final DungeonRoomTemplate SMALL_2 = createSimple("stone/small_2");
     public static final DungeonRoomTemplate SMALL_3 = createSimple("stone/small_3");

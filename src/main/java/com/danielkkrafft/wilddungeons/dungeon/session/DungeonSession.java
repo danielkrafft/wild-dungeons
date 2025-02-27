@@ -8,6 +8,7 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonPerkTem
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
+import com.danielkkrafft.wilddungeons.dungeon.registries.PerkRegistry;
 import com.danielkkrafft.wilddungeons.network.ClientPacketHandler;
 import com.danielkkrafft.wilddungeons.network.SimplePacketManager;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
@@ -21,6 +22,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -98,6 +101,7 @@ public class DungeonSession {
         this.playersInside.put(wdPlayer.getUUID(), true);
         playerStats.putIfAbsent(wdPlayer.getUUID(), new DungeonSession.DungeonStats());
         floor.attemptEnter(wdPlayer);
+        reassignPotions();
         shutdownTimer = SHUTDOWN_TIME;
     }
 
@@ -114,6 +118,13 @@ public class DungeonSession {
         wdPlayer.setRiftCooldown(100);
         wdPlayer.setSoundScape(null, 0, true);
         WDPlayerManager.syncAll(List.of(wdPlayer.getUUID()));
+        List<MobEffectInstance> effectInstances = new ArrayList<>();
+        wdPlayer.getServerPlayer().getActiveEffects().forEach(effect -> {
+            if (effect.isInfiniteDuration()) {
+                effectInstances.add(effect);
+            }
+        });
+        effectInstances.forEach(effect -> wdPlayer.getServerPlayer().removeEffect(effect.getEffect()));
     }
 
     /**
@@ -158,7 +169,7 @@ public class DungeonSession {
 
         perk.count++;
         this.getPerks().put(perkTemplate.name(), perk);
-        perk.onCollect(this);
+        perk.onCollect(false);
     }
 
     /**
@@ -233,6 +244,14 @@ public class DungeonSession {
         DecalRenderer.syncAllClientDecals();
         SaveSystem.DeleteSession(this);
         markedForShutdown = true;
+    }
+
+    public void reassignPotions() {
+        getPerks().forEach((name, perk) -> {
+            if (PerkRegistry.DUNGEON_PERK_REGISTRY.get(perk.name).isPotionEffect()){
+                perk.onCollect(true);
+            }
+        });
     }
 
     /**

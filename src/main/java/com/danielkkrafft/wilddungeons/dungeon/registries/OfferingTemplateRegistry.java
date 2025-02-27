@@ -42,6 +42,10 @@ public class OfferingTemplateRegistry {
     public static final OfferingTemplate FREE_AXE_DAMAGE = createPerk("FREE_AXE_DAMAGE", PerkRegistry.AXE_DAMAGE, XP_LEVEL, 0, 1);
     public static final OfferingTemplate FREE_BOW_DAMAGE = createPerk("FREE_BOW_DAMAGE", PerkRegistry.BOW_DAMAGE, XP_LEVEL, 0, 1);
     public static final OfferingTemplate FREE_EXTRA_LIFE = createPerk("FREE_EXTRA_LIFE", PerkRegistry.EXTRA_LIFE, XP_LEVEL, 0, 1);
+    public static final OfferingTemplate FREE_FIRE_RESIST = createPerk("FREE_FIRE_RESIST", PerkRegistry.FIRE_RESIST, XP_LEVEL, 0, 1);
+    public static final OfferingTemplate FREE_STRENGTH = createPerk("FREE_STRENGTH", PerkRegistry.STRENGTH, XP_LEVEL, 0, 1);
+    public static final OfferingTemplate FREE_NIGHT_VISION = createPerk("NIGHT_VISION", PerkRegistry.NIGHT_VISION, XP_LEVEL, 0, 1);
+    public static final OfferingTemplate FREE_HEALTH_BOOST = createPerk("FREE_HEALTH_BOOST", PerkRegistry.HEALTH_BOOST, XP_LEVEL, 0, 1);
 
     public static final OfferingTemplate EXTRA_LIFE_NORMAL = createPerk("EXTRA_LIFE_NORMAL", PerkRegistry.EXTRA_LIFE, XP_LEVEL, 8, 1.5f);
     public static final OfferingTemplate EXTRA_LIFE_NETHER = createPerk("EXTRA_LIFE_NETHER", PerkRegistry.EXTRA_LIFE, NETHER_XP_LEVEL, 4, 1.5f);

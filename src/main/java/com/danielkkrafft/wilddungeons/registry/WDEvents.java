@@ -7,6 +7,7 @@ import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.TargetPurgeRoom;
+import com.danielkkrafft.wilddungeons.dungeon.registries.PerkRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.entity.EssenceOrb;
 import com.danielkkrafft.wilddungeons.entity.WDEntities;
@@ -299,6 +300,7 @@ public class WDEvents {
                 wdPlayer.setRiftCooldown(140);
                 player.teleportTo(respawnPoint.getX(), respawnPoint.getY(), respawnPoint.getZ());
                 wdPlayer.getCurrentDungeon().getStats(wdPlayer.getUUID()).deaths += 1;
+                wdPlayer.getCurrentDungeon().reassignPotions();
             } else {
                 wdPlayer.getCurrentDungeon().fail();
             }

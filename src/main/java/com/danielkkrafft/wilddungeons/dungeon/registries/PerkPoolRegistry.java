@@ -10,9 +10,13 @@ public class PerkPoolRegistry {
 
     public static void setupPerkPools(){
         ALL_PERKS_POOL
-                .add(SWORD_DAMAGE,1)
-                .add(AXE_DAMAGE,1)
-                .add(BOW_DAMAGE,1)
-                .add(EXTRA_LIFE,1);
+                .add(SWORD_DAMAGE,3)
+                .add(AXE_DAMAGE,3)
+                .add(BOW_DAMAGE,3)
+                .add(EXTRA_LIFE,2)
+                .add(FIRE_RESIST,1)
+                .add(STRENGTH,1)
+                .add(NIGHT_VISION,1)
+                .add(HEALTH_BOOST,1);
     }
 }

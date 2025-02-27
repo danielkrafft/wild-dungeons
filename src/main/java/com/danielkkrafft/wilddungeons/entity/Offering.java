@@ -117,6 +117,9 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     private DungeonPerkTemplate perk = null;
 
     public DungeonPerkTemplate getPerk() {
+        if (!this.type.equals(Type.PERK.toString())) {
+            return null;
+        }
         if (this.perk == null) {
             perk = DUNGEON_PERK_REGISTRY.get(this.offerID);
         }
