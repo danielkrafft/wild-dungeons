@@ -46,6 +46,12 @@ public abstract class WDWeapon extends Item implements GeoAnimatable, GeoItem {
         SingletonGeoAnimatable.registerSyncedAnimatable(this);
     }
 
+    public WDWeapon(String name, Properties properties){
+        super(properties);
+        this.name = name;
+        SingletonGeoAnimatable.registerSyncedAnimatable(this);
+    }
+
     /**
      *  The first animation added to the list will be treated as the "idle", default animation
      */

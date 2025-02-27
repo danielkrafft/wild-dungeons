@@ -11,8 +11,7 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
@@ -25,20 +24,20 @@ public class LaserSword extends WDWeapon {
 
     public enum AnimationList {idle, gun_transform, charging_up, fully_charged, shoot, sword_transform}
 
-    private final int warmUpSeconds = 1;//5
-    private final int maxChargeSeconds = 4;//15
-    private final int cooldownSeconds = 3;
-    private final float cooldownTransitionRatio = 0.25f;
-    private final int laserEntityChargeSeconds = 0;
-    private final Vector2i blastLevelRange = new Vector2i(1, 5);
-    private final Vector2f damageRange = new Vector2f(0.75f, 20f);
-    private final Vector2f laserRadiusRange = new Vector2f(0.1f, 1.0f);
-    private final Vector2f laserDistanceRange = new Vector2f(15, 160);
-    private final Vector2i explosionRadiusRange = new Vector2i(1, 30);
+    private static final int warmUpSeconds = 1;//old 5
+    private static final int maxChargeSeconds = 4;//old 15
+    private static final int cooldownSeconds = 3;//used to be 3x the total charge time
+    private static final float cooldownTransitionRatio = 0.25f;
+    private static final int laserEntityChargeSeconds = 0;
+    private static final Vector2i blastLevelRange = new Vector2i(1, 5);
+    private static final Vector2f damageRange = new Vector2f(0.75f, 20f);
+    private static final Vector2f laserRadiusRange = new Vector2f(0.1f, 1.0f);
+    private static final Vector2f laserDistanceRange = new Vector2f(15, 160);
+    private static final Vector2i explosionRadiusRange = new Vector2i(1, 30);
 
 
     public LaserSword() {
-        super(NAME);
+        super(NAME, new Properties().rarity(Rarity.RARE).durability(1000).attributes(SwordItem.createAttributes(Tiers.DIAMOND, 3, -2.4F)));
         this.addLoopingAnimation(AnimationList.idle.toString());//default animation
         this.addAnimation(AnimationList.gun_transform.toString(), (float) 2 / warmUpSeconds);//2 seconds long
         this.addLoopingAnimation(AnimationList.charging_up.toString(), (float) 20 / (maxChargeSeconds + warmUpSeconds));//20 seconds long
@@ -90,7 +89,7 @@ public class LaserSword extends WDWeapon {
         boolean debris = ratio > 0.6f;
 
         if (!player.isCreative()) stack.setDamageValue(stack.getDamageValue() + blastLevel);
-        player.getCooldowns().addCooldown(this, cooldownSeconds * 20);//used to be 3x the total charge time, which would be up to 60s
+        player.getCooldowns().addCooldown(this, cooldownSeconds * 20);
         shoot(blastLevel, level, player, damage, laserRadius, range, explosion, explosionRadius, debris);
         setAnimation(AnimationList.shoot.toString(), stack, player, level);
     }
