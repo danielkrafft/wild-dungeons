@@ -100,6 +100,7 @@ public class DungeonRegistration {
         private float renderScale = 1.0f;
         private int colorTint;
         private int soundLoop;
+        private boolean showRing = false;
 
         public OfferingTemplate(String name, Offering.Type type, int amount, String id, Offering.CostType costType, int costAmount, float costDeviance) {
             this.name = name;
@@ -114,6 +115,7 @@ public class DungeonRegistration {
         public OfferingTemplate setRenderScale(float renderScale) {this.renderScale = renderScale; return this;}
         public OfferingTemplate setColorTint(int colorTint) {this.colorTint = colorTint; return this;}
         public OfferingTemplate setSoundLoop(SoundEvent soundLoop) {this.soundLoop = BuiltInRegistries.SOUND_EVENT.getId(soundLoop); return this;}
+        public OfferingTemplate setShowRing(boolean showRing) {this.showRing = showRing; return this;}
 
         public OfferingTemplate(String name, ItemTemplate itemTemplate, Offering.CostType costType, int costAmount, float costDeviance) {
              this(name, Offering.Type.ITEM, itemTemplate.getDeviatedCount(), String.valueOf(itemTemplate.itemID), costType, costAmount, costDeviance);
@@ -125,6 +127,7 @@ public class DungeonRegistration {
             Offering offering = new Offering(level, type, adjustedAmount, id, costType, adjustedCost);
             offering.setRenderScale(renderScale);
             offering.setSoundLoop(soundLoop);
+            offering.setShowRing(showRing);
             if (this.type == Offering.Type.RIFT && this.id.split("-")[0].equals("wd")) {
                 DungeonTemplate dungeonTemplate = DungeonRegistry.DUNGEON_REGISTRY.get(this.id.split("wd-")[1]);
                 offering.setPrimaryColor(dungeonTemplate.get(HierarchicalProperty.PRIMARY_COLOR));

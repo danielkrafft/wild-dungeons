@@ -64,6 +64,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     private int primaryColor = 0xFFFFFFFF;
     private int secondaryColor = 0xFFFFFFFF;
     private int soundLoop = 0;
+    private boolean showRing = false;
 
     public Offering(EntityType<Offering> entityType, Level level) {
         super(entityType, level);
@@ -87,6 +88,8 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     public void setSecondaryColor(int secondaryColor) {this.secondaryColor = secondaryColor;}
     public int getSoundLoop() {return this.soundLoop;}
     public void setSoundLoop(int soundEvent) {this.soundLoop = soundEvent;}
+    public boolean isShowingRing() {return this.showRing;}
+    public void setShowRing(boolean showRing) {this.showRing = showRing;}
 
 
     public Offering(Level level) {super(WDEntities.OFFERING.get(), level);}

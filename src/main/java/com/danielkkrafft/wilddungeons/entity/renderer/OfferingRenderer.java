@@ -143,6 +143,12 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
         boolean flag = bakedmodel.isGui3d();
         renderMultipleFromCount(this.itemRenderer, poseStack, buffer, packedLight, itemstack, bakedmodel, flag, this.random);
         poseStack.popPose();
+        if (entity.isShowingRing()){
+            poseStack.pushPose();
+            poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
+            renderPerkRing(poseStack, entity, partialTicks, buffer, entity.getRenderScale()*.2f);
+            poseStack.popPose();
+        }
     }
 
     public void renderPerk(Offering entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {

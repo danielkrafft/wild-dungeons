@@ -35,7 +35,7 @@ public class OfferingTemplateRegistry {
     public static final OfferingTemplate FREE_LASER_SWORD = create("FREE_LASER_SWORD", ItemTemplateRegistry.LASER_SWORD, XP_LEVEL, 0, 1.0f).setRenderScale(2.0f);
     public static final OfferingTemplate FREE_FIREWORK_GUN = create("FREE_FIREWORK_GUN", ItemTemplateRegistry.FIREWORK_GUN, XP_LEVEL, 0, 1.0f).setRenderScale(2.0f);
     public static final OfferingTemplate FREE_MEATHOOK = create("FREE_MEATHOOK", ItemTemplateRegistry.MEATHOOK, XP_LEVEL, 0, 1.0f).setRenderScale(2.0f);
-    public static final OfferingTemplate DUNGEON_KEY = create("DUNGEON_KEY", ItemTemplateRegistry.DUNGEON_KEY, XP_LEVEL, 0, 1.0f).setRenderScale(2.0f).setSoundLoop(WDSoundEvents.SHIMMER.value());
+    public static final OfferingTemplate DUNGEON_KEY = create("DUNGEON_KEY", ItemTemplateRegistry.DUNGEON_KEY, XP_LEVEL, 0, 1.0f).setRenderScale(2.0f).setShowRing(true).setSoundLoop(WDSoundEvents.SHIMMER.value());
 
     public static final OfferingTemplate FREE_SWORD_DAMAGE = create("FREE_SWORD_DAMAGE", PERK, 1, "SWORD_DAMAGE", XP_LEVEL, 0, 1);
     public static final OfferingTemplate FREE_AXE_DAMAGE = create("FREE_AXE_DAMAGE", PERK, 1, "AXE_DAMAGE", XP_LEVEL, 0, 1);
