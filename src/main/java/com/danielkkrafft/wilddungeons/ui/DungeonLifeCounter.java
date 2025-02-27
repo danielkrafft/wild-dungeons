@@ -58,7 +58,6 @@ public class DungeonLifeCounter implements LayeredDraw.Layer {
 
     @SubscribeEvent
     public static void registerOverlays(RegisterGuiLayersEvent event) {
-        event.registerAbove(VanillaGuiLayers.EXPERIENCE_BAR, WildDungeons.rl("essence_bar"), EssenceBar.INSTANCE);
         event.registerAbove(VanillaGuiLayers.HOTBAR, WildDungeons.rl("life_counter"), DungeonLifeCounter.INSTANCE);
     }
 }

@@ -320,12 +320,7 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
 
         // Cost Icon
         {
-            int hueOffset = switch (entity.getOfferingCostType()) {
-                case OVERWORLD -> 0;
-                case END -> EssenceOrb.getHueOffset(EssenceOrb.Type.END);
-                case NETHER -> EssenceOrb.getHueOffset(EssenceOrb.Type.NETHER);
-                case null, default -> 0;
-            };
+            int hueOffset = EssenceOrb.getHueOffset(entity.getOfferingCostType());
 
             poseStack.pushPose();
             poseStack.translate(0.0, 0.0, 0.01f);

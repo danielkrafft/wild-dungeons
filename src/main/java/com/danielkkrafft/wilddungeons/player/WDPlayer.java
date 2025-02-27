@@ -21,6 +21,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import javax.annotation.Nullable;
@@ -28,6 +30,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+
+import static com.danielkkrafft.wilddungeons.WildDungeons.TOGGLE_ESSENCE_TYPE;
 
 public class WDPlayer {
 
@@ -262,5 +266,14 @@ public class WDPlayer {
         tag.putInt("intensity", intensity);
         tag.putBoolean("reset", forceReset);
         PacketDistributor.sendToPlayer(this.getServerPlayer(), new SimplePacketManager.ClientboundTagPacket(tag));
+    }
+
+    @SubscribeEvent
+    public void onClientTick(ClientTickEvent.Post event) {
+        while (TOGGLE_ESSENCE_TYPE.get().consumeClick()) {
+            EssenceOrb.Type[] values = EssenceOrb.Type.values();
+            int index = this.getRecentEssence().ordinal();
+            this.setRecentEssence(values[(index + 1) % values.length]);
+        }
     }
 }

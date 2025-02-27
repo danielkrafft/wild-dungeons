@@ -16,6 +16,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.joml.Vector2i;
 
@@ -29,7 +30,11 @@ public class WDPlayerManager {
     private WDPlayerManager(){}
 
     public WDPlayer getOrCreateClientWDPlayer(LocalPlayer player) {
-        return this.clientPlayer == null ? new WDPlayer(player.getStringUUID()) : this.clientPlayer;
+        if (this.clientPlayer == null) {
+            this.clientPlayer = new WDPlayer(player.getStringUUID());
+            NeoForge.EVENT_BUS.register(this.clientPlayer);
+        }
+        return this.clientPlayer;
     }
 
     public WDPlayer getOrCreateClientWDPlayer(String uuid) {
@@ -37,7 +42,9 @@ public class WDPlayerManager {
     }
 
     public void replaceClientPlayer(WDPlayer wdPlayer) {
+        NeoForge.EVENT_BUS.unregister(this.clientPlayer);
         this.clientPlayer = wdPlayer;
+        NeoForge.EVENT_BUS.register(this.clientPlayer);
     }
 
     public WDPlayer getOrCreateServerWDPlayer(ServerPlayer player) {

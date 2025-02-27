@@ -1,5 +1,6 @@
 package com.danielkkrafft.wilddungeons.ui;
 
+import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.entity.EssenceOrb;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
@@ -12,8 +13,13 @@ import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 
 @OnlyIn(Dist.CLIENT)
+@EventBusSubscriber(modid = WildDungeons.MODID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
 public class EssenceBar implements LayeredDraw.Layer {
     public static final EssenceBar INSTANCE = new EssenceBar();
 
@@ -29,6 +35,9 @@ public class EssenceBar implements LayeredDraw.Layer {
 
     private void renderEssenceBar(GuiGraphics guiGraphics, DeltaTracker deltaTracker, int x, WDPlayer wdPlayer) {
         EssenceOrb.Type type = wdPlayer.getRecentEssence();
+        if (type == EssenceOrb.Type.OVERWORLD) {
+            return;
+        }
 
         float progress = (float) (wdPlayer.getEssenceLevel(type) % 1.0);
         int j = 182;
@@ -48,7 +57,9 @@ public class EssenceBar implements LayeredDraw.Layer {
     private void renderEssenceLevel(GuiGraphics guiGraphics, DeltaTracker deltaTracker, WDPlayer wdPlayer) {
         int level = Mth.floor(wdPlayer.getEssenceLevel(wdPlayer.getRecentEssence()));
         EssenceOrb.Type type = wdPlayer.getRecentEssence();
-
+        if (type == EssenceOrb.Type.OVERWORLD) {
+            return;
+        }
         Gui gui = Minecraft.getInstance().gui;
         if (level > 0) {
 
@@ -61,5 +72,9 @@ public class EssenceBar implements LayeredDraw.Layer {
             guiGraphics.drawString(gui.getFont(), s, j, k - 1, 0, false);
             guiGraphics.drawString(gui.getFont(), s, j, k, EssenceOrb.getFontColor(type), false);
         }
+    }
+    @SubscribeEvent
+    public static void registerOverlays(RegisterGuiLayersEvent event) {
+        event.registerAbove(VanillaGuiLayers.EXPERIENCE_BAR, WildDungeons.rl("essence_bar"), EssenceBar.INSTANCE);
     }
 }

@@ -65,6 +65,8 @@
   "dungeon.perk.HEALTH_BOOST": "Permanent Health Boost III",
   "dungeon.perk.SPEED": "Permanent Speed",
 
+  "key.categories.wilddungeons": "Wild Dungeons",
+  "key.wilddungeons.toggle_essence_type": "Toggle Essence Type",
 
   "dungeon.failed": "DUNGEON FAILED - RESPAWNING"
 }
