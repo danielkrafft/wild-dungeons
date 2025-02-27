@@ -9,8 +9,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.phys.Vec3;
 
-import static com.danielkkrafft.wilddungeons.dungeon.registries.RiftPoolRegistry.NETHER_RIFT_POOL;
-
 public class RiftItem extends Item {
 
     public RiftItem(Properties properties) {

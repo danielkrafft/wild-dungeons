@@ -1,9 +1,7 @@
 package com.danielkkrafft.wilddungeons.util.debug;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.client.Minecraft;
 
 import java.util.HashMap;
 import java.util.List;

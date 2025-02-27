@@ -6,7 +6,6 @@ import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.DungeonLayout;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.dungeon.registries.DungeonBranchRegistry;
-import net.minecraft.core.BlockPos;
 
 import java.util.HashMap;
 

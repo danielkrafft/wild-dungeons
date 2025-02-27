@@ -5,9 +5,6 @@ import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateOrientation;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
-
-import java.util.List;
 
 public class SecretRoom extends DungeonRoom {
 

@@ -1,6 +1,5 @@
 package com.danielkkrafft.wilddungeons.util;
 
-import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.util.Mth;

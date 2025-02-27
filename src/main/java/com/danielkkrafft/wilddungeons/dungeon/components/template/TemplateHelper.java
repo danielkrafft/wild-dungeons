@@ -8,8 +8,6 @@ import com.danielkkrafft.wilddungeons.dungeon.components.DungeonMaterial;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
 import com.danielkkrafft.wilddungeons.entity.WDEntities;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
-import com.danielkkrafft.wilddungeons.util.debug.WDProfiler;
-import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -39,7 +37,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.DESTRUCTION_RULE;
-import static net.minecraft.world.level.block.state.properties.BlockStateProperties.*;
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.STAIRS_SHAPE;
 
 public class TemplateHelper {
     public static final BlockPos EMPTY_BLOCK_POS = new BlockPos(0, 0, 0);
