@@ -15,6 +15,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.resources.PlayerSkin;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -24,6 +25,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import org.joml.Matrix4f;
 
 import java.util.*;
+import java.util.function.Supplier;
 
 public class WDPostDungeonScreen extends Screen {
 
@@ -47,9 +49,9 @@ public class WDPostDungeonScreen extends Screen {
     public final boolean perfectDeaths;
 
     public final int clearScore;
-    public final List<Pair<Integer, ResourceLocation>> clearScores = new ArrayList<>();
+    public final List<Pair<Integer, Supplier<PlayerSkin>>> clearScores = new ArrayList<>();
     public final boolean perfectScore;
-    public final ResourceLocation defaultSkin;
+    public final Supplier<PlayerSkin> defaultSkin;
 
     public final List<AnimationStep> steps = new ArrayList<>();
     public int step = 0;
@@ -110,7 +112,7 @@ public class WDPostDungeonScreen extends Screen {
     public WDPostDungeonScreen(CompoundTag data) {
         super(GameNarrator.NO_TITLE);
         timestamp = System.currentTimeMillis();
-        defaultSkin = Minecraft.getInstance().getSkinManager().getInsecureSkin(Minecraft.getInstance().getGameProfile()).texture();
+        defaultSkin = Minecraft.getInstance().getSkinManager().lookupInsecure(Minecraft.getInstance().getGameProfile());
 
         DungeonSession.DungeonStatsHolder holder = Serializer.fromCompoundTag(data);
         this.stats = holder == null ? null : holder.playerStats;
@@ -136,12 +138,11 @@ public class WDPostDungeonScreen extends Screen {
 
         if (this.stats != null) this.stats.forEach((key, value) -> {
             Player player = Minecraft.getInstance().level.getPlayerByUUID(UUID.fromString(key));
-            ResourceLocation skin = null;
+            Supplier<PlayerSkin> skin = defaultSkin;
             if (player != null) {
                 GameProfile profile = player.getGameProfile();
-                skin = Minecraft.getInstance().getSkinManager().getInsecureSkin(profile).texture();
+                skin = Minecraft.getInstance().getSkinManager().lookupInsecure(profile);
             }
-            if (skin == null) skin = defaultSkin;
             this.clearScores.add(new Pair<>(value.getScore(), skin));
         });
         if (this.stats == null) {
@@ -176,7 +177,7 @@ public class WDPostDungeonScreen extends Screen {
         if (this.clearScores.size() > 1) {
             this.steps.add(SWIPE_TO_CHART);
             this.steps.add(CHART_BACKGROUND);
-            this.steps.add(GET_SKINS);
+//            this.steps.add(GET_SKINS);
             for (int i = 0; i < this.clearScores.size(); i++) {
                 this.steps.add(CHART_ENTRY.copy(i));
             }
@@ -351,14 +352,14 @@ public class WDPostDungeonScreen extends Screen {
     {
         if (skinsLocated || stats == null) return;
         clearScores.clear();
-        if (this.stats != null) this.stats.forEach((key, value) -> {
+        this.stats.forEach((key, value) -> {
             WildDungeons.getLogger().info("PLAYERS IN CLIENT LEVEL: {}", Minecraft.getInstance().level.players());
             Player player = Minecraft.getInstance().level.getPlayerByUUID(UUID.fromString(key));
-            ResourceLocation skin = null;
+            Supplier<PlayerSkin> skin = null;
             if (player != null) {
                 GameProfile profile = player.getGameProfile();
                 WildDungeons.getLogger().info("GETTING SKIN FOR PLAYER: {}", profile.getName());
-                skin = Minecraft.getInstance().getSkinManager().getInsecureSkin(profile).texture();
+                skin = Minecraft.getInstance().getSkinManager().lookupInsecure(profile);
             }
             if (skin == null) skin = defaultSkin;
             this.clearScores.add(new Pair<>(value.getScore(), skin));
@@ -379,8 +380,7 @@ public class WDPostDungeonScreen extends Screen {
         int minY = Mth.lerpInt(ratio, step.maxY() - padding*2, step.minY() + padding*2);
         int maxY = step.maxY() - padding*2;
 
-        ResourceLocation skin = clearScores.get(step.id).getSecond();
-        if (skin == null) skin = defaultSkin;
+        ResourceLocation skin = clearScores.get(step.id).getSecond().get().texture();
 
         guiGraphics.fill(minX + xOffset + this.width, Mth.lerpInt(step.completion(), maxY, minY), maxX + xOffset + this.width, maxY, this.primaryColor);
         drawCenteredSquare(guiGraphics, skin, minX + ((maxX-minX)/2), maxY, (int) (step.completion()*padding*2), 8f/64f, 8f/64f, 16f/64f, 16f/64f, 0xFFFFFFFF);
