@@ -142,7 +142,7 @@ public class DungeonRoom {
         this.onBranchComplete();
         this.processOfferings();
 
-//        getChunkPosSet(this.boundingBoxes, 1).forEach(chunkPos -> forceUpdateChunk(getBranch().getFloor().getLevel(), chunkPos));
+        getChunkPosSet(this.boundingBoxes, 1).forEach(chunkPos -> forceUpdateChunk(getBranch().getFloor().getLevel(), chunkPos));
         WildDungeons.getLogger().info("FINISHED ROOM: {}", getTemplate().name());
     }
 
@@ -526,7 +526,7 @@ public class DungeonRoom {
             lootGenerated = true;
         }
         //doesn't actually help
-//        getChunkPosSet(this.boundingBoxes, 1).forEach(chunkPos -> forceUpdateChunkForPlayer(this.getBranch().getFloor().getLevel(), player.getServerPlayer(), chunkPos));
+        getChunkPosSet(this.boundingBoxes, 1).forEach(chunkPos -> forceUpdateChunkForPlayer(this.getBranch().getFloor().getLevel(), player.getServerPlayer(), chunkPos));
     }
 
     public void onBranchComplete(){
