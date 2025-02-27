@@ -44,13 +44,14 @@ import java.awt.*;
 import java.util.List;
 
 import static com.danielkkrafft.wilddungeons.dungeon.registries.PerkRegistry.DUNGEON_PERK_REGISTRY;
+import static com.danielkkrafft.wilddungeons.entity.EssenceOrb.Type.END;
+import static com.danielkkrafft.wilddungeons.entity.EssenceOrb.Type.NETHER;
 
 public class Offering extends Entity implements IEntityWithComplexSpawn {
 
     public static final int BUBBLE_ANIMATION_TIME = 10;
 
     public enum Type {ITEM, PERK, RIFT}
-    public enum CostType {XP_LEVEL, NETHER_XP_LEVEL, END_XP_LEVEL}
 
     private String type;
     private String costType;
@@ -71,7 +72,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     }
 
     public Type getOfferingType() {return Type.valueOf(this.type);}
-    public CostType getOfferingCostType() {return CostType.valueOf(this.costType);}
+    public EssenceOrb.Type getOfferingCostType() {return EssenceOrb.Type.valueOf(this.costType);}
     public String getOfferingId() {return this.offerID;}
     public void setOfferingId(String offerID) {this.offerID = offerID;}
     public int getAmount() {return this.amount;}
@@ -95,7 +96,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     public Offering(Level level) {super(WDEntities.OFFERING.get(), level);}
 
 
-    public Offering(Level level, Type type, int amount, String offerID, CostType costType, int costAmount) {
+    public Offering(Level level, Type type, int amount, String offerID, EssenceOrb.Type costType, int costAmount) {
         super(WDEntities.OFFERING.get(), level);
         this.type = type.toString();
         this.amount = amount;
@@ -192,7 +193,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
 //        WildDungeons.getLogger().info("READING ADDITIONAL SAVE DATA");
         if (compound.getString("type").isEmpty()) {
             this.type = Type.ITEM.toString();
-            this.costType = CostType.XP_LEVEL.toString();
+            this.costType = EssenceOrb.Type.OVERWORLD.toString();
             this.offerID = "dirt";
             this.amount = 1;
             this.costAmount = 0;
@@ -282,18 +283,18 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     public void attemptPurchase(WDPlayer player) {
         if (!purchased) {
             int levels = switch (this.getOfferingCostType()) {
-                case XP_LEVEL -> player.getServerPlayer().experienceLevel;
-                case NETHER_XP_LEVEL -> Mth.floor(player.getEssenceLevel(EssenceOrb.Type.NETHER));
-                case END_XP_LEVEL -> Mth.floor(player.getEssenceLevel(EssenceOrb.Type.END));
+                case OVERWORLD -> player.getServerPlayer().experienceLevel;
+                case NETHER -> Mth.floor(player.getEssenceLevel(NETHER));
+                case END -> Mth.floor(player.getEssenceLevel(END));
             };
 
             if (this.costAmount == 0 || this.costAmount <= levels) {
                 this.purchased = true;
 
                 switch (this.getOfferingCostType()) {
-                    case XP_LEVEL -> player.getServerPlayer().giveExperienceLevels(-this.costAmount);
-                    case NETHER_XP_LEVEL -> player.giveEssenceLevels(-this.costAmount, EssenceOrb.Type.NETHER);
-                    case END_XP_LEVEL -> player.giveEssenceLevels(-this.costAmount, EssenceOrb.Type.END);
+                    case OVERWORLD -> player.getServerPlayer().giveExperienceLevels(-this.costAmount);
+                    case NETHER -> player.giveEssenceLevels(-this.costAmount, NETHER);
+                    case END -> player.giveEssenceLevels(-this.costAmount, END);
                 }
 
                 this.costAmount = 0;

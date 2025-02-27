@@ -10,6 +10,7 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateOrient
 import com.danielkkrafft.wilddungeons.dungeon.registries.LootTableRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
+import com.danielkkrafft.wilddungeons.entity.EssenceOrb;
 import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
@@ -337,7 +338,7 @@ public class DungeonRoom {
                 destination = String.valueOf(this.getBranch().getFloor().getIndex()+1);
             }
 
-            Offering rift = new Offering(this.getBranch().getFloor().getLevel(), Offering.Type.RIFT, 1, destination, Offering.CostType.XP_LEVEL, 0);
+            Offering rift = new Offering(this.getBranch().getFloor().getLevel(), Offering.Type.RIFT, 1, destination, EssenceOrb.Type.OVERWORLD, 0);
             Vec3 pos1 = StructureTemplate.transform(pos, this.getSettings().getMirror(), this.getSettings().getRotation(), TemplateHelper.EMPTY_BLOCK_POS).add(this.position.getX(), this.position.getY(), this.position.getZ());            WildDungeons.getLogger().info("ADDING RIFT AT {}", pos1);
             rift.setPos(pos1);
             this.getBranch().getFloor().getLevel().addFreshEntity(rift);

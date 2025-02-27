@@ -300,9 +300,9 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
             int textColor = HexFormat.fromHexDigits("ff0000");
 
             int levels = switch(entity.getOfferingCostType()) {
-                case XP_LEVEL -> Minecraft.getInstance().player.experienceLevel;
-                case NETHER_XP_LEVEL -> Mth.floor(wdPlayer.getEssenceLevel(EssenceOrb.Type.NETHER));
-                case END_XP_LEVEL -> Mth.floor(wdPlayer.getEssenceLevel(EssenceOrb.Type.END));
+                case OVERWORLD -> Minecraft.getInstance().player.experienceLevel;
+                case NETHER -> Mth.floor(wdPlayer.getEssenceLevel(EssenceOrb.Type.NETHER));
+                case END -> Mth.floor(wdPlayer.getEssenceLevel(EssenceOrb.Type.END));
             };
 
             if (levels >= entity.getCostAmount()) {
@@ -321,9 +321,9 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
         // Cost Icon
         {
             int hueOffset = switch (entity.getOfferingCostType()) {
-                case XP_LEVEL -> 0;
-                case END_XP_LEVEL -> EssenceOrb.getHueOffset(EssenceOrb.Type.END);
-                case NETHER_XP_LEVEL -> EssenceOrb.getHueOffset(EssenceOrb.Type.NETHER);
+                case OVERWORLD -> 0;
+                case END -> EssenceOrb.getHueOffset(EssenceOrb.Type.END);
+                case NETHER -> EssenceOrb.getHueOffset(EssenceOrb.Type.NETHER);
                 case null, default -> 0;
             };
 
