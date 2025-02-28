@@ -128,7 +128,7 @@ public class DungeonRegistration {
             Offering offering = new Offering(level, type, adjustedAmount, id, costType, adjustedCost);
             offering.setRenderScale(renderScale);
             offering.setSoundLoop(soundLoop);
-            offering.setShowRing(showRing);
+            offering.setShowItemHighlight(showRing);
             if (this.type == Offering.Type.RIFT && this.id.split("-")[0].equals("wd")) {
                 DungeonTemplate dungeonTemplate = DungeonRegistry.DUNGEON_REGISTRY.get(this.id.split("wd-")[1]);
                 offering.setPrimaryColor(dungeonTemplate.get(HierarchicalProperty.PRIMARY_COLOR));

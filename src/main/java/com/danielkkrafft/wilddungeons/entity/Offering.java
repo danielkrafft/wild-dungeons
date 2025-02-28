@@ -19,6 +19,8 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
@@ -65,7 +67,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     private int primaryColor = 0xFFFFFFFF;
     private int secondaryColor = 0xFFFFFFFF;
     private int soundLoop = 0;
-    private boolean showRing = false;
+    private static final EntityDataAccessor<Boolean> highlightItem = SynchedEntityData.defineId(Offering.class, EntityDataSerializers.BOOLEAN);
 
     public Offering(EntityType<Offering> entityType, Level level) {
         super(entityType, level);
@@ -89,9 +91,8 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     public void setSecondaryColor(int secondaryColor) {this.secondaryColor = secondaryColor;}
     public int getSoundLoop() {return this.soundLoop;}
     public void setSoundLoop(int soundEvent) {this.soundLoop = soundEvent;}
-    public boolean isShowingRing() {return this.showRing;}
-    public void setShowRing(boolean showRing) {this.showRing = showRing;}
-
+    public boolean renderItemHighlight() {return this.entityData.get(highlightItem);}
+    public void setShowItemHighlight(boolean shouldShow) {this.entityData.set(highlightItem, shouldShow);}
 
     public Offering(Level level) {super(WDEntities.OFFERING.get(), level);}
 
@@ -171,6 +172,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(highlightItem, false);
     }
 
     @Override
@@ -186,6 +188,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
         compound.putInt("primaryColor", this.primaryColor);
         compound.putInt("secondaryColor", this.secondaryColor);
         compound.putInt("soundLoop", this.soundLoop);
+        compound.putBoolean("highlightItem", this.entityData.get(highlightItem));
     }
 
     @Override
@@ -202,6 +205,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
             this.primaryColor = 0xFFFFFFFF;
             this.secondaryColor = 0xFFFFFFFF;
             this.soundLoop = 0;
+            this.entityData.set(highlightItem, false);
         } else {
             this.type = compound.getString("type");
             this.costType = compound.getString("costType");
@@ -213,6 +217,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
             this.primaryColor = compound.getInt("primaryColor");
             this.secondaryColor = compound.getInt("secondaryColor");
             this.soundLoop = compound.getInt("soundLoop");
+            this.entityData.set(highlightItem, compound.getBoolean("highlightItem"));
         }
     }
 

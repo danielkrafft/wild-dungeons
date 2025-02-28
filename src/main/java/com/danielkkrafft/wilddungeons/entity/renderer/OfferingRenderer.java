@@ -42,6 +42,7 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
 
     private static final ResourceLocation MESSAGE_BUBBLE_TEXTURE = WildDungeons.rl("textures/gui/sprites/hud/message_bubble.png");
     private static final ResourceLocation PERK_RING_TEXTURE = WildDungeons.rl("textures/gui/sprites/hud/perk_ring.png");
+    private static final ResourceLocation ITEM_RING_TEXTURE = WildDungeons.rl("textures/gui/sprites/hud/item_ring.png");
     private static final ResourceLocation PERKS_TEXTURE = WildDungeons.rl("textures/gui/sprites/hud/perks.png");
     private static final Vector2i MESSAGE_BUBBLE_TEXTURE_RESOLUTION = new Vector2i(48, 32);
     private static final Vector2i PERKS_TEXTURE_RESOLUTION = new Vector2i(64, 64);
@@ -60,8 +61,9 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
             .createCompositeState(false);
     private static final RenderType RENDER_TYPE = RenderType.create("message_bubble", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, true, rendertype$compositestate);
     private static final RenderType RENDER_TYPE_3 = RenderType.entityTranslucent(EXPERIENCE_ORB_LOCATION);
-    private static final RenderType RENDER_TYPE_4 = RenderType.entityCutout(PERK_RING_TEXTURE);
-    private static final RenderType RENDER_TYPE_5 = RenderType.entityCutout(PERKS_TEXTURE);
+    private static final RenderType PERK_RING_RENDERTYPE = RenderType.entityCutout(PERK_RING_TEXTURE);
+    private static final RenderType ITEM_RING_RENDERTYPE = RenderType.entityCutout(ITEM_RING_TEXTURE);
+    private static final RenderType PERK_RENDERTYPE = RenderType.entityCutout(PERKS_TEXTURE);
     private static final RenderType RENDER_TYPE_6 = RenderType.itemEntityTranslucentCull(RIFT_TEXTURE);
 
 
@@ -143,10 +145,10 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
         boolean flag = bakedmodel.isGui3d();
         renderMultipleFromCount(this.itemRenderer, poseStack, buffer, packedLight, itemstack, bakedmodel, flag, this.random);
         poseStack.popPose();
-        if (entity.isShowingRing()){
+        if (entity.renderItemHighlight()){
             poseStack.pushPose();
             poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
-            renderPerkRing(poseStack, entity, partialTicks, buffer, entity.getRenderScale()*.2f);
+            renderItemHighlight(poseStack, entity, partialTicks, buffer, entity.getRenderScale()*.2f);
             poseStack.popPose();
         }
     }
@@ -167,7 +169,7 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
 
             float halfSize = 0.3f;
 
-            VertexConsumer vertexconsumer = buffer.getBuffer(RENDER_TYPE_5);
+            VertexConsumer vertexconsumer = buffer.getBuffer(PERK_RENDERTYPE);
             PoseStack.Pose posestack$pose = poseStack.last();
 
             Vector2i coords = entity.getPerk().getTexCoords();
@@ -221,7 +223,26 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
             poseStack.translate(0.0, 0.0, 0.02);
             poseStack.mulPose(Axis.ZN.rotationDegrees(entity.tickCount + partialTicks % 360.0f));
 
-            VertexConsumer vertexconsumer = buffer.getBuffer(RENDER_TYPE_4);
+            VertexConsumer vertexconsumer = buffer.getBuffer(PERK_RING_RENDERTYPE);
+            PoseStack.Pose posestack$pose = poseStack.last();
+            vertex(vertexconsumer, posestack$pose, -radius, -radius, 0.0f, 1.0f, 0xF000F0, 1.0f);
+            vertex(vertexconsumer, posestack$pose, radius, -radius, 1.0f, 1.0f, 0xF000F0, 1.0f);
+            vertex(vertexconsumer, posestack$pose, radius, radius, 1.0f, 0.0f, 0xF000F0, 1.0f);
+            vertex(vertexconsumer, posestack$pose, -radius, radius, 0.0f, 0.0f, 0xF000F0, 1.0f);
+
+            poseStack.popPose();
+        }
+    }
+
+    public void renderItemHighlight(PoseStack poseStack, Offering entity, float partialTicks, MultiBufferSource buffer, float radius) {
+        {
+            poseStack.pushPose();
+            poseStack.translate(0.0, entity.getBbHeight()*0.5f, -0.05);
+            poseStack.mulPose(Axis.ZN.rotationDegrees(-entity.tickCount));
+            radius += 0.1f * Mth.sin((entity.tickCount + partialTicks) * 0.1f);
+
+
+            VertexConsumer vertexconsumer = buffer.getBuffer(ITEM_RING_RENDERTYPE);
             PoseStack.Pose posestack$pose = poseStack.last();
             vertex(vertexconsumer, posestack$pose, -radius, -radius, 0.0f, 1.0f, 0xF000F0, 1.0f);
             vertex(vertexconsumer, posestack$pose, radius, -radius, 1.0f, 1.0f, 0xF000F0, 1.0f);
