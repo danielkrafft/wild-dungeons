@@ -179,7 +179,7 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate NETHER_PIPEWORKS_FREE_CHEST = createSimple("nether/pipeworks/free_chest").set(DIFFICULTY_MODIFIER, 4.0).set(CHEST_SPAWN_CHANCE, 1.0);
     public static final DungeonRoomTemplate NETHER_PIPEWORKS_FREE_PERK = createSimple("nether/pipeworks/free_perk").set(SHOP_TABLE, OfferingTemplateTableRegistry.FREE_PERK_OFFERING_TABLE);
     public static final DungeonRoomTemplate NETHER_PIPEWORKS_LAVAFALLS = createSimple("nether/pipeworks/lava_falls").set(BLOCKING_MATERIAL_INDEX, 1);
-    public static final DungeonRoomTemplate NETHER_PIPEWORKS_TO_FACTORY = createSimple("nether/pipeworks/pipe_to_factory").set(BLOCKING_MATERIAL_INDEX, 1).setClazz(KeyRequiredRoom.class).set(INTENSITY, 1).set(SOUNDSCAPE, SoundscapeTemplateRegistry.PIGLIN_FACTORY);
+    public static final DungeonRoomTemplate NETHER_PIPEWORKS_TO_FACTORY = createSimple("nether/pipeworks/pipe_to_factory").set(BLOCKING_MATERIAL_INDEX, 1).set(INTENSITY, 1).set(SOUNDSCAPE, SoundscapeTemplateRegistry.PIGLIN_FACTORY);
     public static final DungeonRoomTemplate NETHER_FACTORY_PARKOUR_1 = createSimple("nether/factory/parkour1").set(BLOCKING_MATERIAL_INDEX, 1);
     public static final DungeonRoomTemplate NETHER_FACTORY_PARKOUR_2 = create(
             "nether_factory_parkour_2",
