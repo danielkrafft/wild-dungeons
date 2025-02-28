@@ -17,7 +17,7 @@
     "min_inclusive": 0
   },
   "natural": true,
-  "piglin_safe": false,
+  "piglin_safe": true,
   "respawn_anchor_works": false,
   "ultrawarm": false
 }
