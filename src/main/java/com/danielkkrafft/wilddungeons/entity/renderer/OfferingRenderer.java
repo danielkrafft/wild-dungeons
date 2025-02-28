@@ -143,12 +143,12 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
         this.random.setSeed(getSeedForItemStack(itemstack));
         BakedModel bakedmodel = this.itemRenderer.getModel(itemstack, entity.level(), null, entity.getId());
         boolean flag = bakedmodel.isGui3d();
-        renderMultipleFromCount(this.itemRenderer, poseStack, buffer, packedLight, itemstack, bakedmodel, flag, this.random);
+        renderMultipleFromCount(this.itemRenderer, poseStack, buffer, entity.renderItemHighlight() ? 0xF000F0 : packedLight, itemstack, bakedmodel, flag, this.random);
         poseStack.popPose();
-        if (entity.renderItemHighlight()){
+        if (entity.renderItemHighlight()) {
             poseStack.pushPose();
             poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
-            renderItemHighlight(poseStack, entity, partialTicks, buffer, entity.getRenderScale()*.2f);
+            renderItemHighlight(poseStack, entity, partialTicks, buffer, entity.getRenderScale() * .2f);
             poseStack.popPose();
         }
     }
