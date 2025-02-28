@@ -29,7 +29,7 @@ import java.util.*;
 
 @EventBusSubscriber(value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME)
 public class DecalRenderer {
-    public static HashMap<ResourceKey<Level>, HashMap<ChunkPos, Set<Decal>>> SERVER_DECALS_MAP = new HashMap<>(); //TODO these are not being saved or loaded or restored to joining players
+    public static HashMap<ResourceKey<Level>, HashMap<ChunkPos, Set<Decal>>> SERVER_DECALS_MAP = new HashMap<>();
     public static HashMap<ResourceKey<Level>, HashMap<ChunkPos, Set<Decal>>> CLIENT_DECALS_MAP = new HashMap<>();
     public static int DECAL_RENDER_DISTANCE = 8;
 

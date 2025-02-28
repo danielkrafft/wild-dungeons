@@ -234,7 +234,7 @@ public class DungeonSession {
                 ServerLevel level = this.getEntranceLevel();
                 Entity entity = null;
                 if (level != null) {
-                    entity = level.getEntity(uuid);//todo this returns null for some reason
+                    entity = level.getEntity(uuid);
                 }
                 if (entity != null) {
                     entity.discard();
