@@ -12,10 +12,15 @@ import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.INTENSITY;
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.SOUNDSCAPE;
@@ -30,6 +35,7 @@ public class CombatRoom extends TargetPurgeRoom {
     public int groupSize = 2;
 
     public int totalSpawns = 0;
+    public boolean helpingGlow = false;
 
     public CombatRoom(DungeonBranch branch, String templateKey, BlockPos position, TemplateOrientation orientation) {
         super(branch, templateKey, position, orientation);
@@ -80,6 +86,19 @@ public class CombatRoom extends TargetPurgeRoom {
         if (!this.started || this.isClear() || this.getActivePlayers().isEmpty()) return;
         if (spawnTimer == 0 || totalSpawns == targets.size()) {spawnNext(); spawnTimer = SPAWN_INTERVAL;}
         spawnTimer -= 1;
+        if (!helpingGlow && (long) targets.size() <= 3 && !(this instanceof BossRoom)) {
+            TriggerGlowingHelper();
+        }
+    }
+
+    public void TriggerGlowingHelper() {
+        targets.forEach(target -> {
+            if (target.type.equals(DungeonTarget.Type.ENTITY.toString())) {
+                Entity entity = getBranch().getFloor().getLevel().getEntity(UUID.fromString(target.uuid));
+                if (entity instanceof LivingEntity livingEntity) livingEntity.addEffect(new MobEffectInstance(MobEffects.GLOWING,-1,0,true,false));
+            }
+        });
+        helpingGlow = true;
     }
 
     @Override
