@@ -42,7 +42,8 @@ public class WDPlayerManager {
     }
 
     public void replaceClientPlayer(WDPlayer wdPlayer) {
-        NeoForge.EVENT_BUS.unregister(this.clientPlayer);
+        if (this.clientPlayer != null)
+            NeoForge.EVENT_BUS.unregister(this.clientPlayer);
         this.clientPlayer = wdPlayer;
         NeoForge.EVENT_BUS.register(this.clientPlayer);
     }
