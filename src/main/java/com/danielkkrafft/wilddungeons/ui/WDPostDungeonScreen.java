@@ -147,7 +147,8 @@ public class WDPostDungeonScreen extends Screen {
                 String uuid = entry.getKey();
                 DungeonSession.DungeonStats value = entry.getValue();
                 Property property = this.skins.get(uuid);
-                this.clearScores.add(new Pair<>(value.getScore(),Minecraft.getInstance().getSkinManager().skinCache.getUnchecked(new SkinManager.CacheKey(UUID.fromString(uuid), property))));
+                if (property != null)
+                    this.clearScores.add(new Pair<>(value.getScore(),Minecraft.getInstance().getSkinManager().skinCache.getUnchecked(new SkinManager.CacheKey(UUID.fromString(uuid), property))));
             }
         }
 
