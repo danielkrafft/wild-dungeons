@@ -86,7 +86,7 @@ public class CombatRoom extends TargetPurgeRoom {
         if (!this.started || this.isClear() || this.getActivePlayers().isEmpty()) return;
         if (spawnTimer == 0 || totalSpawns == targets.size()) {spawnNext(); spawnTimer = SPAWN_INTERVAL;}
         spawnTimer -= 1;
-        if (!helpingGlow && (long) targets.size() <= 3 && !(this instanceof BossRoom)) {
+        if (!helpingGlow && targets.stream().allMatch(target -> target.spawned) && (long) targets.size() <= 3 && !(this instanceof BossRoom)) {
             TriggerGlowingHelper();
         }
     }
