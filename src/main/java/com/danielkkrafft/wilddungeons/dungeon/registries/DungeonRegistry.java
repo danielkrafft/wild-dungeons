@@ -28,7 +28,7 @@ public class DungeonRegistry {
 
     public static DungeonTemplate OVERWORLD_BASIC_DUNGEON = create("mega_dungeon")
             .setFloorTemplates(new DungeonLayout<DungeonFloorTemplate>()
-                    .add(OVERWORLD_FLOOR_POOL, 2)
+                    .add(OVERWORLD_FLOOR_POOL, 1)
             )
             .set(MATERIAL, OVERWORLD_MATERIAL_POOL_0)
             .set(DISPLAY_NAME, "MEGA DUNGEON")
