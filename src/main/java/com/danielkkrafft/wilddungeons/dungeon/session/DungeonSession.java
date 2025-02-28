@@ -18,10 +18,14 @@ import com.danielkkrafft.wilddungeons.util.FileUtil;
 import com.danielkkrafft.wilddungeons.util.SaveSystem;
 import com.danielkkrafft.wilddungeons.util.Serializer;
 import com.danielkkrafft.wilddungeons.world.dimension.tools.InfiniverseAPI;
+import com.google.common.collect.Iterables;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.players.GameProfileCache;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
@@ -180,7 +184,18 @@ public class DungeonSession {
             this.onExit(wdPlayer);
             wdPlayer.getServerPlayer().addItem(new ItemStack(Items.DIAMOND.asItem(), 1));
             wdPlayer.setLastGameMode(wdPlayer.getServerPlayer().gameMode.getGameModeForPlayer());
-            DungeonStatsHolder holder = new DungeonStatsHolder(this.playerStats, this.getTemplate().get(HierarchicalProperty.DISPLAY_NAME), this.getTemplate().get(HierarchicalProperty.ICON), this.getTemplate().get(HierarchicalProperty.PRIMARY_COLOR), this.getTemplate().get(HierarchicalProperty.SECONDARY_COLOR), this.getTemplate().get(HierarchicalProperty.TARGET_TIME), this.getTemplate().get(HierarchicalProperty.TARGET_DEATHS), this.getTemplate().get(HierarchicalProperty.TARGET_SCORE));
+            HashMap<String, Property> playerSkins = new HashMap<>();
+            for (String uuid : this.playersInside.keySet()) {
+                GameProfileCache gameProfileCache = DungeonSessionManager.getInstance().server.getProfileCache();
+                if (gameProfileCache != null) {
+                    gameProfileCache.get(UUID.fromString(uuid)).ifPresent(gameProfile -> {
+                        Property property = Iterables.getFirst(gameProfile.getProperties().get("textures"), null);
+                        if (property != null)
+                            playerSkins.put(uuid, property);
+                    });
+                }
+            }
+            DungeonStatsHolder holder = new DungeonStatsHolder(this.playerStats,playerSkins, this.getTemplate().get(HierarchicalProperty.DISPLAY_NAME), this.getTemplate().get(HierarchicalProperty.ICON), this.getTemplate().get(HierarchicalProperty.PRIMARY_COLOR), this.getTemplate().get(HierarchicalProperty.SECONDARY_COLOR), this.getTemplate().get(HierarchicalProperty.TARGET_TIME), this.getTemplate().get(HierarchicalProperty.TARGET_DEATHS), this.getTemplate().get(HierarchicalProperty.TARGET_SCORE));
             CompoundTag tag = new CompoundTag();
             tag.putString("packet", ClientPacketHandler.Packets.POST_DUNGEON_SCREEN.toString());
             tag.put("stats", Serializer.toCompoundTag(holder));
@@ -258,6 +273,7 @@ public class DungeonSession {
      */
     public static final class DungeonStatsHolder {
         public final HashMap<String, DungeonStats> playerStats;
+        public final HashMap<String, Property> playerSkins;
         public final String title;
         public final String icon;
         public final int primaryColor;
@@ -266,8 +282,9 @@ public class DungeonSession {
         public final int targetDeaths;
         public final int targetScore;
 
-        public DungeonStatsHolder(HashMap<String, DungeonStats> playerStats, String title, String icon, int primaryColor, int secondaryColor, int targetTime, int targetDeaths, int targetScore) {
+        public DungeonStatsHolder(HashMap<String, DungeonStats> playerStats,HashMap<String,Property> playerSkins, String title, String icon, int primaryColor, int secondaryColor, int targetTime, int targetDeaths, int targetScore) {
             this.playerStats = playerStats;
+            this.playerSkins = playerSkins;
             this.title = title;
             this.icon = icon;
             this.primaryColor = primaryColor;
@@ -277,7 +294,6 @@ public class DungeonSession {
             this.targetScore = targetScore;
         }
     }
-
     /**
      * For tracking dungeon-specific player statistics
      */

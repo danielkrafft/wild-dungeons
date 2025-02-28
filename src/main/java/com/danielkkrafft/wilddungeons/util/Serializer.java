@@ -8,6 +8,7 @@ import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.player.SavedTransform;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.render.DecalRenderer;
+import com.mojang.authlib.properties.Property;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
@@ -76,6 +77,7 @@ public class Serializer
         addCustom(DecalRenderer.Decal.class);
         addCustom(DecalRenderer.Decal.Vertex.class);
         addCustom(TemplateOrientation.class);
+        addCustom(Property.class);
     }
 
     private static void addCustom(Class<?> clazz) {
