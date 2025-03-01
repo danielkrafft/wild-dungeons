@@ -19,11 +19,11 @@ import com.danielkkrafft.wilddungeons.util.SaveSystem;
 import com.danielkkrafft.wilddungeons.util.Serializer;
 import com.danielkkrafft.wilddungeons.world.dimension.tools.InfiniverseAPI;
 import com.google.common.collect.Iterables;
-import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.players.GameProfileCache;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -51,7 +51,6 @@ public class DungeonSession {
     @Serializer.IgnoreSerialization private List<DungeonFloor> floors = new ArrayList<>();
     private final String template;
     private int shutdownTimer = SHUTDOWN_TIME;
-    private int ticksToExit = -1;
     private int lives = 0;
     private boolean markedForShutdown = false;
 
@@ -134,9 +133,6 @@ public class DungeonSession {
      * Run every server tick
      */
     public void tick() {
-        if (ticksToExit > -1 && --ticksToExit == 0) {
-            handleExitBehavior();
-        }
         if (playersInside.values().stream().noneMatch(v -> v) && !getFloors().isEmpty()) {shutdownTimer -= 1;}
         if (shutdownTimer == 0) { shutdown(); return; }
         if (playersInside.values().stream().anyMatch(v -> v)) getFloors().forEach(DungeonFloor::tick);
@@ -221,7 +217,7 @@ public class DungeonSession {
      * called in placed of handleExitBehavior() when the rift is destroyed to ensure the containing level has time to load before trying to get the rift entity
      */
     public void triggerExitBehaviorDelay() {
-        ticksToExit = 5;
+        DungeonSessionManager.getInstance().server.tell(new TickTask(5, this::handleExitBehavior));
     }
 
     /**
