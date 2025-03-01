@@ -543,22 +543,26 @@ public class DungeonRoom {
 
         fixLighting();
         //we could look forward and fix all the lights in the future branches, but this freezes the server when we end up fixing a branch that splits into multiple branches because we are fixing thousands and thousands of blocks
-//        DungeonBranch currentBranch = this.getBranch();
-//        List<DungeonBranch> branches = currentBranch.getFloor().getBranches();
-//        List<DungeonBranch> nextBranches = new ArrayList<>();
-//        for (int i = currentBranch.getIndex() + 1; i < branches.size(); i++) {
-//            DungeonBranch branch = branches.get(i);
-//            if (branch.getIndex() == this.branchIndex + 1 || branch.getTemplate().rootOriginBranchIndex() == this.branchIndex) {
-//                nextBranches.add(branch);
-//            }
-//        }
-//        nextBranches.forEach(nextBranch -> nextBranch.getRooms().forEach(DungeonRoom::fixLighting));
+//        fixFutureBranchesLighting();
+    }
+
+    private void fixFutureBranchesLighting() {
+        DungeonBranch currentBranch = this.getBranch();
+        List<DungeonBranch> branches = currentBranch.getFloor().getBranches();
+        List<DungeonBranch> nextBranches = new ArrayList<>();
+        for (int i = currentBranch.getIndex() + 1; i < branches.size(); i++) {
+            DungeonBranch branch = branches.get(i);
+            if (branch.getIndex() == this.branchIndex + 1 || branch.getTemplate().rootOriginBranchIndex() == this.branchIndex) {
+                nextBranches.add(branch);
+            }
+        }
+        nextBranches.forEach(nextBranch -> nextBranch.getRooms().forEach(DungeonRoom::fixLighting));
     }
 
     private void fixLighting() {
         if (!lightRegenerated){//important that we only trigger this when the player is near, because it only happens once
             updateChunksAndLighting(true, 5);
-            WildDungeons.getLogger().info("FIXING LIGHTING FOR BRANCH {}", this.getBranch().getIndex());
+//            WildDungeons.getLogger().info("FIXING LIGHTING FOR BRANCH {}", this.getBranch().getIndex());
             lightRegenerated = true;
         } else {
             getChunkPosSet(this.boundingBoxes,0).forEach(chunkPos -> forceUpdateChunk(this.getBranch().getFloor().getLevel(),chunkPos));
