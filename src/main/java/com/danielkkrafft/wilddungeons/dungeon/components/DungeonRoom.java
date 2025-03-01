@@ -148,7 +148,7 @@ public class DungeonRoom {
         this.processConnectionPoints(getBranch().getFloor());
         this.onBranchComplete();
 
-        updateChunksAndLighting(false,5);
+        updateChunksAndLighting(false,2,2.5f);
 
         WildDungeons.getLogger().info("FINISHED ROOM: {}", getTemplate().name());
     }
@@ -561,7 +561,7 @@ public class DungeonRoom {
 
     private void fixLighting() {
         if (!lightRegenerated){//important that we only trigger this when the player is near, because it only happens once
-            updateChunksAndLighting(true, 5);
+            updateChunksAndLighting(true, 5,1);
 //            WildDungeons.getLogger().info("FIXING LIGHTING FOR BRANCH {}", this.getBranch().getIndex());
             lightRegenerated = true;
         } else {
@@ -574,7 +574,7 @@ public class DungeonRoom {
      *
      * @param checkEachBlock Whether to check each block position in the bounding boxes, because when the block is placed we already check
      */
-    private void updateChunksAndLighting(boolean checkEachBlock, int repeatPacketAmount) {
+    private void updateChunksAndLighting(boolean checkEachBlock, int repeatPacketAmount, float secondsBetweenPackets) {
         ServerLevel level = this.getBranch().getFloor().getLevel();
         LevelLightEngine lightEngine = level.getChunkSource().getLightEngine();
 
@@ -603,7 +603,7 @@ public class DungeonRoom {
                 });
                 for (int i = 0; i < repeatPacketAmount; i++) {
                     // Sleep for 1 second between updates
-                    Thread.sleep(1000);
+                    Thread.sleep((long) (secondsBetweenPackets*1000));
                     // Run the update on the main server thread
                     level.getServer().execute(() -> {
                         chunkPosSet.forEach(chunkPos -> forceUpdateChunk(level, chunkPos));
