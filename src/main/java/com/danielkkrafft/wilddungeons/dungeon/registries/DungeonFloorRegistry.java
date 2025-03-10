@@ -24,7 +24,7 @@ public class DungeonFloorRegistry {
                             .add(TEST_BRANCH, 1), 1)
                     .addSimple(ENDING_BRANCH));
 
-    public static final DungeonFloorTemplate OVERWORLD_BASIC_FLOOR = create("overworld_basic_floor")//must be lowercase or the game will crash
+    public static final DungeonFloorTemplate MEGA_DUNGEON_FLOOR = create("mega_dungeon_floor")//must be lowercase or the game will crash
             .setBranchTemplates(new DungeonLayout<DungeonBranchTemplate>()
                     .addSimple(OVERWORLD_STARTER_BRANCH)
                     .addSimple(OVERWORLD_SPRAWL_0)
@@ -38,6 +38,29 @@ public class DungeonFloorRegistry {
             .set(HierarchicalProperty.SOUNDSCAPE, SoundscapeTemplateRegistry.MEGA_DUNGEON)
             .set(HierarchicalProperty.INTENSITY, 1)
             .setOrigin(new BlockPos(0, 150, 0));
+
+    public static final DungeonFloorTemplate MEGA_DUNGEON_GAUNTLET_FLOOR = create("mega_dungeon_gauntlet_floor")//must be lowercase or the game will crash
+            .setBranchTemplates(new DungeonLayout<DungeonBranchTemplate>()
+                    .addSimple(OVERWORLD_STARTER_BRANCH)
+                    .addSimple(OVERWORLD_SPRAWL_0)
+                    .addSimple(OVERWORLD_FREE_STUFF_BRANCH_0)
+                    .addSimple(OVERWORLD_SPRAWL_0)
+                    .addSimple(OVERWORLD_FREE_STUFF_BRANCH_0)
+                    .addSimple(OVERWORLD_SPRAWL_1)
+                    .addSimple(OVERWORLD_FREE_STUFF_BRANCH_1)
+                    .addSimple(OVERWORLD_SPRAWL_1)
+                    .addSimple(OVERWORLD_FREE_STUFF_BRANCH_1)
+                    .addSimple(OVERWORLD_SPRAWL_2)
+                    .addSimple(OVERWORLD_FREE_STUFF_BRANCH_2)
+                    .addSimple(OVERWORLD_SPRAWL_2)
+                    .addSimple(OVERWORLD_FREE_STUFF_BRANCH_2)
+                    .addSimple(OVERWORLD_TRIAL_BRANCH)
+                    .addSimple(OVERWORLD_TRIAL_EXIT_BRANCH))
+            .set(HierarchicalProperty.SOUNDSCAPE, SoundscapeTemplateRegistry.MEGA_DUNGEON)
+            .set(HierarchicalProperty.INTENSITY, 1)
+            .set(HierarchicalProperty.DIFFICULTY_MODIFIER, 2.0)
+            .setOrigin(new BlockPos(0, 150, 0));
+
     public static final DungeonFloorTemplate OVERWORLD_SANDY_FLOOR = create("overworld_sandy_floor")
             .setBranchTemplates(new DungeonLayout<DungeonBranchTemplate>()
                     .addSimple(SANDY_STARTER_BRANCH)

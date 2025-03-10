@@ -13,7 +13,7 @@ public class DungeonPoolRegistry {
 
     public static void setupDungeonPools(){
         TEST_DUNGEON_POOL.add(TEST_DUNGEON, 1);
-        OVERWORLD_DUNGEON_POOL.add(OVERWORLD_BASIC_DUNGEON, 1);
+        OVERWORLD_DUNGEON_POOL.add(MEGA_DUNGEON, 1);
         NETHER_DUNGEON_POOL.add(PIGLIN_FACTORY_DUNGEON, 1);
         VILLAGE_DUNGEON_POOL.add(VILLAGE_DUNGEON, 1);
     }

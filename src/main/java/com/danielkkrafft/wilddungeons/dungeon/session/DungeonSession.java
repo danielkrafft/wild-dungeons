@@ -8,7 +8,9 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonPerkTem
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
+import com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.registries.PerkRegistry;
+import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.network.ClientPacketHandler;
 import com.danielkkrafft.wilddungeons.network.SimplePacketManager;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
@@ -20,6 +22,7 @@ import com.danielkkrafft.wilddungeons.util.Serializer;
 import com.danielkkrafft.wilddungeons.world.dimension.tools.InfiniverseAPI;
 import com.google.common.collect.Iterables;
 import com.mojang.authlib.properties.Property;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -32,6 +35,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.*;
@@ -65,7 +69,7 @@ public class DungeonSession {
     public DungeonStats getStats(String uuid) {return this.playerStats.get(uuid);}
     public List<WDPlayer> getPlayers() { return this.playersInside.keySet().stream().map(uuid -> WDPlayerManager.getInstance().getOrCreateServerWDPlayer(uuid)).toList(); }
 
-    public enum DungeonExitBehavior {DESTROY, RANDOMIZE, RESET, NOTHING}
+    public enum DungeonExitBehavior {DESTROY, NEXT, RANDOMIZE, RESET, NOTHING}
     public enum DungeonOpenBehavior {NONE, ESSENCE_REQUIRED, ITEMS_REQUIRED, ENTITY_REQUIRED, GUARD_REQUIRED, KILLS_REQUIRED}
 
     protected DungeonSession(String entranceUUID, ResourceKey<Level> entranceLevelKey, String template) {
@@ -224,6 +228,7 @@ public class DungeonSession {
      * Called when a dungeon is either cleared or failed. Only one case is handled right now, which destroys the rift when the dungeon is completed
      */
     public void handleExitBehavior() {
+        WildDungeons.getLogger().info("HANDLING EXIT BEHAVIOR");
         switch (this.getTemplate().get(HierarchicalProperty.EXIT_BEHAVIOR)) {
             case DESTROY ->  {
                 UUID uuid = UUID.fromString(this.getEntranceUUID());
@@ -234,6 +239,25 @@ public class DungeonSession {
                 }
                 if (entity != null) {
                     entity.discard();
+                }
+            }
+            case NEXT -> {
+                UUID uuid = UUID.fromString(this.getEntranceUUID());
+                ServerLevel level = this.getEntranceLevel();
+                Entity entity = null;
+                if (level != null) {
+                    entity = level.getEntity(uuid);
+                }
+                if (entity instanceof Offering offering) {
+                    Vec3 vec3 = offering.position();
+                    offering.discard();
+
+                    Offering newOffering = this.getTemplate().get(HierarchicalProperty.NEXT_DUNGEON_OFFERING).getRandom().asOffering(level);
+                    DungeonTemplate template = DungeonRegistry.DUNGEON_REGISTRY.get(newOffering.getOfferingId().split("wd-")[1]);
+                    newOffering.setPrimaryColor(template.get(HierarchicalProperty.PRIMARY_COLOR));
+                    newOffering.setSecondaryColor(template.get(HierarchicalProperty.SECONDARY_COLOR));
+                    newOffering.setPos(vec3);
+                    level.addFreshEntity(newOffering);
                 }
             }
         }

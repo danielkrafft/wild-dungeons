@@ -29,7 +29,7 @@ public class HierarchicalProperty<T> {
     public static final HierarchicalProperty<Double> DIFFICULTY_SCALING = new HierarchicalProperty<>(new TypeToken<>() {}, 1.1);
     public static final HierarchicalProperty<Double> CHEST_SPAWN_CHANCE = new HierarchicalProperty<>(new TypeToken<>() {}, 0.33);
     public static final HierarchicalProperty<DungeonSession.DungeonExitBehavior> EXIT_BEHAVIOR = new HierarchicalProperty<>(new TypeToken<>() {}, DungeonSession.DungeonExitBehavior.DESTROY);
-    public static final HierarchicalProperty<WeightedPool<DungeonTemplate>> NEXT_DUNGEON = new HierarchicalProperty<>(new TypeToken<>() {}, null);
+    public static final HierarchicalProperty<WeightedPool<DungeonRegistration.OfferingTemplate>> NEXT_DUNGEON_OFFERING = new HierarchicalProperty<>(new TypeToken<>() {}, null);
     public static final HierarchicalProperty<Boolean> HAS_BEDROCK_SHELL = new HierarchicalProperty<>(new TypeToken<>() {}, true);
     public static final HierarchicalProperty<DungeonRoomTemplate.DestructionRule> DESTRUCTION_RULE = new HierarchicalProperty<>(new TypeToken<>() {}, DungeonRoomTemplate.DestructionRule.NONE);
     public static final HierarchicalProperty<Integer> BLOCKING_MATERIAL_INDEX = new HierarchicalProperty<>(new TypeToken<>() {}, 0); //TODO replace with Blocked Blockstate in the connection block entity

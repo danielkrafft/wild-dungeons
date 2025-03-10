@@ -28,7 +28,7 @@ public class DungeonRoomPoolRegistry {
     public static final WeightedPool<DungeonRoomTemplate> PIGLIN_FACTORY_SPRAWL_ROOM_POOL = new WeightedPool<>();
     public static final WeightedPool<DungeonRoomTemplate> PIGLIN_FACTORY_SHOP_ROOM_POOL = new WeightedPool<>();
 
-    public static void setupRoomPools(){
+    public static void setupRoomPools() {
         SMALL_ROOM_POOL
                 .add(SMALL_1,1)
                 .add(SMALL_2,1)

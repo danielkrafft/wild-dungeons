@@ -10,6 +10,7 @@ public class WeightedPool<T> implements DungeonRegistration.DungeonComponent {
 
     private final List<Pair<T, Integer>> pool;
     public WeightedPool() { pool = new ArrayList<>(); }
+    public static <T> WeightedPool<T> of(T item) {return new WeightedPool<T>().add(item, 1);}
     public WeightedPool<T> add(T item, int weight) { pool.add(Pair.of(item, weight)); return this; }
     public int size() {return this.pool.size();}
     public String name = "none";
