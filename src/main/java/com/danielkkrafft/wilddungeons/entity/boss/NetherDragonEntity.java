@@ -322,7 +322,7 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
     private void setAnchorAboveTarget() {
         LivingEntity livingentity = NetherDragonEntity.this.getTarget();
         BlockPos blockpos = livingentity != null ? livingentity.blockPosition() : NetherDragonEntity.this.blockPosition();
-        this.anchorPoint = blockpos.above(15 + this.random.nextInt(10));
+        this.anchorPoint = blockpos.above(10 + this.random.nextInt(10));
     }
 
     public boolean isInvulnerable() {

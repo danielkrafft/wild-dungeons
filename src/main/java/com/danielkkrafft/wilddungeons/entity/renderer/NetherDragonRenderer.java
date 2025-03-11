@@ -18,6 +18,7 @@ import org.joml.Vector3f;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
+import software.bernie.geckolib.renderer.layer.AutoGlowingGeoLayer;
 
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -27,6 +28,7 @@ public class NetherDragonRenderer extends GeoEntityRenderer<NetherDragonEntity> 
         super(renderManager, new NetherDragonModel());
         shadowRadius = 4;
         shadowStrength = 1;
+        addRenderLayer(new AutoGlowingGeoLayer<>(this));
     }
 
     @Override
@@ -145,7 +147,7 @@ public class NetherDragonRenderer extends GeoEntityRenderer<NetherDragonEntity> 
 
     @Override
     public RenderType getRenderType(NetherDragonEntity animatable, ResourceLocation texture, @Nullable MultiBufferSource bufferSource, float partialTick) {
-        return RenderType.entityTranslucent(texture);
+        return RenderType.entityCutoutNoCull(texture);
     }
 
 }
