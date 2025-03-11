@@ -97,7 +97,7 @@ public class NetherDragonRenderer extends GeoEntityRenderer<NetherDragonEntity> 
                         // Lerp between previous and target rotation
                         prevNeckYaw[finalNeckIndex][0] = Mth.lerp(LERP_FACTOR, prevNeckYaw[finalNeckIndex][0], targetYaw);
                         bone.setRotY(prevNeckYaw[finalNeckIndex][0]);
-                        bone.setRotX((float) Math.toRadians(-finalPitch / 3.0F));
+                        bone.setRotX((float) Math.toRadians(-finalPitch / 4.0F));
                     });
                     continue;
                 }
@@ -109,7 +109,7 @@ public class NetherDragonRenderer extends GeoEntityRenderer<NetherDragonEntity> 
                     float bendFactor = 0.3f + ((float) segmentIndex / 10.0f);
 
                     float targetYaw = (float) Math.toRadians(-finalYaw / 5.0F) * bendFactor;
-                    float targetPitch = (float) Math.toRadians(-finalPitch / 3.0F) * bendFactor;
+                    float targetPitch = (float) Math.toRadians(-finalPitch / 4.0F) * bendFactor;
 
                     // Lerp between previous and target rotation
                     prevNeckYaw[finalNeckIndex][segmentIndex] = Mth.lerp(LERP_FACTOR, prevNeckYaw[finalNeckIndex][segmentIndex], targetYaw);
