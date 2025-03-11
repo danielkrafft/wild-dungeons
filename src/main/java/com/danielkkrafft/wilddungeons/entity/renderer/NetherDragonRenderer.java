@@ -22,17 +22,15 @@ import software.bernie.geckolib.renderer.GeoEntityRenderer;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-public class NetherDragonRenderer extends GeoEntityRenderer<NetherDragonEntity>
-{
-    public NetherDragonRenderer(EntityRendererProvider.Context renderManager)
-    {
-        super(renderManager,new NetherDragonModel());
+public class NetherDragonRenderer extends GeoEntityRenderer<NetherDragonEntity> {
+    public NetherDragonRenderer(EntityRendererProvider.Context renderManager) {
+        super(renderManager, new NetherDragonModel());
         shadowRadius = 4;
         shadowStrength = 1;
     }
+
     @Override
-    public void actuallyRender(PoseStack poseStack, NetherDragonEntity entity, BakedGeoModel model, @Nullable RenderType renderType, MultiBufferSource bufferSource, @Nullable VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int colour)
-    {
+    public void actuallyRender(PoseStack poseStack, NetherDragonEntity entity, BakedGeoModel model, @Nullable RenderType renderType, MultiBufferSource bufferSource, @Nullable VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int colour) {
         BendNeck(entity, model, partialTick);
 
         super.actuallyRender(poseStack, animatable, model, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, colour);
@@ -47,7 +45,14 @@ public class NetherDragonRenderer extends GeoEntityRenderer<NetherDragonEntity>
         }
     }
 
+    private final float[][] prevNeckYaw = new float[3][5];
+    private final float[][] prevNeckPitch = new float[3][5];
+    private final float[] prevHeadYaw = new float[3];
+    private final float[] prevHeadPitch = new float[3];
+    private static final float LERP_FACTOR = 0.5f; // Adjust this to control smoothness
+
     private void BendNeck(NetherDragonEntity entity, BakedGeoModel model, float partialTick) {
+        NetherDragonEntity.AttackPhase attackPhase = entity.getAttackPhase();
         Vector3f targetPos = entity.getMoveTargetPoint();
 
         // Calculate direction to target
@@ -60,9 +65,14 @@ public class NetherDragonRenderer extends GeoEntityRenderer<NetherDragonEntity>
         float yaw = (float) Math.toDegrees(Math.atan2(dz, dx)) - 90.0F - entity.getYRot();
         float pitch = (float) -Math.toDegrees(Math.atan2(dy, horizontalDistance));
 
-        // Normalize and clamp angles
         yaw = Mth.wrapDegrees(yaw);
-        pitch = Mth.clamp(pitch, -40.0F, 60.0F);
+        yaw = Mth.clamp(yaw, -120.0f, 120.0F);
+        pitch = Mth.clamp(pitch, -120.0F, 120.0F);
+
+        if (attackPhase == NetherDragonEntity.AttackPhase.FIREBALL) {
+            yaw = entity.yHeadRot - entity.getYRot();
+            pitch = entity.getXRot();
+        }
 
         // Define neck offsets and fixed base rotations
         float[] neckOffsets = {0.0F, 45.0F, -45.0F};
@@ -75,30 +85,38 @@ public class NetherDragonRenderer extends GeoEntityRenderer<NetherDragonEntity>
 
             for (int i = 0; i < 5; i++) {
                 final int segmentIndex = i;
+                final int finalNeckIndex = neckIndex;
+                float finalYaw = yaw + neckOffset;
+                float finalPitch = pitch;
 
                 // Special handling for the base segment
                 if (i == 0) {
-                    // Use fixed base rotation for the first segment
+
                     model.getBone(neckName).ifPresent(bone -> {
-                        bone.setRotY((float) Math.toRadians(neckOffset));
-                        bone.setRotX(0); // No pitch for fixed base, can adjust if needed
+                        float targetYaw = (float) Math.toRadians(neckOffset);
+                        // Lerp between previous and target rotation
+                        prevNeckYaw[finalNeckIndex][0] = Mth.lerp(LERP_FACTOR, prevNeckYaw[finalNeckIndex][0], targetYaw);
+                        bone.setRotY(prevNeckYaw[finalNeckIndex][0]);
+                        bone.setRotX((float) Math.toRadians(-finalPitch / 3.0F));
                     });
                     continue;
                 }
 
                 // For other segments, gradually follow the target
-                float finalYaw = yaw + neckOffset;
-                float finalPitch = pitch;
 
                 model.getBone(neckName + i).ifPresent(bone -> {
                     // Progressive bending factor (0.3 to 1.0)
-                    float bendFactor = 0.3f + ((float)segmentIndex / 10.0f);
+                    float bendFactor = 0.3f + ((float) segmentIndex / 10.0f);
 
-                    float segmentYaw = (float) Math.toRadians(-finalYaw / 5.0F) * bendFactor;
-                    float segmentPitch = (float) Math.toRadians(-finalPitch / 5.0F) * bendFactor;
+                    float targetYaw = (float) Math.toRadians(-finalYaw / 5.0F) * bendFactor;
+                    float targetPitch = (float) Math.toRadians(-finalPitch / 3.0F) * bendFactor;
 
-                    bone.setRotY(segmentYaw);
-                    bone.setRotX(segmentPitch);
+                    // Lerp between previous and target rotation
+                    prevNeckYaw[finalNeckIndex][segmentIndex] = Mth.lerp(LERP_FACTOR, prevNeckYaw[finalNeckIndex][segmentIndex], targetYaw);
+                    prevNeckPitch[finalNeckIndex][segmentIndex] = Mth.lerp(LERP_FACTOR, prevNeckPitch[finalNeckIndex][segmentIndex], targetPitch);
+
+                    bone.setRotY(prevNeckYaw[finalNeckIndex][segmentIndex]);
+                    bone.setRotX(prevNeckPitch[finalNeckIndex][segmentIndex]);
                 });
             }
         }
@@ -106,20 +124,27 @@ public class NetherDragonRenderer extends GeoEntityRenderer<NetherDragonEntity>
         // Also apply offsets to the heads
         String[] headNames = {"head", "head2", "head3"};
         for (int i = 0; i < headNames.length; i++) {
-            final float headOffset = neckOffsets[i]*0.25f;
+            final float headOffset = neckOffsets[i] * 0.25f;
+            final int headIndex = i;
+
             model.getBone(headNames[i]).ifPresent(bone -> {
-                float headYaw = Mth.DEG_TO_RAD * (Mth.lerp(partialTick, entity.yBodyRotO, entity.yBodyRot) -
+                float targetHeadYaw = -(Mth.DEG_TO_RAD * (Mth.lerp(partialTick, entity.yBodyRotO, entity.yBodyRot) -
                         Mth.lerp(partialTick, entity.yHeadRotO, entity.yHeadRot)) +
-                        Mth.DEG_TO_RAD * headOffset;
-                bone.setRotY(-headYaw);
-                bone.setRotX(Mth.DEG_TO_RAD * Mth.lerp(partialTick, -entity.xRotO, -entity.getXRot()));
+                        Mth.DEG_TO_RAD * headOffset);
+                float targetHeadPitch = Mth.DEG_TO_RAD * Mth.lerp(partialTick, -entity.xRotO, -entity.getXRot());
+
+                // Lerp between previous and target rotation
+                prevHeadYaw[headIndex] = Mth.lerp(LERP_FACTOR, prevHeadYaw[headIndex], targetHeadYaw);
+                prevHeadPitch[headIndex] = Mth.lerp(LERP_FACTOR, prevHeadPitch[headIndex], targetHeadPitch);
+
+                bone.setRotY(prevHeadYaw[headIndex]);
+                bone.setRotX(prevHeadPitch[headIndex]);
             });
         }
     }
 
     @Override
-    public RenderType getRenderType(NetherDragonEntity animatable, ResourceLocation texture, @Nullable MultiBufferSource bufferSource, float partialTick)
-    {
+    public RenderType getRenderType(NetherDragonEntity animatable, ResourceLocation texture, @Nullable MultiBufferSource bufferSource, float partialTick) {
         return RenderType.entityTranslucent(texture);
     }
 

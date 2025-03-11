@@ -573,18 +573,14 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
             StopAttackAnimations();
         }
 
-        protected boolean touchingTarget() {
-            Vector3f target = NetherDragonEntity.this.getMoveTargetPoint();
-            Vec3 vec3 = new Vec3(target.x(), target.y(), target.z());
-            return vec3.distanceToSqr(NetherDragonEntity.this.getX(), NetherDragonEntity.this.getY(), NetherDragonEntity.this.getZ()) < (double) 4.0F;
-        }
-
         public void tick() {
             LivingEntity livingentity = NetherDragonEntity.this.getTarget();
             if (livingentity != null) {
                 NetherDragonEntity.this.setMoveTargetPoint(new Vec3(livingentity.getX(), livingentity.getY(0.5F), livingentity.getZ()).toVector3f());
-                if (touchingTarget()) {
+                if (NetherDragonEntity.this.getBoundingBox().inflate(4).intersects(livingentity.getBoundingBox())) {
                     triggerAnim(ATTACKCONTROLLER,sweep);
+                } else {
+                    StopAttackAnimations();
                 }
                 if (NetherDragonEntity.this.getBoundingBox().inflate(0.2F).intersects(livingentity.getBoundingBox())) {
                     NetherDragonEntity.this.doHurtTarget(livingentity);
@@ -672,7 +668,7 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
                     }
 
                     LargeFireball largefireball = new LargeFireball(level, NetherDragonEntity.this, vec31.normalize(), 1);
-                    Vec3 headPos = new Vec3(NetherDragonEntity.this.getX() + vec3.x * 4.0, NetherDragonEntity.this.getY(0.5), largefireball.getZ() + vec3.z * 4.0)
+                    Vec3 headPos = new Vec3(NetherDragonEntity.this.getX() + vec3.x * 2.0, NetherDragonEntity.this.getY(0.5), largefireball.getZ() + vec3.z * 2.0)
                             .add(vec3.scale(2.5).add(firedFireballs == 0 ? Vec3.ZERO : vec3.cross(new Vec3(0, 1, 0)).normalize().scale(2.5 * (firedFireballs == 1 ? -1 : 1))));
                     largefireball.setPos(headPos);
                     level.addFreshEntity(largefireball);
