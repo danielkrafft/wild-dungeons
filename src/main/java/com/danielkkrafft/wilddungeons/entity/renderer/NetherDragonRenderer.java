@@ -51,7 +51,7 @@ public class NetherDragonRenderer extends GeoEntityRenderer<NetherDragonEntity> 
     private final float[][] prevNeckPitch = new float[3][5];
     private final float[] prevHeadYaw = new float[3];
     private final float[] prevHeadPitch = new float[3];
-    private static final float LERP_FACTOR = 0.5f; // Adjust this to control smoothness
+    private static final float LERP_FACTOR = 0.1f; // Adjust this to control smoothness
 
     private void BendNeck(NetherDragonEntity entity, BakedGeoModel model, float partialTick) {
         NetherDragonEntity.AttackPhase attackPhase = entity.getAttackPhase();
@@ -147,7 +147,7 @@ public class NetherDragonRenderer extends GeoEntityRenderer<NetherDragonEntity> 
 
     @Override
     public RenderType getRenderType(NetherDragonEntity animatable, ResourceLocation texture, @Nullable MultiBufferSource bufferSource, float partialTick) {
-        return RenderType.entityCutoutNoCull(texture);
+        return RenderType.entityTranslucent(texture);
     }
 
 }

@@ -473,7 +473,7 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
         protected boolean touchingTarget() {
             Vector3f target = NetherDragonEntity.this.getMoveTargetPoint();
             Vec3 vec3 = new Vec3(target.x(), target.y(), target.z());
-            return vec3.distanceToSqr(NetherDragonEntity.this.getX(), NetherDragonEntity.this.getY(), NetherDragonEntity.this.getZ()) < (double) 4.0F;
+            return vec3.distanceToSqr(NetherDragonEntity.this.getX(), NetherDragonEntity.this.getY(), NetherDragonEntity.this.getZ()) < (double) 12.0F;
         }
     }
 
@@ -536,7 +536,7 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
             }
 
             this.angle += this.clockwise * 15.0F * ((float) Math.PI / 180F);
-            NetherDragonEntity.this.setMoveTargetPoint(Vec3.atLowerCornerOf(NetherDragonEntity.this.anchorPoint).add(this.distance * Mth.cos(this.angle), -4.0F + this.height, this.distance * Mth.sin(this.angle)).toVector3f());
+            NetherDragonEntity.this.setMoveTargetPoint(Vec3.atLowerCornerOf(NetherDragonEntity.this.anchorPoint).add(this.distance * Mth.cos(this.angle) * 3, this.height, this.distance * Mth.sin(this.angle) * 3).toVector3f());
         }
     }
 
