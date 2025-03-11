@@ -1,9 +1,15 @@
 package com.danielkkrafft.wilddungeons.entity.boss;
 
+import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.util.UtilityMethods;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerBossEvent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -28,32 +34,56 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.LargeFireball;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
+import software.bernie.geckolib.animatable.GeoAnimatable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.PlayState;
+import software.bernie.geckolib.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.EnumSet;
 import java.util.List;
+import java.util.UUID;
 
 import static com.danielkkrafft.wilddungeons.entity.boss.NetherDragonEntity.AttackPhase.*;
 
 public class NetherDragonEntity extends FlyingMob implements GeoEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    private final ServerBossEvent bossEvent = new ServerBossEvent(getDisplayName(), BossEvent.BossBarColor.YELLOW, BossEvent.BossBarOverlay.NOTCHED_20);
-    private Vec3 moveTargetPoint = Vec3.ZERO;
+    private final ServerBossEvent bossEvent = new ServerBossEvent(getDisplayName(), BossEvent.BossBarColor.YELLOW, BossEvent.BossBarOverlay.NOTCHED_10);
     private BlockPos anchorPoint = BlockPos.ZERO;
-    private AttackPhase attackPhase = CIRCLE;
-
+    private static final EntityDataAccessor<Vector3f> MOVE_TARGET_POINT = SynchedEntityData.defineId(NetherDragonEntity.class, EntityDataSerializers.VECTOR3);
+    private static final EntityDataAccessor<Integer> ATTACK_PHASE = SynchedEntityData.defineId(NetherDragonEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> TICKS_INVULNERABLE = SynchedEntityData.defineId(NetherDragonEntity.class,EntityDataSerializers.INT);
+    private static final int SUMMON_TICKS = 50;//5s
+    private static final String
+            FLIGHTCONTROLLER = "NetherDragonFlightController",
+            ATTACKCONTROLLER = "NetherDragonAttackController";
+    private static final String
+            idle = "idle",
+            fly = "fly",
+            fireball = "idle",//todo should be replaced with an actual fireball animation that blends with the fly animation probably
+            sweep = "dive",
+            glide = "glide";
+    private static final RawAnimation
+            flyAnim = RawAnimation.begin().thenLoop(fly),
+            fireballAnim = RawAnimation.begin().thenPlay(fireball),
+            sweepAnim = RawAnimation.begin().thenLoop(sweep),
+            glideAnim = RawAnimation.begin().thenLoop(glide),
+            idleAnim = RawAnimation.begin().thenLoop(idle);
     //<editor-fold desc="Core Mob Properties">
     public NetherDragonEntity(EntityType<? extends FlyingMob> entityType, Level level) {
         super(entityType, level);
-        this.moveTargetPoint = Vec3.ZERO;
+        this.setMoveTargetPoint(new Vector3f(0,0,0));
         this.anchorPoint = BlockPos.ZERO;
-        this.attackPhase = CIRCLE;
+        this.setAttackPhase(CIRCLE);
         this.xpReward = 200;
         this.moveControl = new NetherDragonMoveControl(this);
         setPersistenceRequired();
@@ -68,12 +98,12 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
 
     @Override
     protected void registerGoals() {
-        //todo spawn goal like BreezeGolem
+        goalSelector.addGoal(0, new SummonGoal(this));
         //todo death goal like EnderDragon
         goalSelector.addGoal(1, new NetherDragonEntityAttackStrategyGoal());
         goalSelector.addGoal(2, new NetherDragonEntitySweepAttackGoal());
+        goalSelector.addGoal(2, new NetherDragonEntityFireBallTargetGoal());
         goalSelector.addGoal(3, new NetherDragonEntityCircleAroundAnchorGoal());
-        goalSelector.addGoal(3, new NetherDragonEntityFireBallTargetGoal());
         goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 30));
         goalSelector.addGoal(7, new RandomLookAroundGoal(this));
 
@@ -89,14 +119,46 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
                 add(Attributes.ATTACK_KNOCKBACK, 2).
                 add(Attributes.KNOCKBACK_RESISTANCE, 0.4).
                 add(Attributes.EXPLOSION_KNOCKBACK_RESISTANCE, 0.2).
-                add(Attributes.FLYING_SPEED, 1).
+                add(Attributes.FLYING_SPEED, 2).
                 build();
     }
 
+    private final AnimationController<NetherDragonEntity> FlightController = new AnimationController<>(this,FLIGHTCONTROLLER,5,this::FlightPredicate);
+    private final AnimationController<NetherDragonEntity> AttackController = new AnimationController<>(this,ATTACKCONTROLLER,5,
+            state->state.setAndContinue(idleAnim))
+            .triggerableAnim(idle, idleAnim)
+            .triggerableAnim(fireball, fireballAnim)
+            .triggerableAnim(sweep, sweepAnim);
+
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        //todo animation controllers
+        controllers.add(FlightController);
+        controllers.add(AttackController);
     }
+
+    private <E extends GeoAnimatable> PlayState FlightPredicate(AnimationState<E> event) {
+        NetherDragonEntity dragonEntity = (NetherDragonEntity) event.getAnimatable();
+        switch (dragonEntity.getAttackPhase()) {
+            case CIRCLE -> {
+                if (dragonEntity.getMoveTargetPoint().y() > dragonEntity.getY()) {
+                    event.setAnimation(flyAnim);
+                } else {
+                    event.setAnimation(glideAnim);
+                }
+                return PlayState.CONTINUE;
+            }
+            case SWOOP -> {
+                event.setAnimation(glideAnim);
+                return PlayState.CONTINUE;
+            }
+            case FIREBALL -> {
+                event.setAnimation(flyAnim);
+                return PlayState.CONTINUE;
+            }
+        }
+        return PlayState.STOP;
+    }
+
 
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
@@ -133,6 +195,11 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
         compound.putInt("AX", this.anchorPoint.getX());
         compound.putInt("AY", this.anchorPoint.getY());
         compound.putInt("AZ", this.anchorPoint.getZ());
+        compound.putInt("AP", this.getAttackPhase().ordinal());
+        compound.putInt("TI", this.getTicksInvulnerable());
+        compound.putDouble("MTX", this.getMoveTargetPoint().x());
+        compound.putDouble("MTY", this.getMoveTargetPoint().y());
+        compound.putDouble("MTZ", this.getMoveTargetPoint().z());
     }
 
     @Override
@@ -143,6 +210,15 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
         }
         if (compound.contains("AX")) {
             this.anchorPoint = new BlockPos(compound.getInt("AX"), compound.getInt("AY"), compound.getInt("AZ"));
+        }
+        if (compound.contains("AP")) {
+            this.setAttackPhase(AttackPhase.values()[compound.getInt("AP")]);
+        }
+        if (compound.contains("TI")) {
+            this.setTicksInvulnerable(compound.getInt("TI"));
+        }
+        if (compound.contains("MTX")) {
+            this.setMoveTargetPoint(new Vector3f((float) compound.getDouble("MTX"), (float) compound.getDouble("MTY"), (float) compound.getDouble("MTZ")));
         }
     }
 
@@ -157,7 +233,33 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
     @Override
     protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
         super.defineSynchedData(builder);
-//        builder.define(TICKSINVULNERABLE,0);
+        builder.define(ATTACK_PHASE, 0);
+        builder.define(TICKS_INVULNERABLE,0);
+        builder.define(MOVE_TARGET_POINT, new Vector3f(0,0,0));
+    }
+
+    public void setAttackPhase(AttackPhase attackPhase) {
+        this.entityData.set(ATTACK_PHASE, attackPhase.ordinal());
+    }
+
+    public AttackPhase getAttackPhase() {
+        return AttackPhase.values()[this.entityData.get(ATTACK_PHASE)];
+    }
+
+    public void setTicksInvulnerable(int ticks){
+        this.entityData.set(TICKS_INVULNERABLE,ticks);
+    }
+
+    public int getTicksInvulnerable(){
+        return this.entityData.get(TICKS_INVULNERABLE);
+    }
+
+    public void setMoveTargetPoint(Vector3f pos) {
+        this.entityData.set(MOVE_TARGET_POINT, pos);
+    }
+
+    public Vector3f getMoveTargetPoint() {
+        return this.entityData.get(MOVE_TARGET_POINT);
     }
 
     @Override
@@ -198,15 +300,20 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
         bossEvent.setProgress(hp);
         if (!level.isClientSide && !isDeadOrDying()) {
             //logic
+//            WildDungeons.getLogger().info("Current Target: {}", getTarget());
 //            WildDungeons.getLogger().info("Nether Dragon attack phase: {}", attackPhase);
 //            WildDungeons.getLogger().info("Nether Dragon Y: {}, desired Y {}", getY(), moveTargetPoint.y);
         }
 
     }
 // </editor-fold>
+    public void StopAttackAnimations(){
+        triggerAnim(ATTACKCONTROLLER,idle);
+        AttackController.stop();
+    }
 
     //<editor-fold desc="Goals">
-    enum AttackPhase {
+    public enum AttackPhase {
         CIRCLE,
         SWOOP,
         FIREBALL
@@ -217,6 +324,55 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
         BlockPos blockpos = livingentity != null ? livingentity.blockPosition() : NetherDragonEntity.this.blockPosition();
         this.anchorPoint = blockpos.above(15 + this.random.nextInt(10));
     }
+
+    public boolean isInvulnerable() {
+        return getTicksInvulnerable() <= SUMMON_TICKS;
+    }
+
+    public class SummonGoal extends Goal {
+        public SummonGoal(@NotNull Mob mob) {
+            this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.JUMP, Goal.Flag.LOOK, Goal.Flag.TARGET));
+        }
+
+        @Override
+        public void tick() {
+            int ticks = NetherDragonEntity.this.getTicksInvulnerable();
+            NetherDragonEntity.this.setTicksInvulnerable(NetherDragonEntity.this.getTicksInvulnerable() + 1);
+            if (ticks % 10 == 0)
+                NetherDragonEntity.this.playSound(SoundEvents.NOTE_BLOCK_PLING.value(), 2f, 2f);
+        }
+
+        @Override
+        public void start() {
+            NetherDragonEntity.this.playSound(SoundEvents.GENERIC_EXTINGUISH_FIRE, 2f, 0.7f);
+            NetherDragonEntity.this.setInvulnerable(true);
+        }
+
+        @Override
+        public boolean canUse() {
+            return NetherDragonEntity.this.isInvulnerable();
+        }
+
+        @Override
+        public void stop() {
+            //psuedo explosion
+            Vec3 pos = NetherDragonEntity.this.position();
+            List<LivingEntity> list = NetherDragonEntity.this.level().getEntitiesOfClass(LivingEntity.class, AABB.ofSize(NetherDragonEntity.this.position(), 10, 10, 10), NetherDragonEntity.this::hasLineOfSight);
+            for (LivingEntity li : list) {
+                Vec3 kb = new Vec3(pos.x - li.position().x, pos.y - li.position().y, pos.z - li.position().z).
+                        normalize().scale(2);
+                li.knockback(1.5, kb.x, kb.z);
+                li.setRemainingFireTicks(li.getRemainingFireTicks() + 100);
+                li.hurt(new DamageSource(NetherDragonEntity.this.level().damageSources().generic().typeHolder()), 10);
+            }
+            NetherDragonEntity.this.playSound(SoundEvents.GENERIC_EXPLODE.value(), 2f, 0.8f);
+            UtilityMethods.sendParticles((ServerLevel) NetherDragonEntity.this.level(), ParticleTypes.EXPLOSION_EMITTER, true, 1, pos.x, pos.y, pos.z, 0, 0, 0, 0);
+            UtilityMethods.sendParticles((ServerLevel) NetherDragonEntity.this.level(), ParticleTypes.LAVA, true, 200, pos.x, pos.y, pos.z, 2, 2, 2, 0.06f);
+            UtilityMethods.sendParticles((ServerLevel) NetherDragonEntity.this.level(), ParticleTypes.FLAME, true, 400, pos.x, pos.y, pos.z, 4, 4, 4, 0.08f);
+            NetherDragonEntity.this.setInvulnerable(false);
+        }
+    }
+
 
     class NetherDragonMoveControl extends MoveControl {
         private float speed = 0.1F;
@@ -230,14 +386,14 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
                 NetherDragonEntity.this.setYRot(NetherDragonEntity.this.getYRot() + 180.0F);
                 this.speed = 0.1F;
             }
-            if (NetherDragonEntity.this.attackPhase == FIREBALL) {
+            if (NetherDragonEntity.this.getAttackPhase() == FIREBALL) {
                 //slow down the dragon when it is charging up a fireball
                 this.speed = Mth.approach(this.speed, 0.1F, 0.5f);
             }
 
-            double xDir = NetherDragonEntity.this.moveTargetPoint.x - NetherDragonEntity.this.getX();
-            double yDir = NetherDragonEntity.this.moveTargetPoint.y - NetherDragonEntity.this.getY();
-            double zDir = NetherDragonEntity.this.moveTargetPoint.z - NetherDragonEntity.this.getZ();
+            double xDir = NetherDragonEntity.this.getMoveTargetPoint().x() - NetherDragonEntity.this.getX();
+            double yDir = NetherDragonEntity.this.getMoveTargetPoint().y() - NetherDragonEntity.this.getY();
+            double zDir = NetherDragonEntity.this.getMoveTargetPoint().z() - NetherDragonEntity.this.getZ();
             double distance = Math.sqrt(xDir * xDir + zDir * zDir);
             float oldRot = NetherDragonEntity.this.getYRot();
             if (Math.abs(distance) > (double) 1.0E-5F) {
@@ -249,7 +405,7 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
                 NetherDragonEntity.this.setYRot(Mth.approachDegrees(Mth.wrapDegrees(NetherDragonEntity.this.getYRot() + 90.0F), Mth.wrapDegrees((float) Mth.atan2(zDir, xDir) * (180F / (float) Math.PI)), 4.0F) - 90.0F);
                 NetherDragonEntity.this.yBodyRot = NetherDragonEntity.this.getYRot();
                 if (Mth.degreesDifferenceAbs(oldRot, NetherDragonEntity.this.getYRot()) < 3.0F) {
-                    this.speed = Mth.approach(this.speed, 2f, 0.005F * (2f / this.speed));
+                    this.speed = Mth.approach(this.speed, 4f, 0.005F * (2f / this.speed));
                 } else {
                     this.speed = Mth.approach(this.speed, 1f, 0.025F);
                 }
@@ -280,7 +436,7 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
 
         public void start() {
             this.nextSweepTick = this.adjustedTickDelay(10);
-            NetherDragonEntity.this.attackPhase = CIRCLE;
+            NetherDragonEntity.this.setAttackPhase(CIRCLE);
             NetherDragonEntity.this.setAnchorAboveTarget();
         }
 
@@ -289,13 +445,13 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
         }
 
         public void tick() {
-            if (NetherDragonEntity.this.attackPhase == CIRCLE) {
+            if (NetherDragonEntity.this.getAttackPhase() == CIRCLE) {
                 --this.nextSweepTick;
                 if (this.nextSweepTick <= 0) {
                     this.nextSweepTick = this.adjustedTickDelay((8 + NetherDragonEntity.this.random.nextInt(3)) * 20);
-                    NetherDragonEntity.this.attackPhase = NetherDragonEntity.this.random.nextBoolean() ? SWOOP : FIREBALL;
+                    NetherDragonEntity.this.setAttackPhase(NetherDragonEntity.this.random.nextBoolean() ? SWOOP : FIREBALL);
                     NetherDragonEntity.this.playSound(SoundEvents.ENDER_DRAGON_GROWL, 10.0F, 0.95F + NetherDragonEntity.this.random.nextFloat() * 0.1F);//todo
-                    switch (NetherDragonEntity.this.attackPhase) {
+                    switch (NetherDragonEntity.this.getAttackPhase()) {
                         case SWOOP:
                             NetherDragonEntity.this.setAnchorAboveTarget();
                             break;
@@ -315,7 +471,9 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
         }
 
         protected boolean touchingTarget() {
-            return NetherDragonEntity.this.moveTargetPoint.distanceToSqr(NetherDragonEntity.this.getX(), NetherDragonEntity.this.getY(), NetherDragonEntity.this.getZ()) < (double) 4.0F;
+            Vector3f target = NetherDragonEntity.this.getMoveTargetPoint();
+            Vec3 vec3 = new Vec3(target.x(), target.y(), target.z());
+            return vec3.distanceToSqr(NetherDragonEntity.this.getX(), NetherDragonEntity.this.getY(), NetherDragonEntity.this.getZ()) < (double) 4.0F;
         }
     }
 
@@ -329,7 +487,7 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
         }
 
         public boolean canUse() {
-            return NetherDragonEntity.this.getTarget() == null || NetherDragonEntity.this.attackPhase == CIRCLE;
+            return NetherDragonEntity.this.getTarget() == null || NetherDragonEntity.this.getAttackPhase() == CIRCLE;
         }
 
         public void start() {
@@ -361,12 +519,12 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
                 this.selectNext();
             }
 
-            if (NetherDragonEntity.this.moveTargetPoint.y < NetherDragonEntity.this.getY() && !NetherDragonEntity.this.level().isEmptyBlock(NetherDragonEntity.this.blockPosition().below(1))) {
+            if (NetherDragonEntity.this.getMoveTargetPoint().y() < NetherDragonEntity.this.getY() && !NetherDragonEntity.this.level().isEmptyBlock(NetherDragonEntity.this.blockPosition().below(1))) {
                 this.height = Math.max(1.0F, this.height);
                 this.selectNext();
             }
 
-            if (NetherDragonEntity.this.moveTargetPoint.y > NetherDragonEntity.this.getY() && !NetherDragonEntity.this.level().isEmptyBlock(NetherDragonEntity.this.blockPosition().above(1))) {
+            if (NetherDragonEntity.this.getMoveTargetPoint().y() > NetherDragonEntity.this.getY() && !NetherDragonEntity.this.level().isEmptyBlock(NetherDragonEntity.this.blockPosition().above(1))) {
                 this.height = Math.min(-1.0F, this.height);
                 this.selectNext();
             }
@@ -379,7 +537,7 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
             }
 
             this.angle += this.clockwise * 15.0F * ((float) Math.PI / 180F);
-            NetherDragonEntity.this.moveTargetPoint = Vec3.atLowerCornerOf(NetherDragonEntity.this.anchorPoint).add(this.distance * Mth.cos(this.angle), -4.0F + this.height, this.distance * Mth.sin(this.angle));
+            NetherDragonEntity.this.setMoveTargetPoint(Vec3.atLowerCornerOf(NetherDragonEntity.this.anchorPoint).add(this.distance * Mth.cos(this.angle), -4.0F + this.height, this.distance * Mth.sin(this.angle)).toVector3f());
         }
     }
 
@@ -389,7 +547,7 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
         }
 
         public boolean canUse() {
-            return NetherDragonEntity.this.getTarget() != null && NetherDragonEntity.this.attackPhase == SWOOP;
+            return NetherDragonEntity.this.getTarget() != null && NetherDragonEntity.this.getAttackPhase() == SWOOP;
         }
 
         public boolean canContinueToUse() {
@@ -412,22 +570,33 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
 
         public void stop() {
             NetherDragonEntity.this.setTarget(null);
-            NetherDragonEntity.this.attackPhase = CIRCLE;
+            NetherDragonEntity.this.setAttackPhase(CIRCLE);
+            StopAttackAnimations();
+        }
+
+        protected boolean touchingTarget() {
+            Vector3f target = NetherDragonEntity.this.getMoveTargetPoint();
+            Vec3 vec3 = new Vec3(target.x(), target.y(), target.z());
+            return vec3.distanceToSqr(NetherDragonEntity.this.getX(), NetherDragonEntity.this.getY(), NetherDragonEntity.this.getZ()) < (double) 4.0F;
         }
 
         public void tick() {
             LivingEntity livingentity = NetherDragonEntity.this.getTarget();
             if (livingentity != null) {
-                NetherDragonEntity.this.moveTargetPoint = new Vec3(livingentity.getX(), livingentity.getY(0.5F), livingentity.getZ());
+                NetherDragonEntity.this.setMoveTargetPoint(new Vec3(livingentity.getX(), livingentity.getY(0.5F), livingentity.getZ()).toVector3f());
+                if (touchingTarget()) {
+                    triggerAnim(ATTACKCONTROLLER,sweep);
+                }
                 if (NetherDragonEntity.this.getBoundingBox().inflate(0.2F).intersects(livingentity.getBoundingBox())) {
                     NetherDragonEntity.this.doHurtTarget(livingentity);
-                    NetherDragonEntity.this.attackPhase = CIRCLE;
+                    NetherDragonEntity.this.setAttackPhase(CIRCLE);
                     setAnchorAboveTarget();
                     if (!NetherDragonEntity.this.isSilent()) {
                         NetherDragonEntity.this.level().levelEvent(1039, NetherDragonEntity.this.blockPosition(), 0);
                     }
                 } else if (NetherDragonEntity.this.horizontalCollision || NetherDragonEntity.this.hurtTime > 0) {
-                    NetherDragonEntity.this.attackPhase = CIRCLE;
+                    NetherDragonEntity.this.setAttackPhase(CIRCLE);
+                    StopAttackAnimations();
                     setAnchorAboveTarget();
                 }
             }
@@ -446,7 +615,7 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
 
         @Override
         public boolean canUse() {
-            return NetherDragonEntity.this.getTarget() != null && NetherDragonEntity.this.attackPhase == FIREBALL;
+            return NetherDragonEntity.this.getTarget() != null && NetherDragonEntity.this.getAttackPhase() == FIREBALL;
         }
 
         public boolean canContinueToUse() {
@@ -470,7 +639,8 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
 
         public void stop() {
             NetherDragonEntity.this.setTarget(null);
-            NetherDragonEntity.this.attackPhase = CIRCLE;
+            NetherDragonEntity.this.setAttackPhase(CIRCLE);
+            StopAttackAnimations();
         }
 
         public void tick() {
@@ -490,9 +660,7 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
                 if (++initialFireballDelay < 60) return;
                 if (initialFireballDelay == 60 && !NetherDragonEntity.this.isSilent()) {
                     //todo fireball charging noise
-                    //todo set the dragons state to charging to make it look like it is charging up in the animations
-//                NetherDragonEntity.this.setCharging(true);
-
+//                NetherDragonEntity.this.setCharging(true);//todo this could be used to make the dragon look like it is charging up a fireball instead of just floating there
                 }
 
                 Level level = NetherDragonEntity.this.level();
@@ -505,11 +673,15 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
                     }
 
                     LargeFireball largefireball = new LargeFireball(level, NetherDragonEntity.this, vec31.normalize(), 1);
-                    largefireball.setPos(NetherDragonEntity.this.getX() + vec3.x * 4.0, NetherDragonEntity.this.getY(0.5) + 0.5, largefireball.getZ() + vec3.z * 4.0);
+                    Vec3 headPos = new Vec3(NetherDragonEntity.this.getX() + vec3.x * 4.0, NetherDragonEntity.this.getY(0.5), largefireball.getZ() + vec3.z * 4.0)
+                            .add(vec3.scale(2.5).add(firedFireballs == 0 ? Vec3.ZERO : vec3.cross(new Vec3(0, 1, 0)).normalize().scale(2.5 * (firedFireballs == 1 ? -1 : 1))));
+                    largefireball.setPos(headPos);
                     level.addFreshEntity(largefireball);
+                    triggerAnim(ATTACKCONTROLLER,fireball);
                     this.chargeTime = 0;
                     if (++this.firedFireballs == 3) {
-                        NetherDragonEntity.this.attackPhase = CIRCLE;
+                        NetherDragonEntity.this.setAttackPhase(CIRCLE);
+                        StopAttackAnimations();
                         setAnchorAboveTarget();
                         this.firedFireballs = 0;
                         this.initialFireballDelay = 0;
