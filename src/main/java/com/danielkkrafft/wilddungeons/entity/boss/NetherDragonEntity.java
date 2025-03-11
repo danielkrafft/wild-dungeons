@@ -528,7 +528,6 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
                 this.height = Math.min(-1.0F, this.height);
                 this.selectNext();
             }
-
         }
 
         private void selectNext() {

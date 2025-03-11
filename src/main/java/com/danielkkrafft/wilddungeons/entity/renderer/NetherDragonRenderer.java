@@ -33,7 +33,7 @@ public class NetherDragonRenderer extends GeoEntityRenderer<NetherDragonEntity>
     @Override
     public void actuallyRender(PoseStack poseStack, NetherDragonEntity entity, BakedGeoModel model, @Nullable RenderType renderType, MultiBufferSource bufferSource, @Nullable VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int colour)
     {
-        VanillaBendHead(entity, model, partialTick);
+        BendNeck(entity, model, partialTick);
 
         super.actuallyRender(poseStack, animatable, model, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, colour);
     }
@@ -64,13 +64,33 @@ public class NetherDragonRenderer extends GeoEntityRenderer<NetherDragonEntity>
         yaw = Mth.wrapDegrees(yaw);
         pitch = Mth.clamp(pitch, -40.0F, 60.0F);
 
-        // Apply to each neck segment with progressive bending
-        for (String neckName : new String[]{"neck", "neckLeft", "neckRight"}) {
+        // Define neck offsets and fixed base rotations
+        float[] neckOffsets = {0.0F, 45.0F, -45.0F};
+        String[] neckNames = {"neck", "neckLeft", "neckRight"};
+
+        // Apply to each neck segment
+        for (int neckIndex = 0; neckIndex < neckNames.length; neckIndex++) {
+            String neckName = neckNames[neckIndex];
+            float neckOffset = neckOffsets[neckIndex];
+
             for (int i = 0; i < 5; i++) {
                 final int segmentIndex = i;
-                float finalYaw = yaw;
+
+                // Special handling for the base segment
+                if (i == 0) {
+                    // Use fixed base rotation for the first segment
+                    model.getBone(neckName).ifPresent(bone -> {
+                        bone.setRotY((float) Math.toRadians(neckOffset));
+                        bone.setRotX(0); // No pitch for fixed base, can adjust if needed
+                    });
+                    continue;
+                }
+
+                // For other segments, gradually follow the target
+                float finalYaw = yaw + neckOffset;
                 float finalPitch = pitch;
-                model.getBone(i > 0 ? neckName + i : neckName).ifPresent(bone -> {
+
+                model.getBone(neckName + i).ifPresent(bone -> {
                     // Progressive bending factor (0.3 to 1.0)
                     float bendFactor = 0.3f + ((float)segmentIndex / 10.0f);
 
@@ -83,7 +103,18 @@ public class NetherDragonRenderer extends GeoEntityRenderer<NetherDragonEntity>
             }
         }
 
-        VanillaBendHead(entity, model, partialTick);
+        // Also apply offsets to the heads
+        String[] headNames = {"head", "head2", "head3"};
+        for (int i = 0; i < headNames.length; i++) {
+            final float headOffset = neckOffsets[i]*0.25f;
+            model.getBone(headNames[i]).ifPresent(bone -> {
+                float headYaw = Mth.DEG_TO_RAD * (Mth.lerp(partialTick, entity.yBodyRotO, entity.yBodyRot) -
+                        Mth.lerp(partialTick, entity.yHeadRotO, entity.yHeadRot)) +
+                        Mth.DEG_TO_RAD * headOffset;
+                bone.setRotY(-headYaw);
+                bone.setRotX(Mth.DEG_TO_RAD * Mth.lerp(partialTick, -entity.xRotO, -entity.getXRot()));
+            });
+        }
     }
 
     @Override
