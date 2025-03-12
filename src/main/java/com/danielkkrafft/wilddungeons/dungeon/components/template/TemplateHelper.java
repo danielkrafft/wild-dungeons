@@ -22,7 +22,7 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.RailShape;
 import net.minecraft.world.level.block.state.properties.StairsShape;
 import net.minecraft.world.level.block.state.properties.StructureMode;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.DESTRUCTION_RULE;
-import static net.minecraft.world.level.block.state.properties.BlockStateProperties.STAIRS_SHAPE;
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.*;
 
 public class TemplateHelper {
     public static final BlockPos EMPTY_BLOCK_POS = new BlockPos(0, 0, 0);
@@ -215,9 +215,9 @@ public class TemplateHelper {
     public static BlockState fixBlockStateProperties(BlockState input, StructurePlaceSettings settings) {
         boolean rotated = settings.getRotation() == Rotation.CLOCKWISE_90 || settings.getRotation() == Rotation.COUNTERCLOCKWISE_90;
 
-        if ((input.hasProperty(BlockStateProperties.HORIZONTAL_FACING) || input.hasProperty(BlockStateProperties.FACING))) {
-            Direction facing = input.hasProperty(BlockStateProperties.FACING) ? input.getValue(BlockStateProperties.FACING) : input.getValue(BlockStateProperties.HORIZONTAL_FACING);
-            StairsShape stairsShape = input.hasProperty(BlockStateProperties.STAIRS_SHAPE) ? input.getValue(BlockStateProperties.STAIRS_SHAPE) : null;
+        if ((input.hasProperty(HORIZONTAL_FACING) || input.hasProperty(FACING))) {
+            Direction facing = input.hasProperty(FACING) ? input.getValue(FACING) : input.getValue(HORIZONTAL_FACING);
+            StairsShape stairsShape = input.hasProperty(STAIRS_SHAPE) ? input.getValue(STAIRS_SHAPE) : null;
 
             if (facing != Direction.UP && facing != Direction.DOWN) {
                 facing = switch (settings.getRotation()) {
@@ -263,11 +263,88 @@ public class TemplateHelper {
                 }
             }
 
-            if (input.hasProperty(BlockStateProperties.STAIRS_SHAPE) && stairsShape != null) input = input.setValue(BlockStateProperties.STAIRS_SHAPE, stairsShape);
+            if (input.hasProperty(STAIRS_SHAPE) && stairsShape != null) input = input.setValue(STAIRS_SHAPE, stairsShape);
 
-            return input.hasProperty(BlockStateProperties.FACING) ?
-                    input.setValue(BlockStateProperties.FACING, facing) :
-                    input.setValue(BlockStateProperties.HORIZONTAL_FACING, facing);
+            return input.hasProperty(FACING) ?
+                    input.setValue(FACING, facing) :
+                    input.setValue(HORIZONTAL_FACING, facing);
+        }
+
+        if (input.hasProperty(RAIL_SHAPE_STRAIGHT) || input.hasProperty(RAIL_SHAPE)) {
+            RailShape railShape = input.hasProperty(RAIL_SHAPE) ? input.getValue(RAIL_SHAPE) : input.getValue(RAIL_SHAPE_STRAIGHT);
+            switch (settings.getRotation()) {
+                case NONE -> {
+                }
+                case CLOCKWISE_90 -> {
+                    railShape = switch (railShape) {
+                        case NORTH_SOUTH -> RailShape.EAST_WEST;
+                        case EAST_WEST -> RailShape.NORTH_SOUTH;
+                        case ASCENDING_EAST -> RailShape.ASCENDING_SOUTH;
+                        case ASCENDING_WEST -> RailShape.ASCENDING_NORTH;
+                        case ASCENDING_NORTH -> RailShape.ASCENDING_EAST;
+                        case ASCENDING_SOUTH -> RailShape.ASCENDING_WEST;
+                        case SOUTH_EAST -> RailShape.SOUTH_WEST;
+                        case SOUTH_WEST -> RailShape.NORTH_WEST;
+                        case NORTH_WEST -> RailShape.NORTH_EAST;
+                        case NORTH_EAST -> RailShape.SOUTH_EAST;
+                    };
+                }
+                case CLOCKWISE_180 -> {
+                    railShape = switch (railShape) {
+                        case ASCENDING_EAST -> RailShape.ASCENDING_WEST;
+                        case ASCENDING_WEST -> RailShape.ASCENDING_EAST;
+                        case ASCENDING_NORTH -> RailShape.ASCENDING_SOUTH;
+                        case ASCENDING_SOUTH -> RailShape.ASCENDING_NORTH;
+                        case SOUTH_EAST -> RailShape.NORTH_EAST;
+                        case SOUTH_WEST -> RailShape.NORTH_WEST;
+                        case NORTH_WEST -> RailShape.SOUTH_WEST;
+                        case NORTH_EAST -> RailShape.SOUTH_EAST;
+                        default -> railShape;
+                    };
+                }
+                case COUNTERCLOCKWISE_90 -> {
+                    railShape = switch (railShape) {
+                        case NORTH_SOUTH -> RailShape.EAST_WEST;
+                        case EAST_WEST -> RailShape.NORTH_SOUTH;
+                        case ASCENDING_EAST -> RailShape.ASCENDING_NORTH;
+                        case ASCENDING_WEST -> RailShape.ASCENDING_SOUTH;
+                        case ASCENDING_NORTH -> RailShape.ASCENDING_WEST;
+                        case ASCENDING_SOUTH -> RailShape.ASCENDING_EAST;
+                        case SOUTH_EAST -> RailShape.NORTH_EAST;
+                        case SOUTH_WEST -> RailShape.SOUTH_EAST;
+                        case NORTH_WEST -> RailShape.SOUTH_WEST;
+                        case NORTH_EAST -> RailShape.NORTH_WEST;
+                    };
+                }
+            }
+            switch (settings.getMirror()) {
+                case NONE -> {
+                }
+                case LEFT_RIGHT -> {
+                    railShape = switch (railShape) {
+                        case ASCENDING_EAST -> RailShape.ASCENDING_WEST;
+                        case ASCENDING_WEST -> RailShape.ASCENDING_EAST;
+                        case SOUTH_EAST -> RailShape.SOUTH_WEST;
+                        case SOUTH_WEST -> RailShape.SOUTH_EAST;
+                        case NORTH_WEST -> RailShape.NORTH_EAST;
+                        case NORTH_EAST -> RailShape.NORTH_WEST;
+                        default -> railShape;
+                    };
+                }
+                case FRONT_BACK -> {
+                    railShape = switch (railShape) {
+                        case ASCENDING_NORTH -> RailShape.ASCENDING_SOUTH;
+                        case ASCENDING_SOUTH -> RailShape.ASCENDING_NORTH;
+                        case SOUTH_EAST -> RailShape.NORTH_EAST;
+                        case SOUTH_WEST -> RailShape.NORTH_WEST;
+                        case NORTH_WEST -> RailShape.SOUTH_WEST;
+                        case NORTH_EAST -> RailShape.SOUTH_EAST;
+                        default -> railShape;
+                    };
+                }
+            }
+            if (input.hasProperty(RAIL_SHAPE)) return input.setValue(RAIL_SHAPE, railShape);
+            if (input.hasProperty(RAIL_SHAPE_STRAIGHT)) return input.setValue(RAIL_SHAPE_STRAIGHT, railShape);
         }
         return input;
     }
@@ -293,7 +370,7 @@ public class TemplateHelper {
                     }
                 }
 
-                if (blockstate.hasProperty(STAIRS_SHAPE)) {
+                if (blockstate.hasProperty(STAIRS_SHAPE) || blockstate.hasProperty(RAIL_SHAPE) || blockstate.hasProperty(RAIL_SHAPE_STRAIGHT)) {
                     blockstate = TemplateHelper.fixBlockStateProperties(material.replace(structuretemplate$structureblockinfo.state(), room), settings);
                 } else {
                     blockstate = material.replace(structuretemplate$structureblockinfo.state().mirror(settings.getMirror()).rotate(settings.getRotation()), room);
