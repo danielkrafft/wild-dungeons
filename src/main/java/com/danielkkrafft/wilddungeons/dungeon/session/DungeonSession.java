@@ -22,11 +22,10 @@ import com.danielkkrafft.wilddungeons.util.Serializer;
 import com.danielkkrafft.wilddungeons.world.dimension.tools.InfiniverseAPI;
 import com.google.common.collect.Iterables;
 import com.mojang.authlib.properties.Property;
-import net.minecraft.core.BlockPos;
+import com.mojang.authlib.properties.PropertyMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.players.GameProfileCache;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -193,13 +192,14 @@ public class DungeonSession {
                 GameProfileCache gameProfileCache = DungeonSessionManager.getInstance().server.getProfileCache();
                 if (gameProfileCache != null) {
                     gameProfileCache.get(UUID.fromString(uuid)).ifPresent(gameProfile -> {
-                        Property property = Iterables.getFirst(gameProfile.getProperties().get("textures"), null);
+                        PropertyMap properties = gameProfile.getProperties();
+                        Property property = Iterables.getFirst(properties.get("textures"), null);
                         if (property != null)
                             playerSkins.put(uuid, property);
                     });
                 }
             }
-            DungeonStatsHolder holder = new DungeonStatsHolder(this.playerStats,playerSkins, this.getTemplate().get(HierarchicalProperty.DISPLAY_NAME), this.getTemplate().get(HierarchicalProperty.ICON), this.getTemplate().get(HierarchicalProperty.PRIMARY_COLOR), this.getTemplate().get(HierarchicalProperty.SECONDARY_COLOR), this.getTemplate().get(HierarchicalProperty.TARGET_TIME), this.getTemplate().get(HierarchicalProperty.TARGET_DEATHS), this.getTemplate().get(HierarchicalProperty.TARGET_SCORE));
+            DungeonStatsHolder holder = new DungeonStatsHolder(this.playerStats, playerSkins, this.getTemplate().get(HierarchicalProperty.DISPLAY_NAME), this.getTemplate().get(HierarchicalProperty.ICON), this.getTemplate().get(HierarchicalProperty.PRIMARY_COLOR), this.getTemplate().get(HierarchicalProperty.SECONDARY_COLOR), this.getTemplate().get(HierarchicalProperty.TARGET_TIME), this.getTemplate().get(HierarchicalProperty.TARGET_DEATHS), this.getTemplate().get(HierarchicalProperty.TARGET_SCORE));
             CompoundTag tag = new CompoundTag();
             tag.putString("packet", ClientPacketHandler.Packets.POST_DUNGEON_SCREEN.toString());
             tag.put("stats", Serializer.toCompoundTag(holder));
