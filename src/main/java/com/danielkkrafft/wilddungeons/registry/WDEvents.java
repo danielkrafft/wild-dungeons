@@ -301,11 +301,15 @@ public class WDEvents {
             WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer);
             if (wdPlayer.getCurrentDungeon() == null) return;
             DungeonRoom room = findRoom(wdPlayer.getCurrentFloor(), event.getPos());
-            if (room==null) return;
+            if (room == null) return;
             boolean allowed = room.canPlaceBlock(event.getPos(),event.getPlacedBlock());
             event.setCanceled(!allowed);
-            if (allowed)
+            if (allowed) {
                 wdPlayer.getCurrentDungeon().getStats(wdPlayer.getUUID()).blocksPlaced += 1;
+            } else {
+                serverPlayer.containerMenu.broadcastFullState();
+            }
+
         }
     }
 
