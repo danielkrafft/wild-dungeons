@@ -601,6 +601,7 @@ public class DungeonRoom {
         // Use CompletableFuture for delayed execution
         CompletableFuture.runAsync(() -> {
             try {
+                if (level==null) return;
                 level.getServer().execute(() -> {
                     chunkPosSet.forEach(chunkPos -> forceUpdateChunk(level, chunkPos));
                 });
@@ -608,6 +609,7 @@ public class DungeonRoom {
                     // Sleep for 1 second between updates
                     Thread.sleep((long) (secondsBetweenPackets*1000));
                     // Run the update on the main server thread
+                    if (level==null) return;
                     level.getServer().execute(() -> {
                         chunkPosSet.forEach(chunkPos -> forceUpdateChunk(level, chunkPos));
                     });
