@@ -222,7 +222,7 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
             .set(BLOCKING_MATERIAL_INDEX, 1)
             .set(SOUNDSCAPE, SoundscapeTemplateRegistry.NETHER_DRAGON_LEADUP)
             .set(INTENSITY, 1)
-            .set(DESTRUCTION_RULE,DestructionRule.PROTECT_ALL);
+            .set(DESTRUCTION_RULE,DestructionRule.PROTECT_ALL_CLEAR);
     public static final DungeonRoomTemplate NETHER_FACTORY_BOSS_ROOM = create("nether_factory_boss_room",
             List.of(
                     of("nether/factory/boss_1", EMPTY_BLOCK_POS),
