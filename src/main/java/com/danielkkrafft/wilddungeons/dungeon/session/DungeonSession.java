@@ -57,6 +57,7 @@ public class DungeonSession {
     private int ticksToExit = -1;
     private int lives = 0;
     private boolean markedForShutdown = false;
+    public boolean dirty = true;
 
     public ServerLevel getEntranceLevel() {return DungeonSessionManager.getInstance().server.getLevel(this.entranceLevelKey);}
     public String getEntranceUUID() {return this.entranceUUID;}
@@ -98,6 +99,7 @@ public class DungeonSession {
      * @param floorIndex The index of the floor
      */
     public void onEnter(WDPlayer wdPlayer, int floorIndex) {
+        this.dirty = true;
         DungeonFloor floor = generateOrGetFloor(floorIndex);
         if (!this.playersInside.containsKey(wdPlayer.getUUID())) {
             offsetLives(LIVES_PER_PLAYER);
@@ -118,6 +120,7 @@ public class DungeonSession {
      */
     public void onExit(WDPlayer wdPlayer) {
         if (!this.playersInside.containsKey(wdPlayer.getUUID()) || !this.playersInside.get(wdPlayer.getUUID())) return;
+        this.dirty = true;
         playersInside.put(wdPlayer.getUUID(), false);
         wdPlayer.getCurrentFloor().onExit(wdPlayer);
         wdPlayer.rootRespawn(wdPlayer.getServerPlayer().getServer());

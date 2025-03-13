@@ -172,9 +172,7 @@ public class WDEvents {
 
     @SubscribeEvent
     public static void onWorldSave(LevelEvent.Save event) {
-        if (event.getLevel().isClientSide()
-                || !Objects.equals(event.getLevel().registryAccess().registryOrThrow(Registries.DIMENSION_TYPE).get(WDDimensions.WILDDUNGEON), event.getLevel().dimensionType()))
-            return;
+        if (event.getLevel().isClientSide()) return;
         SaveSystem.Save();
     }
 
