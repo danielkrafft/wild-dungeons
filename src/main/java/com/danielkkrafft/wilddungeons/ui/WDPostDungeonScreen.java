@@ -1,5 +1,6 @@
 package com.danielkkrafft.wilddungeons.ui;
 
+import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.network.ServerPacketHandler;
 import com.danielkkrafft.wilddungeons.network.SimplePacketManager;
@@ -29,7 +30,7 @@ import java.util.concurrent.CompletableFuture;
 public class WDPostDungeonScreen extends Screen {
 
     public final HashMap<String, DungeonSession.DungeonStats> stats;
-    public final HashMap<String, Property> skins;
+    public final HashMap<String, DungeonSession.DungeonSkinDataHolder> skins;
     public String title;
     public String icon;
     public int primaryColor;
@@ -141,7 +142,8 @@ public class WDPostDungeonScreen extends Screen {
             for (Map.Entry<String, DungeonSession.DungeonStats> entry : this.stats.entrySet()) {
                 String uuid = entry.getKey();
                 DungeonSession.DungeonStats dungeonStats = entry.getValue();
-                Property property = this.skins.get(uuid);
+                DungeonSession.DungeonSkinDataHolder dataHolder = this.skins.get(uuid);
+                Property property = dataHolder == null ? null : new Property(dataHolder.name, dataHolder.value, dataHolder.signature);
                 this.clearScores.add(new Pair<>(dungeonStats.getScore(), Minecraft.getInstance().getSkinManager().skinCache.getUnchecked(new SkinManager.CacheKey(UUID.fromString(uuid), property))));
             }
         }

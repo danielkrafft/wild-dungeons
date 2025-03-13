@@ -74,6 +74,7 @@ public class Serializer
         addCustom(DungeonTarget.class);
         addCustom(Pair.class);
         addCustom(DungeonSession.DungeonStatsHolder.class);
+        addCustom(DungeonSession.DungeonSkinDataHolder.class);
         addCustom(KeyRequiredRoom.class);
         addCustom(BossRoom.class);
         addCustom(DecalRenderer.Decal.class);

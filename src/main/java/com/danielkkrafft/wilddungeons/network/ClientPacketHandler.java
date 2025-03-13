@@ -1,5 +1,6 @@
 package com.danielkkrafft.wilddungeons.network;
 
+import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.registries.SoundscapeTemplateRegistry;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.danielkkrafft.wilddungeons.render.DecalRenderer;
@@ -54,6 +55,8 @@ public class ClientPacketHandler {
                 }
             }
             case POST_DUNGEON_SCREEN -> {
+                WildDungeons.getLogger().info("POST DUNGEON SCREEN PACKET RECEIVED");
+                WildDungeons.getLogger().info("DATA: {}", data);
                 Minecraft.getInstance().setScreen(new WDPostDungeonScreen(data.getCompound("stats")));
             }
             case LOADING_SCREEN -> {
