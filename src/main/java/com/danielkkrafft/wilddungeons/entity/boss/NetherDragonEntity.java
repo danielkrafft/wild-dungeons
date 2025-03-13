@@ -3,6 +3,7 @@ package com.danielkkrafft.wilddungeons.entity.boss;
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.util.UtilityMethods;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -14,6 +15,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.DifficultyInstance;
@@ -34,8 +36,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.LargeFireball;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.CommonHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
@@ -51,7 +55,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.EnumSet;
 import java.util.List;
-import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static com.danielkkrafft.wilddungeons.entity.boss.NetherDragonEntity.AttackPhase.*;
 
@@ -59,6 +63,7 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private final ServerBossEvent bossEvent = new ServerBossEvent(getDisplayName(), BossEvent.BossBarColor.YELLOW, BossEvent.BossBarOverlay.NOTCHED_10);
     private BlockPos anchorPoint = BlockPos.ZERO;
+    private BlockPos spawnPoint = BlockPos.ZERO;
     private static final EntityDataAccessor<Vector3f> MOVE_TARGET_POINT = SynchedEntityData.defineId(NetherDragonEntity.class, EntityDataSerializers.VECTOR3);
     private static final EntityDataAccessor<Integer> ATTACK_PHASE = SynchedEntityData.defineId(NetherDragonEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> TICKS_INVULNERABLE = SynchedEntityData.defineId(NetherDragonEntity.class,EntityDataSerializers.INT);
@@ -92,6 +97,7 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
     @Override
     public @Nullable SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
         setAnchorAboveTarget();
+        this.spawnPoint = this.blockPosition();
         bossEvent.setVisible(true);
         return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
     }
@@ -200,6 +206,9 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
         compound.putDouble("MTX", this.getMoveTargetPoint().x());
         compound.putDouble("MTY", this.getMoveTargetPoint().y());
         compound.putDouble("MTZ", this.getMoveTargetPoint().z());
+        compound.putInt("SX", this.spawnPoint.getX());
+        compound.putInt("SY", this.spawnPoint.getY());
+        compound.putInt("SZ", this.spawnPoint.getZ());
     }
 
     @Override
@@ -219,6 +228,9 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
         }
         if (compound.contains("MTX")) {
             this.setMoveTargetPoint(new Vector3f((float) compound.getDouble("MTX"), (float) compound.getDouble("MTY"), (float) compound.getDouble("MTZ")));
+        }
+        if (compound.contains("SX")) {
+            this.spawnPoint = new BlockPos(compound.getInt("SX"), compound.getInt("SY"), compound.getInt("SZ"));
         }
     }
 
@@ -301,8 +313,8 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
         if (!level.isClientSide && !isDeadOrDying()) {
             //logic
 //            WildDungeons.getLogger().info("Current Target: {}", getTarget());
-//            WildDungeons.getLogger().info("Nether Dragon attack phase: {}", attackPhase);
-//            WildDungeons.getLogger().info("Nether Dragon Y: {}, desired Y {}", getY(), moveTargetPoint.y);
+//            WildDungeons.getLogger().info("Nether Dragon attack phase: {}", getAttackPhase());
+//            WildDungeons.getLogger().info("Nether Dragon Y: {}, desired Y {}", getY(), getMoveTargetPoint().y);
         }
 
     }
@@ -322,7 +334,7 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
     private void setAnchorAboveTarget() {
         LivingEntity livingentity = NetherDragonEntity.this.getTarget();
         BlockPos blockpos = livingentity != null ? livingentity.blockPosition() : NetherDragonEntity.this.blockPosition();
-        this.anchorPoint = blockpos.above(10 + this.random.nextInt(10));
+        this.anchorPoint = blockpos.above(2+ this.random.nextInt(10));
     }
 
     public boolean isInvulnerable() {
@@ -497,7 +509,9 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
             this.selectNext();
         }
 
+        private int ticksTryingToGoUp = 0;
         public void tick() {
+            checkWalls(NetherDragonEntity.this.getBoundingBox().inflate(0.1));
             if (NetherDragonEntity.this.random.nextInt(this.adjustedTickDelay(350)) == 0) {
                 this.height = -4.0F + NetherDragonEntity.this.random.nextFloat() * 9.0F;
             }
@@ -510,13 +524,21 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
                 }
             }
 
-            if (NetherDragonEntity.this.random.nextInt(this.adjustedTickDelay(450)) == 0) {
+            if (NetherDragonEntity.this.random.nextInt(this.adjustedTickDelay(100)) == 0) {
                 this.angle = NetherDragonEntity.this.random.nextFloat() * 2.0F * (float) Math.PI;
                 this.selectNext();
             }
 
             if (this.touchingTarget()) {
                 this.selectNext();
+            }
+
+            if (NetherDragonEntity.this.getMoveTargetPoint().y() > NetherDragonEntity.this.getY()){
+                if (++ticksTryingToGoUp > 100){
+                    this.height -= -4.0F;
+                    ticksTryingToGoUp = 0;
+                    selectNext();
+                }
             }
 
             if (NetherDragonEntity.this.getMoveTargetPoint().y() < NetherDragonEntity.this.getY() && !NetherDragonEntity.this.level().isEmptyBlock(NetherDragonEntity.this.blockPosition().below(1))) {
@@ -536,8 +558,50 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
             }
 
             this.angle += this.clockwise * 15.0F * ((float) Math.PI / 180F);
-            NetherDragonEntity.this.setMoveTargetPoint(Vec3.atLowerCornerOf(NetherDragonEntity.this.anchorPoint).add(this.distance * Mth.cos(this.angle) * 3, this.height, this.distance * Mth.sin(this.angle) * 3).toVector3f());
+
+            AtomicReference<Vec3> vec3 = new AtomicReference<>(Vec3.atLowerCornerOf(NetherDragonEntity.this.anchorPoint).add(this.distance * Mth.cos(this.angle) * 3, this.height, this.distance * Mth.sin(this.angle) * 3));
+
+            // Check if the target position is inside a solid block
+            BlockPos targetPos = BlockPos.containing(vec3.get());
+            if (!NetherDragonEntity.this.level().isEmptyBlock(targetPos)) {
+                vec3.set(spawnPoint.getBottomCenter());
+            }
+            NetherDragonEntity.this.setMoveTargetPoint(vec3.get().toVector3f());
         }
+    }
+
+    private boolean checkWalls(AABB area) {//directly ripped from the EnderDragon
+        int i = Mth.floor(area.minX);
+        int j = Mth.floor(area.minY);
+        int k = Mth.floor(area.minZ);
+        int l = Mth.floor(area.maxX);
+        int i1 = Mth.floor(area.maxY);
+        int j1 = Mth.floor(area.maxZ);
+        boolean flag = false;
+        boolean flag1 = false;
+
+        for(int k1 = i; k1 <= l; ++k1) {
+            for(int l1 = j; l1 <= i1; ++l1) {
+                for(int i2 = k; i2 <= j1; ++i2) {
+                    BlockPos blockpos = new BlockPos(k1, l1, i2);
+                    BlockState blockstate = this.level().getBlockState(blockpos);
+                    if (!blockstate.isAir() && !blockstate.is(BlockTags.DRAGON_TRANSPARENT)) {
+                        if (CommonHooks.canEntityDestroy(this.level(), blockpos, this) && !blockstate.is(BlockTags.DRAGON_IMMUNE)) {
+                            flag1 = this.level().removeBlock(blockpos, false) || flag1;
+                        } else {
+                            flag = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (flag1) {
+            BlockPos blockpos1 = new BlockPos(i + this.random.nextInt(l - i + 1), j + this.random.nextInt(i1 - j + 1), k + this.random.nextInt(j1 - k + 1));
+            this.level().levelEvent(2008, blockpos1, 0);
+        }
+
+        return flag;
     }
 
     class NetherDragonEntitySweepAttackGoal extends NetherDragonEntityMoveTargetGoal {
