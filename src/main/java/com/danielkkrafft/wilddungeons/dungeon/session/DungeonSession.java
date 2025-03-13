@@ -187,15 +187,17 @@ public class DungeonSession {
             this.onExit(wdPlayer);
             wdPlayer.getServerPlayer().addItem(new ItemStack(Items.DIAMOND.asItem(), 1));
             wdPlayer.setLastGameMode(wdPlayer.getServerPlayer().gameMode.getGameModeForPlayer());
-            HashMap<String, Property> playerSkins = new HashMap<>();
+            HashMap<String, DungeonSkinDataHolder> playerSkins = new HashMap<>();
             for (String uuid : this.playersInside.keySet()) {
                 GameProfileCache gameProfileCache = DungeonSessionManager.getInstance().server.getProfileCache();
                 if (gameProfileCache != null) {
                     gameProfileCache.get(UUID.fromString(uuid)).ifPresent(gameProfile -> {
                         PropertyMap properties = gameProfile.getProperties();
                         Property property = Iterables.getFirst(properties.get("textures"), null);
-                        if (property != null)
-                            playerSkins.put(uuid, property);
+                        if (property != null){
+                            DungeonSkinDataHolder dungeonSkinDataHolder = new DungeonSkinDataHolder(gameProfile.getName(), property.value(), property.signature());
+                            playerSkins.put(uuid, dungeonSkinDataHolder);
+                        }
                     });
                 }
             }
@@ -297,7 +299,7 @@ public class DungeonSession {
      */
     public static final class DungeonStatsHolder {
         public final HashMap<String, DungeonStats> playerStats;
-        public final HashMap<String, Property> playerSkins;
+        public final HashMap<String, DungeonSkinDataHolder> playerSkins;
         public final String title;
         public final String icon;
         public final int primaryColor;
@@ -306,7 +308,7 @@ public class DungeonSession {
         public final int targetDeaths;
         public final int targetScore;
 
-        public DungeonStatsHolder(HashMap<String, DungeonStats> playerStats,HashMap<String,Property> playerSkins, String title, String icon, int primaryColor, int secondaryColor, int targetTime, int targetDeaths, int targetScore) {
+        public DungeonStatsHolder(HashMap<String, DungeonStats> playerStats,HashMap<String,DungeonSkinDataHolder> playerSkins, String title, String icon, int primaryColor, int secondaryColor, int targetTime, int targetDeaths, int targetScore) {
             this.playerStats = playerStats;
             this.playerSkins = playerSkins;
             this.title = title;
@@ -316,6 +318,17 @@ public class DungeonSession {
             this.targetTime = targetTime;
             this.targetDeaths = targetDeaths;
             this.targetScore = targetScore;
+        }
+    }
+
+    public static final class DungeonSkinDataHolder{
+        public final String name;
+        public final String value;
+        public final String signature;
+        public DungeonSkinDataHolder(String name, String value, String signature) {
+            this.name = name;
+            this.value = value;
+            this.signature = signature;
         }
     }
     /**
