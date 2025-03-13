@@ -23,6 +23,8 @@ import net.minecraft.core.SectionPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.TickTask;
+import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -46,6 +48,7 @@ import org.joml.Vector2i;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.LockSupport;
 
 import static com.danielkkrafft.wilddungeons.block.WDBedrockBlock.MIMIC;
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate.DestructionRule.*;
@@ -73,6 +76,7 @@ public class DungeonRoom {
     private boolean lootGenerated = false;
     private boolean lightRegenerated = false;
     @Serializer.IgnoreSerialization protected DungeonBranch branch = null;
+    @Serializer.IgnoreSerialization public List<CompletableFuture<?>> futures = new ArrayList<>();
 
     public <T> T getProperty(HierarchicalProperty<T> property) { return this.getTemplate().get(property) == null ? this.getBranch().getProperty(property) : this.getTemplate().get(property); }
     public DungeonRoomTemplate getTemplate() {return DUNGEON_ROOM_REGISTRY.get(this.templateKey);}
@@ -160,6 +164,7 @@ public class DungeonRoom {
         if (level == null) return;
         ChunkMap chunkMap = level.getChunkSource().chunkMap;
         ClientboundLevelChunkWithLightPacket packet = createChunkUpdatePacket(level, chunkPos);
+        if (packet == null) return;
 
         for (ServerPlayer player : chunkMap.getPlayers(chunkPos, false)) {
             player.connection.send(packet);
@@ -167,6 +172,9 @@ public class DungeonRoom {
     }
 
     private static ClientboundLevelChunkWithLightPacket createChunkUpdatePacket(ServerLevel level, ChunkPos chunkPos) {
+        if (level == null) return null;
+        ChunkHolder holder = level.getChunkSource().chunkMap.getVisibleChunkIfPresent(chunkPos.toLong());
+        if (!holder.isReadyForSaving()) return null;
         LevelChunk chunk = level.getChunk(chunkPos.x, chunkPos.z);
         LevelLightEngine lightEngine = level.getLightEngine();
         return new ClientboundLevelChunkWithLightPacket(chunk, lightEngine, null, null);
@@ -596,28 +604,37 @@ public class DungeonRoom {
             sectionsToUpdate.add(SectionPos.of(chunkPos, 0));
         }
 
-        sectionsToUpdate.forEach(sectionPos ->
-                lightEngine.updateSectionStatus(sectionPos, false));
+        sectionsToUpdate.forEach(sectionPos -> lightEngine.updateSectionStatus(sectionPos, false));
 
-        // Use CompletableFuture for delayed execution
-        CompletableFuture.runAsync(() -> {
-            try {
-                level.getServer().execute(() -> {
-                    chunkPosSet.forEach(chunkPos -> forceUpdateChunk(level, chunkPos));
-                });
-                for (int i = 0; i < repeatPacketAmount; i++) {
-                    // Sleep for 1 second between updates
-                    Thread.sleep((long) (secondsBetweenPackets*1000));
-                    // Run the update on the main server thread
-                    level.getServer().execute(() -> {
-                        chunkPosSet.forEach(chunkPos -> forceUpdateChunk(level, chunkPos));
-                    });
-                }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                WildDungeons.getLogger().error("Chunk update thread interrupted", e);
-            }
-        }).orTimeout(4, TimeUnit.SECONDS);
+        chunkPosSet.forEach(chunkPos -> forceUpdateChunk(level, chunkPos));
+        for (int i = 1; i <= repeatPacketAmount; i++) {
+            level.getServer().tell(new TickTask((int) (secondsBetweenPackets * 20 * i), () -> {
+                chunkPosSet.forEach(chunkPos -> forceUpdateChunk(level, chunkPos));
+            }));
+        }
+
+//        // Use CompletableFuture for delayed execution
+//        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+//            try {
+//                level.getServer().execute(() -> {
+//                    chunkPosSet.forEach(chunkPos -> forceUpdateChunk(level, chunkPos));
+//                });
+//                for (int i = 0; i < repeatPacketAmount; i++) {
+//                    // Sleep for 1 second between updates
+//                    Thread.sleep((long) (secondsBetweenPackets*1000));
+//                    // Run the update on the main server thread
+//                    level.getServer().execute(() -> {
+//                        chunkPosSet.forEach(chunkPos -> forceUpdateChunk(level, chunkPos));
+//                    });
+//                }
+//            } catch (InterruptedException e) {
+//                Thread.currentThread().interrupt();
+//                WildDungeons.getLogger().error("Chunk update thread interrupted", e);
+//            }
+//        }).orTimeout(4, TimeUnit.SECONDS);
+
+//        if (this.futures == null) this.futures = new ArrayList<>();
+//        this.futures.add(future);
     }
 
     public void onBranchComplete() {
