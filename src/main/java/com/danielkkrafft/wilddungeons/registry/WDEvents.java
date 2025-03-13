@@ -24,11 +24,13 @@ import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import com.danielkkrafft.wilddungeons.util.SaveSystem;
 import com.danielkkrafft.wilddungeons.util.Serializer;
 import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -119,11 +121,36 @@ public class WDEvents {
     public static void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
             WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer.getStringUUID());
+
             CompoundTag tag = new CompoundTag();
             tag.putString("packet", ClientPacketHandler.Packets.UPDATE_WD_PLAYER.toString());
             tag.put("player", Serializer.toCompoundTag(wdPlayer));
             PacketDistributor.sendToPlayer(serverPlayer, new SimplePacketManager.ClientboundTagPacket(tag));
+
+            CompoundTag tag1 = new CompoundTag();
+            tag1.putString("packet", ClientPacketHandler.Packets.SWITCH_SOUNDSCAPE.toString());
+            tag1.putString("sound_key", "NONE");
+            tag1.putInt("intensity", 0);
+            tag1.putBoolean("reset", true);
+            PacketDistributor.sendToPlayer(serverPlayer, new SimplePacketManager.ClientboundTagPacket(tag1));
+
             DecalRenderer.syncClientDecals(serverPlayer);
+            event.getEntity().getServer().tell(new TickTask(1, () -> {
+                if (wdPlayer.getCurrentRoom() != null) {
+                    wdPlayer.getCurrentRoom().onEnter(wdPlayer);
+                }
+            }));
+
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLogout(PlayerEvent.PlayerLoggedOutEvent event) {
+        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
+            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer.getStringUUID());
+            if (wdPlayer.getCurrentRoom() != null) {
+                wdPlayer.getCurrentRoom().onExit(wdPlayer);
+            }
         }
     }
 

@@ -17,6 +17,13 @@
       {"name": "wilddungeons:entity/breeze_golem_core"}
     ]
   },
+  "entity.shimmer": {
+    "sounds": [
+      {
+        "name": "wilddungeons:entity/shimmer"
+      }
+    ]
+  },
   "entity.breeze_golem.cannon.shoot": {
     "sounds": [
       {"name": "wilddungeons:entity/breeze_golem_cannon_shoot"}
@@ -35,6 +42,14 @@
   "entity.breeze_golem.walk": {
     "sounds": [
       {"name": "wilddungeons:entity/breeze_golem_walk"}
+    ]
+  },
+  "soundscape.music.factory_beat": {
+    "sounds": [
+      {
+        "name": "wilddungeons:soundscape/music/factory_beat",
+        "stream": true
+      }
     ]
   },
   "entity.mutant_bogged.ambient": {
@@ -103,6 +118,14 @@
       {"name": "wilddungeons:entity/grapplehook/meathook_entity_hit"}
     ]
   },
+  "soundscape.music.nether_dragon": {
+    "sounds": [
+      {
+        "name": "wilddungeons:soundscape/music/nether_dragon",
+        "stream": true
+      }
+    ]
+  },
   "entity.meathook.reel": {
     "sounds": [
       {"name": "wilddungeons:entity/grapplehook/meathook_entity_reel"}
@@ -116,6 +139,11 @@
   "item.meathook.charge2": {
     "sounds": [
       {"name": "wilddungeons:item/meathook/meathook_charge2"}
+    ]
+  },
+  "soundscape.ambient.horrific_screaming": {
+    "sounds": [
+      {"name": "wilddungeons:soundscape/ambient/horrific_screaming"}
     ]
   },
   "item.meathook.charge3": {
@@ -146,6 +174,14 @@
   "item.meathook.retract": {
     "sounds": [
       {"name": "wilddungeons:item/meathook/meathook_retract"}
+    ]
+  },
+  "soundscape.music.nether_dragon_bass": {
+    "sounds": [
+      {
+        "name": "wilddungeons:soundscape/music/nether_dragon_bass",
+        "stream": true
+      }
     ]
   },
   "ui.misc.beep": {
@@ -253,42 +289,6 @@
         "name": "wilddungeons:soundscape/music/factory_bass",
         "stream": true
       }
-    ],
-    "soundscape.music.factory_beat": {
-      "sounds": [
-        {
-          "name": "wilddungeons:soundscape/music/factory_beat",
-          "stream": true
-        }
-      ]
-    },
-    "soundscape.ambient.horrific_screaming": {
-      "sounds": [
-        {"name": "wilddungeons:soundscape/ambient/horrific_screaming"}
-      ]
-    },
-    "soundscape.music.nether_dragon": {
-      "sounds": [
-        {
-          "name": "wilddungeons:soundscape/music/nether_dragon",
-          "stream": true
-        }
-      ]
-    },
-    "soundscape.music.nether_dragon_bass": {
-      "sounds": [
-        {
-          "name": "wilddungeons:soundscape/music/nether_dragon_bass",
-          "stream": true
-        }
-      ]
-    },
-    "entity.shimmer": {
-      "sounds": [
-        {
-          "name": "wilddungeons:entity/shimmer"
-        }
-      ]
-    }
+    ]
   }
 }

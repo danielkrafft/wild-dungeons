@@ -45,6 +45,7 @@ import org.joml.Vector2i;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 import static com.danielkkrafft.wilddungeons.block.WDBedrockBlock.MIMIC;
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate.DestructionRule.*;
@@ -618,7 +619,7 @@ public class DungeonRoom {
                 Thread.currentThread().interrupt();
                 WildDungeons.getLogger().error("Chunk update thread interrupted", e);
             }
-        });
+        }).orTimeout(4, TimeUnit.SECONDS);
     }
 
     public void onBranchComplete() {
