@@ -10,6 +10,8 @@ public class SoundscapeTemplateRegistry {
     public static final DungeonRegistration.DungeonComponentRegistry<SoundscapeTemplate> SOUNDSCAPE_TEMPLATE_REGISTRY = new DungeonRegistration.DungeonComponentRegistry<>();
     public static ArrayList<SoundscapeTemplate> soundscapes = new ArrayList<>();
 
+    public static final SoundscapeTemplate NONE = create("NONE");
+
     public static final SoundscapeTemplate NETHER_CAVES = create("NETHER_CAVES")
             .addSound(WDSoundEvents.CAVE_01, 0)
             .addSound(WDSoundEvents.NETHER_MELODY, 1)
