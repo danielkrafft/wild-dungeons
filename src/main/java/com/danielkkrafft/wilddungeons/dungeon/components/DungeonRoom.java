@@ -3,6 +3,7 @@ package com.danielkkrafft.wilddungeons.dungeon.components;
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.block.WDBedrockBlock;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
+import com.danielkkrafft.wilddungeons.dungeon.components.room.TargetPurgeRoom;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
@@ -46,6 +47,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 import static com.danielkkrafft.wilddungeons.block.WDBedrockBlock.MIMIC;
+import static com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate.DestructionRule.*;
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialRegistry.DUNGEON_MATERIAL_REGISTRY;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomRegistry.DUNGEON_ROOM_REGISTRY;
@@ -626,7 +628,7 @@ public class DungeonRoom {
 
     public void onClear() {
         this.clear = true;
-        if (this.getProperty(DESTRUCTION_RULE) == DungeonRoomTemplate.DestructionRule.SHELL_CLEAR)
+        if (this.getProperty(DESTRUCTION_RULE) == SHELL_CLEAR)
             CompletableFuture.runAsync(this::removeProtection);
     }
 
@@ -634,5 +636,35 @@ public class DungeonRoom {
     }
 
     public void tick() {
+    }
+
+
+    public boolean canBreakBlock(BlockPos pos, BlockState blockState) {
+        if (this instanceof TargetPurgeRoom) {
+            if (blockState.is(Blocks.SPAWNER)) {
+                return true;
+            }
+        }
+        boolean isInRoom = this.getBoundingBoxes().stream().anyMatch(box -> box.isInside(pos));
+        if (!isInRoom) {
+            return true;
+        }
+        DungeonRoomTemplate.DestructionRule rule = this.getProperty(DESTRUCTION_RULE);
+        return switch (rule) {
+            case PROTECT_ALL, PROTECT_BREAK -> false;
+            case SHELL -> !isPosInsideShell(pos);
+            case PROTECT_ALL_CLEAR -> isClear();
+            case null, default -> true;
+        };
+    }
+
+    public boolean canPlaceBlock(BlockPos pos, BlockState placedBlock) {
+        DungeonRoomTemplate.DestructionRule rule = this.getProperty(DESTRUCTION_RULE);
+        return switch (rule) {
+            case PROTECT_ALL, PROTECT_PLACE -> false;
+            case SHELL -> !isPosInsideShell(pos);
+            case PROTECT_ALL_CLEAR -> isClear();
+            case null, default -> true;
+        };
     }
 }

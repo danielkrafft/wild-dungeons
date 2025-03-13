@@ -7,6 +7,8 @@ import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.TargetPurgeRoom;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.entity.EssenceOrb;
 import com.danielkkrafft.wilddungeons.entity.WDEntities;
@@ -23,6 +25,7 @@ import com.danielkkrafft.wilddungeons.util.SaveSystem;
 import com.danielkkrafft.wilddungeons.util.Serializer;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -43,14 +46,19 @@ import net.minecraft.world.entity.monster.piglin.Piglin;
 import net.minecraft.world.entity.monster.piglin.PiglinBrute;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.EffectCures;
+import net.neoforged.neoforge.event.VanillaGameEvent;
+import net.neoforged.neoforge.event.entity.EntityMobGriefingEvent;
 import net.neoforged.neoforge.event.entity.EntityStruckByLightningEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
@@ -58,13 +66,17 @@ import net.neoforged.neoforge.event.entity.living.LivingExperienceDropEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerXpEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.event.level.ExplosionEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.neoforge.event.level.PistonEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
+import org.joml.Vector2i;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -228,32 +240,151 @@ public class WDEvents {
         }
     }
 
+    private static DungeonRoom findRoom(DungeonFloor floor, BlockPos pos){
+        DungeonRoom room = null;
+        for (Vector2i vec2 : floor.getChunkMap().getOrDefault(new ChunkPos(pos), new ArrayList<>())) {
+            DungeonRoom possibleMatch = floor.getBranches().get(vec2.x).getRooms().get(vec2.y);
+            if (possibleMatch == null) continue;
+            for (BoundingBox box : possibleMatch.getBoundingBoxes()) {
+                if (box.isInside(pos)) {
+                    room = possibleMatch;
+                }
+            }
+        }
+        return room;
+    }
+
     @SubscribeEvent
     public static void onBlockBreak(BlockEvent.BreakEvent event) {
         if (event.getLevel() instanceof ServerLevel serverLevel && event.getPlayer() instanceof ServerPlayer serverPlayer) {
             WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer);
             if (wdPlayer.getCurrentDungeon() == null) return;
-            WildDungeons.getLogger().info("FOUND BLOCK BREAK");
-            event.setCanceled(WDPlayerManager.isProtectedBlock(serverPlayer, event.getPos(), serverLevel));
-            wdPlayer.getCurrentDungeon().getStats(wdPlayer.getUUID()).blocksBroken += 1;
-
-            if (wdPlayer.getCurrentRoom() instanceof TargetPurgeRoom enemyPurgeRoom) {
-                if (event.getLevel().getBlockState(event.getPos()).is(Blocks.SPAWNER)) {
-                    enemyPurgeRoom.discardByBlockPos(event.getPos());
-                }
-            }
+            DungeonRoom room = wdPlayer.getCurrentRoom();
+            if (room==null) return;
+            boolean allowed = room.canBreakBlock(event.getPos(),event.getState());
+            event.setCanceled(!allowed);
+            if (allowed)
+                wdPlayer.getCurrentDungeon().getStats(wdPlayer.getUUID()).blocksBroken += 1;
         }
     }
 
     @SubscribeEvent
     public static void onBlockPlace(BlockEvent.EntityPlaceEvent event) {
         if (event.getLevel() instanceof ServerLevel serverLevel && event.getEntity() instanceof ServerPlayer serverPlayer) {
-            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer.getStringUUID());
+            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer);
             if (wdPlayer.getCurrentDungeon() == null) return;
-            event.setCanceled(WDPlayerManager.isProtectedBlock(serverPlayer, event.getPos(), serverLevel));
-            wdPlayer.getCurrentDungeon().getStats(wdPlayer.getUUID()).blocksPlaced += 1;
+            DungeonRoom room = wdPlayer.getCurrentRoom();
+            if (room==null) return;
+            boolean allowed = room.canPlaceBlock(event.getPos(),event.getPlacedBlock());
+            event.setCanceled(!allowed);
+            if (allowed)
+                wdPlayer.getCurrentDungeon().getStats(wdPlayer.getUUID()).blocksPlaced += 1;
         }
     }
+
+    @SubscribeEvent
+    public static void onExplosionStart(ExplosionEvent.Start event){
+        Level level = event.getLevel();
+        if (level.isClientSide()) return;
+
+        DungeonFloor floor = DungeonSessionManager.getInstance().getFloorFromKey(level.dimension());
+        if (floor == null) return;
+
+        BlockPos pos = BlockPos.containing(event.getExplosion().center());
+        DungeonRoom room = findRoom(floor, pos);
+        if (room == null) return;
+
+        DungeonRoomTemplate.DestructionRule rule = room.getProperty(HierarchicalProperty.DESTRUCTION_RULE);
+        switch (rule) {
+            case SHELL_CLEAR, PROTECT_ALL_CLEAR -> {
+                if (room.isClear()) return;
+                event.setCanceled(true);
+            }
+            case PROTECT_ALL, PROTECT_BREAK -> {
+                event.setCanceled(true);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onExplosionDetonate(ExplosionEvent.Detonate event){
+        Level level = event.getLevel();
+        if (level.isClientSide()) return;
+
+        for (BlockPos pos : event.getAffectedBlocks()) {
+            DungeonFloor floor = DungeonSessionManager.getInstance().getFloorFromKey(level.dimension());
+            if (floor == null) return;
+
+            DungeonRoom room = findRoom(floor, pos);
+
+            if (room == null) return;
+
+            DungeonRoomTemplate.DestructionRule rule = room.getProperty(HierarchicalProperty.DESTRUCTION_RULE);
+            switch (rule) {
+                case SHELL_CLEAR, PROTECT_ALL_CLEAR -> {
+                    if (room.isClear()) return;
+                    event.getAffectedBlocks().removeIf(blockPos -> !room.canBreakBlock(blockPos, level.getBlockState(blockPos)));
+                }
+                case PROTECT_ALL, PROTECT_BREAK -> {
+                    event.getAffectedBlocks().removeIf(blockPos -> !room.canBreakBlock(blockPos, level.getBlockState(blockPos)));
+                }
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onMobGrief(EntityMobGriefingEvent event){
+        Level level = event.getEntity().level();
+        if (level.isClientSide()) return;
+
+        DungeonFloor floor = DungeonSessionManager.getInstance().getFloorFromKey(level.dimension());
+        if (floor == null) return;
+
+        BlockPos pos = event.getEntity().getOnPos();
+        DungeonRoom room = findRoom(floor, pos);
+        if (room == null) return;
+
+        DungeonRoomTemplate.DestructionRule rule = room.getProperty(HierarchicalProperty.DESTRUCTION_RULE);
+        switch (rule) {
+            case SHELL_CLEAR-> {
+                if (room.isClear()) return;
+                if (room.isPosInsideShell(pos))
+                    event.setCanGrief(false);
+            }
+            case PROTECT_ALL, PROTECT_BREAK -> {
+                event.setCanGrief(false);
+            }
+            case PROTECT_ALL_CLEAR -> {
+                if (room.isClear()) return;
+                event.setCanGrief(false);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPistonMovePre(PistonEvent.Pre event){
+        Level level = (Level) event.getLevel();
+        if (level.isClientSide()) return;
+
+        DungeonFloor floor = DungeonSessionManager.getInstance().getFloorFromKey(level.dimension());
+        if (floor == null) return;
+
+        BlockPos pos = event.getPos();
+        DungeonRoom room = findRoom(floor, pos);
+        if (room == null) return;
+
+        DungeonRoomTemplate.DestructionRule rule = room.getProperty(HierarchicalProperty.DESTRUCTION_RULE);
+        switch (rule) {
+            case SHELL_CLEAR, PROTECT_ALL_CLEAR -> {
+                if (room.isClear()) return;
+                event.setCanceled(true);
+            }
+            case PROTECT_ALL, PROTECT_BREAK -> {
+                event.setCanceled(true);
+            }
+        }
+    }
+
 
     @SubscribeEvent
     public static void onDeath(LivingDeathEvent event) {

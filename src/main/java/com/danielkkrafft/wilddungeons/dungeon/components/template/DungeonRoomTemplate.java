@@ -32,7 +32,7 @@ public final class DungeonRoomTemplate implements DungeonRegistration.DungeonCom
 
 
     public enum DestructionRule {
-        SHELL, NONE, SHELL_CLEAR
+        SHELL, NONE, SHELL_CLEAR, PROTECT_BREAK, PROTECT_PLACE, PROTECT_ALL, PROTECT_ALL_CLEAR
     }
 
     public HashMap<HierarchicalProperty<?>, Object> PROPERTIES = new HashMap<>();

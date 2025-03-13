@@ -3,6 +3,8 @@ package com.danielkkrafft.wilddungeons.player;
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.network.ClientPacketHandler;
@@ -84,44 +86,5 @@ public class WDPlayerManager {
             result.add(server.getPlayerList().getPlayer(UUID.fromString(k)).getName().toString());
         });
         return result;
-    }
-
-    public static boolean isProtectedBlock(ServerPlayer player, BlockPos pos, ServerLevel level) {
-        DungeonFloor floor = DungeonSessionManager.getInstance().getFloorFromKey(level.dimension());
-        if (floor == null) return false;
-        WildDungeons.getLogger().info("FOUND DUNGEON FLOOR");
-
-        DungeonRoom room = null;
-
-        for (Vector2i vec2 : floor.getChunkMap().getOrDefault(new ChunkPos(pos), new ArrayList<>())) {
-            DungeonRoom possibleMatch = floor.getBranches().get(vec2.x).getRooms().get(vec2.y);
-            if (possibleMatch == null) continue;
-            for (BoundingBox box : possibleMatch.getBoundingBoxes()) {
-                if (box.isInside(pos)) {
-                    room = possibleMatch;
-                }
-            }
-        }
-
-        if (room == null) return false;
-        WildDungeons.getLogger().info("FOUND DUNGEON ROOM");
-
-        if (room.getAlwaysBreakable().contains(pos)) return false;
-
-        WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(player.getStringUUID());
-        if (wdPlayer.getCurrentBranch() != null && !room.getBranch().hasPlayerVisited(player.getStringUUID())) return true;
-
-//        if (room.getDestructionRule() == DungeonRoomTemplate.DestructionRule.NONE) {
-//            return false;
-//        }
-//
-//        if (room.getDestructionRule() == DungeonRoomTemplate.DestructionRule.SHELL) {
-//            if (room.isPosInsideShell(pos)) return false;
-//        }
-//
-//        if (room.getDestructionRule() == DungeonRoomTemplate.DestructionRule.SHELL_CLEAR && room.isClear()) {
-//            return false;
-//        }
-        return false;
     }
 }
