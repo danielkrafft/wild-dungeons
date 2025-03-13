@@ -243,6 +243,7 @@ public class DungeonFloor {
      * Called on shutdown and on quit. Stops all CompletableFutures associated with this floor.
      */
     public void cancelGenerations() {
+        if (this.generationFutures == null) return;
         generationFutures.forEach(future -> future.cancel(true));
     }
     /**

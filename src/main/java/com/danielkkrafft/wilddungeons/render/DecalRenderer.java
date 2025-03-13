@@ -47,6 +47,7 @@ public class DecalRenderer {
 
         PoseStack poseStack = event.getPoseStack();
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+        RenderSystem.enableDepthTest();
         RenderSystem.disableCull();
         Tesselator tesselator = Tesselator.getInstance();
 

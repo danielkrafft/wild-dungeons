@@ -112,8 +112,9 @@ public class ConnectionPoint {
         return result;
     }
 
-    @Serializer.IgnoreSerialization private HashMap<TemplateOrientation, Direction> cachedDirections = new HashMap<>();
+    @Serializer.IgnoreSerialization private HashMap<TemplateOrientation, Direction> cachedDirections = new HashMap<>(); // TODO we should have an annotation instead here @Serializer.SerializeAs(new HashMap<>())
     public Direction getDirection(TemplateOrientation orientation) {
+        if (cachedDirections == null) cachedDirections = new HashMap<>(); // Serializer does not make a new hashmap due to unsafe new constructor
         cachedDirections.computeIfAbsent(orientation, o -> {
             Direction direction;
             direction = TemplateHelper.mirrorDirection(Direction.byName(this.direction), orientation.getMirror());

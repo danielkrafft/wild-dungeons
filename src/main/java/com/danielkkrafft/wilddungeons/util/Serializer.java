@@ -16,6 +16,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector2i;
@@ -78,13 +80,14 @@ public class Serializer
         addCustom(DecalRenderer.Decal.Vertex.class);
         addCustom(TemplateOrientation.class);
         addCustom(Property.class);
+        addCustom(Mirror.class);
+        addCustom(Rotation.class);
     }
 
     private static void addCustom(Class<?> clazz) {
         try {
             CLASS_CONSTRUCTORS.put(clazz, REFLECTION_FACTORY.newConstructorForSerialization(clazz, Object.class.getDeclaredConstructor()));
             while (clazz != null) {
-                if (clazz.isEnum()) break;
                 List<Field> fields = new ArrayList<>();
                 ACCEPTABLE_CLASS_REFERENCES.put(clazz.getName(), clazz);
                 for (Field field : clazz.getDeclaredFields()) {
@@ -94,6 +97,7 @@ public class Serializer
                     fields.add(field);
                 }
                 CLASS_FIELDS.put(clazz.getName(), fields);
+                if (clazz.isEnum()) break;
                 clazz = clazz.getSuperclass();
             }
         } catch (NoSuchMethodException e) {

@@ -156,6 +156,7 @@ public class DungeonRoom {
     }
 
     public static void forceUpdateChunk(ServerLevel level, ChunkPos chunkPos) {
+        if (level == null) return;
         ChunkMap chunkMap = level.getChunkSource().chunkMap;
         ClientboundLevelChunkWithLightPacket packet = createChunkUpdatePacket(level, chunkPos);
 

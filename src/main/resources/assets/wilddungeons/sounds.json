@@ -72,8 +72,7 @@
   },
   "entity.rift_aura": {
     "sounds": [
-      {"name": "wilddungeons:entity/rift_aura",
-        "stream": true}
+      {"name": "wilddungeons:entity/rift_aura"}
     ]
   },
   "entity.mutant_bogged.hit": {
@@ -181,14 +180,12 @@
   },
   "entity.whispers": {
     "sounds": [
-      {"name": "wilddungeons:entity/whispers",
-        "stream": true}
+      {"name": "wilddungeons:entity/whispers"}
     ]
   },
   "soundscape.ambient.cave_01": {
     "sounds": [
-      {"name": "wilddungeons:soundscape/ambient/cave_01",
-        "stream": true}
+      {"name": "wilddungeons:soundscape/ambient/cave_01"}
     ]
   },
   "soundscape.music.nether_bass": {
@@ -211,8 +208,7 @@
   },
   "soundscape.ambient.cave_02": {
     "sounds": [
-      {"name": "wilddungeons:soundscape/ambient/cave_02",
-        "stream": true}
+      {"name": "wilddungeons:soundscape/ambient/cave_02"}
     ]
   },
   "soundscape.music.mega_dungeon_melody": {
@@ -268,10 +264,7 @@
     },
     "soundscape.ambient.horrific_screaming": {
       "sounds": [
-        {
-          "name": "wilddungeons:soundscape/ambient/horrific_screaming",
-          "stream": true
-        }
+        {"name": "wilddungeons:soundscape/ambient/horrific_screaming"}
       ]
     },
     "soundscape.music.nether_dragon": {
