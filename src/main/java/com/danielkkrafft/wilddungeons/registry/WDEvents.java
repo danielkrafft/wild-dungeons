@@ -259,7 +259,7 @@ public class WDEvents {
         if (event.getLevel() instanceof ServerLevel serverLevel && event.getPlayer() instanceof ServerPlayer serverPlayer) {
             WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer);
             if (wdPlayer.getCurrentDungeon() == null) return;
-            DungeonRoom room = wdPlayer.getCurrentRoom();
+            DungeonRoom room = findRoom(wdPlayer.getCurrentFloor(), event.getPos());
             if (room==null) return;
             boolean allowed = room.canBreakBlock(event.getPos(),event.getState());
             event.setCanceled(!allowed);
@@ -270,12 +270,10 @@ public class WDEvents {
 
     @SubscribeEvent
     public static void onBlockPlace(BlockEvent.EntityPlaceEvent event) {
-        WildDungeons.getLogger().info("BLOCK PLACE EVENT");
-
         if (event.getLevel() instanceof ServerLevel serverLevel && event.getEntity() instanceof ServerPlayer serverPlayer) {
             WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer);
             if (wdPlayer.getCurrentDungeon() == null) return;
-            DungeonRoom room = wdPlayer.getCurrentRoom();
+            DungeonRoom room = findRoom(wdPlayer.getCurrentFloor(), event.getPos());
             if (room==null) return;
             boolean allowed = room.canPlaceBlock(event.getPos(),event.getPlacedBlock());
             event.setCanceled(!allowed);
@@ -377,7 +375,7 @@ public class WDEvents {
 
         DungeonRoomTemplate.DestructionRule rule = room.getProperty(HierarchicalProperty.DESTRUCTION_RULE);
         switch (rule) {
-            case SHELL_CLEAR, PROTECT_ALL_CLEAR -> {
+            case PROTECT_ALL_CLEAR -> {
                 if (room.isClear()) return;
                 event.setCanceled(true);
             }
