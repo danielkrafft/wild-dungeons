@@ -61,7 +61,12 @@ public class SaveSystem {
 
         SaveFile saveFile = new SaveFile();
         Stack<DungeonSession> sessions = new Stack<>();
-        DungeonSessionManager.getInstance().getSessions().forEach((key, value) -> sessions.push(value));
+        DungeonSessionManager.getInstance().getSessions().forEach((key, value) -> {
+            if (!value.getPlayers().isEmpty() || value.dirty) {
+                sessions.push(value);
+                value.dirty = false;
+            }
+        });
         saveFile.AddPlayers(WDPlayerManager.getInstance().getServerPlayers());
 
         while (sessions.iterator().hasNext()) {
