@@ -53,6 +53,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.storage.LevelResource;
@@ -150,6 +151,7 @@ public class WDEvents {
             WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer.getStringUUID());
             if (wdPlayer.getCurrentRoom() != null) {
                 wdPlayer.getCurrentRoom().onExit(wdPlayer);
+                wdPlayer.getCurrentDungeon().getFloors().forEach(floor -> floor.getBranches().forEach(branch -> branch.getRooms().forEach(room -> {if (room.futures != null) room.futures.forEach(future -> future.cancel(true));})));
             }
         }
     }
@@ -172,8 +174,10 @@ public class WDEvents {
 
     @SubscribeEvent
     public static void onWorldSave(LevelEvent.Save event) {
-        if (event.getLevel().isClientSide()) return;
-        SaveSystem.Save();
+        if (event.getLevel() instanceof ServerLevel serverLevel && serverLevel.equals(serverLevel.getServer().overworld())) {
+            SaveSystem.Save();
+        }
+
     }
 
     @SubscribeEvent

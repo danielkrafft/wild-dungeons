@@ -8,6 +8,8 @@ import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.Level;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -21,7 +23,7 @@ public class SaveSystem {
 
     //TODO the rewrite probably broke the save system
 
-    public static void Save(){
+    public static void Save() {
         INSTANCE.save();
     }
 
