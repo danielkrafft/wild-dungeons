@@ -169,6 +169,7 @@ public class DungeonRegistration {
         private List<Pair<Integer, Integer>> mobEffects = new ArrayList<>();
         private boolean allEffects = false;
         private float randomChance = 0.5f;
+        private double healthMultiplier = 1.0f;
 
         public TargetTemplate(String name, DungeonTarget.Type type) {
             this.name = name;
@@ -187,6 +188,7 @@ public class DungeonRegistration {
             enemy.bootsItem = bootsAlwaysSpawn ? bootsItem : RandomUtil.randFloatBetween(0, 1) < randomChance ? bootsItem : -1;
             enemy.mainHandItem = mainHandAlwaysSpawn ? mainHandItem : RandomUtil.randFloatBetween(0, 1) < randomChance ? mainHandItem : -1;
             enemy.offHandItem = offHandAlwaysSpawn ? offHandItem : RandomUtil.randFloatBetween(0, 1) < randomChance ? offHandItem : -1;
+            enemy.healthMultiplier = healthMultiplier;
             if (allEffects) {
                 enemy.mobEffects.addAll(mobEffects);
             } else for (Pair<Integer, Integer> mobEffect : mobEffects) {
@@ -216,6 +218,7 @@ public class DungeonRegistration {
         public TargetTemplate addMobEffect(Holder<MobEffect> effect, int amplifier) {this.mobEffects.add(Pair.of(BuiltInRegistries.MOB_EFFECT.getId(effect.value()), amplifier)); return this;}
         public TargetTemplate addMobEffect(Holder<MobEffect> effect, int amplifier,boolean alwaysSpawnAll) {this.mobEffects.add(Pair.of(BuiltInRegistries.MOB_EFFECT.getId(effect.value()), amplifier));allEffects=alwaysSpawnAll; return this;}
         public TargetTemplate setRandomChance(float randomChance) {this.randomChance = randomChance; return this;}
+        public TargetTemplate setHealthMultiplier(double mult) {this.healthMultiplier = mult; return this;}
     }
 
     public static class ItemTemplate implements DungeonComponent {

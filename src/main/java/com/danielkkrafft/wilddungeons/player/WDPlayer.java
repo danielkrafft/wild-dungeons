@@ -254,6 +254,7 @@ public class WDPlayer {
     }
 
     public void setSoundScape(@Nullable DungeonRegistration.SoundscapeTemplate soundScape, int intensity, boolean forceReset) {
+        if (this.getServerPlayer() == null) return;
         CompoundTag tag = new CompoundTag();
         tag.putString("packet", ClientPacketHandler.Packets.SWITCH_SOUNDSCAPE.toString());
 

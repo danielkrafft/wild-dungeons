@@ -204,6 +204,7 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate NETHER_FACTORY_SPRAWL_4 = createSimple("nether/factory/sprawl4").set(BLOCKING_MATERIAL_INDEX, 1);
     public static final DungeonRoomTemplate NETHER_FACTORY_SPRAWL_5 = createSimple("nether/factory/sprawl5").set(BLOCKING_MATERIAL_INDEX, 1);
     public static final DungeonRoomTemplate NETHER_FACTORY_SPRAWL_6 = createSimple("nether/factory/sprawl6").set(BLOCKING_MATERIAL_INDEX, 1);
+    public static final DungeonRoomTemplate NETHER_FACTORY_FREE_PERK_1 = createSimple("nether/factory/free_perk_1").set(BLOCKING_MATERIAL_INDEX, 1).set(SHOP_TABLE, OfferingTemplateTableRegistry.FREE_PERK_OFFERING_TABLE);
     public static final DungeonRoomTemplate NETHER_FACTORY_RAIL_1 = createSimple("nether/factory/rail_1").set(BLOCKING_MATERIAL_INDEX, 1);
     public static final DungeonRoomTemplate NETHER_FACTORY_RAIL_TRANSITION = createSimple("nether/factory/rail_transition").set(BLOCKING_MATERIAL_INDEX, 1);
     public static final DungeonRoomTemplate NETHER_FACTORY_TRAP_1 = createSimple("nether/factory/trap1").set(BLOCKING_MATERIAL_INDEX, 1);

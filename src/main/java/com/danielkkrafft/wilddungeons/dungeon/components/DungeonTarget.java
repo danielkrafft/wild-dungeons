@@ -10,6 +10,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
@@ -35,6 +36,7 @@ public class DungeonTarget {
     public int bootsItem = -1;
     public int mainHandItem = -1;
     public int offHandItem = -1;
+    public double healthMultiplier = 1.0f;
     public List<Pair<Integer, Integer>> mobEffects = new ArrayList<>();
 
     public DungeonTarget(Type type, String entityTypeKey) {
@@ -70,6 +72,11 @@ public class DungeonTarget {
             if (offHandItem != -1) entity.getSlot(99).set(new ItemStack(Item.byId(offHandItem), 1));
             if (entity instanceof LivingEntity livingEntity) {
                 mobEffects.forEach(pair -> livingEntity.addEffect(new MobEffectInstance(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(BuiltInRegistries.MOB_EFFECT.byId(pair.getFirst())), Integer.MAX_VALUE, pair.getSecond())));
+                double targetHealth = livingEntity.getMaxHealth() * healthMultiplier;
+                if (livingEntity.getAttributes().hasAttribute(Attributes.MAX_HEALTH)) {
+                    livingEntity.getAttribute(Attributes.MAX_HEALTH).setBaseValue(targetHealth);
+                    livingEntity.setHealth((float) targetHealth);
+                }
             }
 
             List<BlockPos> validPoints = room.sampleSpawnablePositions(room.getBranch().getFloor().getLevel(), 10, Mth.ceil(Math.max(entity.getBoundingBox().getXsize(), entity.getBoundingBox().getZsize())));

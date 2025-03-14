@@ -24,8 +24,8 @@ public class LaserSword extends WDWeapon {
 
     public enum AnimationList {idle, gun_transform, charging_up, fully_charged, shoot, sword_transform}
 
-    private static final int warmUpSeconds = 1;//old 5
-    private static final int maxChargeSeconds = 4;//old 15
+    private static final int warmUpSeconds = 5;//old 5
+    private static final int maxChargeSeconds = 15;//old 15
     private static final int cooldownSeconds = 3;//used to be 3x the total charge time
     private static final float cooldownTransitionRatio = 0.25f;
     private static final int laserEntityChargeSeconds = 0;
@@ -37,7 +37,7 @@ public class LaserSword extends WDWeapon {
 
 
     public LaserSword() {
-        super(NAME, new Properties().rarity(Rarity.RARE).durability(1000).attributes(SwordItem.createAttributes(Tiers.DIAMOND, 3, -2.4F)));
+        super(NAME, new Properties().rarity(Rarity.RARE).durability(200).attributes(SwordItem.createAttributes(Tiers.DIAMOND, 3, -2.4F)));
         this.addLoopingAnimation(AnimationList.idle.toString());//default animation
         this.addAnimation(AnimationList.gun_transform.toString(), (float) 2 / warmUpSeconds);//2 seconds long
         this.addLoopingAnimation(AnimationList.charging_up.toString(), (float) 20 / (maxChargeSeconds + warmUpSeconds));//20 seconds long
@@ -88,7 +88,7 @@ public class LaserSword extends WDWeapon {
         boolean explosion = ratio > 0.4f;
         boolean debris = ratio > 0.6f;
 
-        if (!player.isCreative()) stack.setDamageValue(stack.getDamageValue() + blastLevel);
+        if (!player.isCreative()) stack.setDamageValue(stack.getDamageValue() + blastLevel * 10);
         player.getCooldowns().addCooldown(this, cooldownSeconds * 20);
         shoot(blastLevel, level, player, damage, laserRadius, range, explosion, explosionRadius, debris);
         setAnimation(AnimationList.shoot.toString(), stack, player, level);
