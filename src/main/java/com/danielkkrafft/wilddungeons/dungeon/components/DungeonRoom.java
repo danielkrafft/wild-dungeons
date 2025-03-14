@@ -608,7 +608,7 @@ public class DungeonRoom {
 
         chunkPosSet.forEach(chunkPos -> forceUpdateChunk(level, chunkPos));
         for (int i = 1; i <= repeatPacketAmount; i++) {
-            level.getServer().tell(new TickTask((int) (secondsBetweenPackets * 20 * i), () -> {
+            level.getServer().tell(new TickTask((int) (secondsBetweenPackets * 20 * i), () -> {//will execute immediately instead of waiting because minecraft is dumb
                 chunkPosSet.forEach(chunkPos -> forceUpdateChunk(level, chunkPos));
             }));
         }

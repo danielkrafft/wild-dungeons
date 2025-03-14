@@ -18,9 +18,7 @@ import com.danielkkrafft.wilddungeons.util.FileUtil;
 import com.danielkkrafft.wilddungeons.util.Serializer;
 import com.danielkkrafft.wilddungeons.world.dimension.EmptyGenerator;
 import com.danielkkrafft.wilddungeons.world.dimension.tools.UpdateDimensionsPacket;
-import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.logging.LogUtils;
-import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
@@ -36,17 +34,13 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
-import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
-import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforge.registries.RegisterEvent;
-import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 
 @Mod(WildDungeons.MODID)
@@ -163,19 +157,6 @@ public class WildDungeons {
     @SubscribeEvent
     public static void registerLayerDefinition(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(AmogusModel.LAYER_LOCATION, AmogusModel::createBodyLayer);
-    }
-
-    public static final Lazy<KeyMapping> TOGGLE_ESSENCE_TYPE = Lazy.of(() -> new KeyMapping(//todo should be moved to it's own keymapping class if we add more keybindings
-            "key.wilddungeons.toggle_essence_type",
-            KeyConflictContext.IN_GAME,
-            InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_V,
-            "key.categories.wilddungeons"
-    ));
-
-    @SubscribeEvent
-    public static void registerKeymappings(RegisterKeyMappingsEvent event) {
-        event.register(TOGGLE_ESSENCE_TYPE.get());
     }
 
     public static ResourceLocation rl(String path) {
