@@ -88,7 +88,7 @@ public class LaserSword extends WDWeapon {
         boolean explosion = ratio > 0.4f;
         boolean debris = ratio > 0.6f;
 
-        if (!player.isCreative()) stack.setDamageValue(stack.getDamageValue() + blastLevel * 10);
+        if (!player.isCreative()) stack.setDamageValue(stack.getDamageValue() + blastLevel * 10);//should this be hurtAndBreak?
         player.getCooldowns().addCooldown(this, cooldownSeconds * 20);
         shoot(blastLevel, level, player, damage, laserRadius, range, explosion, explosionRadius, debris);
         setAnimation(AnimationList.shoot.toString(), stack, player, level);

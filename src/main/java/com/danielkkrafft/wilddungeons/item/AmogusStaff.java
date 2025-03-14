@@ -20,14 +20,14 @@ public class AmogusStaff extends Item {
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
+        EquipmentSlot slot = usedHand == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND;
+        player.getItemInHand(usedHand).hurtAndBreak(1, player, slot);
         if (level.isClientSide) return InteractionResultHolder.pass(player.getItemInHand(usedHand));
         AmogusEntity ae = new AmogusEntity(WDEntities.AMOGUS.get(), level);
         HitResult hitResult = player.pick(5, 1, false);
         Vec3 pos = hitResult.getType() == HitResult.Type.BLOCK ? hitResult.getLocation() : player.position();
         ae.setPos(pos);
         level.addFreshEntity(ae);
-        EquipmentSlot slot = usedHand == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND;
-        player.getItemInHand(usedHand).hurtAndBreak(1, player, slot);
         return InteractionResultHolder.consume(player.getItemInHand(usedHand));
     }
 }
