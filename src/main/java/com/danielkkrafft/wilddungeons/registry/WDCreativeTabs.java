@@ -65,7 +65,7 @@ public class WDCreativeTabs {
                 output.accept(EssenceBottleItem.setEssenceType(new ItemStack(ESSENCE_BOTTLE.get()), EssenceOrb.Type.NETHER));
                 output.accept(EssenceBottleItem.setEssenceType(new ItemStack(ESSENCE_BOTTLE.get()), EssenceOrb.Type.END));
 
-//                output.accept(MEATHOOK_ITEM.get());
+                output.accept(MEATHOOK_ITEM.get());
                 output.accept(AMOGUS_STAFF.get());
                 output.accept(LASER_SWORD_ITEM.get());
                 output.accept(FIREWORK_GUN_ITEM.get());

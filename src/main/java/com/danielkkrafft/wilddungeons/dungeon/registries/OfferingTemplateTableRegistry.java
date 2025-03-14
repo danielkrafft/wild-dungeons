@@ -21,7 +21,7 @@ public class OfferingTemplateTableRegistry {
         BASIC_SHOP_TABLE.add(CHEAP_BASIC_POOL,1).add(MEDIUM_BASIC_POOL,5).add(EXPENSIVE_BASIC_POOL,10);
         OFFERING_TEMPLATE_TABLE_REGISTRY.add(BASIC_SHOP_TABLE);
 
-        FREE_CUSTOM_WEAPON_TABLE.add(new WeightedPool<OfferingTemplate>().add(OfferingTemplateRegistry.FREE_AMOGUS_STAFF, 1).add(OfferingTemplateRegistry.FREE_LASER_SWORD, 1).add(OfferingTemplateRegistry.FREE_FIREWORK_GUN, 1), 1);
+        FREE_CUSTOM_WEAPON_TABLE.add(new WeightedPool<OfferingTemplate>().add(OfferingTemplateRegistry.FREE_AMOGUS_STAFF, 1).add(OfferingTemplateRegistry.FREE_LASER_SWORD, 1).add(OfferingTemplateRegistry.FREE_FIREWORK_GUN, 1).add(OfferingTemplateRegistry.FREE_MEATHOOK, 1), 1);
         OFFERING_TEMPLATE_TABLE_REGISTRY.add(FREE_CUSTOM_WEAPON_TABLE);
     }
 }
