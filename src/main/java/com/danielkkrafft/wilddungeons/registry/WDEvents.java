@@ -26,6 +26,7 @@ import com.danielkkrafft.wilddungeons.util.Serializer;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
@@ -287,8 +288,11 @@ public class WDEvents {
             if (room==null) return;
             boolean allowed = room.canBreakBlock(event.getPos(),event.getState());
             event.setCanceled(!allowed);
-            if (allowed)
+            if (allowed) {
                 wdPlayer.getCurrentDungeon().getStats(wdPlayer.getUUID()).blocksBroken += 1;
+            } else {
+                serverPlayer.sendSystemMessage(Component.translatable("message.wilddungeons.block_break_fail"),true);
+            }
         }
     }
 
@@ -304,6 +308,7 @@ public class WDEvents {
             if (allowed) {
                 wdPlayer.getCurrentDungeon().getStats(wdPlayer.getUUID()).blocksPlaced += 1;
             } else {
+                serverPlayer.sendSystemMessage(Component.translatable("message.wilddungeons.block_place_fail"),true);
                 serverPlayer.containerMenu.broadcastFullState();
             }
 

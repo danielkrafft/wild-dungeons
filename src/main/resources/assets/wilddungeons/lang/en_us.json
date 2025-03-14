@@ -71,5 +71,7 @@
   "key.categories.wilddungeons": "Wild Dungeons",
   "key.wilddungeons.toggle_essence_type": "Toggle Essence Type",
 
-  "dungeon.failed": "DUNGEON FAILED - RESPAWNING"
+  "dungeon.failed": "DUNGEON FAILED - RESPAWNING",
+  "message.wilddungeons.block_break_fail": "Block cannot be broken - Room is protected",
+  "message.wilddungeons.block_place_fail": "Block cannot be placed - Room is protected"
 }
