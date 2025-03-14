@@ -50,7 +50,7 @@ public class DungeonFloor {
     public DungeonFloorTemplate getTemplate() {return DUNGEON_FLOOR_REGISTRY.get(this.templateKey);}
     public DungeonSession getSession() {return DungeonSessionManager.getInstance().getDungeonSession(this.sessionKey);}
     public <T> T getProperty(HierarchicalProperty<T> property) { return this.getTemplate().get(property) == null ? this.getSession().getTemplate().get(property) : this.getTemplate().get(property); }
-    public double getDifficulty() {return this.getSession().getTemplate().get(HierarchicalProperty.DIFFICULTY_MODIFIER) * Math.max(1,this.getSession().getPlayers().size()) * this.getProperty(HierarchicalProperty.DIFFICULTY_MODIFIER);}
+    public double getDifficulty() {return this.getSession().getTemplate().get(HierarchicalProperty.DIFFICULTY_MODIFIER) * Math.max(1,(this.getSession().getPlayers().size()) * this.getProperty(HierarchicalProperty.DIFFICULTY_MODIFIER) * Math.pow(0.92, this.getSession().getPlayers().size()));}
     public ServerLevel getLevel() {
         return DungeonSessionManager.getInstance().server.levels.get(this.LEVEL_KEY);
     }

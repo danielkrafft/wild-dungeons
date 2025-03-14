@@ -49,6 +49,9 @@ public class CombatRoom extends TargetPurgeRoom {
 
         templates.forEach(template -> {
             DungeonTarget enemy = template.asEnemy();
+            if (this instanceof BossRoom) {
+                enemy.healthMultiplier = Math.max(this.getDifficulty() / 0.5, 1);
+            }
             targets.add(enemy);
             totalSpawns += 1;
         });

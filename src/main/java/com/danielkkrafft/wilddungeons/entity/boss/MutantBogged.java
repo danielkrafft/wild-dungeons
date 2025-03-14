@@ -112,7 +112,7 @@ public class MutantBogged extends Monster implements RangedAttackMob, GeoEntity 
     }
 
     public static AttributeSupplier setAttributes() {
-        return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 300).
+        return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 120).
                 add(Attributes.MOVEMENT_SPEED, 0.4).
                 add(Attributes.FOLLOW_RANGE, 50).
                 add(Attributes.ATTACK_DAMAGE, 10).
