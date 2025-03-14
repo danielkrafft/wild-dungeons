@@ -2,6 +2,7 @@ package com.danielkkrafft.wilddungeons.sound;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
+import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -68,10 +69,21 @@ public class SoundscapeHandler {
 
     @SubscribeEvent
     public static void onMusicPlay(PlaySoundEvent event) {
-        if (Minecraft.getInstance().player == null) return;
-        if (WDPlayerManager.getInstance().getOrCreateClientWDPlayer(Minecraft.getInstance().player).getCurrentDungeon() == null) return;
-        if (event.getSound().getLocation().toString().contains(WildDungeons.MODID)) return;
+        if (Minecraft.getInstance().player == null) {
+            WildDungeons.getLogger().info("PLAYING SOUND: {}", event.getName());
+            return;
+        }
+        WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateClientWDPlayer(Minecraft.getInstance().player);
+        if (!wdPlayer.isInsideDungeon()) {
+            WildDungeons.getLogger().info("PLAYING SOUND: {}", event.getName());
+            return;
+        }
+        if (event.getSound().getLocation().toString().contains(WildDungeons.MODID)) {
+            WildDungeons.getLogger().info("PLAYING SOUND: {}", event.getName());
+            return;
+        }
         if (event.getSound().getLocation().toString().contains("music")) {
+            WildDungeons.getLogger().info("CANCELLING SOUND: {}", event.getName());
             event.setSound(null);
         }
     }

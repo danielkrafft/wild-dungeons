@@ -66,8 +66,11 @@ public class WDPlayer {
 
     public String getUUID() {return this.UUID;}
 
-    public DungeonSession getCurrentDungeon() {
+    public DungeonSession getCurrentDungeon() { // Unsafe on clients
         return Objects.equals(this.currentDungeon, "none") ? null : DungeonSessionManager.getInstance().getDungeonSession(this.currentDungeon);}
+    public boolean isInsideDungeon() {
+        return !Objects.equals(this.currentDungeon, "none");
+    }
     public void setCurrentDungeon(DungeonSession session) {
         this.currentDungeon = session == null ? "none" : DungeonSessionManager.buildDungeonSessionKey(session.getEntranceUUID());
         this.currentDungeonKey = this.currentDungeon;
