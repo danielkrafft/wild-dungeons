@@ -63,6 +63,7 @@ import net.neoforged.neoforge.event.entity.EntityStruckByLightningEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingExperienceDropEvent;
+import net.neoforged.neoforge.event.entity.living.LivingUseTotemEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerXpEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
@@ -418,6 +419,15 @@ public class WDEvents {
         }
     }
 
+    @SubscribeEvent
+    public static void onTotemUse(LivingUseTotemEvent event){
+        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
+            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer);
+            if (wdPlayer.getCurrentDungeon() == null) return;
+            event.setCanceled(true);
+            serverPlayer.containerMenu.broadcastFullState();
+        }
+    }
 
     @SubscribeEvent
     public static void onDeath(LivingDeathEvent event) {
