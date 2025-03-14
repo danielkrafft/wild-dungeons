@@ -3,6 +3,7 @@ package com.danielkkrafft.wilddungeons.dungeon.components;
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.block.WDBedrockBlock;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
+import com.danielkkrafft.wilddungeons.dungeon.components.room.LockableEventRoom;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.TargetPurgeRoom;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
@@ -23,7 +24,6 @@ import net.minecraft.core.SectionPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerLevel;
@@ -74,6 +74,7 @@ public class DungeonRoom {
     private final HashMap<String, Boolean> playersInside = new HashMap<>();
     private final Set<BlockPos> alwaysBreakable = new HashSet<>();
     private boolean lootGenerated = false;
+    private boolean offeringsProcessed = false;
     private boolean lightRegenerated = false;
     @Serializer.IgnoreSerialization protected DungeonBranch branch = null;
     @Serializer.IgnoreSerialization public List<CompletableFuture<?>> futures = new ArrayList<>();
@@ -174,6 +175,7 @@ public class DungeonRoom {
     private static ClientboundLevelChunkWithLightPacket createChunkUpdatePacket(ServerLevel level, ChunkPos chunkPos) {
         if (level == null) return null;
         ChunkHolder holder = level.getChunkSource().chunkMap.getVisibleChunkIfPresent(chunkPos.toLong());
+        if (holder == null) return null;
         if (!holder.isReadyForSaving()) return null;
         LevelChunk chunk = level.getChunk(chunkPos.x, chunkPos.z);
         LevelLightEngine lightEngine = level.getLightEngine();
@@ -342,10 +344,13 @@ public class DungeonRoom {
             if (point.isConnected()) {
                 point.unBlock();
                 point.addDecal();
-                point.getConnectedPoint().unBlock();
+                if (!(point.getConnectedPoint().getRoom() instanceof LockableEventRoom)){
+                    point.getConnectedPoint().unBlock();
+                };
             }
             if (!point.isConnected()) {
-                point.blockAndRemoveDecal(2);
+                point.block(2);
+                point.removeDecal();
             }
         }
     }
@@ -371,18 +376,22 @@ public class DungeonRoom {
     }
 
     public void processOfferings() {
-        List<DungeonRegistration.OfferingTemplate> entries = this.getProperty(SHOP_TABLE).randomResults(this.getTemplate().offerings().size(), (int) this.getDifficulty() * this.getTemplate().offerings().size(), 1.2f);
-        getTemplate().offerings().forEach(pos -> {
-            if (entries.isEmpty()) {
-                return;
-            }
-            Offering next = entries.removeFirst().asOffering(this.getBranch().getFloor().getLevel());
-            Vec3 pos1 = StructureTemplate.transform(pos, this.getSettings().getMirror(), this.getSettings().getRotation(), TemplateHelper.EMPTY_BLOCK_POS).add(this.position.getX(), this.position.getY(), this.position.getZ());
-            WildDungeons.getLogger().info("ADDING OFFERING AT {}", pos1);
-            next.setPos(pos1);
-            this.getBranch().getFloor().getLevel().addFreshEntity(next);
-            this.offeringUUIDs.add(next.getStringUUID());
-        });
+        if (!offeringsProcessed)
+        {
+            List<DungeonRegistration.OfferingTemplate> entries = this.getProperty(SHOP_TABLE).randomResults(this.getTemplate().offerings().size(), (int) this.getDifficulty() * this.getTemplate().offerings().size(), 1.2f);
+            getTemplate().offerings().forEach(pos -> {
+                if (entries.isEmpty()) {
+                    return;
+                }
+                Offering next = entries.removeFirst().asOffering(this.getBranch().getFloor().getLevel());
+                Vec3 pos1 = StructureTemplate.transform(pos, this.getSettings().getMirror(), this.getSettings().getRotation(), TemplateHelper.EMPTY_BLOCK_POS).add(this.position.getX(), this.position.getY(), this.position.getZ());
+                WildDungeons.getLogger().info("ADDING OFFERING AT {}", pos1);
+                next.setPos(pos1);
+                this.getBranch().getFloor().getLevel().addFreshEntity(next);
+                this.offeringUUIDs.add(next.getStringUUID());
+            });
+            offeringsProcessed = true;
+        }
     }
 
     public void processLootBlocks() {
@@ -547,32 +556,20 @@ public class DungeonRoom {
         ServerPlayer serverPlayer = player.getServerPlayer();
         if (serverPlayer == null) return;
 
+        generateLoot();
+
+        fixLighting();
+    }
+
+    private void generateLoot() {
         // Generate loot only once
         if (!lootGenerated) {
             this.processLootBlocks();
-            this.processOfferings();
             lootGenerated = true;
         }
-
-        fixLighting();
-        //we could look forward and fix all the lights in the future branches, but this freezes the server when we end up fixing a branch that splits into multiple branches because we are fixing thousands and thousands of blocks
-//        fixFutureBranchesLighting();
     }
 
-    private void fixFutureBranchesLighting() {
-        DungeonBranch currentBranch = this.getBranch();
-        List<DungeonBranch> branches = currentBranch.getFloor().getBranches();
-        List<DungeonBranch> nextBranches = new ArrayList<>();
-        for (int i = currentBranch.getIndex() + 1; i < branches.size(); i++) {
-            DungeonBranch branch = branches.get(i);
-            if (branch.getIndex() == this.branchIndex + 1 || branch.getTemplate().rootOriginBranchIndex() == this.branchIndex) {
-                nextBranches.add(branch);
-            }
-        }
-        nextBranches.forEach(nextBranch -> nextBranch.getRooms().forEach(DungeonRoom::fixLighting));
-    }
-
-    private void fixLighting() {
+    public void fixLighting() {
         if (!lightRegenerated){//important that we only trigger this when the player is near, because it only happens once
             updateChunksAndLighting(true, 5,1);
 //            WildDungeons.getLogger().info("FIXING LIGHTING FOR BRANCH {}", this.getBranch().getIndex());
@@ -607,35 +604,37 @@ public class DungeonRoom {
 
         sectionsToUpdate.forEach(sectionPos -> lightEngine.updateSectionStatus(sectionPos, false));
 
-        chunkPosSet.forEach(chunkPos -> forceUpdateChunk(level, chunkPos));
-        for (int i = 1; i <= repeatPacketAmount; i++) {
-            level.getServer().tell(new TickTask((int) (secondsBetweenPackets * 20 * i), () -> {//will execute immediately instead of waiting because minecraft is dumb
-                chunkPosSet.forEach(chunkPos -> forceUpdateChunk(level, chunkPos));
-            }));
-        }
+//        chunkPosSet.forEach(chunkPos -> forceUpdateChunk(level, chunkPos));
+//        for (int i = 1; i <= repeatPacketAmount; i++) {
+//            level.getServer().tell(new TickTask((int) (secondsBetweenPackets * 20 * i), () -> {//will execute immediately instead of waiting because minecraft is dumb
+//                chunkPosSet.forEach(chunkPos -> forceUpdateChunk(level, chunkPos));
+//            }));
+//        }
 
-//        // Use CompletableFuture for delayed execution
-//        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
-//            try {
-//                level.getServer().execute(() -> {
-//                    chunkPosSet.forEach(chunkPos -> forceUpdateChunk(level, chunkPos));
-//                });
-//                for (int i = 0; i < repeatPacketAmount; i++) {
-//                    // Sleep for 1 second between updates
-//                    Thread.sleep((long) (secondsBetweenPackets*1000));
-//                    // Run the update on the main server thread
-//                    level.getServer().execute(() -> {
-//                        chunkPosSet.forEach(chunkPos -> forceUpdateChunk(level, chunkPos));
-//                    });
-//                }
-//            } catch (InterruptedException e) {
-//                Thread.currentThread().interrupt();
-//                WildDungeons.getLogger().error("Chunk update thread interrupted", e);
-//            }
-//        }).orTimeout(4, TimeUnit.SECONDS);
+        // Use CompletableFuture for delayed execution
+        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+            try {
+                if (level == null) return;
+                level.getServer().execute(() -> {
+                    chunkPosSet.forEach(chunkPos -> forceUpdateChunk(level, chunkPos));
+                });
+                for (int i = 0; i < repeatPacketAmount; i++) {
+                    // Sleep for 1 second between updates
+                    Thread.sleep((long) (secondsBetweenPackets*1000));
+                    // Run the update on the main server thread
+                    if (level == null) return;
+                    level.getServer().execute(() -> {
+                        chunkPosSet.forEach(chunkPos -> forceUpdateChunk(level, chunkPos));
+                    });
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                WildDungeons.getLogger().error("Chunk update thread interrupted", e);
+            }
+        }).orTimeout(4, TimeUnit.SECONDS);
 
-//        if (this.futures == null) this.futures = new ArrayList<>();
-//        this.futures.add(future);
+        if (this.futures == null) this.futures = new ArrayList<>();
+        this.futures.add(future);
     }
 
     public void onBranchComplete() {

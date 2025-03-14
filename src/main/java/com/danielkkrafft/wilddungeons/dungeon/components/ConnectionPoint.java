@@ -256,11 +256,6 @@ public class ConnectionPoint {
         });
     }
 
-    public void blockAndRemoveDecal(int flags){
-        block(flags);
-        removeDecal();
-    }
-
     public void unBlock() {
         ServerLevel level = this.getRoom().getBranch().getFloor().getLevel();
         unBlockedBlockStates.forEach((pos, blockState) -> level.setBlock(pos, TemplateHelper.fixBlockStateProperties(blockStateFromString(blockState), this.getRoom().getSettings()), 2));
