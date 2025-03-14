@@ -233,7 +233,7 @@ public class ConnectionPoint {
         getPositions(this.getRoom().getOrientation(), this.getRoom().getPosition()).forEach((pos) -> level.setBlock(pos, this.getRoom().getMaterial().getHidden(0), 2));
     }
 
-    public void block( int flags) {
+    public void block(int flags) {
         this.getRoom().getActivePlayers().forEach(wdPlayer -> {
             ServerPlayer player = wdPlayer.getServerPlayer();
             if (player!=null && this.getRealBoundingBox().isInside(player.blockPosition())) {
@@ -266,11 +266,6 @@ public class ConnectionPoint {
         unBlockedBlockStates.forEach((pos, blockState) -> level.setBlock(pos, TemplateHelper.fixBlockStateProperties(blockStateFromString(blockState), this.getRoom().getSettings()), 2));
     }
 
-    public void unBlockAndAddDecal() {
-        unBlock();
-        addDecal();
-    }
-
     public void addDecal(){
         Decal decal = this.getDecal();
         if (decal != null) {
@@ -279,7 +274,7 @@ public class ConnectionPoint {
         }
     }
 
-    public void removeDecal(){
+    public void removeDecal() {
         Decal decal = this.getDecal();
         if (decal != null) {
             DecalRenderer.removeServerDecal(decal);

@@ -340,7 +340,8 @@ public class DungeonRoom {
         for (ConnectionPoint point : connectionPoints) {
             point.setupBlockstates(getOrientation(), getPosition(), this.getBranch().getFloor().getLevel());
             if (point.isConnected()) {
-                point.unBlockAndAddDecal();
+                point.unBlock();
+                point.addDecal();
                 point.getConnectedPoint().unBlock();
             }
             if (!point.isConnected()) {

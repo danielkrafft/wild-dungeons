@@ -98,7 +98,6 @@ public class LockableEventRoom extends DungeonRoom {
     @Override
     public void onBranchEnter(WDPlayer player) {
         super.onBranchEnter(player);
-        setPreviewDoorways();
     }
 
     public void setPreviewDoorways() {
@@ -110,7 +109,8 @@ public class LockableEventRoom extends DungeonRoom {
                         (point.getConnectedPoint().getRoom().getIndex() > this.getIndex() && point.getConnectedPoint().getBranchIndex() == this.getBranch().getIndex())) {
                     point.blockAndRemoveDecal(2);
                 } else {
-                    point.unBlockAndAddDecal();
+                    point.unBlock();
+                    point.addDecal();
                 }
             }
         });

@@ -64,7 +64,8 @@ public class KeyRequiredRoom extends TargetPurgeRoom {
                 //this code only works when the *next* branch is generated too
                 if (point.getConnectedPoint().getBranchIndex() <= this.getBranch().getIndex() &&
                         (point.getConnectedPoint().getRoom().getIndex() <= this.getIndex() || point.getConnectedPoint().getBranchIndex() != this.getBranch().getIndex())) {
-                    point.unBlockAndAddDecal();
+                    point.unBlock();
+                    point.addDecal();
                 }
             }
         });
