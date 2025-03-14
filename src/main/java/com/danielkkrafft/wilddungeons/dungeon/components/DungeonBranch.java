@@ -258,6 +258,13 @@ public class DungeonBranch {
         for (DungeonRoom room : this.getRooms()) {
             room.onBranchEnter(player);
         }
+        List<DungeonBranch> futureBranches = getBranchesOneAhead();
+        futureBranches.forEach(nextBranch ->{
+            nextBranch.getRooms().forEach(dungeonRoom -> {
+                dungeonRoom.fixLighting();
+                dungeonRoom.processOfferings();
+            });
+        });
     }
 
     /**
@@ -284,5 +291,17 @@ public class DungeonBranch {
         //we shouldn't inline this because there are 40+ calls to that method and it kept causing knock-on errors
         if (this.branchRooms == null) this.branchRooms = new ArrayList<>();
         this.branchRooms.add(room);
+    }
+
+    public List<DungeonBranch> getBranchesOneAhead() {
+        List<DungeonBranch> branches = this.getFloor().getBranches();
+        List<DungeonBranch> nextBranches = new ArrayList<>();
+        for (int i = this.getIndex() + 1; i < branches.size(); i++) {
+            DungeonBranch branch = branches.get(i);
+            if (branch.getIndex() == this.getIndex() + 1 || branch.getTemplate().rootOriginBranchIndex() == this.getIndex()) {
+                nextBranches.add(branch);
+            }
+        }
+        return nextBranches;
     }
 }
