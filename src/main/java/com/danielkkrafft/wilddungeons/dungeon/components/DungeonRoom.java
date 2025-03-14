@@ -607,35 +607,37 @@ public class DungeonRoom {
 
         sectionsToUpdate.forEach(sectionPos -> lightEngine.updateSectionStatus(sectionPos, false));
 
-        chunkPosSet.forEach(chunkPos -> forceUpdateChunk(level, chunkPos));
-        for (int i = 1; i <= repeatPacketAmount; i++) {
-            level.getServer().tell(new TickTask((int) (secondsBetweenPackets * 20 * i), () -> {//will execute immediately instead of waiting because minecraft is dumb
-                chunkPosSet.forEach(chunkPos -> forceUpdateChunk(level, chunkPos));
-            }));
-        }
+//        chunkPosSet.forEach(chunkPos -> forceUpdateChunk(level, chunkPos));
+//        for (int i = 1; i <= repeatPacketAmount; i++) {
+//            level.getServer().tell(new TickTask((int) (secondsBetweenPackets * 20 * i), () -> {//will execute immediately instead of waiting because minecraft is dumb
+//                chunkPosSet.forEach(chunkPos -> forceUpdateChunk(level, chunkPos));
+//            }));
+//        }
 
-//        // Use CompletableFuture for delayed execution
-//        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
-//            try {
-//                level.getServer().execute(() -> {
-//                    chunkPosSet.forEach(chunkPos -> forceUpdateChunk(level, chunkPos));
-//                });
-//                for (int i = 0; i < repeatPacketAmount; i++) {
-//                    // Sleep for 1 second between updates
-//                    Thread.sleep((long) (secondsBetweenPackets*1000));
-//                    // Run the update on the main server thread
-//                    level.getServer().execute(() -> {
-//                        chunkPosSet.forEach(chunkPos -> forceUpdateChunk(level, chunkPos));
-//                    });
-//                }
-//            } catch (InterruptedException e) {
-//                Thread.currentThread().interrupt();
-//                WildDungeons.getLogger().error("Chunk update thread interrupted", e);
-//            }
-//        }).orTimeout(4, TimeUnit.SECONDS);
+        // Use CompletableFuture for delayed execution
+        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+            try {
+                if (level == null) return;
+                level.getServer().execute(() -> {
+                    chunkPosSet.forEach(chunkPos -> forceUpdateChunk(level, chunkPos));
+                });
+                for (int i = 0; i < repeatPacketAmount; i++) {
+                    // Sleep for 1 second between updates
+                    Thread.sleep((long) (secondsBetweenPackets*1000));
+                    // Run the update on the main server thread
+                    if (level == null) return;
+                    level.getServer().execute(() -> {
+                        chunkPosSet.forEach(chunkPos -> forceUpdateChunk(level, chunkPos));
+                    });
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                WildDungeons.getLogger().error("Chunk update thread interrupted", e);
+            }
+        }).orTimeout(4, TimeUnit.SECONDS);
 
-//        if (this.futures == null) this.futures = new ArrayList<>();
-//        this.futures.add(future);
+        if (this.futures == null) this.futures = new ArrayList<>();
+        this.futures.add(future);
     }
 
     public void onBranchComplete() {
