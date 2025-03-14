@@ -1,4 +1,4 @@
-﻿package com.danielkkrafft.wilddungeons;
+package com.danielkkrafft.wilddungeons;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
