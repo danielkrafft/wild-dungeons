@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
-import static com.danielkkrafft.wilddungeons.WildDungeonsClient.TOGGLE_ESSENCE_TYPE;
+import static com.danielkkrafft.KeyBindings.TOGGLE_ESSENCE_TYPE;
 
 public class WDPlayer {
 
