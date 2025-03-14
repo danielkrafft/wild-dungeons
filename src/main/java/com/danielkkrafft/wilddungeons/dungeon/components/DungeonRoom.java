@@ -74,7 +74,7 @@ public class DungeonRoom {
     private final HashMap<String, Boolean> playersInside = new HashMap<>();
     private final Set<BlockPos> alwaysBreakable = new HashSet<>();
     private boolean lootGenerated = false;
-    private boolean offeringsProcessed = false;
+    public boolean offeringsProcessed = false;
     private boolean lightRegenerated = false;
     @Serializer.IgnoreSerialization protected DungeonBranch branch = null;
     @Serializer.IgnoreSerialization public List<CompletableFuture<?>> futures = new ArrayList<>();
@@ -378,6 +378,7 @@ public class DungeonRoom {
     public void processOfferings() {
         if (!offeringsProcessed)
         {
+            offeringsProcessed = true;
             List<DungeonRegistration.OfferingTemplate> entries = this.getProperty(SHOP_TABLE).randomResults(this.getTemplate().offerings().size(), (int) this.getDifficulty() * this.getTemplate().offerings().size(), 1.2f);
             getTemplate().offerings().forEach(pos -> {
                 if (entries.isEmpty()) {
@@ -390,7 +391,6 @@ public class DungeonRoom {
                 this.getBranch().getFloor().getLevel().addFreshEntity(next);
                 this.offeringUUIDs.add(next.getStringUUID());
             });
-            offeringsProcessed = true;
         }
     }
 
