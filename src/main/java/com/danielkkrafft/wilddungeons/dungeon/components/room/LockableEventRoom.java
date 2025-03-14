@@ -73,7 +73,7 @@ public class LockableEventRoom extends DungeonRoom {
         WildDungeons.getLogger().info("LOCKABLE ROOM CLEARING");
         this.getBranch().getFloor().getLevel().playSound(null, this.getPosition(), SoundEvents.IRON_DOOR_OPEN, SoundSource.BLOCKS, .5f, 1f);
         this.getConnectionPoints().forEach(point -> {
-            if (point.isConnected()) {
+            if (point.isConnected() && !(point.getConnectedPoint().getRoom() instanceof SecretRoom)) {
                 point.unBlock();
             }
         });
