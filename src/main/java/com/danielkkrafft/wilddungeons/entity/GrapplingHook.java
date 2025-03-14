@@ -173,7 +173,7 @@ public class GrapplingHook extends ThrowableProjectile
                             discard();
                         }
                     } else {
-                        if (Minecraft.getInstance().options.keyUse.isDown()) {
+                        if (Minecraft.getInstance().options.keyUse.isDown()) {//todo add keybind and refactor this entire thing to not reference keybinds
                             Meathook.resetHook(p, it);
                             if (Meathook.getHookUUID(it) == null) {
                                 discard();
