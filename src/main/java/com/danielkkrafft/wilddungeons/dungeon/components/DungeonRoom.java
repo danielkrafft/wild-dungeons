@@ -344,7 +344,9 @@ public class DungeonRoom {
             if (point.isConnected()) {
                 point.unBlock();
                 point.addDecal();
-                point.getConnectedPoint().unBlock();
+                if (!(point.getConnectedPoint().getRoom() instanceof LockableEventRoom)){
+                    point.getConnectedPoint().unBlock();
+                };
             }
             if (!point.isConnected()) {
                 point.block(2);
