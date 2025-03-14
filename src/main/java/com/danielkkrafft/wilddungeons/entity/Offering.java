@@ -60,7 +60,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     private String purchaseBehavior;
     private String offerID;
     private int amount;
-    private int costAmount;
+    private static final EntityDataAccessor<Integer> costAmount = SynchedEntityData.defineId(Offering.class, EntityDataSerializers.INT);
     private boolean purchased = false;
     private float bubbleTimer = BUBBLE_ANIMATION_TIME;
     private float renderScale = 1.0f;
@@ -78,11 +78,11 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     public String getOfferingId() {return this.offerID;}
     public void setOfferingId(String offerID) {this.offerID = offerID;}
     public int getAmount() {return this.amount;}
-    public int getCostAmount() {return this.costAmount;}
+    public int getCostAmount() {return this.getEntityData().get(costAmount);}
+    public void setCostAmount(int cost) {this.getEntityData().set(costAmount, cost);}
     public boolean isPurchased() {return this.purchased;}
     public float getBubbleTimer() {return this.bubbleTimer;}
     public void setBubbleTimer(float time) {this.bubbleTimer = time;}
-    public void overrideCost(int cost) {this.costAmount = cost;}
     public float getRenderScale() {return this.renderScale;}
     public void setRenderScale(float renderScale) {this.renderScale = renderScale;}
     public int getPrimaryColor() {return this.primaryColor;}
@@ -103,7 +103,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
         this.amount = amount;
         this.offerID = offerID;
         this.costType = costType.toString();
-        this.costAmount = costAmount;
+        this.setCostAmount(costAmount);
     }
 
     private ItemStack itemStack = null;
@@ -173,6 +173,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         builder.define(highlightItem, false);
+        builder.define(costAmount, 0);
     }
 
     @Override
@@ -182,7 +183,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
         compound.putString("costType", this.costType);
         compound.putString("offerID", this.offerID);
         compound.putInt("amount", this.amount);
-        compound.putInt("costAmount", this.costAmount);
+        compound.putInt("costAmount", this.getCostAmount());
         compound.putBoolean("purchased", this.purchased);
         compound.putFloat("renderScale", this.renderScale);
         compound.putInt("primaryColor", this.primaryColor);
@@ -199,7 +200,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
             this.costType = EssenceOrb.Type.OVERWORLD.toString();
             this.offerID = "dirt";
             this.amount = 1;
-            this.costAmount = 0;
+            this.setCostAmount(0);
             this.purchased = false;
             this.renderScale = 1.0f;
             this.primaryColor = 0xFFFFFFFF;
@@ -211,7 +212,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
             this.costType = compound.getString("costType");
             this.offerID = compound.getString("offerID");
             this.amount = compound.getInt("amount");
-            this.costAmount = compound.getInt("costAmount");
+            this.setCostAmount(compound.getInt("costAmount"));
             this.purchased = compound.getBoolean("purchased");
             this.renderScale = compound.getFloat("renderScale");
             this.primaryColor = compound.getInt("primaryColor");
@@ -228,7 +229,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
         buffer.writeUtf(this.costType);
         buffer.writeUtf(this.offerID);
         buffer.writeInt(this.amount);
-        buffer.writeInt(this.costAmount);
+        buffer.writeInt(this.getCostAmount());
         buffer.writeBoolean(this.purchased);
         buffer.writeFloat(this.renderScale);
         buffer.writeInt(this.primaryColor);
@@ -243,7 +244,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
         this.costType = buffer.readUtf();
         this.offerID = buffer.readUtf();
         this.amount = buffer.readInt();
-        this.costAmount = buffer.readInt();
+        this.setCostAmount(buffer.readInt());
         this.purchased = buffer.readBoolean();
         this.renderScale = buffer.readFloat();
         this.primaryColor = buffer.readInt();
@@ -293,16 +294,16 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
                 case END -> Mth.floor(player.getEssenceLevel(END));
             };
 
-            if (this.costAmount == 0 || this.costAmount <= levels) {
+            if (this.getCostAmount() == 0 || this.getCostAmount() <= levels) {
                 this.purchased = true;
 
                 switch (this.getOfferingCostType()) {
-                    case OVERWORLD -> player.getServerPlayer().giveExperienceLevels(-this.costAmount);
-                    case NETHER -> player.giveEssenceLevels(-this.costAmount, NETHER);
-                    case END -> player.giveEssenceLevels(-this.costAmount, END);
+                    case OVERWORLD -> player.getServerPlayer().giveExperienceLevels(-this.getCostAmount());
+                    case NETHER -> player.giveEssenceLevels(-this.getCostAmount(), NETHER);
+                    case END -> player.giveEssenceLevels(-this.getCostAmount(), END);
                 }
 
-                this.costAmount = 0;
+                this.setCostAmount(0);
 
                 if (player.getCurrentRoom() != null) {
                     player.getCurrentRoom().getOfferingUUIDs().remove(this.getStringUUID());
