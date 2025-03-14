@@ -420,7 +420,9 @@ public class WDEvents {
         if (event.getEntity() instanceof ServerPlayer player) {
             WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(player);
             if (wdPlayer.getCurrentDungeon() == null) return;
-
+            if (event.getSource().getEntity() instanceof Monster monster){
+                monster.setTarget(null);
+            }
             CriteriaTriggers.USED_TOTEM.trigger(player, new ItemStack(Items.TOTEM_OF_UNDYING));
             player.gameEvent(GameEvent.ITEM_INTERACT_FINISH);
             player.removeEffectsCuredBy(EffectCures.PROTECTED_BY_TOTEM);
