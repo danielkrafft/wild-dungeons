@@ -24,10 +24,7 @@ import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import com.danielkkrafft.wilddungeons.util.SaveSystem;
 import com.danielkkrafft.wilddungeons.util.Serializer;
 import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.TickTask;
@@ -50,17 +47,16 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
+import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.storage.LevelResource;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.EffectCures;
-import net.neoforged.neoforge.event.VanillaGameEvent;
 import net.neoforged.neoforge.event.entity.EntityMobGriefingEvent;
 import net.neoforged.neoforge.event.entity.EntityStruckByLightningEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
@@ -81,7 +77,6 @@ import org.joml.Vector2i;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 public class WDEvents {
@@ -424,9 +419,7 @@ public class WDEvents {
         if (event.getEntity() instanceof ServerPlayer player) {
             WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(player);
             if (wdPlayer.getCurrentDungeon() == null) return;
-            if (event.getSource().getEntity() instanceof Monster monster){
-                monster.setTarget(null);
-            }
+
             CriteriaTriggers.USED_TOTEM.trigger(player, new ItemStack(Items.TOTEM_OF_UNDYING));
             player.gameEvent(GameEvent.ITEM_INTERACT_FINISH);
             player.removeEffectsCuredBy(EffectCures.PROTECTED_BY_TOTEM);
@@ -442,8 +435,14 @@ public class WDEvents {
 
                 BlockPos respawnPoint;
                 DungeonRoom room = wdPlayer.getCurrentRoom();
-
                 if (room == null) {
+                    room.getBoundingBoxes().forEach(boundingBox -> {
+                        player.level().getEntitiesOfClass(Monster.class, AABB.of(boundingBox.inflatedBy(1))).forEach(monster -> {
+                            if (monster.getTarget() == player) {
+                                monster.setTarget(null);
+                            }
+                        });
+                    });
                     DungeonFloor floor = wdPlayer.getCurrentFloor();
                     int index = 0;
                     for (DungeonBranch branch : floor.getBranches()) {
