@@ -167,6 +167,12 @@ public class DungeonBranchRegistry {
             .set(SOUNDSCAPE, SoundscapeTemplateRegistry.PIGLIN_FACTORY)
             .set(INTENSITY, 2);
 
+    public static final DungeonBranchTemplate PIGLIN_FACTORY_SIDE_FREE_PERK = create("PIGLIN_FACTORY_SIDE_FREE_PERK")
+            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
+                    .addSimple(NETHER_FACTORY_FREE_PERK_1)
+            )
+            .set(SOUNDSCAPE, SoundscapeTemplateRegistry.PEACEFUL);
+
     public static final DungeonBranchTemplate NETHER_DRAGON_BOSS_BRANCH = create("NETHER_DRAGON_BOSS_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .addSimple(NETHER_FACTORY_BOSS_ROOM))
