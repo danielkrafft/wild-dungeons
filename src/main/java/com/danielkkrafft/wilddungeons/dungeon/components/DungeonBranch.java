@@ -41,6 +41,8 @@ public class DungeonBranch {
     public List<DungeonRoom> getRooms() {return this.branchRooms;}
     public BlockPos getSpawnPoint() {return this.spawnPoint;}
     public int getIndex() {return this.index;}
+    public int getRootIndex() {return this.getTemplate().rootOriginBranchIndex();}
+    public int getRootOrActualIndex() {return this.getRootIndex() == -1 ? this.getIndex() : this.getRootIndex();}
     public void setIndex(int index) {this.index = index;}
     public boolean isFullyGenerated() {return this.fullyGenerated;}
     public boolean hasPlayerVisited(String uuid) {return this.playersInside.containsKey(uuid);}
@@ -257,12 +259,13 @@ public class DungeonBranch {
         this.playersInside.put(player.getUUID(), true);
         for (DungeonRoom room : this.getRooms()) {
             room.onBranchEnter(player);
+            room.processOfferings();//safe to call twice because it will only process if the room is not already processed
         }
         List<DungeonBranch> futureBranches = getBranchesOneAhead();
         futureBranches.forEach(nextBranch ->{
-            nextBranch.getRooms().forEach(dungeonRoom -> {
-                dungeonRoom.fixLighting();
-                dungeonRoom.processOfferings();
+            nextBranch.getRooms().forEach(room -> {
+                room.fixLighting();
+                room.processOfferings();
             });
         });
     }
@@ -298,7 +301,7 @@ public class DungeonBranch {
         List<DungeonBranch> nextBranches = new ArrayList<>();
         for (int i = this.getIndex() + 1; i < branches.size(); i++) {
             DungeonBranch branch = branches.get(i);
-            if (branch.getIndex() == this.getIndex() + 1 || branch.getTemplate().rootOriginBranchIndex() == this.getIndex()) {
+            if (branch.getIndex() == this.getIndex() + 1 || branch.getRootIndex() == this.getIndex()) {
                 nextBranches.add(branch);
             }
         }

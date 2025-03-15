@@ -50,7 +50,6 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.storage.LevelResource;
@@ -462,8 +461,8 @@ public class WDEvents {
                     int index = 0;
                     for (DungeonBranch branch : floor.getBranches()) {
                         if (branch.hasPlayerVisited(wdPlayer.getUUID())) {
-                            if (branch.getIndex() > index) {
-                                index = branch.getIndex();
+                            if (branch.getRootOrActualIndex() > index) {
+                                index = branch.getRootOrActualIndex();
                             }
                         }
                     }
@@ -473,7 +472,7 @@ public class WDEvents {
                 if (room.getBranch().getIndex() == 0) {
                     respawnPoint = room.getBranch().getRooms().getFirst().getSpawnPoint(room.getBranch().getFloor().getLevel());
                 } else {
-                    respawnPoint = room.getBranch().getFloor().getBranches().get(room.getBranch().getIndex()-1).getRooms().getLast().getSpawnPoint(room.getBranch().getFloor().getLevel());
+                    respawnPoint = room.getBranch().getFloor().getBranches().get(room.getBranch().getRootOrActualIndex()-1).getRooms().getLast().getSpawnPoint(room.getBranch().getFloor().getLevel());
                 }
 
                 wdPlayer.setRiftCooldown(140);
