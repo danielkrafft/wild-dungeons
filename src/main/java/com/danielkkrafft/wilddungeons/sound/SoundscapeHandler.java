@@ -70,20 +70,20 @@ public class SoundscapeHandler {
     @SubscribeEvent
     public static void onMusicPlay(PlaySoundEvent event) {
         if (Minecraft.getInstance().player == null) {
-            WildDungeons.getLogger().info("PLAYING SOUND: {}", event.getName());
+//            WildDungeons.getLogger().info("PLAYING SOUND: {}", event.getName());
             return;
         }
         WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateClientWDPlayer(Minecraft.getInstance().player);
         if (!wdPlayer.isInsideDungeon()) {
-            WildDungeons.getLogger().info("PLAYING SOUND: {}", event.getName());
+//            WildDungeons.getLogger().info("PLAYING SOUND: {}", event.getName());
             return;
         }
         if (event.getSound().getLocation().toString().contains(WildDungeons.MODID)) {
-            WildDungeons.getLogger().info("PLAYING SOUND: {}", event.getName());
+//            WildDungeons.getLogger().info("PLAYING SOUND: {}", event.getName());
             return;
         }
         if (event.getSound().getLocation().toString().contains("music")) {
-            WildDungeons.getLogger().info("CANCELLING SOUND: {}", event.getName());
+//            WildDungeons.getLogger().info("CANCELLING SOUND: {}", event.getName());
             event.setSound(null);
         }
     }

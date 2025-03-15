@@ -120,7 +120,8 @@ public class DecalRenderer {
         CompoundTag tag = new CompoundTag();
         tag.putString("packet", ClientPacketHandler.Packets.SYNC_DECALS.toString());
         tag.put("decal", Serializer.toCompoundTag(SERVER_DECALS_MAP));
-        player.connection.send(new SimplePacketManager.ClientboundTagPacket(tag));
+        if (player!=null)//edge case where player is null when the session is shutting down
+            player.connection.send(new SimplePacketManager.ClientboundTagPacket(tag));
     }
 
     public static void syncAllClientDecals() {

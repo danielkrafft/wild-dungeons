@@ -278,13 +278,13 @@ public class DungeonSession {
      */
     public void shutdown() {
         floors.forEach(DungeonFloor::cancelGenerations);
+        DecalRenderer.syncAllClientDecals();
         getPlayers().forEach(this::onExit);
         floors.forEach(floor -> {
             floor.getBranches().forEach(dungeonBranch -> dungeonBranch.getRooms().forEach(dungeonRoom -> dungeonRoom.getConnectionPoints().forEach(ConnectionPoint::removeServerDecal)));
             InfiniverseAPI.get().markDimensionForUnregistration(DungeonSessionManager.getInstance().server, floor.getLevelKey());
             FileUtil.deleteDirectoryContents(FileUtil.getWorldPath().resolve("dimensions").resolve(WildDungeons.MODID).resolve(floor.getLevelKey().location().getPath()), true);
         });
-        DecalRenderer.syncAllClientDecals();
         SaveSystem.DeleteSession(this);
         markedForShutdown = true;
     }
