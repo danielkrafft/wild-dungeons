@@ -51,9 +51,15 @@ public class SaveSystem {
     }
 
     private void deleteSession(DungeonSession dungeonSession) {
-        Path path = FileUtil.getWorldPath().resolve("data").resolve("dungeons");
-        FileUtil.deletePath(path.resolve(dungeonSession.getSessionKey()+".nbt"));
-        FileUtil.deleteDirectoryContents(path.resolve(dungeonSession.getSessionKey()),true);
+        try {
+            Path path = FileUtil.getWorldPath().resolve("data").resolve("dungeons");
+            FileUtil.deletePath(path.resolve(dungeonSession.getSessionKey()+".nbt"));
+            FileUtil.deleteDirectoryContents(path.resolve(dungeonSession.getSessionKey()),true);
+        } catch (Exception e) {
+            WildDungeons.getLogger().error("Failed to delete session: {}", dungeonSession.getSessionKey());
+            e.printStackTrace();
+        }
+
     }
 
 
