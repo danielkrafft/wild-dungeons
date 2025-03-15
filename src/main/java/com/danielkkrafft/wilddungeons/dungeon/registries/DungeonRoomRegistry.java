@@ -44,7 +44,7 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
                     of("stone/medium_4_comp_1", EMPTY_BLOCK_POS),
                     of("stone/medium_4_comp_2", new BlockPos(4, 0, -17))
             ));
-    public static final DungeonRoomTemplate LARGE_1 = createSimple("stone/large_1").setClazz(CombatRoom.class);
+    public static final DungeonRoomTemplate LARGE_1 = createSimple("stone/large_1").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
     public static final DungeonRoomTemplate START = createSimple("stone/start");
     public static final DungeonRoomTemplate BOSS = create(
             "stone/boss",
@@ -208,8 +208,8 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate NETHER_FACTORY_RAIL_1 = createSimple("nether/factory/rail_1").set(BLOCKING_MATERIAL_INDEX, 1);
     public static final DungeonRoomTemplate NETHER_FACTORY_RAIL_TRANSITION = createSimple("nether/factory/rail_transition").set(BLOCKING_MATERIAL_INDEX, 1);
     public static final DungeonRoomTemplate NETHER_FACTORY_TRAP_1 = createSimple("nether/factory/trap1").set(BLOCKING_MATERIAL_INDEX, 1);
-    public static final DungeonRoomTemplate NETHER_FACTORY_COMBAT_1 = copyOf(NETHER_FACTORY_SPRAWL_3, "nether_factory_combat_1").setClazz(CombatRoom.class);
-    public static final DungeonRoomTemplate NETHER_FACTORY_COMBAT_2 = copyOf(NETHER_FACTORY_SPRAWL_2, "nether_factory_combat_2").setClazz(CombatRoom.class);
+    public static final DungeonRoomTemplate NETHER_FACTORY_COMBAT_1 = copyOf(NETHER_FACTORY_SPRAWL_3, "nether_factory_combat_1").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
+    public static final DungeonRoomTemplate NETHER_FACTORY_COMBAT_2 = copyOf(NETHER_FACTORY_SPRAWL_2, "nether_factory_combat_2").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
     public static final DungeonRoomTemplate NETHER_FACTORY_KEY_COMBAT = copyOf(NETHER_FACTORY_COMBAT_1, "nether_factory_key_combat").setRoomClearOffering(OfferingTemplateRegistry.DUNGEON_KEY);
     public static final DungeonRoomTemplate NETHER_FACTORY_TRI_BRANCH = create("nether_factory_tri_branch",
             List.of(
@@ -238,6 +238,7 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
                     of("nether/factory/boss_10", new BlockPos(-48,18,7))
             ))
             .setClazz(BossRoom.class)
+            .set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR)
             .setRoomClearOffering(OfferingTemplateRegistry.EXIT_RIFT)
             .set(ENEMY_TABLE, EnemyTableRegistry.NETHER_DRAGON_ARENA)
             .set(BOSS_SPAWN_POS, new Vec3(3.0, 40.0, 3.0));
