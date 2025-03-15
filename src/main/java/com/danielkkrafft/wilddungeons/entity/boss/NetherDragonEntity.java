@@ -91,7 +91,7 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
         this.setAttackPhase(CIRCLE);
         this.xpReward = 200;
         this.moveControl = new NetherDragonMoveControl(this);
-        setPersistenceRequired();
+//        setPersistenceRequired();
     }
 
     @Override
