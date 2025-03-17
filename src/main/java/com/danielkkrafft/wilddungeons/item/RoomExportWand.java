@@ -184,7 +184,7 @@ public class RoomExportWand extends Item {
             StructureTemplate structuretemplate;
             try {
                 structuretemplate = structuretemplatemanager.getOrCreate(resourceLocation);
-            } catch (ResourceLocationException var8) {
+            } catch (ResourceLocationException e) {
                 return false;
             }
 
@@ -232,9 +232,11 @@ public class RoomExportWand extends Item {
         }
     }
 
-
-    
     public String getRoomName() {
         return roomName;
+    }
+
+    public void setName(String roomName) {
+        this.roomName = roomName;
     }
 }
