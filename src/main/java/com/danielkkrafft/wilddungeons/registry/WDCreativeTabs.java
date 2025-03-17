@@ -20,6 +20,7 @@ public class WDCreativeTabs {
             .title(Component.translatable("itemGroup." + WildDungeons.MODID))
             .icon(() -> new ItemStack(CONNECTION_BLOCK.get()))
             .displayItems((params, output) -> {
+                output.accept(ROOM_EXPORT_WAND.get());
                 output.accept(WD_BEDROCK.get());
                 output.accept(CONNECTION_BLOCK.get());
                 output.accept(SPAWN_BLOCK.get());
