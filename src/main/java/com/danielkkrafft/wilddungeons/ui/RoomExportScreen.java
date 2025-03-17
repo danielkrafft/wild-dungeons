@@ -1,19 +1,19 @@
 package com.danielkkrafft.wilddungeons.ui;
 
 import com.danielkkrafft.wilddungeons.item.RoomExportWand;
+import com.danielkkrafft.wilddungeons.network.ServerPacketHandler;
+import com.danielkkrafft.wilddungeons.network.SimplePacketManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Vec3i;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.game.ServerboundSetStructureBlockPacket;
 import net.minecraft.world.level.block.entity.StructureBlockEntity;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.minecraft.world.level.block.state.properties.StructureMode;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -23,6 +23,7 @@ public class RoomExportScreen extends Screen {
 
     private final RoomExportWand roomExportWand;
     private EditBox nameEdit;
+    private Button saveButton;
 
     public RoomExportScreen(RoomExportWand roomExportWand) {
         super(CommonComponents.EMPTY);
@@ -41,6 +42,9 @@ public class RoomExportScreen extends Screen {
         this.nameEdit.setMaxLength(128);
         this.nameEdit.setValue(roomExportWand.getRoomName());
         this.addWidget(this.nameEdit);
+        this.saveButton = this.addRenderableWidget(Button.builder(Component.translatable("structure_block.button.save"), button -> {
+            onDone();
+        }).bounds(this.width / 2 + 4 + 100, 185, 50, 20).build());
     }
 
     @Override
@@ -90,16 +94,17 @@ public class RoomExportScreen extends Screen {
     }
 
     private void onDone() {
-        this.sendToServer(StructureBlockEntity.UpdateType.UPDATE_DATA);
+        this.sendToServer();
         assert this.minecraft != null;
         this.minecraft.setScreen(null);
     }
 
-    private void sendToServer(StructureBlockEntity.UpdateType updateType) {
-        assert this.minecraft != null;
-        //todo send data to server
-        //todo custom packet
-//        this.minecraft.getConnection().send(new ServerboundSetStructureBlockPacket(this.structure.getBlockPos(), updateType, this.structure.getMode(), this.nameEdit.getValue(), blockpos, vec3i, this.structure.getMirror(), this.structure.getRotation(), this.dataEdit.getValue(), this.structure.isIgnoreEntities(), this.structure.getShowAir(), this.structure.getShowBoundingBox(), f, i));
+    private void sendToServer() {
+        CompoundTag tag = new CompoundTag();
+        tag.putString("packet", ServerPacketHandler.Packets.ROOM_EXPORT_WAND_SAVE.toString());
+        tag.putString("roomName", this.nameEdit.getValue());
+
+        PacketDistributor.sendToServer(new SimplePacketManager.ServerboundTagPacket(tag));
     }
 
 

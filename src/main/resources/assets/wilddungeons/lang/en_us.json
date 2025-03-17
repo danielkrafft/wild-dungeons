@@ -78,5 +78,7 @@
   "message.room_export_wand.first_pos_set": "First position set at %s, %s, %s",
   "message.room_export_wand.second_pos_set": "Second position set at %s, %s, %s",
   "message.room_export_wand.reset": "Positions reset",
-  "message.room_export_wand.too_far": "Positions are too far apart"
+  "message.room_export_wand.too_far": "Positions are too far apart",
+  "message.room_export_wand.save.success": "Room saved as %s",
+  "message.room_export_wand.save.failure": "Room save failed"
 }
