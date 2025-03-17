@@ -8,6 +8,7 @@
   "item.wilddungeons.firework_gun": "Firework Gun",
   "item.wilddungeons.wd_dungeon_key": "Dungeon Key",
   "item.wilddungeons.amogus_staff": "Imposter Staff",
+  "item.wilddungeons.room_export_wand": "Room Export Wand",
 
   "block.wilddungeons.connection_block": "Connection Block",
   "block.wilddungeons.rift_block": "Rift Block",
@@ -73,5 +74,9 @@
 
   "dungeon.failed": "DUNGEON FAILED - RESPAWNING",
   "message.wilddungeons.block_break_fail": "Block cannot be broken - Room is protected",
-  "message.wilddungeons.block_place_fail": "Block cannot be placed - Room is protected"
+  "message.wilddungeons.block_place_fail": "Block cannot be placed - Room is protected",
+  "message.room_export_wand.first_pos_set": "First position set at %s, %s, %s",
+  "message.room_export_wand.second_pos_set": "Second position set at %s, %s, %s",
+  "message.room_export_wand.reset": "Positions reset",
+  "message.room_export_wand.too_far": "Positions are too far apart"
 }
