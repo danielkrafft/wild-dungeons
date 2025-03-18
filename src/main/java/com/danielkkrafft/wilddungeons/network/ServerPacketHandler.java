@@ -7,6 +7,7 @@ import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.danielkkrafft.wilddungeons.registry.WDItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -40,7 +41,7 @@ public class ServerPacketHandler {
                 if (itemStack.is(WDItems.ROOM_EXPORT_WAND)){
                     RoomExportWand wand = (RoomExportWand) itemStack.getItem();
                     wand.setName(data.getString("roomName"));
-                    boolean success = wand.saveStructure((ServerLevel) context.player().level());
+                    boolean success = wand.saveStructure((ServerLevel) context.player().level(), (ListTag) data.getList("dungeonMaterials", 10));
                     if (success) {
                         context.player().sendSystemMessage(Component.translatable("message.room_export_wand.save.success",wand.getRoomName()));
                     } else {
