@@ -23,7 +23,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
 
 import java.io.*;
 import java.nio.file.*;
@@ -35,7 +34,6 @@ import java.util.stream.Stream;
 
 public class WDStructureTemplateManager {
     public static WDStructureTemplateManager INSTANCE;
-    private static final Logger LOGGER = WildDungeons.getLogger();
     public static final String STRUCTURE_RESOURCE_DIRECTORY_NAME = "structure";
     private static final String STRUCTURE_GENERATED_DIRECTORY_NAME = "structures";
     private static final String STRUCTURE_FILE_EXTENSION = ".nbt";
@@ -107,7 +105,7 @@ public class WDStructureTemplateManager {
 
     private Optional<WDStructureTemplate> loadFromResource(ResourceLocation id) {
         ResourceLocation resourcelocation = RESOURCE_LISTER.idToFile(id);
-        return this.load(() -> this.resourceManager.open(resourcelocation), (p_230366_) -> LOGGER.error("Couldn't load structure {}", id, p_230366_));
+        return this.load(() -> this.resourceManager.open(resourcelocation), (p_230366_) ->  WildDungeons.getLogger().error("Couldn't load structure {}", id, p_230366_));
     }
 
 
@@ -137,7 +135,7 @@ public class WDStructureTemplateManager {
             return Optional.empty();
         } else {
             Path path = this.createAndValidatePathToGeneratedStructure(id, STRUCTURE_FILE_EXTENSION);
-            return this.load(() -> new FileInputStream(path.toFile()), (p_230400_) -> LOGGER.error("Couldn't load structure from {}", path, p_230400_));
+            return this.load(() -> new FileInputStream(path.toFile()), (p_230400_) ->  WildDungeons.getLogger().error("Couldn't load structure from {}", path, p_230400_));
         }
     }
 
@@ -173,12 +171,12 @@ public class WDStructureTemplateManager {
                 try {
                     output.accept(ResourceLocation.fromNamespaceAndPath(namespace, function.apply(this.relativize(folder, p_352044_))));
                 } catch (ResourceLocationException resourcelocationexception) {
-                    LOGGER.error("Invalid location while listing folder {} contents", folder, resourcelocationexception);
+                    WildDungeons.getLogger().error("Invalid location while listing folder {} contents", folder, resourcelocationexception);
                 }
 
             });
         } catch (IOException ioexception) {
-            LOGGER.error("Failed to list folder {} contents", folder, ioexception);
+            WildDungeons.getLogger().error("Failed to list folder {} contents", folder, ioexception);
         }
 
     }
@@ -199,7 +197,7 @@ public class WDStructureTemplateManager {
             } catch (NoSuchFileException var10) {
                 return Optional.empty();
             } catch (IOException | CommandSyntaxException ioexception) {
-                LOGGER.error("Couldn't load structure from {}", path, ioexception);
+                WildDungeons.getLogger().error("Couldn't load structure from {}", path, ioexception);
                 return Optional.empty();
             }
         }
@@ -250,7 +248,7 @@ public class WDStructureTemplateManager {
                 try {
                     Files.createDirectories(Files.exists(path1) ? path1.toRealPath() : path1);
                 } catch (IOException var13) {
-                    LOGGER.error("Failed to create parent directory: {}", path1);
+                    WildDungeons.getLogger().error("Failed to create parent directory: {}", path1);
                     return false;
                 }
 
@@ -306,5 +304,9 @@ public class WDStructureTemplateManager {
     @FunctionalInterface
     interface InputStreamOpener {
         InputStream open() throws IOException;
+    }
+
+    public HolderGetter<Block> getBlockLookup() {
+        return blockLookup;
     }
 }
