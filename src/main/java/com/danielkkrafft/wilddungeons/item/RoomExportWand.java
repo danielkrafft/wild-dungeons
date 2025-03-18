@@ -2,6 +2,8 @@ package com.danielkkrafft.wilddungeons.item;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.ui.RoomExportScreen;
+import com.danielkkrafft.wilddungeons.world.structure.WDStructureTemplate;
+import com.danielkkrafft.wilddungeons.world.structure.WDStructureTemplateManager;
 import com.google.common.collect.Lists;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.client.Minecraft;
@@ -175,23 +177,23 @@ public class RoomExportWand extends Item {
     }
 
     public boolean saveStructure(ServerLevel serverLevel) {
-        if (this.roomName == null) {
+        if (this.roomName == null || this.firstPos == null || this.secondPos == null) {
             return false;
         } else {
             ResourceLocation resourceLocation = WildDungeons.rl(this.roomName);
-            StructureTemplateManager structuretemplatemanager = serverLevel.getStructureManager();
+            WDStructureTemplateManager wdStructureTemplateManager = WDStructureTemplateManager.INSTANCE;
 
-            StructureTemplate structuretemplate;
+            WDStructureTemplate wdStructureTemplate;
             try {
-                structuretemplate = structuretemplatemanager.getOrCreate(resourceLocation);
+                wdStructureTemplate = wdStructureTemplateManager.getOrCreate(resourceLocation);
             } catch (ResourceLocationException e) {
                 return false;
             }
 
-            fillFromWorld(structuretemplate, serverLevel, firstPos, secondPos, withEntities);
-            structuretemplate.setAuthor(serverLevel.getServer().getServerModName());
+            fillFromWorld(wdStructureTemplate, serverLevel, firstPos, secondPos, withEntities);
+            wdStructureTemplate.setAuthor(serverLevel.getServer().getServerModName());
             try {
-                return structuretemplatemanager.save(resourceLocation);
+                return wdStructureTemplateManager.save(resourceLocation);
             } catch (ResourceLocationException e) {
                 return false;
             }
