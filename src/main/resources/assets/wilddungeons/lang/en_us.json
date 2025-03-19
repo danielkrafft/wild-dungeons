@@ -84,5 +84,6 @@
   "message.room_export_wand.save.failure": "Saving room failed",
   "room_export_wand.name_label": "Room Name:",
   "room_export_wand.materials_label": "Material Blocks:",
+  "room_export_wand.mode_label": "Mode:",
   "room_export_wand.dungeon_material_index_label": "Dungeon Material Index:"
 }

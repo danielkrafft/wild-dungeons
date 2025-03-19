@@ -45,7 +45,7 @@ public class ServerPacketHandler {
                     StructureBlockEntity.UpdateType updateType = StructureBlockEntity.UpdateType.valueOf(data.getString("updateType"));
                     wand.setName(data.getString("roomName"));
                     boolean saveFile = updateType == StructureBlockEntity.UpdateType.SAVE_AREA;
-                    boolean success = wand.saveStructure((ServerLevel) context.player().level(), (ListTag) data.getList("dungeonMaterials", 10), saveFile);
+                    boolean success = wand.saveStructure((ServerLevel) context.player().level(), data.getList("dungeonMaterials", 10), saveFile);
                     if (success && saveFile) {
                         context.player().sendSystemMessage(Component.translatable("message.room_export_wand.save.success",wand.getRoomName()));
                     } else if (saveFile) {
