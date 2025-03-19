@@ -190,7 +190,11 @@ public class RoomExportScreen extends Screen {
 
         List<Pair<BlockState, Integer>> dungeonMaterials = new ArrayList<>();
         for (int i = 0; i < this.dungeonMaterials.size(); i++) {
-            dungeonMaterials.add(Pair.of(this.dungeonMaterials.get(i).getFirst(),Integer.parseInt(detailsList.children().get(i).dungeonMaterialIDEdit.getValue())));
+            String value = this.detailsList.children().get(i).dungeonMaterialIDEdit.getValue();
+            if (value.isBlank()){
+                value = "0";
+            }
+            dungeonMaterials.add(Pair.of(this.dungeonMaterials.get(i).getFirst(),Integer.parseInt(value)));
         }
 
         ListTag listTag = new ListTag();
@@ -226,17 +230,10 @@ public class RoomExportScreen extends Screen {
                     public boolean charTyped(char charTyped, int modifiers) {
                         return Character.isDigit(charTyped) && super.charTyped(charTyped, modifiers);
                     }
-
-                    @Override
-                    public void setValue(String text) {
-                        if (text.isEmpty()) {
-                            text="0";
-                        }
-                        super.setValue(text);
-                    }
                 };
                 this.dungeonMaterialIDEdit.setMaxLength(128);
                 this.dungeonMaterialIDEdit.setValue(Integer.toString(dungeonMatID));
+                //todo checkboxes for which material type to use? stairs, slabs, walls, etc
             }
 
             @Override

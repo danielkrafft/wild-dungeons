@@ -158,7 +158,7 @@ public class DungeonRoom {
 
         updateChunksAndLighting(false,2,2.5f);
 
-        WildDungeons.getLogger().info("FINISHED ROOM: {}", getTemplate().name());
+        WildDungeons.getLogger().info("FINISHED ACTUALLY PLACING ROOM: {}", getTemplate().name());
     }
 
     public static void forceUpdateChunk(ServerLevel level, ChunkPos chunkPos) {
