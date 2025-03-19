@@ -14,7 +14,6 @@ public class WDStructureTemplate extends StructureTemplate {
     public @NotNull CompoundTag save(@NotNull CompoundTag tag) {
         super.save(tag);
         tag.put("dungeon_materials", dungeonMaterials);
-
         return tag;
     }
 

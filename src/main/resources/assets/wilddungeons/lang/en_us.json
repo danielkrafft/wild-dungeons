@@ -80,7 +80,9 @@
   "message.room_export_wand.reset": "Positions reset",
   "message.room_export_wand.too_far": "Positions are too far apart",
   "message.room_export_wand.save.success": "Room saved as %s",
-  "message.room_export_wand.save.failure": "Room save failed",
+  "message.room_export_wand.save.updated": "Room %s updated",
+  "message.room_export_wand.save.failure": "Saving room failed",
   "room_export_wand.name_label": "Room Name:",
-  "room_export_wand.materials_label": "Material Blocks:"
+  "room_export_wand.materials_label": "Material Blocks:",
+  "room_export_wand.dungeon_material_index_label": "Dungeon Material Index:"
 }

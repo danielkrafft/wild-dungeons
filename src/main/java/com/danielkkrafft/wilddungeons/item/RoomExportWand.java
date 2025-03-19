@@ -180,7 +180,7 @@ public class RoomExportWand extends Item {
         }
     }
 
-    public boolean saveStructure(ServerLevel serverLevel, ListTag dungeonMaterials) {
+    public boolean saveStructure(ServerLevel serverLevel, ListTag dungeonMaterials, boolean saveFile) {
         if (this.roomName == null || this.firstPos == null || this.secondPos == null) {
             return false;
         } else {
@@ -193,15 +193,17 @@ public class RoomExportWand extends Item {
             } catch (ResourceLocationException e) {
                 return false;
             }
-
-            fillFromWorld(wdStructureTemplate, serverLevel, firstPos, secondPos, withEntities);
-            wdStructureTemplate.setAuthor(serverLevel.getServer().getServerModName());
-            wdStructureTemplate.setDungeonMaterials(dungeonMaterials);
-            try {
-                return wdStructureTemplateManager.save(resourceLocation);
-            } catch (ResourceLocationException e) {
-                return false;
+            if (saveFile){
+                fillFromWorld(wdStructureTemplate, serverLevel, firstPos, secondPos, withEntities);
+                wdStructureTemplate.setAuthor(serverLevel.getServer().getServerModName());
+                wdStructureTemplate.setDungeonMaterials(dungeonMaterials);
+                try {
+                    return wdStructureTemplateManager.save(resourceLocation);
+                } catch (ResourceLocationException e) {
+                    return false;
+                }
             }
+            return true;
         }
     }
 
