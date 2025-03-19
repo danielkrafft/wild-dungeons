@@ -17,6 +17,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundStartConfigurationPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -35,6 +36,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.Palette;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
 import net.minecraft.world.phys.HitResult;
@@ -45,6 +47,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class RoomExportWand extends Item {
+    List<Pair<BlockPos,BlockPos>> roomPositions = new ArrayList<>();
     private BlockPos firstPos;
     private BlockPos secondPos;
     private boolean setFirstPos = true;
@@ -69,10 +72,14 @@ public class RoomExportWand extends Item {
         } else if (player instanceof ServerPlayer serverPlayer) {
             // Server-side handling: reset positions on shift-click
             if (serverPlayer.isShiftKeyDown()) {
-                firstPos = null;
-                secondPos = null;
-                setFirstPos = true;
-                serverPlayer.sendSystemMessage(Component.translatable("message.room_export_wand.reset"));
+                if (firstPos != null) {
+                    firstPos = null;
+                    secondPos = null;
+                    setFirstPos = true;
+                    serverPlayer.sendSystemMessage(Component.translatable("message.room_export_wand.reset"));
+                } else if (!roomPositions.isEmpty()) {
+                    roomPositions.removeLast();
+                }
                 return InteractionResultHolder.success(itemStack);
             }
         }
@@ -96,12 +103,17 @@ public class RoomExportWand extends Item {
                 setFirstPos = true;
                 secondPos = context.getClickedPos();
                 serverPlayer.sendSystemMessage(Component.translatable("message.room_export_wand.second_pos_set", secondPos.getX(), secondPos.getY(), secondPos.getZ()));
+
+                // Add the completed position pair to the list
+                roomPositions.add(new Pair<>(firstPos, secondPos));
+                firstPos = null;
+                secondPos = null;
+                serverPlayer.sendSystemMessage(Component.translatable("message.room_export_wand.room_added", roomPositions.size()));
             }
             return InteractionResult.CONSUME;
         }
         return super.useOn(context);
     }
-
     private boolean checkDistance(@NotNull UseOnContext context, ServerPlayer serverPlayer, BlockPos checkAgainst) {
         if (checkAgainst != null) {
             //check to make sure the second pos isn't more than 48 blocks from the first pos in any direction
@@ -117,16 +129,11 @@ public class RoomExportWand extends Item {
     public void inventoryTick(@NotNull ItemStack stack, @NotNull Level level, @NotNull Entity entity, int slotId, boolean isSelected) {
         if (isSelected && level.isClientSide && entity instanceof Player player) {
             if (player.tickCount % 2 == 0) {
-                if (firstPos != null && secondPos != null) {
-                    BoundingBox boundingBox = BoundingBox.fromCorners(firstPos, secondPos);
-                    renderBoundingBoxEdges(level, boundingBox);
-                } else {
-                    if (firstPos != null) {
-                        renderBoundingBoxEdges(level,new BoundingBox(firstPos));
-                    }
-                    if (secondPos != null) {
-                        renderBoundingBoxEdges(level, new BoundingBox(secondPos));
-                    }
+                if (!roomPositions.isEmpty()) {
+                    roomPositions.forEach(pair -> renderBoundingBoxEdges(level, BoundingBox.fromCorners(pair.getFirst(), pair.getSecond())));
+                }
+                if (firstPos != null) {
+                    renderBoundingBoxEdges(level, new BoundingBox(firstPos));
                 }
             }
         }
@@ -186,7 +193,7 @@ public class RoomExportWand extends Item {
     }
 
     public boolean saveStructure(ServerLevel serverLevel, ListTag dungeonMaterials, boolean saveFile) {
-        if (this.roomName == null || this.firstPos == null || this.secondPos == null) {
+        if (this.roomName == null || this.roomPositions.isEmpty()) {
             return false;
         } else {
             ResourceLocation resourceLocation = WildDungeons.rl(this.roomName);
@@ -199,9 +206,21 @@ public class RoomExportWand extends Item {
                 return false;
             }
             if (saveFile){
-                fillFromWorld(wdStructureTemplate, serverLevel, firstPos, secondPos, withEntities);
-                wdStructureTemplate.setAuthor(serverLevel.getServer().getServerModName());
-                wdStructureTemplate.setDungeonMaterials(dungeonMaterials);
+                BlockPos firstPos = roomPositions.getFirst().getFirst();
+                BlockPos secondPos = roomPositions.getFirst().getSecond();
+                BlockPos firstRoomMinPos = new BlockPos(Math.min(firstPos.getX(), secondPos.getX()), Math.min(firstPos.getY(), secondPos.getY()), Math.min(firstPos.getZ(), secondPos.getZ()));
+                for (Pair<BlockPos, BlockPos> roomPosition : roomPositions) {
+                    StructureTemplate innerTemplate = new StructureTemplate();
+                    fillFromWorld(innerTemplate, serverLevel, roomPosition.getFirst(), roomPosition.getSecond(), withEntities);
+                    innerTemplate.setAuthor(serverLevel.getServer().getServerModName());
+                    BlockPos pos1 = roomPosition.getFirst();
+                    BlockPos pos2 = roomPosition.getSecond();
+                    BlockPos thisRoomMinPos = new BlockPos(Math.min(pos1.getX(), pos2.getX()), Math.min(pos1.getY(), pos2.getY()), Math.min(pos1.getZ(), pos2.getZ()));
+                    BlockPos offsetFromFirst = thisRoomMinPos.subtract(firstRoomMinPos);
+                    Pair<StructureTemplate, BlockPos> innerTemplatePair = Pair.of(innerTemplate, offsetFromFirst);
+                    wdStructureTemplate.innerTemplates.add(innerTemplatePair);
+                    wdStructureTemplate.setDungeonMaterials(dungeonMaterials);
+                }
                 try {
                     return wdStructureTemplateManager.save(resourceLocation);
                 } catch (ResourceLocationException e) {
@@ -213,39 +232,33 @@ public class RoomExportWand extends Item {
     }
 
     public List<Pair<BlockState, Integer>> getDungeonMaterials(Level level) {
-        if (roomName == null || this.firstPos == null || this.secondPos == null) {
+        if (roomName == null || this.roomPositions.isEmpty()) {
             return new ArrayList<>();
         }
         WDStructureTemplate wdStructureTemplate = WDStructureTemplateManager.INSTANCE.getOrCreate(WildDungeons.rl(roomName));
-
-        List<Pair<BlockState, Integer>> loadedMaterials = Lists.newArrayList();
-
-        wdStructureTemplate.dungeonMaterials.forEach(tag -> {
-            CompoundTag compoundTag = (CompoundTag) tag;
-            BlockState blockState = readBlockState(WDStructureTemplateManager.INSTANCE.getBlockLookup(), compoundTag);
-            int dungeonMaterialId = compoundTag.getInt("dungeon_material_id");
-            loadedMaterials.add(Pair.of(blockState, dungeonMaterialId));
-        });
+        List<Pair<BlockState, Integer>> loadedMaterials = wdStructureTemplate.getDungeonMaterialsAsList();
 
         List<Pair<BlockState, Integer>> dungeonMaterials = Lists.newArrayList();
-
-        fillFromWorld(wdStructureTemplate, level, firstPos, secondPos, withEntities);
-        List<Palette> palettes = wdStructureTemplate.palettes;
-        for (Palette palette : palettes) {
-            palette.blocks().forEach(structureBlockInfo -> {
-                BlockState defaultBlockState = structureBlockInfo.state().getBlock().defaultBlockState();
-                if (defaultBlockState.is(Blocks.AIR)) {
-                    return;
-                }
-                int matchingIndex = 0;
-                for (Pair<BlockState, Integer> dungeonMaterial : loadedMaterials) {
-                    if (dungeonMaterial.getFirst().equals(defaultBlockState)) {
-                        matchingIndex = dungeonMaterial.getSecond();
-                        break;
+        for (Pair<BlockPos, BlockPos> blockPosPair : roomPositions) {
+            StructureTemplate innerTemplate = new StructureTemplate();
+            fillFromWorld(innerTemplate, level, blockPosPair.getFirst(), blockPosPair.getSecond(), withEntities);
+            List<Palette> palettes = innerTemplate.palettes;
+            for (Palette palette : palettes) {
+                palette.blocks().forEach(structureBlockInfo -> {
+                    BlockState defaultBlockState = structureBlockInfo.state().getBlock().defaultBlockState();
+                    if (defaultBlockState.is(Blocks.AIR)) {
+                        return;
                     }
-                }
-                dungeonMaterials.add(Pair.of(defaultBlockState, matchingIndex));
-            });
+                    int matchingIndex = 0;
+                    for (Pair<BlockState, Integer> dungeonMaterial : loadedMaterials) {
+                        if (dungeonMaterial.getFirst().equals(defaultBlockState)) {
+                            matchingIndex = dungeonMaterial.getSecond();
+                            break;
+                        }
+                    }
+                    dungeonMaterials.add(Pair.of(defaultBlockState, matchingIndex));
+                });
+            }
         }
 
         List<Pair<BlockState, Integer>> filteredMaterials = new ArrayList<>();
@@ -262,22 +275,7 @@ public class RoomExportWand extends Item {
         return filteredMaterials;
     }
 
-    public static BlockState readBlockState(HolderGetter<Block> blockGetter, CompoundTag tag) {
-        if (!tag.contains("Name", 8)) {
-            return Blocks.AIR.defaultBlockState();
-        } else {
-            ResourceLocation resourcelocation = ResourceLocation.parse(tag.getString("Name"));
-            Optional<? extends Holder<Block>> optional = blockGetter.get(ResourceKey.create(Registries.BLOCK, resourcelocation));
-            if (optional.isEmpty()) {
-                return Blocks.AIR.defaultBlockState();
-            } else {
-                Block block = optional.get().value();
-                return block.defaultBlockState();
-            }
-        }
-    }
-
-    public void fillFromWorld(WDStructureTemplate structureTemplate, Level level, BlockPos pos1, BlockPos pos2, boolean withEntities) {
+    public void fillFromWorld(StructureTemplate structureTemplate, Level level, BlockPos pos1, BlockPos pos2, boolean withEntities) {
         List<StructureBlockInfo> normalBlocks = Lists.newArrayList();
         List<StructureBlockInfo> blocksWithNbt = Lists.newArrayList();
         List<StructureBlockInfo> blocksWithSpecialShape = Lists.newArrayList();
@@ -297,12 +295,12 @@ public class RoomExportWand extends Item {
                     structuretemplate$structureblockinfo = new StructureBlockInfo(blockPos1, blockstate, null);
                 }
 
-                WDStructureTemplate.addToLists(structuretemplate$structureblockinfo, normalBlocks, blocksWithNbt, blocksWithSpecialShape);
+                StructureTemplate.addToLists(structuretemplate$structureblockinfo, normalBlocks, blocksWithNbt, blocksWithSpecialShape);
             }
         }
 
         structureTemplate.palettes.clear();
-        structureTemplate.palettes.add(new Palette(WDStructureTemplate.buildInfoList(normalBlocks,blocksWithNbt,blocksWithSpecialShape)));
+        structureTemplate.palettes.add(new Palette(StructureTemplate.buildInfoList(normalBlocks,blocksWithNbt,blocksWithSpecialShape)));
         if (withEntities) {
             structureTemplate.fillEntityList(level, minPos, maxPos);
         } else {

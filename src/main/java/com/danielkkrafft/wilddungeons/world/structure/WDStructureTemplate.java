@@ -1,19 +1,39 @@
 package com.danielkkrafft.wilddungeons.world.structure;
 
+import com.mojang.datafixers.util.Pair;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import org.jetbrains.annotations.NotNull;
 
-public class WDStructureTemplate extends StructureTemplate {
-    public ListTag dungeonMaterials = new ListTag();
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
-    @Override
+public class WDStructureTemplate {
+    public ListTag dungeonMaterials = new ListTag();
+    public List<Pair<StructureTemplate,BlockPos>> innerTemplates = new ArrayList<>();
+
     public @NotNull CompoundTag save(@NotNull CompoundTag tag) {
-        super.save(tag);
+        ListTag innerTagList = new ListTag();
+        for (Pair<StructureTemplate, BlockPos> innerTemplate : innerTemplates) {
+            CompoundTag innerTag = new CompoundTag();
+            innerTemplate.getFirst().save(innerTag);
+            innerTag.putLong("originOffset", innerTemplate.getSecond().asLong());
+            innerTagList.add(innerTag);
+        }
+        tag.put("inner_templates", innerTagList);
         tag.put("dungeon_materials", dungeonMaterials);
+
         return tag;
     }
 
@@ -21,11 +41,45 @@ public class WDStructureTemplate extends StructureTemplate {
         this.dungeonMaterials = dungeonMaterials;
     }
 
-    @Override
     public void load(@NotNull HolderGetter<Block> blockGetter, @NotNull CompoundTag tag) {
+        if (tag.contains("inner_templates")) {
+            ListTag innerTagList = tag.getList("inner_templates", 10);
+            for (int i = 0; i < innerTagList.size(); i++) {
+                CompoundTag innerTag = innerTagList.getCompound(i);
+                StructureTemplate innerTemplate = new StructureTemplate();
+                innerTemplate.load(blockGetter, innerTag);
+                Pair<StructureTemplate, BlockPos> innerTemplatePair = Pair.of(innerTemplate, BlockPos.of(innerTag.getLong("originOffset")));
+                innerTemplates.add(innerTemplatePair);
+            }
+        }
         if (tag.contains("dungeon_materials")) {
             dungeonMaterials = tag.getList("dungeon_materials", 10);
         }
-        super.load(blockGetter, tag);
+    }
+
+    public List<Pair<BlockState, Integer>> getDungeonMaterialsAsList() {
+        List<Pair<BlockState, Integer>> loadedMaterials = new ArrayList<>();
+        dungeonMaterials.forEach(tag -> {
+            CompoundTag compoundTag = (CompoundTag) tag;
+            BlockState blockState = readBlockState(WDStructureTemplateManager.INSTANCE.getBlockLookup(), compoundTag);
+            int dungeonMaterialId = compoundTag.getInt("dungeon_material_id");
+            loadedMaterials.add(Pair.of(blockState, dungeonMaterialId));
+        });
+        return loadedMaterials;
+    }
+
+    public static BlockState readBlockState(HolderGetter<Block> blockGetter, CompoundTag tag) {
+        if (!tag.contains("Name", 8)) {
+            return Blocks.AIR.defaultBlockState();
+        } else {
+            ResourceLocation resourcelocation = ResourceLocation.parse(tag.getString("Name"));
+            Optional<? extends Holder<Block>> optional = blockGetter.get(ResourceKey.create(Registries.BLOCK, resourcelocation));
+            if (optional.isEmpty()) {
+                return Blocks.AIR.defaultBlockState();
+            } else {
+                Block block = optional.get().value();
+                return block.defaultBlockState();
+            }
+        }
     }
 }

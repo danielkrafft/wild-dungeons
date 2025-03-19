@@ -6,6 +6,7 @@ import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
+import com.danielkkrafft.wilddungeons.world.structure.WDStructureTemplate;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -56,6 +57,8 @@ public class DungeonMaterial implements DungeonRegistration.DungeonComponent {
 
     public BlockState replace(BlockState input, DungeonRoom room) {
         BlockState result = input;
+        //todo get the dungeon index mapping from the template nbt
+//        room.getTemplate().templates();//todo replace with getting the wrapper nbt data instead of the roomstructure itself
 
         if (input.is(WDBlocks.WD_BASIC.get())) {result = getBasic(0);}
         else if (input.is(WDBlocks.WD_BASIC_2.get())) {result = getBasic(1);}
