@@ -9,12 +9,15 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderGetter;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -27,6 +30,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -38,12 +42,13 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class RoomExportWand extends Item {
     private BlockPos firstPos;
     private BlockPos secondPos;
     private boolean setFirstPos = true;
-    private boolean withEntities;
+    private boolean withEntities;//todo implement this in the ui
     private String roomName = "room";
 
 
@@ -211,30 +216,35 @@ public class RoomExportWand extends Item {
         if (roomName == null || this.firstPos == null || this.secondPos == null) {
             return new ArrayList<>();
         }
-        List<Pair<BlockState, Integer>> dungeonMaterials = Lists.newArrayList();
         WDStructureTemplate wdStructureTemplate = WDStructureTemplateManager.INSTANCE.getOrCreate(WildDungeons.rl(roomName));
+
+        List<Pair<BlockState, Integer>> loadedMaterials = Lists.newArrayList();
+
         wdStructureTemplate.dungeonMaterials.forEach(tag -> {
             CompoundTag compoundTag = (CompoundTag) tag;
-            BlockState blockState = NbtUtils.readBlockState(WDStructureTemplateManager.INSTANCE.getBlockLookup(),compoundTag.getCompound("blockstate"));
+            BlockState blockState = readBlockState(WDStructureTemplateManager.INSTANCE.getBlockLookup(), compoundTag);
             int dungeonMaterialId = compoundTag.getInt("dungeon_material_id");
-            dungeonMaterials.add(Pair.of(blockState, dungeonMaterialId));
+            loadedMaterials.add(Pair.of(blockState, dungeonMaterialId));
         });
+
+        List<Pair<BlockState, Integer>> dungeonMaterials = Lists.newArrayList();
 
         fillFromWorld(wdStructureTemplate, level, firstPos, secondPos, withEntities);
         List<Palette> palettes = wdStructureTemplate.palettes;
         for (Palette palette : palettes) {
             palette.blocks().forEach(structureBlockInfo -> {
-                if (structureBlockInfo.state().is(Blocks.AIR)) {
+                BlockState defaultBlockState = structureBlockInfo.state().getBlock().defaultBlockState();
+                if (defaultBlockState.is(Blocks.AIR)) {
                     return;
                 }
                 int matchingIndex = 0;
-                for (Pair<BlockState, Integer> dungeonMaterial : dungeonMaterials) {
-                    if (dungeonMaterial.getFirst().equals(structureBlockInfo.state())) {
+                for (Pair<BlockState, Integer> dungeonMaterial : loadedMaterials) {
+                    if (dungeonMaterial.getFirst().equals(defaultBlockState)) {
                         matchingIndex = dungeonMaterial.getSecond();
                         break;
                     }
                 }
-                dungeonMaterials.add(Pair.of(structureBlockInfo.state(), matchingIndex));
+                dungeonMaterials.add(Pair.of(defaultBlockState, matchingIndex));
             });
         }
 
@@ -252,6 +262,20 @@ public class RoomExportWand extends Item {
         return filteredMaterials;
     }
 
+    public static BlockState readBlockState(HolderGetter<Block> blockGetter, CompoundTag tag) {
+        if (!tag.contains("Name", 8)) {
+            return Blocks.AIR.defaultBlockState();
+        } else {
+            ResourceLocation resourcelocation = ResourceLocation.parse(tag.getString("Name"));
+            Optional<? extends Holder<Block>> optional = blockGetter.get(ResourceKey.create(Registries.BLOCK, resourcelocation));
+            if (optional.isEmpty()) {
+                return Blocks.AIR.defaultBlockState();
+            } else {
+                Block block = optional.get().value();
+                return block.defaultBlockState();
+            }
+        }
+    }
 
     public void fillFromWorld(WDStructureTemplate structureTemplate, Level level, BlockPos pos1, BlockPos pos2, boolean withEntities) {
         List<StructureBlockInfo> normalBlocks = Lists.newArrayList();

@@ -80,10 +80,6 @@ public class WDStructureTemplateManager {
         return this.structureRepository.computeIfAbsent(id, this::tryLoad);
     }
 
-    public Stream<ResourceLocation> listTemplates() {
-        return this.sources.stream().flatMap((p_230376_) -> (Stream)p_230376_.lister().get()).distinct();
-    }
-
     private Optional<WDStructureTemplate> tryLoad(ResourceLocation id) {
         for(Source structuretemplatemanager$source : this.sources) {
             try {
@@ -294,10 +290,6 @@ public class WDStructureTemplateManager {
 
         public Function<ResourceLocation, Optional<WDStructureTemplate>> loader() {
             return this.loader;
-        }
-
-        public Supplier<Stream<ResourceLocation>> lister() {
-            return this.lister;
         }
     }
 
