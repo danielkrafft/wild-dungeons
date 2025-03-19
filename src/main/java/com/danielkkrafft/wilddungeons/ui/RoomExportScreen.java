@@ -21,6 +21,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.StructureBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -34,6 +35,7 @@ import java.util.List;
 public class RoomExportScreen extends Screen {
     private static final Component NAME_LABEL = Component.translatable("room_export_wand.name_label");
     private static final Component MATERIALS_LABEL = Component.translatable("room_export_wand.materials_label");
+    private static final Component DUNGEON_MATERIAL_INDEX_LABEL = Component.translatable("room_export_wand.dungeon_material_index_label");
 
     private final RoomExportWand roomExportWand;
     private List<Pair<BlockState, Integer>> dungeonMaterials;
@@ -43,12 +45,8 @@ public class RoomExportScreen extends Screen {
 
     public RoomExportScreen(RoomExportWand roomExportWand, List<Pair<BlockState, Integer>> dungeonMaterials) {
         super(CommonComponents.EMPTY);
-        //grab data from wand
         this.roomExportWand = roomExportWand;
         this.dungeonMaterials = dungeonMaterials;
-        dungeonMaterials.forEach(blockStateIntegerPair -> {
-            WildDungeons.getLogger().info("BlockState: {} DungeonMaterialID: {}", blockStateIntegerPair.getFirst().toString(), blockStateIntegerPair.getSecond());
-        });
     }
 
     @Override
@@ -64,7 +62,7 @@ public class RoomExportScreen extends Screen {
         this.saveButton = this.addRenderableWidget(Button.builder(Component.translatable("structure_block.button.save"), button -> {
             onDone();
         }).bounds(this.width / 2 + 4 + 100, 20, 50, 20).build());
-        this.detailsList = this.addRenderableWidget(new DetailsList(this.width, this.height - 65, 55, 24));
+        this.detailsList = this.addRenderableWidget(new DetailsList(this.width, this.height - 65, 60, 24));
         detailsList.children().forEach(entry -> {
             this.addRenderableWidget(entry.dungeonMaterialIDEdit);
             entry.dungeonMaterialIDEdit.active = entry.dungeonMaterialIDEdit.visible = false;
@@ -76,6 +74,7 @@ public class RoomExportScreen extends Screen {
         guiGraphics.drawString(this.font, NAME_LABEL, this.width / 2 - 153, 10, new Color(0, 255, 233, 255).getRGB());
         this.nameEdit.render(guiGraphics, mouseX, mouseY, partialTick);
         guiGraphics.drawString(this.font, MATERIALS_LABEL, this.width / 2 - 153, 45, new Color(255, 255, 255, 255).getRGB());
+        guiGraphics.drawString(this.font, DUNGEON_MATERIAL_INDEX_LABEL, this.width / 2 + 30, 45, new Color(255, 255, 255, 255).getRGB());
         super.render(guiGraphics, mouseX, mouseY, partialTick);
     }
 
@@ -99,6 +98,7 @@ public class RoomExportScreen extends Screen {
 
     @Override
     public void onClose() {
+        sendToServer(StructureBlockEntity.UpdateType.UPDATE_DATA);
         this.onCancel();
     }
 
@@ -119,14 +119,15 @@ public class RoomExportScreen extends Screen {
     }
 
     private void onDone() {
-        this.sendToServer();
+        this.sendToServer(StructureBlockEntity.UpdateType.SAVE_AREA);
         assert this.minecraft != null;
         this.minecraft.setScreen(null);
     }
 
-    private void sendToServer() {
+    private void sendToServer(StructureBlockEntity.UpdateType updateType) {
         CompoundTag tag = new CompoundTag();
-        tag.putString("packet", ServerPacketHandler.Packets.ROOM_EXPORT_WAND_SAVE.toString());
+        tag.putString("packet", ServerPacketHandler.Packets.ROOM_EXPORT_WAND_CLOSE.toString());
+        tag.putString("updateType", updateType.toString());
         tag.putString("roomName", this.nameEdit.getValue());
 
         List<Pair<BlockState, Integer>> dungeonMaterials = new ArrayList<>();
