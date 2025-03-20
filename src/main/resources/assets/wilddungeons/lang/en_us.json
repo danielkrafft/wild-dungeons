@@ -88,6 +88,6 @@
   "room_export_wand.name_label": "Room Name:",
   "room_export_wand.materials_label": "Structure Blocks:",
   "room_export_wand.mode_label": "Mode:",
-  "room_export_wand.dungeon_material_index_label": "Mat.Index:",
+  "room_export_wand.dungeon_material_index_label": "Mat. Index:",
   "room_export_wand.dungeon_material_block_type": "Block Type:"
 }
