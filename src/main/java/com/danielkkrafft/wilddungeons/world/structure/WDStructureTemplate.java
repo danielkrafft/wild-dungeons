@@ -1,5 +1,6 @@
 package com.danielkkrafft.wilddungeons.world.structure;
 
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonMaterial;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -59,13 +60,17 @@ public class WDStructureTemplate {
         }
     }
 
-    public List<Pair<BlockState, Integer>> getDungeonMaterialsAsList() {
-        List<Pair<BlockState, Integer>> loadedMaterials = new ArrayList<>();
+    public List<DungeonMaterial.BlockSetting> getDungeonMaterialsAsList() {
+        List<DungeonMaterial.BlockSetting> loadedMaterials = new ArrayList<>();
         dungeonMaterials.forEach(tag -> {
             CompoundTag compoundTag = (CompoundTag) tag;
             BlockState blockState = readBlockState(WDStructureTemplateManager.INSTANCE.getBlockLookup(), compoundTag);
             int dungeonMaterialId = compoundTag.getInt("dungeon_material_id");
-            loadedMaterials.add(Pair.of(blockState, dungeonMaterialId));
+            DungeonMaterial.BlockSetting blockSetting = new DungeonMaterial.BlockSetting(blockState, dungeonMaterialId);
+            if (compoundTag.contains("blockType")){
+                blockSetting.setBlockType(DungeonMaterial.BlockSetting.BlockType.values()[compoundTag.getInt("blockType")]);
+            }
+            loadedMaterials.add(blockSetting);
         });
         return loadedMaterials;
     }

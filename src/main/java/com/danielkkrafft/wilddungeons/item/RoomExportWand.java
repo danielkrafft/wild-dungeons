@@ -1,10 +1,13 @@
 package com.danielkkrafft.wilddungeons.item;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.block.WDBlocks;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonMaterial;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.ui.RoomExportScreen;
 import com.danielkkrafft.wilddungeons.world.structure.WDStructureTemplate;
 import com.danielkkrafft.wilddungeons.world.structure.WDStructureTemplateManager;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.ResourceLocationException;
@@ -26,6 +29,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -242,14 +246,16 @@ public class RoomExportWand extends Item {
         }
     }
 
-    public List<Pair<BlockState, Integer>> getDungeonMaterials(ItemStack itemStack, Level level) {
+    private static final ImmutableList<Block> IGNORED_BLOCKS = ImmutableList.of(Blocks.STRUCTURE_BLOCK, Blocks.STRUCTURE_VOID, WDBlocks.SPAWN_BLOCK.get(), WDBlocks.CONNECTION_BLOCK.get(), Blocks.AIR);
+
+    public List<DungeonMaterial.BlockSetting> getDungeonMaterials(ItemStack itemStack, Level level) {
         if (getRoomName(itemStack) == null || this.roomPositions.isEmpty()) {
             return new ArrayList<>();
         }
         WDStructureTemplate wdStructureTemplate = WDStructureTemplateManager.INSTANCE.getOrCreate(WildDungeons.rl(getRoomName(itemStack)));
-        List<Pair<BlockState, Integer>> loadedMaterials = wdStructureTemplate.getDungeonMaterialsAsList();
+        List<DungeonMaterial.BlockSetting> loadedMaterials = wdStructureTemplate.getDungeonMaterialsAsList();
 
-        List<Pair<BlockState, Integer>> dungeonMaterials = Lists.newArrayList();
+        List<DungeonMaterial.BlockSetting> dungeonMaterials = Lists.newArrayList();
         for (Pair<BlockPos, BlockPos> blockPosPair : roomPositions) {
             StructureTemplate innerTemplate = new StructureTemplate();
             fillFromWorld(innerTemplate, level, blockPosPair.getFirst(), blockPosPair.getSecond(), withEntities);
@@ -257,28 +263,28 @@ public class RoomExportWand extends Item {
             for (Palette palette : palettes) {
                 palette.blocks().forEach(structureBlockInfo -> {
                     BlockState defaultBlockState = structureBlockInfo.state().getBlock().defaultBlockState();
-                    if (defaultBlockState.is(Blocks.AIR)) {
+                    if (IGNORED_BLOCKS.contains(defaultBlockState.getBlock())) {
                         return;
                     }
-                    int matchingIndex = 0;
-                    for (Pair<BlockState, Integer> dungeonMaterial : loadedMaterials) {
-                        if (dungeonMaterial.getFirst().equals(defaultBlockState)) {
-                            matchingIndex = dungeonMaterial.getSecond();
+                    DungeonMaterial.BlockSetting newMaterial = new DungeonMaterial.BlockSetting(defaultBlockState,0);
+                    for (DungeonMaterial.BlockSetting dungeonMaterial : loadedMaterials) {
+                        if (dungeonMaterial.blockState.equals(defaultBlockState)) {
+                            newMaterial = dungeonMaterial;
                             break;
                         }
                     }
-                    dungeonMaterials.add(Pair.of(defaultBlockState, matchingIndex));
+                    dungeonMaterials.add(newMaterial);
                 });
             }
         }
 
-        List<Pair<BlockState, Integer>> filteredMaterials = new ArrayList<>();
+        List<DungeonMaterial.BlockSetting> filteredMaterials = new ArrayList<>();
         List<BlockState> seenBlockStates = new ArrayList<>();
 
-        for (Pair<BlockState, Integer> pair : dungeonMaterials) {
-            BlockState state = pair.getFirst();
+        for (DungeonMaterial.BlockSetting setting : dungeonMaterials) {
+            BlockState state = setting.blockState;
             if (!seenBlockStates.contains(state)) {
-                filteredMaterials.add(pair);
+                filteredMaterials.add(setting);
                 seenBlockStates.add(state);
             }
         }
