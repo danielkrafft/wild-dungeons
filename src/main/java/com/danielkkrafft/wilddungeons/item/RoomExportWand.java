@@ -9,16 +9,10 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
-import net.minecraft.core.HolderGetter;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.game.ClientboundStartConfigurationPacket;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -31,11 +25,13 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.StructureMode;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.Palette;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
@@ -44,15 +40,17 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+
+import static com.danielkkrafft.wilddungeons.registry.WDDataComponents.WAND_MODE;
+import static com.danielkkrafft.wilddungeons.registry.WDDataComponents.WAND_ROOM_NAME;
 
 public class RoomExportWand extends Item {
+
     List<Pair<BlockPos,BlockPos>> roomPositions = new ArrayList<>();
     private BlockPos firstPos;
     private BlockPos secondPos;
     private boolean setFirstPos = true;
     private boolean withEntities;//todo implement this in the ui
-    private String roomName = "room";
 
 
     public RoomExportWand(Properties properties) {
@@ -66,7 +64,7 @@ public class RoomExportWand extends Item {
         if (level.isClientSide) {
             // Only open screen when right-clicking in air (not targeting a block)
             if (!player.isShiftKeyDown() && Minecraft.getInstance().hitResult.getType() == HitResult.Type.MISS) {
-                Minecraft.getInstance().setScreen(new RoomExportScreen(this,this.getDungeonMaterials(level)));
+                Minecraft.getInstance().setScreen(new RoomExportScreen(itemStack ,this.getDungeonMaterials(itemStack, level)));
                 return InteractionResultHolder.success(itemStack);
             }
         } else if (player instanceof ServerPlayer serverPlayer) {
@@ -78,6 +76,7 @@ public class RoomExportWand extends Item {
                     setFirstPos = true;
                     serverPlayer.sendSystemMessage(Component.translatable("message.room_export_wand.reset"));
                 } else if (!roomPositions.isEmpty()) {
+                    serverPlayer.sendSystemMessage(Component.translatable("message.room_export_wand.room_removed", roomPositions.size()));
                     roomPositions.removeLast();
                 }
                 return InteractionResultHolder.success(itemStack);
@@ -93,22 +92,30 @@ public class RoomExportWand extends Item {
 
             if (serverPlayer.isShiftKeyDown()) return super.useOn(context);
 
-            if (setFirstPos) {
-                if (!checkDistance(context, serverPlayer, secondPos)) return InteractionResult.FAIL;
-                setFirstPos = false;
-                firstPos = context.getClickedPos();
-                serverPlayer.sendSystemMessage(Component.translatable("message.room_export_wand.first_pos_set", firstPos.getX(), firstPos.getY(), firstPos.getZ()));
-            } else {
-                if (!checkDistance(context, serverPlayer, firstPos)) return InteractionResult.FAIL;
-                setFirstPos = true;
-                secondPos = context.getClickedPos();
-                serverPlayer.sendSystemMessage(Component.translatable("message.room_export_wand.second_pos_set", secondPos.getX(), secondPos.getY(), secondPos.getZ()));
+            switch (getMode(context.getItemInHand())) {
+                case SAVE, DATA -> {
+                    if (setFirstPos) {
+                        if (!checkDistance(context, serverPlayer, secondPos)) return InteractionResult.FAIL;
+                        setFirstPos = false;
+                        firstPos = context.getClickedPos();
+                        serverPlayer.sendSystemMessage(Component.translatable("message.room_export_wand.first_pos_set", firstPos.getX(), firstPos.getY(), firstPos.getZ()));
+                    } else {
+                        if (!checkDistance(context, serverPlayer, firstPos)) return InteractionResult.FAIL;
+                        setFirstPos = true;
+                        secondPos = context.getClickedPos();
+                        serverPlayer.sendSystemMessage(Component.translatable("message.room_export_wand.second_pos_set", secondPos.getX(), secondPos.getY(), secondPos.getZ()));
 
-                // Add the completed position pair to the list
-                roomPositions.add(new Pair<>(firstPos, secondPos));
-                firstPos = null;
-                secondPos = null;
-                serverPlayer.sendSystemMessage(Component.translatable("message.room_export_wand.room_added", roomPositions.size()));
+                        // Add the completed position pair to the list
+                        roomPositions.add(new Pair<>(firstPos, secondPos));
+                        firstPos = null;
+                        secondPos = null;
+                        serverPlayer.sendSystemMessage(Component.translatable("message.room_export_wand.room_added", roomPositions.size()));
+                    }
+                }
+                case LOAD -> {
+                    loadStructure(context);
+                    return InteractionResult.SUCCESS;
+                }
             }
             return InteractionResult.CONSUME;
         }
@@ -192,11 +199,12 @@ public class RoomExportWand extends Item {
         }
     }
 
-    public boolean saveStructure(ServerLevel serverLevel, ListTag dungeonMaterials, boolean saveFile) {
-        if (this.roomName == null || this.roomPositions.isEmpty()) {
+    public static boolean saveStructure(ItemStack itemStack, ServerLevel serverLevel, ListTag dungeonMaterials, boolean saveFile) {
+        RoomExportWand wand = (RoomExportWand) itemStack.getItem();
+        if (getRoomName(itemStack) == null || wand.roomPositions.isEmpty()) {
             return false;
         } else {
-            ResourceLocation resourceLocation = WildDungeons.rl(this.roomName);
+            ResourceLocation resourceLocation = WildDungeons.rl(getRoomName(itemStack));
             WDStructureTemplateManager wdStructureTemplateManager = WDStructureTemplateManager.INSTANCE;
 
             WDStructureTemplate wdStructureTemplate;
@@ -206,12 +214,13 @@ public class RoomExportWand extends Item {
                 return false;
             }
             if (saveFile){
-                BlockPos firstPos = roomPositions.getFirst().getFirst();
-                BlockPos secondPos = roomPositions.getFirst().getSecond();
+                wdStructureTemplate.innerTemplates.clear();
+                BlockPos firstPos = wand.roomPositions.getFirst().getFirst();
+                BlockPos secondPos = wand.roomPositions.getFirst().getSecond();
                 BlockPos firstRoomMinPos = new BlockPos(Math.min(firstPos.getX(), secondPos.getX()), Math.min(firstPos.getY(), secondPos.getY()), Math.min(firstPos.getZ(), secondPos.getZ()));
-                for (Pair<BlockPos, BlockPos> roomPosition : roomPositions) {
+                for (Pair<BlockPos, BlockPos> roomPosition : wand.roomPositions) {
                     StructureTemplate innerTemplate = new StructureTemplate();
-                    fillFromWorld(innerTemplate, serverLevel, roomPosition.getFirst(), roomPosition.getSecond(), withEntities);
+                    fillFromWorld(innerTemplate, serverLevel, roomPosition.getFirst(), roomPosition.getSecond(), wand.withEntities);
                     innerTemplate.setAuthor(serverLevel.getServer().getServerModName());
                     BlockPos pos1 = roomPosition.getFirst();
                     BlockPos pos2 = roomPosition.getSecond();
@@ -231,11 +240,11 @@ public class RoomExportWand extends Item {
         }
     }
 
-    public List<Pair<BlockState, Integer>> getDungeonMaterials(Level level) {
-        if (roomName == null || this.roomPositions.isEmpty()) {
+    public List<Pair<BlockState, Integer>> getDungeonMaterials(ItemStack itemStack, Level level) {
+        if (getRoomName(itemStack) == null || this.roomPositions.isEmpty()) {
             return new ArrayList<>();
         }
-        WDStructureTemplate wdStructureTemplate = WDStructureTemplateManager.INSTANCE.getOrCreate(WildDungeons.rl(roomName));
+        WDStructureTemplate wdStructureTemplate = WDStructureTemplateManager.INSTANCE.getOrCreate(WildDungeons.rl(getRoomName(itemStack)));
         List<Pair<BlockState, Integer>> loadedMaterials = wdStructureTemplate.getDungeonMaterialsAsList();
 
         List<Pair<BlockState, Integer>> dungeonMaterials = Lists.newArrayList();
@@ -275,7 +284,7 @@ public class RoomExportWand extends Item {
         return filteredMaterials;
     }
 
-    public void fillFromWorld(StructureTemplate structureTemplate, Level level, BlockPos pos1, BlockPos pos2, boolean withEntities) {
+    public static void fillFromWorld(StructureTemplate structureTemplate, Level level, BlockPos pos1, BlockPos pos2, boolean withEntities) {
         List<StructureBlockInfo> normalBlocks = Lists.newArrayList();
         List<StructureBlockInfo> blocksWithNbt = Lists.newArrayList();
         List<StructureBlockInfo> blocksWithSpecialShape = Lists.newArrayList();
@@ -308,11 +317,40 @@ public class RoomExportWand extends Item {
         }
     }
 
-    public String getRoomName() {
-        return roomName;
+    public static String getRoomName(ItemStack itemStack) {
+        return itemStack.has(WAND_ROOM_NAME.get()) ? itemStack.get(WAND_ROOM_NAME.get()) : "room";
     }
 
-    public void setName(String roomName) {
-        this.roomName = roomName;
+    public static void setName(ItemStack itemStack, String roomName) {
+        itemStack.set(WAND_ROOM_NAME, roomName);
+    }
+
+    public static void loadStructure(UseOnContext context) {
+        BlockPos clickedPos = context.getClickedPos().above();
+        ServerLevel level = (ServerLevel) context.getLevel();
+        ItemStack itemStack = context.getItemInHand();
+        Rotation rotation = switch (context.getHorizontalDirection()) {
+            case SOUTH -> Rotation.NONE;
+            case WEST -> Rotation.CLOCKWISE_90;
+            case NORTH -> Rotation.CLOCKWISE_180;
+            case EAST -> Rotation.COUNTERCLOCKWISE_90;
+            default -> Rotation.NONE;
+        };
+        StructurePlaceSettings settings = new StructurePlaceSettings().setRotation(rotation);
+        WDStructureTemplate wdStructureTemplate = WDStructureTemplateManager.INSTANCE.getOrCreate(WildDungeons.rl(getRoomName(itemStack)));
+        for (Pair<StructureTemplate, BlockPos> innerTemplatePair : wdStructureTemplate.innerTemplates) {
+            StructureTemplate innerTemplate = innerTemplatePair.getFirst();
+            BlockPos offset = innerTemplatePair.getSecond().rotate(rotation);
+            innerTemplate.placeInWorld(level, clickedPos.offset(offset), clickedPos, settings, level.random, 2);
+        }
+    }
+
+    public static StructureMode getMode(ItemStack itemStack) {
+        int mode = itemStack.has(WAND_MODE.get()) ? itemStack.get(WAND_MODE.get()) : 0;
+        return StructureMode.values()[mode];
+    }
+
+    public static void setMode(ItemStack itemStack, StructureMode structureMode) {
+        itemStack.set(WAND_MODE.get(), structureMode.ordinal());
     }
 }

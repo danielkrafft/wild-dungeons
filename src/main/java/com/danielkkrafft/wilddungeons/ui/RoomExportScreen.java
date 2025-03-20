@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RoomExportScreen extends Screen {
-    private final RoomExportWand roomExportWand;
+    private final ItemStack roomExportWand;
     private final List<Pair<BlockState, Integer>> dungeonMaterials;
 
 
@@ -51,15 +51,17 @@ public class RoomExportScreen extends Screen {
     private static final Component DUNGEON_MATERIAL_INDEX_LABEL = Component.translatable("room_export_wand.dungeon_material_index_label");
     private Button saveButton;
     private DetailsList detailsList;
+    private boolean saveFile = false;
 
     private Button loadButton;
 
     private Button cancelButton;
 
-    public RoomExportScreen(RoomExportWand roomExportWand, List<Pair<BlockState, Integer>> dungeonMaterials) {
+    public RoomExportScreen(ItemStack roomExportWand, List<Pair<BlockState, Integer>> dungeonMaterials) {
         super(CommonComponents.EMPTY);
         this.roomExportWand = roomExportWand;
         this.dungeonMaterials = dungeonMaterials;
+        this.mode = RoomExportWand.getMode(roomExportWand);
     }
 
     @Override
@@ -77,9 +79,11 @@ public class RoomExportScreen extends Screen {
             }
         };
         this.nameEdit.setMaxLength(128);
-        this.nameEdit.setValue(roomExportWand.getRoomName());
+        this.nameEdit.setValue(RoomExportWand.getRoomName(roomExportWand));
         this.addWidget(this.nameEdit);
+
         this.saveButton = this.addRenderableWidget(Button.builder(Component.translatable("structure_block.button.save"), button -> {
+            saveFile = true;
             onDone();
         }).bounds(this.width - 55, 20, 50, 20).build());
         this.detailsList = this.addRenderableWidget(new DetailsList(this.width, this.height - 65, 60, 24));
@@ -87,6 +91,14 @@ public class RoomExportScreen extends Screen {
             this.addRenderableWidget(entry.dungeonMaterialIDEdit);
             entry.dungeonMaterialIDEdit.active = entry.dungeonMaterialIDEdit.visible = false;
         });
+
+        this.loadButton = this.addRenderableWidget(Button.builder(Component.translatable("structure_block.button.load"), button -> {
+            onDone();
+        }).bounds(this.width - 55, 20, 50, 20).build());
+
+        this.cancelButton = this.addRenderableWidget(Button.builder(Component.translatable("gui.cancel"), button -> {
+            this.onClose();
+        }).bounds(5, 45, 50, 20).build());
 
         this.updateMode(this.mode);
     }
@@ -104,6 +116,7 @@ public class RoomExportScreen extends Screen {
                 guiGraphics.drawString(this.font, DUNGEON_MATERIAL_INDEX_LABEL, this.width / 2 + 30, 45, new Color(255, 255, 255, 255).getRGB());
             }
             case LOAD -> {
+
             }
             case DATA -> {
             }
@@ -118,16 +131,18 @@ public class RoomExportScreen extends Screen {
         detailsList.children().forEach(entry -> {
             entry.dungeonMaterialIDEdit.active = entry.dungeonMaterialIDEdit.visible = false;
         });
+
+        loadButton.active = loadButton.visible = false;
+
         this.mode = mode;
+
         switch (mode) {
             case SAVE -> {
                 saveButton.active = saveButton.visible = true;
                 detailsList.active = detailsList.visible = true;
-//                detailsList.children().forEach(entry -> {
-//                    entry.dungeonMaterialIDEdit.active = entry.dungeonMaterialIDEdit.visible = true;
-//                });
             }
             case LOAD -> {
+                loadButton.active = loadButton.visible = true;
                 //todo
             }
             case DATA -> {
@@ -156,13 +171,7 @@ public class RoomExportScreen extends Screen {
 
     @Override
     public void onClose() {
-        sendToServer(StructureBlockEntity.UpdateType.UPDATE_DATA);
-        this.onCancel();
-    }
-
-    private void onCancel() {
-        assert this.minecraft != null;
-        this.minecraft.setScreen(null);
+        onDone();
     }
 
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
@@ -177,7 +186,17 @@ public class RoomExportScreen extends Screen {
     }
 
     private void onDone() {
-        this.sendToServer(StructureBlockEntity.UpdateType.SAVE_AREA);
+        switch (mode) {
+            case SAVE -> {
+                this.sendToServer(StructureBlockEntity.UpdateType.SAVE_AREA);
+            }
+            case LOAD -> {
+                this.sendToServer(StructureBlockEntity.UpdateType.LOAD_AREA);
+            }
+            case DATA -> {
+                this.sendToServer(StructureBlockEntity.UpdateType.UPDATE_DATA);
+            }
+        }
         assert this.minecraft != null;
         this.minecraft.setScreen(null);
     }
@@ -186,8 +205,24 @@ public class RoomExportScreen extends Screen {
         CompoundTag tag = new CompoundTag();
         tag.putString("packet", ServerPacketHandler.Packets.ROOM_EXPORT_WAND_CLOSE.toString());
         tag.putString("updateType", updateType.toString());
+        tag.putInt("mode", this.mode.ordinal());
         tag.putString("roomName", this.nameEdit.getValue());
+        tag.putBoolean("saveFile", saveFile);
+        saveFile = false;
 
+        switch (updateType){
+            case SAVE_AREA, UPDATE_DATA -> {
+                ListTag listTag = getDungeonMaterialsTag();
+                tag.put("dungeonMaterials", listTag);
+            }
+            case LOAD_AREA -> {
+            }
+        }
+
+        PacketDistributor.sendToServer(new SimplePacketManager.ServerboundTagPacket(tag));
+    }
+
+    private ListTag getDungeonMaterialsTag() {
         List<Pair<BlockState, Integer>> dungeonMaterials = new ArrayList<>();
         for (int i = 0; i < this.dungeonMaterials.size(); i++) {
             String value = this.detailsList.children().get(i).dungeonMaterialIDEdit.getValue();
@@ -207,8 +242,7 @@ public class RoomExportScreen extends Screen {
             compoundTag.putInt("dungeon_material_id", blockStateIntegerPair.getSecond());
             listTag.add(compoundTag);
         }));
-        tag.put("dungeonMaterials", listTag);
-        PacketDistributor.sendToServer(new SimplePacketManager.ServerboundTagPacket(tag));
+        return listTag;
     }
 
     @OnlyIn(Dist.CLIENT)

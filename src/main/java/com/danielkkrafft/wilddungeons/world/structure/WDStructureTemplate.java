@@ -6,6 +6,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -21,14 +22,14 @@ import java.util.Optional;
 
 public class WDStructureTemplate {
     public ListTag dungeonMaterials = new ListTag();
-    public List<Pair<StructureTemplate,BlockPos>> innerTemplates = new ArrayList<>();
+    public List<Pair<StructureTemplate, BlockPos>> innerTemplates = new ArrayList<>();
 
     public @NotNull CompoundTag save(@NotNull CompoundTag tag) {
         ListTag innerTagList = new ListTag();
         for (Pair<StructureTemplate, BlockPos> innerTemplate : innerTemplates) {
             CompoundTag innerTag = new CompoundTag();
             innerTemplate.getFirst().save(innerTag);
-            innerTag.putLong("originOffset", innerTemplate.getSecond().asLong());
+            innerTag.put("originOffset", newIntegerList(innerTemplate.getSecond().getX(), innerTemplate.getSecond().getY(), innerTemplate.getSecond().getZ()));
             innerTagList.add(innerTag);
         }
         tag.put("inner_templates", innerTagList);
@@ -48,7 +49,8 @@ public class WDStructureTemplate {
                 CompoundTag innerTag = innerTagList.getCompound(i);
                 StructureTemplate innerTemplate = new StructureTemplate();
                 innerTemplate.load(blockGetter, innerTag);
-                Pair<StructureTemplate, BlockPos> innerTemplatePair = Pair.of(innerTemplate, BlockPos.of(innerTag.getLong("originOffset")));
+                ListTag originOffset = innerTag.getList("originOffset", 3);
+                Pair<StructureTemplate, BlockPos> innerTemplatePair = Pair.of(innerTemplate, new BlockPos(originOffset.getInt(0), originOffset.getInt(1), originOffset.getInt(2)));
                 innerTemplates.add(innerTemplatePair);
             }
         }
@@ -81,5 +83,15 @@ public class WDStructureTemplate {
                 return block.defaultBlockState();
             }
         }
+    }
+
+    public ListTag newIntegerList(int... values) {
+        ListTag listtag = new ListTag();
+
+        for (int i : values) {
+            listtag.add(IntTag.valueOf(i));
+        }
+
+        return listtag;
     }
 }
