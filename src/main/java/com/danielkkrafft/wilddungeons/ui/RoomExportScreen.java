@@ -51,7 +51,7 @@ public class RoomExportScreen extends Screen {
     private static final Component DUNGEON_MATERIAL_INDEX_LABEL = Component.translatable("room_export_wand.dungeon_material_index_label");
     private Button saveButton;
     private DetailsList detailsList;
-    private boolean saveFile = false;
+    private boolean confirmAction = false;
 
     private Button loadButton;
 
@@ -83,7 +83,7 @@ public class RoomExportScreen extends Screen {
         this.addWidget(this.nameEdit);
 
         this.saveButton = this.addRenderableWidget(Button.builder(Component.translatable("structure_block.button.save"), button -> {
-            saveFile = true;
+            confirmAction = true;
             onDone();
         }).bounds(this.width - 55, 20, 50, 20).build());
         this.detailsList = this.addRenderableWidget(new DetailsList(this.width, this.height - 65, 60, 24));
@@ -93,10 +93,12 @@ public class RoomExportScreen extends Screen {
         });
 
         this.loadButton = this.addRenderableWidget(Button.builder(Component.translatable("structure_block.button.load"), button -> {
+            confirmAction = true;
             onDone();
         }).bounds(this.width - 55, 20, 50, 20).build());
 
         this.cancelButton = this.addRenderableWidget(Button.builder(Component.translatable("gui.cancel"), button -> {
+            confirmAction = false;
             this.onClose();
         }).bounds(5, 45, 50, 20).build());
 
@@ -207,8 +209,8 @@ public class RoomExportScreen extends Screen {
         tag.putString("updateType", updateType.toString());
         tag.putInt("mode", this.mode.ordinal());
         tag.putString("roomName", this.nameEdit.getValue());
-        tag.putBoolean("saveFile", saveFile);
-        saveFile = false;
+        tag.putBoolean("confirmAction", confirmAction);
+        confirmAction = false;
 
         switch (updateType){
             case SAVE_AREA, UPDATE_DATA -> {

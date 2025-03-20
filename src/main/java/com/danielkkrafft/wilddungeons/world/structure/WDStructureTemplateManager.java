@@ -201,15 +201,15 @@ public class WDStructureTemplateManager {
 
     private Optional<WDStructureTemplate> load(InputStreamOpener inputStream, Consumer<Throwable> onError) {
         try {
-            Optional<WDStructureTemplate> optional;
             try (
                     InputStream inputstream = inputStream.open();
                     InputStream fastBufferedInputStream = new FastBufferedInputStream(inputstream)
             ) {
-                optional = Optional.of(this.readStructure(fastBufferedInputStream));
+                WDStructureTemplate wdStructureTemplate = this.readStructure(fastBufferedInputStream);
+                if (wdStructureTemplate == null)
+                    return Optional.empty();
+                return Optional.of(wdStructureTemplate);
             }
-
-            return optional;
         } catch (FileNotFoundException var12) {
             return Optional.empty();
         } catch (Throwable throwable1) {
@@ -227,6 +227,8 @@ public class WDStructureTemplateManager {
         WDStructureTemplate structuretemplate = new WDStructureTemplate();
         int i = NbtUtils.getDataVersion(nbt, 500);
         structuretemplate.load(this.blockLookup, DataFixTypes.STRUCTURE.updateToCurrentVersion(this.fixerUpper, nbt, i));
+        if (structuretemplate.innerTemplates.isEmpty())
+            return null;
         return structuretemplate;
     }
 

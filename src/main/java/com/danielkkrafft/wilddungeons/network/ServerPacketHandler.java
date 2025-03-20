@@ -40,27 +40,29 @@ public class ServerPacketHandler {
             case ROOM_EXPORT_WAND_CLOSE -> {
                 ItemStack itemStack = context.player().getItemInHand(context.player().getUsedItemHand());
                 if (itemStack.is(WDItems.ROOM_EXPORT_WAND)){
-
-                    StructureBlockEntity.UpdateType updateType = StructureBlockEntity.UpdateType.valueOf(data.getString("updateType"));
-                    RoomExportWand.setName(itemStack, data.getString("roomName"));
                     StructureMode structureMode = StructureMode.values()[data.getInt("mode")];
                     RoomExportWand.setMode(itemStack, structureMode);
+                    
+                    boolean confirmAction = data.getBoolean("confirmAction");
 
-                    switch (updateType) {
+                    switch (StructureBlockEntity.UpdateType.valueOf(data.getString("updateType"))) {
                         case UPDATE_DATA -> {
 
                         }
                         case SAVE_AREA -> {
-                            boolean saveFile = data.getBoolean("saveFile");
-                            boolean success = RoomExportWand.saveStructure(itemStack, (ServerLevel) context.player().level(), data.getList("dungeonMaterials", 10), saveFile);
-                            if (success && saveFile) {
+                            boolean success = RoomExportWand.saveStructure(itemStack, (ServerLevel) context.player().level(), data.getList("dungeonMaterials", 10), confirmAction);
+                            RoomExportWand.setName(itemStack, data.getString("roomName"));
+                            if (success && confirmAction) {
                                 context.player().sendSystemMessage(Component.translatable("message.room_export_wand.save.success",RoomExportWand.getRoomName(itemStack)));
-                            } else if (saveFile) {
+                            } else if (confirmAction) {
                                 context.player().sendSystemMessage(Component.translatable("message.room_export_wand.save.failure"));
                             }
                         }
                         case LOAD_AREA -> {
-                            context.player().sendSystemMessage(Component.translatable("message.room_export_wand.load.success", RoomExportWand.getRoomName(itemStack)));
+                            if (confirmAction){
+                                RoomExportWand.setName(itemStack, data.getString("roomName"));
+                                context.player().sendSystemMessage(Component.translatable("message.room_export_wand.load.success", RoomExportWand.getRoomName(itemStack)));
+                            }
                         }
                     }
                 }

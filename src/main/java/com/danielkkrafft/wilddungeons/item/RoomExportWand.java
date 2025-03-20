@@ -1,6 +1,7 @@
 package com.danielkkrafft.wilddungeons.item;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.ui.RoomExportScreen;
 import com.danielkkrafft.wilddungeons.world.structure.WDStructureTemplate;
 import com.danielkkrafft.wilddungeons.world.structure.WDStructureTemplateManager;
@@ -40,6 +41,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.danielkkrafft.wilddungeons.registry.WDDataComponents.WAND_MODE;
 import static com.danielkkrafft.wilddungeons.registry.WDDataComponents.WAND_ROOM_NAME;
@@ -330,18 +332,22 @@ public class RoomExportWand extends Item {
         ServerLevel level = (ServerLevel) context.getLevel();
         ItemStack itemStack = context.getItemInHand();
         Rotation rotation = switch (context.getHorizontalDirection()) {
-            case SOUTH -> Rotation.NONE;
             case WEST -> Rotation.CLOCKWISE_90;
             case NORTH -> Rotation.CLOCKWISE_180;
             case EAST -> Rotation.COUNTERCLOCKWISE_90;
             default -> Rotation.NONE;
         };
         StructurePlaceSettings settings = new StructurePlaceSettings().setRotation(rotation);
-        WDStructureTemplate wdStructureTemplate = WDStructureTemplateManager.INSTANCE.getOrCreate(WildDungeons.rl(getRoomName(itemStack)));
-        for (Pair<StructureTemplate, BlockPos> innerTemplatePair : wdStructureTemplate.innerTemplates) {
-            StructureTemplate innerTemplate = innerTemplatePair.getFirst();
-            BlockPos offset = innerTemplatePair.getSecond().rotate(rotation);
-            innerTemplate.placeInWorld(level, clickedPos.offset(offset), clickedPos, settings, level.random, 2);
+        Optional<WDStructureTemplate> wdStructureTemplate = WDStructureTemplateManager.INSTANCE.get(WildDungeons.rl(getRoomName(itemStack)));
+        if (wdStructureTemplate.isPresent()) {
+            for (Pair<StructureTemplate, BlockPos> innerTemplatePair : wdStructureTemplate.get().innerTemplates) {
+                StructureTemplate innerTemplate = innerTemplatePair.getFirst();
+                BlockPos offset = innerTemplatePair.getSecond().rotate(rotation);
+                innerTemplate.placeInWorld(level, clickedPos.offset(offset), clickedPos, settings, level.random, 2);
+            }
+        } else {
+            Optional<StructureTemplate> structureTemplate = DungeonSessionManager.getInstance().server.getStructureManager().get(WildDungeons.rl(getRoomName(itemStack)));
+            structureTemplate.ifPresent(template -> template.placeInWorld(level, clickedPos, clickedPos, settings, level.random, 2));
         }
     }
 
