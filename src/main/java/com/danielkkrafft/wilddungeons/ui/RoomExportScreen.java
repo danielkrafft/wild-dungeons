@@ -182,6 +182,7 @@ public class RoomExportScreen extends Screen {
         } else if (keyCode != 257 && keyCode != 335) {
             return false;
         } else {
+            confirmAction = true;
             this.onDone();
             return true;
         }
@@ -228,10 +229,11 @@ public class RoomExportScreen extends Screen {
         List<Pair<BlockState, Integer>> dungeonMaterials = new ArrayList<>();
         for (int i = 0; i < this.dungeonMaterials.size(); i++) {
             String value = this.detailsList.children().get(i).dungeonMaterialIDEdit.getValue();
-            if (value.isBlank()){
-                value = "0";
-            }
-            dungeonMaterials.add(Pair.of(this.dungeonMaterials.get(i).getFirst(),Integer.parseInt(value)));
+            int intValue = 0;
+            try {
+                intValue = Integer.parseInt(value);
+            } catch (NumberFormatException ignored){}
+            dungeonMaterials.add(Pair.of(this.dungeonMaterials.get(i).getFirst(), intValue));
         }
 
         ListTag listTag = new ListTag();
@@ -264,7 +266,7 @@ public class RoomExportScreen extends Screen {
             public Entry(int dungeonMatID) {
                 this.dungeonMaterialIDEdit = new EditBox(RoomExportScreen.this.font, 0, 0, 20, 20, Component.translatable("room_export_wand.dungeon_material_id")) {
                     public boolean charTyped(char charTyped, int modifiers) {
-                        return Character.isDigit(charTyped) && super.charTyped(charTyped, modifiers);
+                        return (Character.isDigit(charTyped) || charTyped == '-') && super.charTyped(charTyped, modifiers);
                     }
                 };
                 this.dungeonMaterialIDEdit.setMaxLength(128);

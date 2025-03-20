@@ -7,6 +7,7 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalPr
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.world.structure.WDStructureTemplate;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -56,11 +57,23 @@ public class DungeonMaterial implements DungeonRegistration.DungeonComponent {
     public BlockState getHidden(int index) {return index > hiddenBlockStates.size()-1 ? hiddenBlockStates.getFirst().getRandom() : hiddenBlockStates.get(index).getRandom();}
 
     public BlockState replace(BlockState input, DungeonRoom room) {
+        if (input.is(Blocks.AIR)) {return input;}
         BlockState result = input;
-        //todo get the dungeon index mapping from the template nbt
-//        room.getTemplate().templates();//todo replace with getting the wrapper nbt data instead of the roomstructure itself
+        WDStructureTemplate wdTemplate = room.getTemplate().wdStructureTemplate();
+        List<Pair<BlockState, Integer>> dungeonIndexMapping = wdTemplate.getDungeonMaterialsAsList();
+        int materialIndex = dungeonIndexMapping.stream().filter(pair -> pair.getFirst().equals(input.getBlock().defaultBlockState())).findFirst().map(Pair::getSecond).orElse(-1);
+        if (materialIndex != -1) {
+            if (input.hasProperty(BlockStateProperties.STAIRS_SHAPE)){ result = getStair(materialIndex);}
+            else if (input.hasProperty(BlockStateProperties.SLAB_TYPE)){ result = getSlab(materialIndex);}
+            else if (input.hasProperty(BlockStateProperties.WEST_WALL)){ result = getWall(materialIndex);}
+            else if (input.hasProperty(BlockStateProperties.LIT)){ result = getLight(materialIndex);}
+            else if (input.hasProperty(BlockStateProperties.HANGING)){ result = getHangingLight(materialIndex);}
+            else {result = getBasic(materialIndex);}
+        }
 
-        if (input.is(WDBlocks.WD_BASIC.get())) {result = getBasic(0);}
+
+
+        /*if (input.is(WDBlocks.WD_BASIC.get())) {result = getBasic(0);}
         else if (input.is(WDBlocks.WD_BASIC_2.get())) {result = getBasic(1);}
         else if (input.is(WDBlocks.WD_BASIC_3.get())) {result = getBasic(2);}
         else if (input.is(WDBlocks.WD_BASIC_4.get())) {result = getBasic(3);}
@@ -86,9 +99,8 @@ public class DungeonMaterial implements DungeonRegistration.DungeonComponent {
         else if (input.is(WDBlocks.WD_HANGING_LIGHT_4.get())) {result = getHangingLight(3).trySetValue(BlockStateProperties.HANGING,true);}
         else if (input.is(WDBlocks.WD_SECRET.get())) {result = getHidden(0);}
         //IMPORTANT: do NOT replace Trapped Chests as this will break some rooms
-        else if (input.is(Blocks.CHEST))  {result = RandomUtil.randFloatBetween(0, 1) < room.getProperty(HierarchicalProperty.CHEST_SPAWN_CHANCE) ? Blocks.CHEST.defaultBlockState() : Blocks.AIR.defaultBlockState();}
+        else*/ if (input.is(Blocks.CHEST))  {result = RandomUtil.randFloatBetween(0, 1) < room.getProperty(HierarchicalProperty.CHEST_SPAWN_CHANCE) ? Blocks.CHEST.defaultBlockState() : Blocks.AIR.defaultBlockState();}
         else if (input.is(Blocks.BARREL)) {result = RandomUtil.randFloatBetween(0, 1) < room.getProperty(HierarchicalProperty.CHEST_SPAWN_CHANCE) ? Blocks.BARREL.defaultBlockState() : Blocks.AIR.defaultBlockState();}
-        else {return result;}
 
         for (Property<?> property : input.getProperties()) {
             if (result.hasProperty(property)) {

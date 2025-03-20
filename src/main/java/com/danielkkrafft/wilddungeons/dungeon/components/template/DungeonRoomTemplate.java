@@ -7,6 +7,8 @@ import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
+import com.danielkkrafft.wilddungeons.world.structure.WDStructureTemplate;
+import com.danielkkrafft.wilddungeons.world.structure.WDStructureTemplateManager;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
@@ -17,6 +19,7 @@ import net.minecraft.world.phys.Vec3;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 public final class DungeonRoomTemplate implements DungeonRegistration.DungeonComponent {
     private Class<?> clazz = DungeonRoom.class;
@@ -29,6 +32,7 @@ public final class DungeonRoomTemplate implements DungeonRegistration.DungeonCom
     private List<StructureTemplate.StructureBlockInfo> lootBlocks;
     private List<StructureTemplate.StructureBlockInfo> dataMarkers;
     private DungeonRegistration.OfferingTemplate roomClearOffering = null;
+    private WDStructureTemplate wdStructureTemplate;
 
 
     public enum DestructionRule {
@@ -40,9 +44,13 @@ public final class DungeonRoomTemplate implements DungeonRegistration.DungeonCom
     public <T> T get(HierarchicalProperty<T> property) { return (T) this.PROPERTIES.get(property); }
 
     public static DungeonRoomTemplate create(String name, List<Pair<String, BlockPos>> structures) {
+        WDStructureTemplate wdStructureTemplate = WDStructureTemplateManager.INSTANCE.get(WildDungeons.rl(name)).orElse(new WDStructureTemplate());
+
         List<Pair<StructureTemplate, BlockPos>> templates = new ArrayList<>();
-        for (Pair<String, BlockPos> structure : structures) {
-            WildDungeons.getLogger().info("TRYING TO LOAD STRUCTURE FILE {}", structure.getFirst());
+
+        if (wdStructureTemplate.innerTemplates != null && !wdStructureTemplate.innerTemplates.isEmpty()) {
+            templates = wdStructureTemplate.innerTemplates;
+        } else for (Pair<String, BlockPos> structure : structures) {
             StructureTemplate template = DungeonSessionManager.getInstance().server.getStructureManager().getOrCreate(WildDungeons.rl(structure.getFirst()));
             templates.add(new Pair<>(template, structure.getSecond()));
         }
@@ -56,6 +64,7 @@ public final class DungeonRoomTemplate implements DungeonRegistration.DungeonCom
         List<StructureTemplate.StructureBlockInfo> locatedDataMarkers = TemplateHelper.locateDataMarkers(templates);
         return new DungeonRoomTemplate()
                 .setName(name)
+                .setWDStructureTemplate(wdStructureTemplate)
                 .setTemplates(templates)
                 .setConnectionPoints(connectionPoints)
                 .setSpawnPoints(spawnPoint)
@@ -68,7 +77,7 @@ public final class DungeonRoomTemplate implements DungeonRegistration.DungeonCom
 
     public List<BoundingBox> getBoundingBoxes(TemplateOrientation orientation, BlockPos position) {
         List<BoundingBox> boundingBoxes = new ArrayList<>();
-        templates.forEach(template -> {
+        templates().forEach(template -> {
             BlockPos newOffset = StructureTemplate.transform(template.getSecond(), orientation.getMirror(), orientation.getRotation(), TemplateHelper.EMPTY_BLOCK_POS);
             BlockPos newPosition = position.offset(newOffset);
             boundingBoxes.add(template.getFirst().getBoundingBox(new StructurePlaceSettings().setMirror(orientation.getMirror()).setRotation(orientation.getRotation()), newPosition));
@@ -95,6 +104,10 @@ public final class DungeonRoomTemplate implements DungeonRegistration.DungeonCom
 
     public List<Pair<StructureTemplate, BlockPos>> templates() {
         return templates;
+    }
+
+    public WDStructureTemplate wdStructureTemplate() {
+        return wdStructureTemplate;
     }
 
     public List<ConnectionPoint> connectionPoints() {
@@ -184,6 +197,11 @@ public final class DungeonRoomTemplate implements DungeonRegistration.DungeonCom
 
     public DungeonRoomTemplate setProperties(HashMap<HierarchicalProperty<?>, Object> prop) {this.PROPERTIES = prop; return this;}
 
+    private DungeonRoomTemplate setWDStructureTemplate(WDStructureTemplate wdStructureTemplate) {
+        this.wdStructureTemplate = wdStructureTemplate;
+        return this;
+    }
+
     public static DungeonRoomTemplate copyOf(DungeonRoomTemplate template, String newName) {
         return new DungeonRoomTemplate()
                 .setClazz(template.clazz)
@@ -196,6 +214,7 @@ public final class DungeonRoomTemplate implements DungeonRegistration.DungeonCom
                 .setLootBlocks(template.lootBlocks)
                 .setDataMarkers(template.dataMarkers)
                 .setRoomClearOffering(template.roomClearOffering)
+                .setWDStructureTemplate(template.wdStructureTemplate)
                 .setProperties(new HashMap<>(template.PROPERTIES));
     }
 }

@@ -52,7 +52,7 @@ public class RoomExportWand extends Item {
     private BlockPos firstPos;
     private BlockPos secondPos;
     private boolean setFirstPos = true;
-    private boolean withEntities;//todo implement this in the ui
+    private boolean withEntities = true;//todo implement this in the ui
 
 
     public RoomExportWand(Properties properties) {
