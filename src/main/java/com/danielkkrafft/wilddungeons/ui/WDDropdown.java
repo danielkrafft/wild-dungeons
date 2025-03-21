@@ -194,6 +194,9 @@ public class WDDropdown extends AbstractWidget {
         if (!active || !visible) {
             return false;
         }
+        if (isMouseOver(mouseX, mouseY)){
+            this.playDownSound(Minecraft.getInstance().getSoundManager());
+        }
 
         if (isExpanded) {
             int dropdownY = getY() + height;
@@ -206,10 +209,7 @@ public class WDDropdown extends AbstractWidget {
                 int clickedIndex = (int)((mouseY - dropdownY) / height) + scrollOffset;
                 if (clickedIndex >= 0 && clickedIndex < options.size()) {
                     setSelectedIndex(clickedIndex);
-                    this.playDownSound(Minecraft.getInstance().getSoundManager());
                 }
-                isExpanded = false;
-                return true;
             }
             isExpanded = false;
             return true;
@@ -217,7 +217,6 @@ public class WDDropdown extends AbstractWidget {
                 mouseY >= getY() && mouseY <= getY() + height) {
             // Click on closed dropdown, expand it
             isExpanded = true;
-            this.playDownSound(Minecraft.getInstance().getSoundManager());
             return true;
         }
 

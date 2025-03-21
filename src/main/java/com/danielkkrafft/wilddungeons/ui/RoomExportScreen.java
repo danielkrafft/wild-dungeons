@@ -121,6 +121,7 @@ public class RoomExportScreen extends Screen {
         materialDropdown.setSelectionChangeListener(index -> {
             dungeonMaterialList.setMaterialIndex(index);
         });
+        materialDropdown.setSelectedIndex(materialIndex);
 
         //todo button that opens a menu that displays all the rooms, and allows you to select one to load
         //crawl the resource folder for all the rooms
