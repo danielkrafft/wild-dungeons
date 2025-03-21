@@ -117,7 +117,7 @@ public class RoomExportScreen extends Screen {
         materialIndexSlider.SetApplyCallback(() -> {
             dungeonMaterialList.setMaterialIndex(materialIndexSlider.getValueInt());
         });
-        dungeonMaterialList = addRenderableWidget(new SelectedMaterialDetailList(width-10, height - 90, 85, 30));
+        dungeonMaterialList = addRenderableWidget(new SelectedMaterialDetailList(width-10, height - 90, 85, 30, materialIndex));
 
         //todo button that opens a menu that displays all the rooms, and allows you to select one to load
         //crawl the resource folder for all the rooms
@@ -393,16 +393,9 @@ public class RoomExportScreen extends Screen {
     @OnlyIn(Dist.CLIENT)
     public class SelectedMaterialDetailList extends ObjectSelectionList<SelectedMaterialDetailList.MaterialDetailEntry>{
         private int materialIndex = 0;
-        public SelectedMaterialDetailList(int width, int height, int fromTop, int itemHeight) {
+        public SelectedMaterialDetailList(int width, int height, int fromTop, int itemHeight, int materialIndex) {
             super(RoomExportScreen.this.minecraft, width, height, fromTop, itemHeight);
-            addEntry(new MaterialDetailEntry(BASIC));
-            addEntry(new MaterialDetailEntry(STAIR));
-            addEntry(new MaterialDetailEntry(SLAB));
-            addEntry(new MaterialDetailEntry(WALL));
-            addEntry(new MaterialDetailEntry(LIGHT));
-            addEntry(new MaterialDetailEntry(HANGING_LIGHT));
-            addEntry(new MaterialDetailEntry(HIDDEN));
-            this.setMaterialIndex(RoomExportWand.getMaterialIndex(roomExportWand));
+            this.setMaterialIndex(materialIndex);
         }
 
         @Override
@@ -420,7 +413,31 @@ public class RoomExportScreen extends Screen {
 
         public void setMaterialIndex(int valueInt) {
             this.materialIndex = valueInt;
-            children().forEach(MaterialDetailEntry::updateBlocklist);
+            List<MaterialDetailEntry> children = new ArrayList<>(this.children());
+            children.forEach(this::removeEntry);
+            setupMaterialEntries();
+        }
+
+        public void setupMaterialEntries(){
+            DungeonMaterial dungeonMaterial = getMaterial();
+            addEntryPool(dungeonMaterial.basicBlockStates, BASIC);
+            addEntryPool(dungeonMaterial.stairBlockStates, STAIR);
+            addEntryPool(dungeonMaterial.slabBlockStates, SLAB);
+            addEntryPool(dungeonMaterial.wallBlockStates, WALL);
+            addEntryPool(dungeonMaterial.lightBlockStates, LIGHT);
+            addEntryPool(dungeonMaterial.hangingLightBlockStates, HANGING_LIGHT);
+            addEntryPool(dungeonMaterial.hiddenBlockStates, HIDDEN);
+        }
+
+        private void addEntryPool(ArrayList<WeightedPool<BlockState>> weightedPools, DungeonMaterial.BlockSetting.BlockType blockType) {
+            if (weightedPools != null) {
+                for (int i = 0; i < weightedPools.size(); i++) {
+                    WeightedPool<BlockState> pool = weightedPools.get(i);
+                    addEntry(new MaterialDetailEntry(blockType, pool, i));
+                }
+            } else {
+                addEntry(new MaterialDetailEntry(blockType, WeightedPool.of(Blocks.AIR.defaultBlockState()), 0));
+            }
         }
 
         public DungeonMaterial getMaterial(){
@@ -429,19 +446,21 @@ public class RoomExportScreen extends Screen {
 
         @OnlyIn(Dist.CLIENT)
         class MaterialDetailEntry extends ObjectSelectionList.Entry<MaterialDetailEntry>{
-            private static final Component BASIC = Component.translatable("dungeon_material.basic");
-            private static final Component STAIR = Component.translatable("dungeon_material.stair");
-            private static final Component SLAB = Component.translatable("dungeon_material.slab");
-            private static final Component WALL = Component.translatable("dungeon_material.wall");
-            private static final Component LIGHT = Component.translatable("dungeon_material.light");
-            private static final Component HANGING_LIGHT = Component.translatable("dungeon_material.hanging_light");
-            private static final Component HIDDEN = Component.translatable("dungeon_material.hidden");
+            private static final String BASIC = "dungeon_material.basic";
+            private static final String STAIR = "dungeon_material.stair";
+            private static final String SLAB = "dungeon_material.slab";
+            private static final String WALL = "dungeon_material.wall";
+            private static final String LIGHT = "dungeon_material.light";
+            private static final String HANGING_LIGHT = "dungeon_material.hanging_light";
+            private static final String HIDDEN = "dungeon_material.hidden";
             private DungeonMaterial.BlockSetting.BlockType blockType = DungeonMaterial.BlockSetting.BlockType.NONE;
             private final List<BlockState> blockStates = new ArrayList<>();
+            private final int index;
 
-            public MaterialDetailEntry(DungeonMaterial.BlockSetting.BlockType blockType) {
+            public MaterialDetailEntry(DungeonMaterial.BlockSetting.BlockType blockType, WeightedPool<BlockState> pool , int index) {
                 this.blockType = blockType;
-
+                this.index = index+1;
+                blockStates.addAll(pool.getAll());
             }
 
             @Override
@@ -466,14 +485,14 @@ public class RoomExportScreen extends Screen {
                 guiGraphics.drawString(
                         RoomExportScreen.this.font,
                         getBlockTypeComponent(),
-                        left + 20,
+                        left + 5,
                         top,
                         new Color(255, 255, 255, 255).getRGB()
                 );
 
                 int y = top + height - 20;
                 for (int i = 0; i < blockStates.size(); i++) {
-                    int x = left + 20 + i * 20;
+                    int x = left + i * 20;
                     RoomExportScreen.blitSlot(guiGraphics, x, y, blockStates.get(i).getBlock().asItem().getDefaultInstance());
                 }
             }
@@ -485,32 +504,17 @@ public class RoomExportScreen extends Screen {
 
             private Component getBlockTypeComponent(){
                 return switch (blockType) {
-                    case BASIC -> BASIC;
-                    case STAIR -> STAIR;
-                    case SLAB -> SLAB;
-                    case WALL -> WALL;
-                    case LIGHT -> LIGHT;
-                    case HANGING_LIGHT -> HANGING_LIGHT;
-                    case HIDDEN -> HIDDEN;
+                    case BASIC -> Component.translatable(BASIC, index);
+                    case STAIR -> Component.translatable(STAIR, index);
+                    case SLAB -> Component.translatable(SLAB, index);
+                    case WALL -> Component.translatable(WALL, index);
+                    case LIGHT -> Component.translatable(LIGHT, index);
+                    case HANGING_LIGHT -> Component.translatable(HANGING_LIGHT, index);
+                    case HIDDEN -> Component.translatable(HIDDEN, index);
                     case NONE -> Component.empty();
                 };
             }
 
-            public void updateBlocklist() {
-                blockStates.clear();
-                ArrayList<WeightedPool<BlockState>> pools = switch (blockType) {
-                    case NONE -> new ArrayList<>();
-                    case BASIC -> getMaterial().basicBlockStates;
-                    case STAIR -> getMaterial().stairBlockStates;
-                    case SLAB -> getMaterial().slabBlockStates;
-                    case WALL -> getMaterial().wallBlockStates;
-                    case LIGHT -> getMaterial().lightBlockStates;
-                    case HANGING_LIGHT -> getMaterial().hangingLightBlockStates;
-                    case HIDDEN -> getMaterial().hiddenBlockStates;
-                };
-                if (pools != null)
-                    pools.forEach(pool -> blockStates.addAll(pool.getAll()));
-            }
         }
     }
 

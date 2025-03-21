@@ -93,11 +93,11 @@
   "room_export_wand.dungeon_material_index_label": "Mat. Index:",
   "room_export_wand.dungeon_material_block_type": "Block Type:",
   "room_export_wand.button.load_with_materials": "Load with Materials",
-  "dungeon_material.basic": "Basic",
-  "dungeon_material.stair": "Stair",
-  "dungeon_material.slab": "Slab",
-  "dungeon_material.wall": "Wall",
-  "dungeon_material.light": "Light",
-  "dungeon_material.hanging_light": "Hanging Light",
-  "dungeon_material.hidden": "Secret"
+  "dungeon_material.basic": "Basic %s",
+  "dungeon_material.stair": "Stair %s",
+  "dungeon_material.slab": "Slab %s",
+  "dungeon_material.wall": "Wall %s",
+  "dungeon_material.light": "Light %s",
+  "dungeon_material.hanging_light": "Hanging Light %s",
+  "dungeon_material.hidden": "Secret %s"
 }
