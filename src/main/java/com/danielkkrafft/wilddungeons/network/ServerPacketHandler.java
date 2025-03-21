@@ -61,6 +61,11 @@ public class ServerPacketHandler {
                         case LOAD_AREA -> {
                             if (confirmAction){
                                 RoomExportWand.setName(itemStack, data.getString("roomName"));
+                                if (data.getBoolean("loadWithMaterials")) {
+                                    RoomExportWand.placeWithMaterials(itemStack, data.getInt("materialIndex"));
+                                } else {
+                                    RoomExportWand.placeWithMaterials(itemStack, -1);
+                                }
                                 context.player().sendSystemMessage(Component.translatable("message.room_export_wand.load.success", RoomExportWand.getRoomName(itemStack)));
                             }
                         }

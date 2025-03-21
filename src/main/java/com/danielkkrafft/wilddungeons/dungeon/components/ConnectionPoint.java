@@ -215,7 +215,7 @@ public class ConnectionPoint {
 
             if (blockEntity instanceof ConnectionBlockEntity connectionBlockEntity) {
                 BlockState blockState = blockStateFromString(connectionBlockEntity.unblockedBlockstate);
-                blockState = this.getRoom().getMaterial().replace(blockState, this.getRoom());
+                blockState = this.getRoom().getMaterial().replace(blockState, this.getRoom().getTemplate().wdStructureTemplate());
                 connectionBlockEntity.unblockedBlockstate = toString(blockState);
                 this.unBlockedBlockStates.put(pos, connectionBlockEntity.unblockedBlockstate);
             }

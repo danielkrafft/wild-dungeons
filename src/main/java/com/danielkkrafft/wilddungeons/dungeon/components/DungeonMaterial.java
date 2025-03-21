@@ -3,11 +3,8 @@ package com.danielkkrafft.wilddungeons.dungeon.components;
 
 import com.danielkkrafft.wilddungeons.block.WDBlocks;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
-import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
-import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.world.structure.WDStructureTemplate;
-import com.mojang.datafixers.util.Pair;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -59,10 +56,9 @@ public class DungeonMaterial implements DungeonRegistration.DungeonComponent {
     public BlockState getHangingLight(int index) {return index > hangingLightBlockStates.size()-1 ? hangingLightBlockStates.getFirst().getRandom() : hangingLightBlockStates.get(index).getRandom();}
     public BlockState getHidden(int index) {return index > hiddenBlockStates.size()-1 ? hiddenBlockStates.getFirst().getRandom() : hiddenBlockStates.get(index).getRandom();}
 
-    public BlockState replace(BlockState input, DungeonRoom room) {
+    public BlockState replace(BlockState input, WDStructureTemplate wdTemplate) {
         if (input.is(Blocks.AIR)) {return input;}
         BlockState result = input;
-        WDStructureTemplate wdTemplate = room.getTemplate().wdStructureTemplate();
         List<BlockSetting> dungeonIndexMapping = wdTemplate.getDungeonMaterialsAsList();
         Optional<BlockSetting> blockSettingOptional = dungeonIndexMapping.stream().filter(blockSetting -> blockSetting.blockState.equals(input.getBlock().defaultBlockState())).findFirst();
         if (blockSettingOptional.isPresent()) {
@@ -107,8 +103,9 @@ public class DungeonMaterial implements DungeonRegistration.DungeonComponent {
         else if (input.is(WDBlocks.WD_HANGING_LIGHT_4.get())) {result = getHangingLight(3).trySetValue(BlockStateProperties.HANGING,true);}
         else if (input.is(WDBlocks.WD_SECRET.get())) {result = getHidden(0);}
         //IMPORTANT: do NOT replace Trapped Chests as this will break some rooms
-        else if (input.is(Blocks.CHEST))  {result = RandomUtil.randFloatBetween(0, 1) < room.getProperty(HierarchicalProperty.CHEST_SPAWN_CHANCE) ? Blocks.CHEST.defaultBlockState() : Blocks.AIR.defaultBlockState();}
-        else if (input.is(Blocks.BARREL)) {result = RandomUtil.randFloatBetween(0, 1) < room.getProperty(HierarchicalProperty.CHEST_SPAWN_CHANCE) ? Blocks.BARREL.defaultBlockState() : Blocks.AIR.defaultBlockState();}
+        //todo replace with a property in the wd template
+//        else if (input.is(Blocks.CHEST))  {result = RandomUtil.randFloatBetween(0, 1) < room.getProperty(HierarchicalProperty.CHEST_SPAWN_CHANCE) ? Blocks.CHEST.defaultBlockState() : Blocks.AIR.defaultBlockState();}
+//        else if (input.is(Blocks.BARREL)) {result = RandomUtil.randFloatBetween(0, 1) < room.getProperty(HierarchicalProperty.CHEST_SPAWN_CHANCE) ? Blocks.BARREL.defaultBlockState() : Blocks.AIR.defaultBlockState();}
 
         for (Property<?> property : input.getProperties()) {
             if (result.hasProperty(property)) {

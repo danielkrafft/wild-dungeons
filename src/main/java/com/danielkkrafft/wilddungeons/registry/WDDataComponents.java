@@ -20,6 +20,8 @@ public class WDDataComponents {
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> WAND_MODE = DATA_COMPONENT_TYPES.register("wand_mode", () -> DataComponentType.<Integer>builder().persistent(Codec.INT).networkSynchronized(ByteBufCodecs.INT).build());
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<String>> WAND_ROOM_NAME = DATA_COMPONENT_TYPES.register("wand_room_name", () -> DataComponentType.<String>builder().persistent(Codec.STRING).networkSynchronized(ByteBufCodecs.STRING_UTF8).build());
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> WAND_MATERIAL_INT = DATA_COMPONENT_TYPES.register("wand_material", () -> DataComponentType.<Integer>builder().persistent(Codec.INT).networkSynchronized(ByteBufCodecs.INT).build());
+
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> ESSENCE_TYPE = DATA_COMPONENT_TYPES.register("essence_type", () -> DataComponentType.<Integer>builder().persistent(Codec.INT).networkSynchronized(ByteBufCodecs.INT).build());
 }

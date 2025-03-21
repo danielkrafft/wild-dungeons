@@ -73,8 +73,10 @@
   "key.wilddungeons.toggle_essence_type": "Toggle Essence Type",
 
   "dungeon.failed": "DUNGEON FAILED - RESPAWNING",
+
   "message.wilddungeons.block_break_fail": "Block cannot be broken - Room is protected",
   "message.wilddungeons.block_place_fail": "Block cannot be placed - Room is protected",
+
   "message.room_export_wand.first_pos_set": "First position set at %s, %s, %s",
   "message.room_export_wand.second_pos_set": "Second position set at %s, %s, %s",
   "message.room_export_wand.reset": "Positions reset",

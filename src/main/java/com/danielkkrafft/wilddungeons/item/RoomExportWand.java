@@ -3,6 +3,7 @@ package com.danielkkrafft.wilddungeons.item;
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.block.WDBlocks;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonMaterial;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.ui.RoomExportScreen;
 import com.danielkkrafft.wilddungeons.world.structure.WDStructureTemplate;
@@ -47,8 +48,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.danielkkrafft.wilddungeons.registry.WDDataComponents.WAND_MODE;
-import static com.danielkkrafft.wilddungeons.registry.WDDataComponents.WAND_ROOM_NAME;
+import static com.danielkkrafft.wilddungeons.registry.WDDataComponents.*;
 
 public class RoomExportWand extends Item {
 
@@ -345,15 +345,54 @@ public class RoomExportWand extends Item {
         };
         StructurePlaceSettings settings = new StructurePlaceSettings().setRotation(rotation);
         Optional<WDStructureTemplate> wdStructureTemplate = WDStructureTemplateManager.INSTANCE.get(WildDungeons.rl(getRoomName(itemStack)));
+
+        RoomExportWand wand = (RoomExportWand) itemStack.getItem();
+        wand.roomPositions = new ArrayList<>();
+
         if (wdStructureTemplate.isPresent()) {
-            for (Pair<StructureTemplate, BlockPos> innerTemplatePair : wdStructureTemplate.get().innerTemplates) {
-                StructureTemplate innerTemplate = innerTemplatePair.getFirst();
-                BlockPos offset = innerTemplatePair.getSecond().rotate(rotation);
-                innerTemplate.placeInWorld(level, clickedPos.offset(offset), clickedPos, settings, level.random, 2);
+            int materialIndex = getMaterialIndex(itemStack);
+            if (materialIndex != -1){
+                TemplateHelper.wandPlaceInWorld(wdStructureTemplate.get(), getMaterialIndex(itemStack), level, clickedPos, settings);
+            } else {
+                for (Pair<StructureTemplate, BlockPos> innerTemplatePair : wdStructureTemplate.get().innerTemplates) {
+                    StructureTemplate innerTemplate = innerTemplatePair.getFirst();
+                    BlockPos offset = innerTemplatePair.getSecond().rotate(rotation);
+                    innerTemplate.placeInWorld(level, clickedPos.offset(offset), clickedPos, settings, level.random, 2);
+                }
             }
+
+            wdStructureTemplate.get().innerTemplates.forEach(pair -> {
+                // Get rotated offset, same as used during placement
+                BlockPos offset = pair.getSecond().rotate(rotation);
+                BlockPos minPos = clickedPos.offset(offset);
+
+                // Get original size and prepare for calculations
+                Vec3i originalSize = pair.getFirst().getSize();
+
+                // Calculate the maximum position based on rotation
+                BlockPos maxPos;
+                switch (rotation) {
+                    case COUNTERCLOCKWISE_90 -> // For 270° rotation: X becomes -Z, Z becomes X
+                            maxPos = minPos.offset(-originalSize.getZ() - 1, originalSize.getY() - 1, originalSize.getX() - 1);
+                    case CLOCKWISE_90 -> // For 90° rotation: X becomes Z, Z becomes -X
+                            maxPos = minPos.offset(originalSize.getZ() - 1, originalSize.getY() - 1, -originalSize.getX() - 1);
+                    case CLOCKWISE_180 -> // For 180° rotation: X becomes -X, Z becomes -Z
+                            maxPos = minPos.offset(-originalSize.getX() - 1, originalSize.getY() - 1, -originalSize.getZ() - 1);
+                    default -> // No rotation
+                            maxPos = minPos.offset(originalSize.getX() - 1, originalSize.getY() - 1, originalSize.getZ() - 1);
+                }
+
+                wand.roomPositions.add(new Pair<>(minPos, maxPos));
+            });
         } else {
             Optional<StructureTemplate> structureTemplate = DungeonSessionManager.getInstance().server.getStructureManager().get(WildDungeons.rl(getRoomName(itemStack)));
-            structureTemplate.ifPresent(template -> template.placeInWorld(level, clickedPos, clickedPos, settings, level.random, 2));
+            structureTemplate.ifPresent(template -> {
+                template.placeInWorld(level, clickedPos, clickedPos, settings, level.random, 2);
+
+                BlockPos maxPos = clickedPos.offset(template.getSize()).offset(-1, -1, -1);
+                wand.roomPositions.add(new Pair<>(clickedPos, maxPos));
+            });
+
         }
     }
 
@@ -365,4 +404,13 @@ public class RoomExportWand extends Item {
     public static void setMode(ItemStack itemStack, StructureMode structureMode) {
         itemStack.set(WAND_MODE.get(), structureMode.ordinal());
     }
+
+    public static void placeWithMaterials(ItemStack itemStack, int materialIndex) {
+        itemStack.set(WAND_MATERIAL_INT, materialIndex);
+    }
+
+    public static int getMaterialIndex(ItemStack itemStack) {
+        return itemStack.has(WAND_MATERIAL_INT) ? itemStack.get(WAND_MATERIAL_INT) : -1;
+    }
+
 }
