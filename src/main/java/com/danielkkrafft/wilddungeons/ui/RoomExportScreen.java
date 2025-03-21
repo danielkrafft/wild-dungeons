@@ -59,8 +59,9 @@ public class RoomExportScreen extends Screen {
 
     private Button loadButton;
     private Checkbox loadWithMaterials;
-    private WDSlider materialIndexSlider;
+//    private WDSlider materialIndexSlider;
     private SelectedMaterialDetailList dungeonMaterialList;
+    private WDDropdown materialDropdown;
 
     private Button cancelButton;
 
@@ -110,14 +111,16 @@ public class RoomExportScreen extends Screen {
                 .pos(60, 40)
                 .selected(materialIndex != -1)
                 .onValueChange(((checkbox, b) -> {
-                    materialIndexSlider.active = materialIndexSlider.visible = b;
+                    materialDropdown.active = materialDropdown.visible = b;
                     dungeonMaterialList.active = dungeonMaterialList.visible = b;
                 })).build());
-        materialIndexSlider = addRenderableWidget(new WDSlider(5, 60, width - 10, 20, Component.empty(), Component.empty(), 0, DungeonMaterialRegistry.dungeonMaterials.size()-1, materialIndex, false));
-        materialIndexSlider.SetApplyCallback(() -> {
-            dungeonMaterialList.setMaterialIndex(materialIndexSlider.getValueInt());
-        });
+
         dungeonMaterialList = addRenderableWidget(new SelectedMaterialDetailList(width-10, height - 90, 85, 30, materialIndex));
+        materialDropdown = addRenderableWidget(new WDDropdown(minecraft, 5, 60, 200, 20, Component.translatable("room_export_wand.dungeon_materials")));
+        materialDropdown.setOptions(DungeonMaterialRegistry.dungeonMaterials.stream().map(dungeonMaterial ->(Component)Component.literal(dungeonMaterial.name())).toList());
+        materialDropdown.setSelectionChangeListener(index -> {
+            dungeonMaterialList.setMaterialIndex(index);
+        });
 
         //todo button that opens a menu that displays all the rooms, and allows you to select one to load
         //crawl the resource folder for all the rooms
@@ -145,13 +148,6 @@ public class RoomExportScreen extends Screen {
                 guiGraphics.drawString(font, MATERIAL_BLOCK_TYPE, width - 140 , 60, new Color(255, 255, 255, 255).getRGB());
             }
             case LOAD -> {
-                if (loadWithMaterials.selected()){
-                    //calculate the width of the material name
-                    DungeonMaterial dungeonMaterial = dungeonMaterialList.getMaterial();
-                    int width = font.width(dungeonMaterial.name());
-                    int x = (this.width - width) / 2;
-                    guiGraphics.drawString(font, dungeonMaterial.name(), x, 65, new Color(255, 255, 255, 255).getRGB());
-                }
             }
             case DATA -> {
             }
@@ -170,7 +166,7 @@ public class RoomExportScreen extends Screen {
 
         loadButton.active = loadButton.visible = false;
         loadWithMaterials.active = loadWithMaterials.visible = false;
-        materialIndexSlider.active = materialIndexSlider.visible = false;
+        materialDropdown.active = materialDropdown.visible = false;
         dungeonMaterialList.active = dungeonMaterialList.visible = false;
 
         this.mode = mode;
@@ -183,7 +179,7 @@ public class RoomExportScreen extends Screen {
             case LOAD -> {
                 loadButton.active = loadButton.visible = true;
                 loadWithMaterials.active = loadWithMaterials.visible = true;
-                materialIndexSlider.active = materialIndexSlider.visible = loadWithMaterials.selected();
+                materialDropdown.active = materialDropdown.visible = loadWithMaterials.selected();
                 dungeonMaterialList.active = dungeonMaterialList.visible = loadWithMaterials.selected();
                 //todo
             }
@@ -254,7 +250,7 @@ public class RoomExportScreen extends Screen {
             }
             case LOAD_AREA -> {
                 tag.putBoolean("loadWithMaterials", loadWithMaterials.selected());
-                tag.putInt("materialIndex", materialIndexSlider.getValueInt());
+                tag.putInt("materialIndex", materialDropdown.getSelectedIndex());
             }
         }
 
@@ -408,6 +404,9 @@ public class RoomExportScreen extends Screen {
             if (!this.active || !this.visible) {
                 return false;
             }
+            if (materialDropdown.isIsCoveredByDropdown((int) mouseX, (int) mouseY, this.width)) {
+                return false;
+            }
             return super.isMouseOver(mouseX, mouseY);
         }
 
@@ -481,24 +480,42 @@ public class RoomExportScreen extends Screen {
                     boolean hovering,
                     float partialTick
             ) {
+                // Only render if within parent list's visible area and not covered by dropdown
+                if (top >= SelectedMaterialDetailList.this.getY() &&
+                        top + height <= SelectedMaterialDetailList.this.getY() + SelectedMaterialDetailList.this.height) {
 
-                guiGraphics.drawString(
-                        RoomExportScreen.this.font,
-                        getBlockTypeComponent(),
-                        left + 5,
-                        top,
-                        new Color(255, 255, 255, 255).getRGB()
-                );
 
-                int y = top + height - 20;
-                for (int i = 0; i < blockStates.size(); i++) {
-                    int x = left + i * 20;
-                    RoomExportScreen.blitSlot(guiGraphics, x, y, blockStates.get(i).getBlock().asItem().getDefaultInstance());
+
+                    // Make sure we don't render too many items in a row
+                    int y = top + height - 20;
+                    int maxItemsPerRow = Math.min(blockStates.size(), Math.max(1, (width - 10) / 20));
+                    // Check if dropdown is expanded
+
+                        for (int i = 0; i < maxItemsPerRow; i++) {
+                            int x = left + i * 20;
+                            boolean isCoveredByDropdown = materialDropdown.isIsCoveredByDropdown(x, y, 18);
+                            if (!isCoveredByDropdown)
+                                RoomExportScreen.blitSlot(guiGraphics, x, y, blockStates.get(i).getBlock().asItem().getDefaultInstance());
+                        }
+                        if (!materialDropdown.isIsCoveredByDropdown(left + 5, top, font.width(getBlockTypeComponent()))) {
+                        guiGraphics.drawString(
+                                RoomExportScreen.this.font,
+                                getBlockTypeComponent(),
+                                left + 5,
+                                top,
+                                new Color(255, 255, 255, 255).getRGB()
+                        );
+                    }
                 }
             }
 
             @Override
             public boolean mouseClicked(double mouseX, double mouseY, int button) {
+                return false;
+            }
+
+            @Override
+            public boolean isMouseOver(double mouseX, double mouseY) {
                 return false;
             }
 
@@ -517,6 +534,7 @@ public class RoomExportScreen extends Screen {
 
         }
     }
+
 
     public static ItemStack getDisplayItem(BlockState state) {
         Item item = state.getBlock().asItem();
