@@ -469,6 +469,53 @@ public class TemplateHelper {
         }
     }
 
+    public static void wandPlaceInWorld(StructureTemplate innerTemplate, int materialIndex, ServerLevel serverLevel, BlockPos clickedPos, StructurePlaceSettings settings) {
+        if (innerTemplate.palettes.isEmpty()) return;
+        DungeonMaterial material = DungeonMaterialRegistry.dungeonMaterials.get(materialIndex);
+
+        List<StructureTemplate.StructureBlockInfo> list = settings.getRandomPalette(innerTemplate.palettes, BlockPos.ZERO).blocks();
+        if ((!list.isEmpty() || !settings.isIgnoreEntities() && !innerTemplate.entityInfoList.isEmpty()) && innerTemplate.size.getX() >= 1 && innerTemplate.size.getY() >= 1 && innerTemplate.size.getZ() >= 1) {
+
+            for (StructureTemplate.StructureBlockInfo structureBlockInfo : StructureTemplate.processBlockInfos(serverLevel, BlockPos.ZERO, clickedPos, settings, list, innerTemplate)) {
+                BlockState blockstate = structureBlockInfo.state();
+                BlockPos pos = structureBlockInfo.pos().offset(clickedPos);
+
+                if (blockstate.hasProperty(STAIRS_SHAPE) || blockstate.hasProperty(RAIL_SHAPE) || blockstate.hasProperty(RAIL_SHAPE_STRAIGHT)) {
+                    blockstate = TemplateHelper.fixBlockStateProperties(material.replace(structureBlockInfo.state(), null), settings);
+                } else {
+                    blockstate = material.replace(structureBlockInfo.state().mirror(settings.getMirror()).rotate(settings.getRotation()), null);
+                }
+
+                if (structureBlockInfo.nbt() != null) {
+                    BlockEntity blockentity = serverLevel.getBlockEntity(pos);
+                    Clearable.tryClear(blockentity);
+                    serverLevel.setBlock(pos, Blocks.BARRIER.defaultBlockState(), 2);
+                }
+
+                if (serverLevel.setBlock(pos, blockstate, 2)) {
+                    if (structureBlockInfo.nbt() != null) {
+                        BlockEntity blockentity1 = serverLevel.getBlockEntity(pos);
+                        if (blockentity1 != null) {
+                            blockentity1.loadWithComponents(structureBlockInfo.nbt(), serverLevel.registryAccess());
+                        }
+                    }
+
+                    FluidState fluidstate = settings.shouldApplyWaterlogging() ? serverLevel.getFluidState(pos) : null;
+                    if (fluidstate != null) {
+                        if (blockstate.getFluidState().isSource()) {
+                        } else if (blockstate.getBlock() instanceof LiquidBlockContainer) {
+                            ((LiquidBlockContainer) blockstate.getBlock()).placeLiquid(serverLevel, pos, blockstate, fluidstate);
+                        }
+                    }
+                }
+            }
+
+            if (!settings.isIgnoreEntities()) {
+                addEntitiesToWorld(innerTemplate, serverLevel, BlockPos.ZERO, settings);
+            }
+        }
+    }
+
     public static void addEntitiesToWorld(StructureTemplate template, ServerLevelAccessor p_74524_, BlockPos p_74525_, StructurePlaceSettings placementIn) {
         for(StructureTemplate.StructureEntityInfo structuretemplate$structureentityinfo : StructureTemplate.processEntityInfos(template, p_74524_, p_74525_, placementIn, template.entityInfoList)) {
             if (structuretemplate$structureentityinfo.nbt.getString("id").equals(WDEntities.OFFERING.getId().toString())) continue;

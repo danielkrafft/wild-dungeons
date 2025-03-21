@@ -26,7 +26,7 @@ public class DungeonMaterial implements DungeonRegistration.DungeonComponent {
     public ArrayList<WeightedPool<BlockState>> lightBlockStates;
     public ArrayList<WeightedPool<BlockState>> hangingLightBlockStates;
     public ArrayList<WeightedPool<BlockState>> hiddenBlockStates;
-    public float chestChance = .33f;
+    public float chestChance = .33f;//todo move this to a property of the room
 
     public DungeonMaterial(String name, WeightedPool<BlockState> defaultBasicBlocks, WeightedPool<BlockState> defaultStairBlocks, WeightedPool<BlockState> defaultSlabBlocks, WeightedPool<BlockState> defaultWallBlocks, WeightedPool<BlockState> defaultLightBlocks, WeightedPool<BlockState> defaultHiddenBlocks) {
         this.name = name;
@@ -59,19 +59,21 @@ public class DungeonMaterial implements DungeonRegistration.DungeonComponent {
     public BlockState replace(BlockState input, WDStructureTemplate wdTemplate) {
         if (input.is(Blocks.AIR)) {return input;}
         BlockState result = input;
-        List<BlockSetting> dungeonIndexMapping = wdTemplate.getDungeonMaterialsAsList();
-        Optional<BlockSetting> blockSettingOptional = dungeonIndexMapping.stream().filter(blockSetting -> blockSetting.blockState.equals(input.getBlock().defaultBlockState())).findFirst();
-        if (blockSettingOptional.isPresent()) {
-            BlockSetting blockSetting = blockSettingOptional.get();
-            int materialIndex = blockSetting.materialIndex;
-            switch (blockSetting.blockType) {
-                case BASIC -> result = getBasic(materialIndex);
-                case STAIR -> result = getStair(materialIndex);
-                case SLAB -> result = getSlab(materialIndex);
-                case WALL -> result = getWall(materialIndex);
-                case LIGHT -> result = getLight(materialIndex);
-                case HANGING_LIGHT -> result = getHangingLight(materialIndex).trySetValue(BlockStateProperties.HANGING,true);
-                case HIDDEN -> result = getHidden(materialIndex);
+        if (wdTemplate != null){
+            List<BlockSetting> dungeonIndexMapping = wdTemplate.getDungeonMaterialsAsList();
+            Optional<BlockSetting> blockSettingOptional = dungeonIndexMapping.stream().filter(blockSetting -> blockSetting.blockState.equals(input.getBlock().defaultBlockState())).findFirst();
+            if (blockSettingOptional.isPresent()) {
+                BlockSetting blockSetting = blockSettingOptional.get();
+                int materialIndex = blockSetting.materialIndex;
+                switch (blockSetting.blockType) {
+                    case BASIC -> result = getBasic(materialIndex);
+                    case STAIR -> result = getStair(materialIndex);
+                    case SLAB -> result = getSlab(materialIndex);
+                    case WALL -> result = getWall(materialIndex);
+                    case LIGHT -> result = getLight(materialIndex);
+                    case HANGING_LIGHT -> result = getHangingLight(materialIndex).trySetValue(BlockStateProperties.HANGING,true);
+                    case HIDDEN -> result = getHidden(materialIndex);
+                }
             }
         }
 

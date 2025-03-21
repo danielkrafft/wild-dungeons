@@ -5,6 +5,7 @@ import com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialRegistry
 import com.danielkkrafft.wilddungeons.item.RoomExportWand;
 import com.danielkkrafft.wilddungeons.network.ServerPacketHandler;
 import com.danielkkrafft.wilddungeons.network.SimplePacketManager;
+import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -27,16 +28,18 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.StructureMode;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.client.gui.widget.ExtendedSlider;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
+
+import static com.danielkkrafft.wilddungeons.dungeon.components.DungeonMaterial.BlockSetting.BlockType.*;
 
 public class RoomExportScreen extends Screen {
     private final ItemStack roomExportWand;
-    private final List<DungeonMaterial.BlockSetting> dungeonMaterials;
+    private final List<DungeonMaterial.BlockSetting> selectedBlockSettings;
 
 
     private static final Component NAME_LABEL = Component.translatable("room_export_wand.name_label");
@@ -46,93 +49,109 @@ public class RoomExportScreen extends Screen {
     private CycleButton<StructureMode> modeButton;
 
     private EditBox nameEdit;
+    private boolean confirmAction = false;
 
     private static final Component MATERIALS_LABEL = Component.translatable("room_export_wand.materials_label");
     private static final Component MATERIAL_INDEX_LABEL = Component.translatable("room_export_wand.dungeon_material_index_label");
     private static final Component MATERIAL_BLOCK_TYPE = Component.translatable("room_export_wand.dungeon_material_block_type");
     private Button saveButton;
-    private DungeonMaterialDetailsList dungeonMaterialDetailsList;
-    private boolean confirmAction = false;
+    private SelectedRegionDetailList selectedRegionDetailList;
 
     private Button loadButton;
     private Checkbox loadWithMaterials;
-    private ExtendedSlider materialIndexSlider;
+    private WDSlider materialIndexSlider;
+    private SelectedMaterialDetailList dungeonMaterialList;
 
     private Button cancelButton;
 
-    public RoomExportScreen(ItemStack roomExportWand, List<DungeonMaterial.BlockSetting> dungeonMaterials) {
+    public RoomExportScreen(ItemStack roomExportWand, List<DungeonMaterial.BlockSetting> selectedBlockSettings) {
         super(CommonComponents.EMPTY);
         this.roomExportWand = roomExportWand;
-        this.dungeonMaterials = dungeonMaterials;
+        this.selectedBlockSettings = selectedBlockSettings;
         this.mode = RoomExportWand.getMode(roomExportWand);
     }
 
     @Override
     protected void init() {
-        modeButton = this.addRenderableWidget(CycleButton.<StructureMode>builder(structureMode -> Component.translatable("structure_block.mode." + structureMode.getSerializedName()))
+        modeButton = addRenderableWidget(CycleButton.<StructureMode>builder(structureMode -> Component.translatable("structure_block.mode." + structureMode.getSerializedName()))
                 .withValues(ALL_MODES)
                 .displayOnlyValue()
-                .withInitialValue(this.mode)
+                .withInitialValue(mode)
                 .create(5, 15, 50, 20, Component.translatable("structure_block.mode"), (button, mode) -> {
-                    this.updateMode(mode);
+                    updateMode(mode);
                 }));
-        this.nameEdit = new EditBox(this.font, 60, 15, this.width - 120, 20, Component.translatable("structure_block.structure_name")) {
+        nameEdit = new EditBox(font, 60, 15, width - 120, 20, Component.translatable("structure_block.structure_name")) {
             public boolean charTyped(char charTyped, int modifiers) {
-                return RoomExportScreen.this.isValidCharacterForName(this.getValue(), charTyped, this.getCursorPosition()) && super.charTyped(charTyped, modifiers);
+                return RoomExportScreen.this.isValidCharacterForName(getValue(), charTyped, getCursorPosition()) && super.charTyped(charTyped, modifiers);
             }
         };
-        this.nameEdit.setMaxLength(128);
-        this.nameEdit.setValue(RoomExportWand.getRoomName(roomExportWand));
-        this.addWidget(this.nameEdit);
+        nameEdit.setMaxLength(128);
+        nameEdit.setValue(RoomExportWand.getRoomName(roomExportWand));
+        addWidget(nameEdit);
 
-        this.saveButton = this.addRenderableWidget(Button.builder(Component.translatable("structure_block.button.save"), button -> {
+        saveButton = addRenderableWidget(Button.builder(Component.translatable("structure_block.button.save"), button -> {
             confirmAction = true;
             onDone();
-        }).bounds(this.width - 55, 15, 50, 20).build());
-        this.dungeonMaterialDetailsList = this.addRenderableWidget(new DungeonMaterialDetailsList(this.width, this.height - 80, 75, 24));
-        dungeonMaterialDetailsList.children().forEach(entry -> {
-            this.addRenderableWidget(entry.dungeonMaterialIDEdit);
-            entry.dungeonMaterialIDEdit.active = entry.dungeonMaterialIDEdit.visible = false;
-            this.addRenderableWidget(entry.blockTypeButton);
-            entry.blockTypeButton.active = entry.blockTypeButton.visible = false;
+        }).bounds(width - 55, 15, 50, 20).build());
+        selectedRegionDetailList = addRenderableWidget(new SelectedRegionDetailList(width-10, height - 80, 75, 24));
+        selectedRegionDetailList.children().forEach(selectionRegionBlockEntry -> {
+            addRenderableWidget(selectionRegionBlockEntry.dungeonMaterialIDEdit);
+            selectionRegionBlockEntry.dungeonMaterialIDEdit.active = selectionRegionBlockEntry.dungeonMaterialIDEdit.visible = false;
+            addRenderableWidget(selectionRegionBlockEntry.blockTypeButton);
+            selectionRegionBlockEntry.blockTypeButton.active = selectionRegionBlockEntry.blockTypeButton.visible = false;
         });
 
-        this.loadButton = this.addRenderableWidget(Button.builder(Component.translatable("structure_block.button.load"), button -> {
+        loadButton = addRenderableWidget(Button.builder(Component.translatable("structure_block.button.load"), button -> {
             confirmAction = true;
             onDone();
-        }).bounds(this.width - 55, 15, 50, 20).build());
+        }).bounds(width - 55, 15, 50, 20).build());
         int materialIndex = RoomExportWand.getMaterialIndex(roomExportWand);
-        this.loadWithMaterials = this.addRenderableWidget(Checkbox.builder(Component.translatable("structure_block.button.load_with_materials"), this.font)
+        loadWithMaterials = addRenderableWidget(Checkbox.builder(Component.translatable("room_export_wand.button.load_with_materials"), font)
                 .pos(60, 40)
-                        .selected(materialIndex!= -1)
+                .selected(materialIndex != -1)
                 .onValueChange(((checkbox, b) -> {
-            materialIndexSlider.active = materialIndexSlider.visible = b;
-        })).build());
-        this.materialIndexSlider = this.addRenderableWidget(new ExtendedSlider(5, 60, this.width - 10, 20, Component.translatable("structure_block.button.material_index"),Component.empty(),0, DungeonMaterialRegistry.dungeonMaterials.size(), materialIndex , true));
+                    materialIndexSlider.active = materialIndexSlider.visible = b;
+                    dungeonMaterialList.active = dungeonMaterialList.visible = b;
+                })).build());
+        materialIndexSlider = addRenderableWidget(new WDSlider(5, 60, width - 10, 20, Component.empty(), Component.empty(), 0, DungeonMaterialRegistry.dungeonMaterials.size()-1, materialIndex, false));
+        materialIndexSlider.SetApplyCallback(() -> {
+            dungeonMaterialList.setMaterialIndex(materialIndexSlider.getValueInt());
+        });
+        dungeonMaterialList = addRenderableWidget(new SelectedMaterialDetailList(width-10, height - 90, 85, 30));
 
-        this.cancelButton = this.addRenderableWidget(Button.builder(Component.translatable("gui.cancel"), button -> {
+        //todo button that opens a menu that displays all the rooms, and allows you to select one to load
+        //crawl the resource folder for all the rooms
+
+
+        cancelButton = addRenderableWidget(Button.builder(Component.translatable("gui.cancel"), button -> {
             confirmAction = false;
-            this.onClose();
+            onClose();
         }).bounds(5, 35, 50, 20).build());
 
-        this.updateMode(this.mode);
+        updateMode(mode);
     }
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         //permanent render
-        guiGraphics.drawString(this.font, NAME_LABEL, 60, 5, new Color(0, 255, 233, 255).getRGB());
-        this.nameEdit.render(guiGraphics, mouseX, mouseY, partialTick);
-        guiGraphics.drawString(this.font, MODE_LABEL, 5, 5, new Color(255, 255, 255, 255).getRGB());
+        guiGraphics.drawString(font, NAME_LABEL, 60, 5, new Color(0, 255, 233, 255).getRGB());
+        nameEdit.render(guiGraphics, mouseX, mouseY, partialTick);
+        guiGraphics.drawString(font, MODE_LABEL, 5, 5, new Color(255, 255, 255, 255).getRGB());
         //dynamic render
         switch (mode){
             case SAVE -> {
-                guiGraphics.drawString(this.font, MATERIALS_LABEL, 5, 60, new Color(255, 255, 255, 255).getRGB());
-                guiGraphics.drawString(this.font, MATERIAL_INDEX_LABEL, this.width - 65, 60, new Color(255, 255, 255, 255).getRGB());
-                guiGraphics.drawString(this.font, MATERIAL_BLOCK_TYPE, this.width - 140 , 60, new Color(255, 255, 255, 255).getRGB());
+                guiGraphics.drawString(font, MATERIALS_LABEL, 5, 60, new Color(255, 255, 255, 255).getRGB());
+                guiGraphics.drawString(font, MATERIAL_INDEX_LABEL, width - 65, 60, new Color(255, 255, 255, 255).getRGB());
+                guiGraphics.drawString(font, MATERIAL_BLOCK_TYPE, width - 140 , 60, new Color(255, 255, 255, 255).getRGB());
             }
             case LOAD -> {
-
+                if (loadWithMaterials.selected()){
+                    //calculate the width of the material name
+                    DungeonMaterial dungeonMaterial = dungeonMaterialList.getMaterial();
+                    int width = font.width(dungeonMaterial.name());
+                    int x = (this.width - width) / 2;
+                    guiGraphics.drawString(font, dungeonMaterial.name(), x, 65, new Color(255, 255, 255, 255).getRGB());
+                }
             }
             case DATA -> {
             }
@@ -143,27 +162,29 @@ public class RoomExportScreen extends Screen {
 
     private void updateMode(StructureMode mode) {
         saveButton.active = saveButton.visible = false;
-        dungeonMaterialDetailsList.active = dungeonMaterialDetailsList.visible = false;
-        dungeonMaterialDetailsList.children().forEach(entry -> {
-            entry.dungeonMaterialIDEdit.active = entry.dungeonMaterialIDEdit.visible = false;
-            entry.blockTypeButton.active = entry.blockTypeButton.visible = false;
+        selectedRegionDetailList.active = selectedRegionDetailList.visible = false;
+        selectedRegionDetailList.children().forEach(selectionRegionBlockEntry -> {
+            selectionRegionBlockEntry.dungeonMaterialIDEdit.active = selectionRegionBlockEntry.dungeonMaterialIDEdit.visible = false;
+            selectionRegionBlockEntry.blockTypeButton.active = selectionRegionBlockEntry.blockTypeButton.visible = false;
         });
 
         loadButton.active = loadButton.visible = false;
         loadWithMaterials.active = loadWithMaterials.visible = false;
         materialIndexSlider.active = materialIndexSlider.visible = false;
+        dungeonMaterialList.active = dungeonMaterialList.visible = false;
 
         this.mode = mode;
 
         switch (mode) {
             case SAVE -> {
                 saveButton.active = saveButton.visible = true;
-                dungeonMaterialDetailsList.active = dungeonMaterialDetailsList.visible = true;
+                selectedRegionDetailList.active = selectedRegionDetailList.visible = true;
             }
             case LOAD -> {
                 loadButton.active = loadButton.visible = true;
                 loadWithMaterials.active = loadWithMaterials.visible = true;
                 materialIndexSlider.active = materialIndexSlider.visible = loadWithMaterials.selected();
+                dungeonMaterialList.active = dungeonMaterialList.visible = loadWithMaterials.selected();
                 //todo
             }
             case DATA -> {
@@ -174,20 +195,20 @@ public class RoomExportScreen extends Screen {
 
     @Override
     public void resize(@NotNull Minecraft minecraft, int width, int height) {
-        String s = this.nameEdit.getValue();
+        String s = nameEdit.getValue();
         super.resize(minecraft, width, height);
-        this.init(minecraft, width, height);
-        this.nameEdit.setValue(s);
+        init(minecraft, width, height);
+        nameEdit.setValue(s);
     }
 
     @Override
     public void renderBackground(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        this.renderTransparentBackground(guiGraphics);
+        renderTransparentBackground(guiGraphics);
     }
 
     @Override
     protected void setInitialFocus() {
-        this.setInitialFocus(this.nameEdit);
+        setInitialFocus(nameEdit);
     }
 
     @Override
@@ -202,27 +223,27 @@ public class RoomExportScreen extends Screen {
             return false;
         } else {
             confirmAction = true;
-            this.onDone();
+            onDone();
             return true;
         }
     }
 
     private void onDone() {
         switch (mode) {
-            case SAVE -> this.sendToServer(StructureBlockEntity.UpdateType.SAVE_AREA);
-            case LOAD -> this.sendToServer(StructureBlockEntity.UpdateType.LOAD_AREA);
-            case DATA -> this.sendToServer(StructureBlockEntity.UpdateType.UPDATE_DATA);
+            case SAVE -> sendToServer(StructureBlockEntity.UpdateType.SAVE_AREA);
+            case LOAD -> sendToServer(StructureBlockEntity.UpdateType.LOAD_AREA);
+            case DATA -> sendToServer(StructureBlockEntity.UpdateType.UPDATE_DATA);
         }
-        assert this.minecraft != null;
-        this.minecraft.setScreen(null);
+        assert minecraft != null;
+        minecraft.setScreen(null);
     }
 
     private void sendToServer(StructureBlockEntity.UpdateType updateType) {
         CompoundTag tag = new CompoundTag();
         tag.putString("packet", ServerPacketHandler.Packets.ROOM_EXPORT_WAND_CLOSE.toString());
         tag.putString("updateType", updateType.toString());
-        tag.putInt("mode", this.mode.ordinal());
-        tag.putString("roomName", this.nameEdit.getValue());
+        tag.putInt("mode", mode.ordinal());
+        tag.putString("roomName", nameEdit.getValue());
         tag.putBoolean("confirmAction", confirmAction);
         confirmAction = false;
 
@@ -233,7 +254,7 @@ public class RoomExportScreen extends Screen {
             }
             case LOAD_AREA -> {
                 tag.putBoolean("loadWithMaterials", loadWithMaterials.selected());
-                tag.putInt("materialIndex", (int) materialIndexSlider.getValue());
+                tag.putInt("materialIndex", materialIndexSlider.getValueInt());
             }
         }
 
@@ -243,17 +264,17 @@ public class RoomExportScreen extends Screen {
     private ListTag getDungeonMaterialsTag() {
         ListTag listTag = new ListTag();
 
-        for (int i = 0; i < this.dungeonMaterials.size(); i++) {
-            DungeonMaterialDetailsList.Entry entry = this.dungeonMaterialDetailsList.children().get(i);
-            String value = entry.dungeonMaterialIDEdit.getValue();
+        for (int i = 0; i < selectedBlockSettings.size(); i++) {
+            SelectedRegionDetailList.SelectionRegionBlockEntry selectionRegionBlockEntry = selectedRegionDetailList.children().get(i);
+            String value = selectionRegionBlockEntry.dungeonMaterialIDEdit.getValue();
             int intValue = 0;
             try {
                 intValue = Integer.parseInt(value);
             } catch (NumberFormatException ignored){}
             CompoundTag compoundTag = new CompoundTag();
-            compoundTag.putString("Name", BuiltInRegistries.BLOCK.getKey(dungeonMaterials.get(i).blockState.getBlock()).toString());
+            compoundTag.putString("Name", BuiltInRegistries.BLOCK.getKey(selectedBlockSettings.get(i).blockState.getBlock()).toString());
             compoundTag.putInt("dungeon_material_id", intValue);
-            compoundTag.putInt("blockType", dungeonMaterials.get(i).blockType.ordinal());
+            compoundTag.putInt("blockType", selectedBlockSettings.get(i).blockType.ordinal());
 
             listTag.add(compoundTag);
         }
@@ -264,35 +285,42 @@ public class RoomExportScreen extends Screen {
 
 
     @OnlyIn(Dist.CLIENT)
-    public class DungeonMaterialDetailsList extends ObjectSelectionList<DungeonMaterialDetailsList.Entry>{
-        public DungeonMaterialDetailsList(int width, int height, int fromTop, int itemHeight) {
+    public class SelectedRegionDetailList extends ObjectSelectionList<SelectedRegionDetailList.SelectionRegionBlockEntry>{
+        public SelectedRegionDetailList(int width, int height, int fromTop, int itemHeight) {
             super(RoomExportScreen.this.minecraft, width, height, fromTop, itemHeight);
 
-            RoomExportScreen.this.dungeonMaterials.forEach(blockSetting -> {
-                this.addEntry(new Entry(blockSetting));
+            RoomExportScreen.this.selectedBlockSettings.forEach(blockSetting -> {
+                addEntry(new SelectionRegionBlockEntry(blockSetting));
             });
         }
 
         @Override
+        public boolean isMouseOver(double mouseX, double mouseY) {
+            if (!this.active || !this.visible) {
+                return false;
+            }
+            return super.isMouseOver(mouseX, mouseY);
+        }
+
+        @Override
         public int getRowWidth() {
-            return this.width-20;
+            return width-20;
         }
 
         @OnlyIn(Dist.CLIENT)
-        class Entry extends ObjectSelectionList.Entry<Entry>{
+        class SelectionRegionBlockEntry extends ObjectSelectionList.Entry<SelectionRegionBlockEntry>{
             public EditBox dungeonMaterialIDEdit;
             public CycleButton<DungeonMaterial.BlockSetting.BlockType> blockTypeButton;
 
-            public Entry(DungeonMaterial.BlockSetting blockSetting) {
-//                this.linearLayout = LinearLayout.horizontal().spacing(5);
-                this.dungeonMaterialIDEdit = new EditBox(RoomExportScreen.this.font, 0, 0, 30, 20, Component.translatable("room_export_wand.dungeon_material_id")) {
+            public SelectionRegionBlockEntry(DungeonMaterial.BlockSetting blockSetting) {
+                dungeonMaterialIDEdit = new EditBox(RoomExportScreen.this.font, 0, 0, 30, 20, Component.translatable("room_export_wand.dungeon_material_id")) {
                     public boolean charTyped(char charTyped, int modifiers) {
                         return (Character.isDigit(charTyped) || charTyped == '-') && super.charTyped(charTyped, modifiers);
                     }
                 };
-                this.dungeonMaterialIDEdit.setMaxLength(128);
-                this.dungeonMaterialIDEdit.setValue(Integer.toString(blockSetting.materialIndex));
-                this.blockTypeButton = CycleButton.<DungeonMaterial.BlockSetting.BlockType>builder(blockType -> Component.empty())
+                dungeonMaterialIDEdit.setMaxLength(128);
+                dungeonMaterialIDEdit.setValue(Integer.toString(blockSetting.materialIndex));
+                blockTypeButton = CycleButton.<DungeonMaterial.BlockSetting.BlockType>builder(blockType -> Component.empty())
                         .withValues(DungeonMaterial.BlockSetting.BlockType.values())
                         .displayOnlyValue()
                         .withInitialValue(blockSetting.blockType)
@@ -303,7 +331,7 @@ public class RoomExportScreen extends Screen {
 
             @Override
             public @NotNull Component getNarration() {
-                ItemStack itemStack = getDisplayItem(RoomExportScreen.this.dungeonMaterials.get(RoomExportScreen.this.dungeonMaterials.size() - DungeonMaterialDetailsList.this.children().indexOf(this) - 1).blockState);
+                ItemStack itemStack = getDisplayItem(RoomExportScreen.this.selectedBlockSettings.get(RoomExportScreen.this.selectedBlockSettings.size() - SelectedRegionDetailList.this.children().indexOf(this) - 1).blockState);
                 return !itemStack.isEmpty() ? Component.translatable("narrator.select", itemStack.getHoverName()) : CommonComponents.EMPTY;
             }
 
@@ -320,8 +348,8 @@ public class RoomExportScreen extends Screen {
                     boolean hovering,
                     float partialTick
             ) {
-                BlockState blockState = RoomExportScreen.this.dungeonMaterials.get(index).blockState;
-                this.blitSlot(guiGraphics, left, top, getDisplayItem(blockState));
+                BlockState blockState = RoomExportScreen.this.selectedBlockSettings.get(index).blockState;
+                RoomExportScreen.blitSlot(guiGraphics, left, top, getDisplayItem(blockState));
                 guiGraphics.drawString(
                         RoomExportScreen.this.font,
                         blockState.getBlock().getName().getString(),
@@ -329,12 +357,12 @@ public class RoomExportScreen extends Screen {
                         top + 6,
                         new Color(255, 255, 255, 255).getRGB()
                 );
-                boolean flag = top >= RoomExportScreen.this.dungeonMaterialDetailsList.getY() && top <= RoomExportScreen.this.dungeonMaterialDetailsList.getY() + RoomExportScreen.this.dungeonMaterialDetailsList.height - 20;
-                this.blockTypeButton.setPosition(left + width - 120, top);
-                renderButtonItem(guiGraphics,this.blockTypeButton.getValue(), this.blockTypeButton);
-                this.blockTypeButton.active = this.blockTypeButton.visible = flag;
-                this.dungeonMaterialIDEdit.setPosition(left + width - 50, top);
-                this.dungeonMaterialIDEdit.active = this.dungeonMaterialIDEdit.visible = flag && this.blockTypeButton.getValue() != DungeonMaterial.BlockSetting.BlockType.NONE;
+                boolean flag = top >= RoomExportScreen.this.selectedRegionDetailList.getY() && top <= RoomExportScreen.this.selectedRegionDetailList.getY() + RoomExportScreen.this.selectedRegionDetailList.height - 20;
+                blockTypeButton.setPosition(left + width - 120, top);
+                renderButtonItem(guiGraphics,blockTypeButton.getValue(), blockTypeButton);
+                blockTypeButton.active = blockTypeButton.visible = flag;
+                dungeonMaterialIDEdit.setPosition(left + width - 50, top);
+                dungeonMaterialIDEdit.active = dungeonMaterialIDEdit.visible = flag && blockTypeButton.getValue() != DungeonMaterial.BlockSetting.BlockType.NONE;
             }
 
             private void renderButtonItem(GuiGraphics guiGraphics, DungeonMaterial.BlockSetting.BlockType blockType, CycleButton<?> button){
@@ -359,20 +387,134 @@ public class RoomExportScreen extends Screen {
                 return false;
             }
 
-            private void blitSlot(GuiGraphics guiGraphics, int x, int y, ItemStack stack) {
-                this.blitSlotBg(guiGraphics, x + 1, y + 1);
-                if (!stack.isEmpty()) {
-                    guiGraphics.renderFakeItem(stack, x + 2, y + 2);
+        }
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public class SelectedMaterialDetailList extends ObjectSelectionList<SelectedMaterialDetailList.MaterialDetailEntry>{
+        private int materialIndex = 0;
+        public SelectedMaterialDetailList(int width, int height, int fromTop, int itemHeight) {
+            super(RoomExportScreen.this.minecraft, width, height, fromTop, itemHeight);
+            addEntry(new MaterialDetailEntry(BASIC));
+            addEntry(new MaterialDetailEntry(STAIR));
+            addEntry(new MaterialDetailEntry(SLAB));
+            addEntry(new MaterialDetailEntry(WALL));
+            addEntry(new MaterialDetailEntry(LIGHT));
+            addEntry(new MaterialDetailEntry(HANGING_LIGHT));
+            addEntry(new MaterialDetailEntry(HIDDEN));
+            this.setMaterialIndex(RoomExportWand.getMaterialIndex(roomExportWand));
+        }
+
+        @Override
+        public int getRowWidth() {
+            return this.width-20;
+        }
+
+        @Override
+        public boolean isMouseOver(double mouseX, double mouseY) {
+            if (!this.active || !this.visible) {
+                return false;
+            }
+            return super.isMouseOver(mouseX, mouseY);
+        }
+
+        public void setMaterialIndex(int valueInt) {
+            this.materialIndex = valueInt;
+            children().forEach(MaterialDetailEntry::updateBlocklist);
+        }
+
+        public DungeonMaterial getMaterial(){
+            return DungeonMaterialRegistry.dungeonMaterials.get(materialIndex);
+        }
+
+        @OnlyIn(Dist.CLIENT)
+        class MaterialDetailEntry extends ObjectSelectionList.Entry<MaterialDetailEntry>{
+            private static final Component BASIC = Component.translatable("dungeon_material.basic");
+            private static final Component STAIR = Component.translatable("dungeon_material.stair");
+            private static final Component SLAB = Component.translatable("dungeon_material.slab");
+            private static final Component WALL = Component.translatable("dungeon_material.wall");
+            private static final Component LIGHT = Component.translatable("dungeon_material.light");
+            private static final Component HANGING_LIGHT = Component.translatable("dungeon_material.hanging_light");
+            private static final Component HIDDEN = Component.translatable("dungeon_material.hidden");
+            private DungeonMaterial.BlockSetting.BlockType blockType = DungeonMaterial.BlockSetting.BlockType.NONE;
+            private final List<BlockState> blockStates = new ArrayList<>();
+
+            public MaterialDetailEntry(DungeonMaterial.BlockSetting.BlockType blockType) {
+                this.blockType = blockType;
+
+            }
+
+            @Override
+            public @NotNull Component getNarration() {
+                return getBlockTypeComponent();
+            }
+
+            @Override
+            public void render(
+                    @NotNull GuiGraphics guiGraphics,
+                    int index,
+                    int top,
+                    int left,
+                    int width,
+                    int height,
+                    int mouseX,
+                    int mouseY,
+                    boolean hovering,
+                    float partialTick
+            ) {
+
+                guiGraphics.drawString(
+                        RoomExportScreen.this.font,
+                        getBlockTypeComponent(),
+                        left + 20,
+                        top,
+                        new Color(255, 255, 255, 255).getRGB()
+                );
+
+                int y = top + height - 20;
+                for (int i = 0; i < blockStates.size(); i++) {
+                    int x = left + 20 + i * 20;
+                    RoomExportScreen.blitSlot(guiGraphics, x, y, blockStates.get(i).getBlock().asItem().getDefaultInstance());
                 }
             }
 
-            private void blitSlotBg(GuiGraphics guiGraphics, int x, int y) {
-                guiGraphics.blitSprite(ResourceLocation.withDefaultNamespace("container/slot"), x, y, 0, 18, 18);
+            @Override
+            public boolean mouseClicked(double mouseX, double mouseY, int button) {
+                return false;
+            }
+
+            private Component getBlockTypeComponent(){
+                return switch (blockType) {
+                    case BASIC -> BASIC;
+                    case STAIR -> STAIR;
+                    case SLAB -> SLAB;
+                    case WALL -> WALL;
+                    case LIGHT -> LIGHT;
+                    case HANGING_LIGHT -> HANGING_LIGHT;
+                    case HIDDEN -> HIDDEN;
+                    case NONE -> Component.empty();
+                };
+            }
+
+            public void updateBlocklist() {
+                blockStates.clear();
+                ArrayList<WeightedPool<BlockState>> pools = switch (blockType) {
+                    case NONE -> new ArrayList<>();
+                    case BASIC -> getMaterial().basicBlockStates;
+                    case STAIR -> getMaterial().stairBlockStates;
+                    case SLAB -> getMaterial().slabBlockStates;
+                    case WALL -> getMaterial().wallBlockStates;
+                    case LIGHT -> getMaterial().lightBlockStates;
+                    case HANGING_LIGHT -> getMaterial().hangingLightBlockStates;
+                    case HIDDEN -> getMaterial().hiddenBlockStates;
+                };
+                if (pools != null)
+                    pools.forEach(pool -> blockStates.addAll(pool.getAll()));
             }
         }
     }
 
-    public ItemStack getDisplayItem(BlockState state) {
+    public static ItemStack getDisplayItem(BlockState state) {
         Item item = state.getBlock().asItem();
         if (item == Items.AIR) {
             if (state.is(Blocks.WATER)) {
@@ -383,5 +525,12 @@ public class RoomExportScreen extends Screen {
         }
 
         return new ItemStack(item);
+    }
+
+    public static void blitSlot(GuiGraphics guiGraphics, int x, int y, ItemStack stack) {
+        guiGraphics.blitSprite(ResourceLocation.withDefaultNamespace("container/slot"), x + 1, y + 1, 0, 18, 18);
+        if (!stack.isEmpty()) {
+            guiGraphics.renderFakeItem(stack, x + 2, y + 2);
+        }
     }
 }

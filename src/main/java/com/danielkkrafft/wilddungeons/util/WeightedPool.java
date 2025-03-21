@@ -32,6 +32,14 @@ public class WeightedPool<T> implements DungeonRegistration.DungeonComponent {
         return this.pool.getFirst().getFirst();
     }
 
+    public List<T> getAll() {
+        List<T> result = new ArrayList<>();
+        for (Pair<T, Integer> pair : this.pool) {
+            result.add(pair.getFirst());
+        }
+        return result;
+    }
+
     @SafeVarargs
     //Uses int division, use bigger numbers
     public static <T> WeightedPool<T> combine(Pair<WeightedPool<T>, Integer>... pairs) {

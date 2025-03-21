@@ -348,9 +348,9 @@ public class RoomExportWand extends Item {
 
         RoomExportWand wand = (RoomExportWand) itemStack.getItem();
         wand.roomPositions = new ArrayList<>();
+        int materialIndex = getMaterialIndex(itemStack);
 
         if (wdStructureTemplate.isPresent()) {
-            int materialIndex = getMaterialIndex(itemStack);
             if (materialIndex != -1){
                 TemplateHelper.wandPlaceInWorld(wdStructureTemplate.get(), getMaterialIndex(itemStack), level, clickedPos, settings);
             } else {
@@ -362,34 +362,45 @@ public class RoomExportWand extends Item {
             }
 
             wdStructureTemplate.get().innerTemplates.forEach(pair -> {
-                // Get rotated offset, same as used during placement
                 BlockPos offset = pair.getSecond().rotate(rotation);
                 BlockPos minPos = clickedPos.offset(offset);
-
-                // Get original size and prepare for calculations
                 Vec3i originalSize = pair.getFirst().getSize();
-
-                // Calculate the maximum position based on rotation
                 BlockPos maxPos;
                 switch (rotation) {
                     case COUNTERCLOCKWISE_90 -> // For 270° rotation: X becomes -Z, Z becomes X
-                            maxPos = minPos.offset(-originalSize.getZ() - 1, originalSize.getY() - 1, originalSize.getX() - 1);
+                            maxPos = minPos.offset(-originalSize.getZ() + 1, originalSize.getY() - 1, originalSize.getX() - 1);
                     case CLOCKWISE_90 -> // For 90° rotation: X becomes Z, Z becomes -X
-                            maxPos = minPos.offset(originalSize.getZ() - 1, originalSize.getY() - 1, -originalSize.getX() - 1);
+                            maxPos = minPos.offset(originalSize.getZ() - 1, originalSize.getY() - 1, -originalSize.getX() + 1);
                     case CLOCKWISE_180 -> // For 180° rotation: X becomes -X, Z becomes -Z
-                            maxPos = minPos.offset(-originalSize.getX() - 1, originalSize.getY() - 1, -originalSize.getZ() - 1);
+                            maxPos = minPos.offset(-originalSize.getX() + 1, originalSize.getY() - 1, -originalSize.getZ() + 1);
                     default -> // No rotation
                             maxPos = minPos.offset(originalSize.getX() - 1, originalSize.getY() - 1, originalSize.getZ() - 1);
                 }
-
                 wand.roomPositions.add(new Pair<>(minPos, maxPos));
             });
         } else {
             Optional<StructureTemplate> structureTemplate = DungeonSessionManager.getInstance().server.getStructureManager().get(WildDungeons.rl(getRoomName(itemStack)));
             structureTemplate.ifPresent(template -> {
-                template.placeInWorld(level, clickedPos, clickedPos, settings, level.random, 2);
 
-                BlockPos maxPos = clickedPos.offset(template.getSize()).offset(-1, -1, -1);
+                if (materialIndex != -1){
+                    TemplateHelper.wandPlaceInWorld(template, materialIndex, level, clickedPos, settings);
+                } else {
+                    template.placeInWorld(level, clickedPos, clickedPos, settings, level.random, 2);
+                }
+
+
+                Vec3i originalSize = template.getSize();
+                BlockPos maxPos;
+                switch (rotation) {
+                    case COUNTERCLOCKWISE_90 ->
+                            maxPos = clickedPos.offset(originalSize.getZ() - 1, originalSize.getY() - 1, -originalSize.getX() + 1);
+                    case CLOCKWISE_90 ->
+                            maxPos = clickedPos.offset(-originalSize.getZ() + 1, originalSize.getY() - 1, originalSize.getX() - 1);
+                    case CLOCKWISE_180 ->
+                            maxPos = clickedPos.offset(-originalSize.getX() + 1, originalSize.getY() - 1, -originalSize.getZ() + 1);
+                    default ->
+                            maxPos = clickedPos.offset(originalSize.getX() - 1, originalSize.getY() - 1, originalSize.getZ() - 1);
+                }
                 wand.roomPositions.add(new Pair<>(clickedPos, maxPos));
             });
 
