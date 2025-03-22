@@ -135,7 +135,7 @@ public class WDStructureTemplateManager {
         }
     }
 
-    private Stream<ResourceLocation> listGenerated() {
+    public Stream<ResourceLocation> listGenerated() {
         if (!Files.isDirectory(this.generatedDir)) {
             return Stream.empty();
         } else {
@@ -147,7 +147,7 @@ public class WDStructureTemplateManager {
                         String s = path.getFileName().toString();
                         Path path1 = path.resolve(STRUCTURE_GENERATED_DIRECTORY_NAME);
                         Objects.requireNonNull(list);
-                        this.listFolderContents(path1, s, ".nbt", list::add);
+                        this.listFolderContents(path1, s, STRUCTURE_FILE_EXTENSION, list::add);
                     }
                 }
 
@@ -238,7 +238,7 @@ public class WDStructureTemplateManager {
             return false;
         } else {
             WDStructureTemplate structuretemplate = optional.get();
-            Path path = this.createAndValidatePathToGeneratedStructure(id, ".nbt");
+            Path path = this.createAndValidatePathToGeneratedStructure(id, STRUCTURE_FILE_EXTENSION);
             Path path1 = path.getParent();
             if (path1 == null) {
                 return false;

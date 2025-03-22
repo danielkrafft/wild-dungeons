@@ -1,12 +1,17 @@
 package com.danielkkrafft.wilddungeons.ui;
 
+import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonMaterial;
 import com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialRegistry;
+import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.item.RoomExportWand;
 import com.danielkkrafft.wilddungeons.network.ServerPacketHandler;
 import com.danielkkrafft.wilddungeons.network.SimplePacketManager;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
+import com.danielkkrafft.wilddungeons.world.dimension.tools.ReflectionBuddy;
+import com.danielkkrafft.wilddungeons.world.structure.WDStructureTemplateManager;
 import com.google.common.collect.ImmutableList;
+import net.minecraft.FileUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.*;
@@ -19,6 +24,8 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackResources;
+import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -26,14 +33,19 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.StructureBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.StructureMode;
+import net.minecraft.world.level.storage.LevelResource;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.danielkkrafft.wilddungeons.dungeon.components.DungeonMaterial.BlockSetting.BlockType.*;
 
@@ -57,11 +69,12 @@ public class RoomExportScreen extends Screen {
     private Button saveButton;
     private SelectedRegionDetailList selectedRegionDetailList;
 
+    private static final Component ROOM_LABEL = Component.translatable("room_export_wand.predefined_room_label");
     private Button loadButton;
     private Checkbox loadWithMaterials;
-//    private WDSlider materialIndexSlider;
     private SelectedMaterialDetailList dungeonMaterialList;
     private WDDropdown materialDropdown;
+    private WDDropdown resourcePackDropdown;
 
     private Button cancelButton;
 
@@ -108,29 +121,41 @@ public class RoomExportScreen extends Screen {
         }).bounds(width - 55, 15, 50, 20).build());
         int materialIndex = RoomExportWand.getMaterialIndex(roomExportWand);
         loadWithMaterials = addRenderableWidget(Checkbox.builder(Component.translatable("room_export_wand.button.load_with_materials"), font)
-                .pos(60, 40)
+                .pos(60, 38)
                 .selected(materialIndex != -1)
-                .onValueChange(((checkbox, b) -> {
-                    materialDropdown.active = materialDropdown.visible = b;
-                    dungeonMaterialList.active = dungeonMaterialList.visible = b;
-                })).build());
-
-        dungeonMaterialList = addRenderableWidget(new SelectedMaterialDetailList(width-10, height - 90, 85, 30, materialIndex));
-        materialDropdown = addRenderableWidget(new WDDropdown(minecraft, 5, 60, 200, 20, Component.translatable("room_export_wand.dungeon_materials")));
+                .onValueChange(((checkbox, b) -> updateMode(mode))).build());
+        if (materialIndex == -1) {
+            materialIndex = 0;
+        }
+        materialDropdown = addRenderableWidget(new WDDropdown(minecraft, 5, 59, 200, 20, Component.translatable("room_export_wand.dungeon_materials")));
         materialDropdown.setOptions(DungeonMaterialRegistry.dungeonMaterials.stream().map(dungeonMaterial ->(Component)Component.literal(dungeonMaterial.name())).toList());
+        materialDropdown.setSelectedIndex(materialIndex);
+        materialDropdown.setMaxVisibleOptions(7);
+        dungeonMaterialList = addRenderableWidget(new SelectedMaterialDetailList(width-10, height - 90, 85, 30, materialIndex));
         materialDropdown.setSelectionChangeListener(index -> {
             dungeonMaterialList.setMaterialIndex(index);
         });
-        materialDropdown.setSelectedIndex(materialIndex);
 
-        //todo button that opens a menu that displays all the rooms, and allows you to select one to load
-        //crawl the resource folder for all the rooms
 
+        resourcePackDropdown = addRenderableWidget(new WDDropdown(minecraft, width-205, 59, 200, 20, Component.translatable("room_export_wand.dungeon_materials")));
+        Map<ResourceLocation, Resource> resourceLocationPackResourcesMap = DungeonSessionManager.getInstance().server.getResourceManager().listResources("structure", (resourceLocation -> resourceLocation.getNamespace().equals("wilddungeons") && resourceLocation.getPath().endsWith(".nbt")));
+        ArrayList<Component> resourceLocations = WDStructureTemplateManager.INSTANCE.listGenerated().map(resourceLocation -> Component.literal(resourceLocation.getPath().replace("structure/", "").replace(".nbt", ""))).collect(Collectors.toCollection(ArrayList::new));
+        for (ResourceLocation resourceLocation : resourceLocationPackResourcesMap.keySet()) {
+            resourceLocations.add(Component.literal(resourceLocation.getPath().replace("structure/", "").replace(".nbt", "")));
+        }
+        resourceLocations = new ArrayList<>(resourceLocations.stream().distinct().toList());
+        //remove duplicates
+        resourceLocations.sort(Comparator.comparing(Component::getString));
+        resourcePackDropdown.setOptions(resourceLocations);
+        resourcePackDropdown.setMaxVisibleOptions(7);
+        resourcePackDropdown.setSelectionChangeListener(index -> {
+            nameEdit.setValue(resourcePackDropdown.getOptions().get(index).getString());
+        });
 
         cancelButton = addRenderableWidget(Button.builder(Component.translatable("gui.cancel"), button -> {
             confirmAction = false;
             onClose();
-        }).bounds(5, 35, 50, 20).build());
+        }).bounds(5, 36, 50, 20).build());
 
         updateMode(mode);
     }
@@ -149,6 +174,7 @@ public class RoomExportScreen extends Screen {
                 guiGraphics.drawString(font, MATERIAL_BLOCK_TYPE, width - 140 , 60, new Color(255, 255, 255, 255).getRGB());
             }
             case LOAD -> {
+                guiGraphics.drawString(font, ROOM_LABEL , width - 205, 45, new Color(255, 255, 255, 255).getRGB());
             }
             case DATA -> {
             }
@@ -169,7 +195,7 @@ public class RoomExportScreen extends Screen {
         loadWithMaterials.active = loadWithMaterials.visible = false;
         materialDropdown.active = materialDropdown.visible = false;
         dungeonMaterialList.active = dungeonMaterialList.visible = false;
-
+        resourcePackDropdown.active = resourcePackDropdown.visible = false;
         this.mode = mode;
 
         switch (mode) {
@@ -182,7 +208,7 @@ public class RoomExportScreen extends Screen {
                 loadWithMaterials.active = loadWithMaterials.visible = true;
                 materialDropdown.active = materialDropdown.visible = loadWithMaterials.selected();
                 dungeonMaterialList.active = dungeonMaterialList.visible = loadWithMaterials.selected();
-                //todo
+                resourcePackDropdown.active = resourcePackDropdown.visible = true;
             }
             case DATA -> {
                 //todo room properties go here
@@ -402,10 +428,7 @@ public class RoomExportScreen extends Screen {
 
         @Override
         public boolean isMouseOver(double mouseX, double mouseY) {
-            if (!this.active || !this.visible) {
-                return false;
-            }
-            if (materialDropdown.isIsCoveredByDropdown((int) mouseX, (int) mouseY, this.width)) {
+            if (!this.active || !this.visible || materialDropdown.isIsCoveredByDropdown((int) mouseX, (int) mouseY, this.width) || resourcePackDropdown.isIsCoveredByDropdown((int) mouseX, (int) mouseY, this.width)){
                 return false;
             }
             return super.isMouseOver(mouseX, mouseY);
@@ -484,21 +507,16 @@ public class RoomExportScreen extends Screen {
                 // Only render if within parent list's visible area and not covered by dropdown
                 if (top >= SelectedMaterialDetailList.this.getY() &&
                         top + height <= SelectedMaterialDetailList.this.getY() + SelectedMaterialDetailList.this.height) {
-
-
-
-                    // Make sure we don't render too many items in a row
                     int y = top + height - 20;
                     int maxItemsPerRow = Math.min(blockStates.size(), Math.max(1, (width - 10) / 20));
-                    // Check if dropdown is expanded
-
                         for (int i = 0; i < maxItemsPerRow; i++) {
                             int x = left + i * 20;
-                            boolean isCoveredByDropdown = materialDropdown.isIsCoveredByDropdown(x, y, 18);
+                            boolean isCoveredByDropdown = materialDropdown.isIsCoveredByDropdown(x, y, 18) || resourcePackDropdown.isIsCoveredByDropdown(x, y, 18);
                             if (!isCoveredByDropdown)
                                 RoomExportScreen.blitSlot(guiGraphics, x, y, blockStates.get(i).getBlock().asItem().getDefaultInstance());
                         }
-                        if (!materialDropdown.isIsCoveredByDropdown(left + 5, top, font.width(getBlockTypeComponent()))) {
+                        int widthOfText = font.width(getBlockTypeComponent());
+                        if (!materialDropdown.isIsCoveredByDropdown(left + 5, top, widthOfText) && !resourcePackDropdown.isIsCoveredByDropdown(left + 5, top, widthOfText)) {
                         guiGraphics.drawString(
                                 RoomExportScreen.this.font,
                                 getBlockTypeComponent(),
