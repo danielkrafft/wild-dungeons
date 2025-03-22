@@ -36,7 +36,6 @@ public class DungeonMaterial implements DungeonRegistration.DungeonComponent {
         this.wallBlockStates = new ArrayList<>(List.of(defaultWallBlocks));
         this.lightBlockStates = new ArrayList<>(List.of(defaultLightBlocks));
         this.hiddenBlockStates = new ArrayList<>(List.of(defaultHiddenBlocks));
-        this.hangingLightBlockStates = new ArrayList<>(List.of(WeightedPool.of(Blocks.AIR.defaultBlockState())));//null prevention
     }
 
     public DungeonMaterial setHangingLights(WeightedPool<BlockState> hangingLightBlockStates) {this.hangingLightBlockStates = new ArrayList<>(List.of(hangingLightBlockStates)); return this;}
@@ -54,7 +53,10 @@ public class DungeonMaterial implements DungeonRegistration.DungeonComponent {
     public BlockState getSlab(int index) {return index > slabBlockStates.size()-1 ? slabBlockStates.getFirst().getRandom() : slabBlockStates.get(index).getRandom();}
     public BlockState getWall(int index) {return index > wallBlockStates.size()-1 ? wallBlockStates.getFirst().getRandom() : wallBlockStates.get(index).getRandom();}
     public BlockState getLight(int index) {return index > lightBlockStates.size()-1 ? lightBlockStates.getFirst().getRandom() : lightBlockStates.get(index).getRandom();}
-    public BlockState getHangingLight(int index) {return index > hangingLightBlockStates.size()-1 ? hangingLightBlockStates.getFirst().getRandom() : hangingLightBlockStates.get(index).getRandom();}
+    public BlockState getHangingLight(int index) {
+        if (hangingLightBlockStates == null || hangingLightBlockStates.isEmpty()) {return Blocks.AIR.defaultBlockState();}
+        return index > hangingLightBlockStates.size()-1 ? hangingLightBlockStates.getFirst().getRandom() : hangingLightBlockStates.get(index).getRandom();
+    }
     public BlockState getHidden(int index) {return index > hiddenBlockStates.size()-1 ? hiddenBlockStates.getFirst().getRandom() : hiddenBlockStates.get(index).getRandom();}
 
     public BlockState replace(BlockState input, WDStructureTemplate wdTemplate) {
