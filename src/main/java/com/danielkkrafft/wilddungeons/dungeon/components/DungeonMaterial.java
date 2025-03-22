@@ -36,6 +36,7 @@ public class DungeonMaterial implements DungeonRegistration.DungeonComponent {
         this.wallBlockStates = new ArrayList<>(List.of(defaultWallBlocks));
         this.lightBlockStates = new ArrayList<>(List.of(defaultLightBlocks));
         this.hiddenBlockStates = new ArrayList<>(List.of(defaultHiddenBlocks));
+        this.hangingLightBlockStates = new ArrayList<>(List.of(WeightedPool.of(Blocks.AIR.defaultBlockState())));//null prevention
     }
 
     public DungeonMaterial setHangingLights(WeightedPool<BlockState> hangingLightBlockStates) {this.hangingLightBlockStates = new ArrayList<>(List.of(hangingLightBlockStates)); return this;}
