@@ -3,8 +3,13 @@ package com.danielkkrafft.wilddungeons.dungeon.components;
 
 import com.danielkkrafft.wilddungeons.block.WDBlocks;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
+import com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomRegistry;
+import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.world.structure.WDStructureTemplate;
+import com.danielkkrafft.wilddungeons.world.structure.WDStructureTemplateManager;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -26,7 +31,6 @@ public class DungeonMaterial implements DungeonRegistration.DungeonComponent {
     public ArrayList<WeightedPool<BlockState>> lightBlockStates;
     public ArrayList<WeightedPool<BlockState>> hangingLightBlockStates;
     public ArrayList<WeightedPool<BlockState>> hiddenBlockStates;
-    public float chestChance = .33f;//todo move this to a property of the room
 
     public DungeonMaterial(String name, WeightedPool<BlockState> defaultBasicBlocks, WeightedPool<BlockState> defaultStairBlocks, WeightedPool<BlockState> defaultSlabBlocks, WeightedPool<BlockState> defaultWallBlocks, WeightedPool<BlockState> defaultLightBlocks, WeightedPool<BlockState> defaultHiddenBlocks) {
         this.name = name;
@@ -39,7 +43,6 @@ public class DungeonMaterial implements DungeonRegistration.DungeonComponent {
     }
 
     public DungeonMaterial setHangingLights(WeightedPool<BlockState> hangingLightBlockStates) {this.hangingLightBlockStates = new ArrayList<>(List.of(hangingLightBlockStates)); return this;}
-    public DungeonMaterial setChestChance(float chestChance) {this.chestChance = chestChance; return this;}
     public DungeonMaterial addBasicBlockSet(WeightedPool<BlockState> blockStates) {this.basicBlockStates.add(blockStates); return this;}
     public DungeonMaterial addStairBlockSet(WeightedPool<BlockState> blockStates) {this.stairBlockStates.add(blockStates); return this;}
     public DungeonMaterial addSlabBlockSet(WeightedPool<BlockState> blockStates) {this.slabBlockStates.add(blockStates); return this;}
@@ -107,10 +110,6 @@ public class DungeonMaterial implements DungeonRegistration.DungeonComponent {
         else if (input.is(WDBlocks.WD_HANGING_LIGHT_3.get())) {result = getHangingLight(2).trySetValue(BlockStateProperties.HANGING,true);}
         else if (input.is(WDBlocks.WD_HANGING_LIGHT_4.get())) {result = getHangingLight(3).trySetValue(BlockStateProperties.HANGING,true);}
         else if (input.is(WDBlocks.WD_SECRET.get())) {result = getHidden(0);}
-        //IMPORTANT: do NOT replace Trapped Chests as this will break some rooms
-        //todo replace with a property in the wd template
-//        else if (input.is(Blocks.CHEST))  {result = RandomUtil.randFloatBetween(0, 1) < room.getProperty(HierarchicalProperty.CHEST_SPAWN_CHANCE) ? Blocks.CHEST.defaultBlockState() : Blocks.AIR.defaultBlockState();}
-//        else if (input.is(Blocks.BARREL)) {result = RandomUtil.randFloatBetween(0, 1) < room.getProperty(HierarchicalProperty.CHEST_SPAWN_CHANCE) ? Blocks.BARREL.defaultBlockState() : Blocks.AIR.defaultBlockState();}
 
         for (Property<?> property : input.getProperties()) {
             if (result.hasProperty(property)) {
