@@ -142,6 +142,7 @@ public class RoomExportWand extends Item {
     public void inventoryTick(@NotNull ItemStack stack, @NotNull Level level, @NotNull Entity entity, int slotId, boolean isSelected) {
         if (isSelected && level.isClientSide && entity instanceof Player player) {
             if (player.tickCount % 2 == 0) {
+                ArrayList<Pair<BlockPos, BlockPos>> roomPositions = new ArrayList<>(this.roomPositions);//prevents rare concurrent modification exception that occurs when a player adds a room while the client is iterating over the list
                 if (!roomPositions.isEmpty()) {
                     roomPositions.forEach(pair -> renderBoundingBoxEdges(level, BoundingBox.fromCorners(pair.getFirst(), pair.getSecond())));
                 }
