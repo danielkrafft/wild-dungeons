@@ -1,5 +1,6 @@
 package com.danielkkrafft.wilddungeons.ui;
 
+import com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialRegistry;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
@@ -43,6 +44,10 @@ public class WDDropdown extends AbstractWidget {
         options.clear();
         options.addAll(newOptions);
         selectedIndex = options.isEmpty() ? -1 : 0;
+    }
+
+    public int calculateMaxDisplayableOptions(int parentHeight){
+        return Math.min(options.size(), Math.max(1, (parentHeight - getY() - 30) / 20));
     }
 
     public int getSelectedIndex() {
@@ -171,7 +176,7 @@ public class WDDropdown extends AbstractWidget {
                 return true;
             }
         } else if (keyCode == 257 || keyCode == 32) { // Enter or Space when collapsed
-            isExpanded = true;
+            Expand();
             return true;
         }
         return false;
@@ -216,11 +221,16 @@ public class WDDropdown extends AbstractWidget {
         } else if (mouseX >= getX() && mouseX <= getX() + width &&
                 mouseY >= getY() && mouseY <= getY() + height) {
             // Click on closed dropdown, expand it
-            isExpanded = true;
+            Expand();
             return true;
         }
 
         return false;
+    }
+
+    public void Expand(){
+        isExpanded = true;
+        scrollOffset = Math.min(options.size() - maxVisibleOptions, selectedIndex);
     }
 
     public void setMaxVisibleOptions(int maxOptions) {

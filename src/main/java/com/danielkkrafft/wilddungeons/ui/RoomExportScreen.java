@@ -127,11 +127,11 @@ public class RoomExportScreen extends Screen {
         if (materialIndex == -1) {
             materialIndex = 0;
         }
+        dungeonMaterialList = addRenderableWidget(new SelectedMaterialDetailList(width-10, height - 90, 85, 30, materialIndex));
         materialDropdown = addRenderableWidget(new WDDropdown(minecraft, 5, 59, 200, 20, Component.translatable("room_export_wand.dungeon_materials")));
         materialDropdown.setOptions(DungeonMaterialRegistry.dungeonMaterials.stream().map(dungeonMaterial ->(Component)Component.literal(dungeonMaterial.name())).toList());
         materialDropdown.setSelectedIndex(materialIndex);
-        materialDropdown.setMaxVisibleOptions(7);
-        dungeonMaterialList = addRenderableWidget(new SelectedMaterialDetailList(width-10, height - 90, 85, 30, materialIndex));
+        materialDropdown.setMaxVisibleOptions(materialDropdown.calculateMaxDisplayableOptions(this.height));
         materialDropdown.setSelectionChangeListener(index -> {
             dungeonMaterialList.setMaterialIndex(index);
         });
@@ -147,10 +147,15 @@ public class RoomExportScreen extends Screen {
         //remove duplicates
         resourceLocations.sort(Comparator.comparing(Component::getString));
         resourcePackDropdown.setOptions(resourceLocations);
-        resourcePackDropdown.setMaxVisibleOptions(7);
+        resourcePackDropdown.setMaxVisibleOptions(resourcePackDropdown.calculateMaxDisplayableOptions(this.height));
         resourcePackDropdown.setSelectionChangeListener(index -> {
             nameEdit.setValue(resourcePackDropdown.getOptions().get(index).getString());
         });
+        try {
+            resourcePackDropdown.setSelectedIndex(resourceLocations.indexOf(Component.literal(nameEdit.getValue())));
+        } catch (IndexOutOfBoundsException ignored) {
+            resourcePackDropdown.setSelectedIndex(0);
+        }
 
         cancelButton = addRenderableWidget(Button.builder(Component.translatable("gui.cancel"), button -> {
             confirmAction = false;
