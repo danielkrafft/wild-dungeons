@@ -168,12 +168,7 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_11 = createSimple("nether/cave/sprawl_11");
     public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_12 = createSimple("nether/cave/sprawl_12");
     public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_13 = createSimple("nether/cave/sprawl_13");
-    public static final DungeonRoomTemplate NETHER_CAVE_END_ROOM = create(
-            "nether_cave_end",
-            List.of(
-                    of("nether/cave/end_1", EMPTY_BLOCK_POS),
-                    of("nether/cave/end_2", new BlockPos(48, 0, 0))
-            ))
+    public static final DungeonRoomTemplate NETHER_CAVE_END_ROOM = createSimple("nether/cave/end_composite")
             .set(INTENSITY, 3);
     public static final DungeonRoomTemplate NETHER_PIPEWORKS_BREAKOUT_ROOM = createSimple("nether/pipeworks/breakout").set(BLOCKING_MATERIAL_INDEX, 1);
     public static final DungeonRoomTemplate NETHER_PIPEWORKS_0 = createSimple("nether/pipeworks/breakout").set(BLOCKING_MATERIAL_INDEX, 1);

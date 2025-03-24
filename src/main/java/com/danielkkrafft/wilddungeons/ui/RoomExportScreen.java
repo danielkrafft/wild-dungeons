@@ -138,8 +138,8 @@ public class RoomExportScreen extends Screen {
 
 
         resourcePackDropdown = addRenderableWidget(new WDDropdown(minecraft, width-205, 59, 200, 20, Component.translatable("room_export_wand.dungeon_materials")));
-        Map<ResourceLocation, Resource> resourceLocationPackResourcesMap = DungeonSessionManager.getInstance().server.getResourceManager().listResources("structure", (resourceLocation -> resourceLocation.getNamespace().equals("wilddungeons") && resourceLocation.getPath().endsWith(".nbt")));
         ArrayList<Component> resourceLocations = WDStructureTemplateManager.INSTANCE.listGenerated().map(resourceLocation -> Component.literal(resourceLocation.getPath().replace("structure/", "").replace(".nbt", ""))).collect(Collectors.toCollection(ArrayList::new));
+        Map<ResourceLocation, Resource> resourceLocationPackResourcesMap = DungeonSessionManager.getInstance().server.getResourceManager().listResources("structure", (resourceLocation -> resourceLocation.getNamespace().equals("wilddungeons") && resourceLocation.getPath().endsWith(".nbt")));
         for (ResourceLocation resourceLocation : resourceLocationPackResourcesMap.keySet()) {
             resourceLocations.add(Component.literal(resourceLocation.getPath().replace("structure/", "").replace(".nbt", "")));
         }
@@ -482,7 +482,7 @@ public class RoomExportScreen extends Screen {
 
             public MaterialDetailEntry(DungeonMaterial.BlockSetting.BlockType blockType, WeightedPool<BlockState> pool , int index) {
                 this.blockType = blockType;
-                this.index = index+1;
+                this.index = index;
                 blockStates.addAll(pool.getAll());
             }
 
