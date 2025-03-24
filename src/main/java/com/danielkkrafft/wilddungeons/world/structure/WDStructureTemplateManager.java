@@ -16,17 +16,22 @@ import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.FastBufferedInputStream;
 import net.minecraft.util.datafix.DataFixTypes;
+import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import org.apache.commons.io.IOUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -77,6 +82,7 @@ public class WDStructureTemplateManager {
     }
 
     public Optional<WDStructureTemplate> get(ResourceLocation id) {
+//        return tryLoad(id);
         return this.structureRepository.computeIfAbsent(id, this::tryLoad);
     }
 
@@ -94,7 +100,38 @@ public class WDStructureTemplateManager {
         return Optional.empty();
     }
 
-    public void onResourceManagerReload(ResourceManager resourceManager) {//todo subscribe to a resource reload event
+    public static PreparableReloadListener StructureTemplateManagerReloadListener = new PreparableReloadListener() {
+        @Override
+        public @NotNull CompletableFuture<Void> reload(@NotNull PreparationBarrier preparationBarrier, @NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profilerFiller, @NotNull ProfilerFiller profilerFiller1, @NotNull Executor executor, @NotNull Executor executor1) {
+            profilerFiller.startTick();
+            profilerFiller.push("structure_template_reload");
+
+            // Use the background executor for preparation work
+            return CompletableFuture.supplyAsync(() -> {
+                        if (WDStructureTemplateManager.INSTANCE != null) {
+                            WDStructureTemplateManager.INSTANCE.onResourceManagerReload(resourceManager);
+                        }
+                        return null;
+                    }, executor)
+                    .thenCompose(preparationBarrier::wait)  // Wait for all preparation work to complete
+                    .thenAcceptAsync(unused -> {
+                        // Apply phase runs on the game thread (executor1)
+                        profilerFiller1.startTick();
+                        profilerFiller1.push("apply_structure_templates");
+                        profilerFiller1.pop();
+                        profilerFiller1.endTick();
+                    }, executor1)
+                    .whenComplete((unused, throwable) -> {
+                        if (throwable != null) {
+                            WildDungeons.getLogger().error("Failed to reload structure templates", throwable);
+                        }
+                        profilerFiller.pop();
+                        profilerFiller.endTick();
+                    });
+        }
+    };
+
+    public void onResourceManagerReload(ResourceManager resourceManager) {
         this.resourceManager = resourceManager;
         this.structureRepository.clear();
     }
@@ -105,7 +142,7 @@ public class WDStructureTemplateManager {
     }
 
 
-    private Stream<ResourceLocation> listResources() {
+    public Stream<ResourceLocation> listResources() {
         return RESOURCE_LISTER.listMatchingResources(this.resourceManager).keySet().stream()
                 .map(RESOURCE_LISTER::fileToId);
     }
