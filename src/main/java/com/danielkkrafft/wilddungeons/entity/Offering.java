@@ -74,7 +74,15 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     }
 
     public Type getOfferingType() {return Type.valueOf(this.type);}
-    public EssenceOrb.Type getOfferingCostType() {return EssenceOrb.Type.valueOf(this.costType);}
+    public EssenceOrb.Type getOfferingCostType() {
+        EssenceOrb.Type type;
+        try {
+            type = EssenceOrb.Type.valueOf(this.costType);
+        } catch (Exception e) {
+            type = EssenceOrb.Type.OVERWORLD;
+        }
+        return type;
+    }
     public String getOfferingId() {return this.offerID;}
     public void setOfferingId(String offerID) {this.offerID = offerID;}
     public int getAmount() {return this.amount;}
@@ -111,7 +119,11 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     public ItemStack getItemStack() {
         if (this.itemStack == null) {
             WildDungeons.getLogger().info("Getting itemstack of ID: {}", this.offerID);
-            itemStack = new ItemStack(Item.byId(Integer.parseInt(this.offerID)), this.amount);
+            try {
+                itemStack = new ItemStack(Item.byId(Integer.parseInt(this.offerID)), this.amount);
+            } catch (Exception e) {
+                itemStack = Items.DIRT.getDefaultInstance();
+            }
         }
         return itemStack;
     }
