@@ -50,8 +50,8 @@ public class ServerPacketHandler {
 
                         }
                         case SAVE_AREA -> {
-                            boolean success = RoomExportWand.saveStructure(itemStack, (ServerLevel) context.player().level(), data.getList("dungeonMaterials", 10), confirmAction);
                             RoomExportWand.setName(itemStack, data.getString("roomName"));
+                            boolean success = RoomExportWand.saveStructure(itemStack, (ServerLevel) context.player().level(), data.getList("dungeonMaterials", 10), confirmAction);
                             if (success && confirmAction) {
                                 context.player().sendSystemMessage(Component.translatable("message.room_export_wand.save.success",RoomExportWand.getRoomName(itemStack)));
                             } else if (confirmAction) {

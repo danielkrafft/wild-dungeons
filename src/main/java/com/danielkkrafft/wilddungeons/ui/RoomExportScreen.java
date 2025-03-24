@@ -153,9 +153,7 @@ public class RoomExportScreen extends Screen {
         });
         try {
             resourcePackDropdown.setSelectedIndex(resourceLocations.indexOf(Component.literal(nameEdit.getValue())));
-        } catch (IndexOutOfBoundsException ignored) {
-            resourcePackDropdown.setSelectedIndex(0);
-        }
+        } catch (IndexOutOfBoundsException ignored) {}
 
         cancelButton = addRenderableWidget(Button.builder(Component.translatable("gui.cancel"), button -> {
             confirmAction = false;

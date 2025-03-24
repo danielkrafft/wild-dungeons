@@ -183,8 +183,10 @@ public class WDStructureTemplateManager {
                     for(Path path : directorystream) {
                         String s = path.getFileName().toString();
                         Path path1 = path.resolve(STRUCTURE_GENERATED_DIRECTORY_NAME);
-                        Objects.requireNonNull(list);
-                        this.listFolderContents(path1, s, STRUCTURE_FILE_EXTENSION, list::add);
+                        if (Files.isDirectory(path1)) {
+                            Objects.requireNonNull(list);
+                            this.listFolderContents(path1, s, STRUCTURE_FILE_EXTENSION, list::add);
+                        }
                     }
                 }
 
