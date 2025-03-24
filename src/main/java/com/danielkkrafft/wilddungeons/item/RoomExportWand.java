@@ -252,7 +252,7 @@ public class RoomExportWand extends Item {
         if (getRoomName(itemStack) == null || this.roomPositions.isEmpty()) {
             return new ArrayList<>();
         }
-        WDStructureTemplate wdStructureTemplate = WDStructureTemplateManager.INSTANCE.getOrCreate(WildDungeons.rl(getRoomName(itemStack)));
+        WDStructureTemplate wdStructureTemplate = WDStructureTemplateManager.INSTANCE.get(WildDungeons.rl(getRoomName(itemStack))).orElse(new WDStructureTemplate());
         List<DungeonMaterial.BlockSetting> loadedMaterials = wdStructureTemplate.getDungeonMaterialsAsList();
 
         List<DungeonMaterial.BlockSetting> dungeonMaterials = Lists.newArrayList();
@@ -343,7 +343,7 @@ public class RoomExportWand extends Item {
             case EAST -> Rotation.COUNTERCLOCKWISE_90;
             default -> Rotation.NONE;
         };
-        StructurePlaceSettings settings = new StructurePlaceSettings().setRotation(rotation);
+        StructurePlaceSettings settings = new StructurePlaceSettings().setRotation(rotation).setIgnoreEntities(false);
         Optional<WDStructureTemplate> wdStructureTemplate = WDStructureTemplateManager.INSTANCE.get(WildDungeons.rl(getRoomName(itemStack)));
 
         RoomExportWand wand = (RoomExportWand) itemStack.getItem();
@@ -367,13 +367,13 @@ public class RoomExportWand extends Item {
                 Vec3i originalSize = pair.getFirst().getSize();
                 BlockPos maxPos;
                 switch (rotation) {
-                    case COUNTERCLOCKWISE_90 -> // For 270° rotation: X becomes -Z, Z becomes X
-                            maxPos = minPos.offset(-originalSize.getZ() + 1, originalSize.getY() - 1, originalSize.getX() - 1);
-                    case CLOCKWISE_90 -> // For 90° rotation: X becomes Z, Z becomes -X
+                    case COUNTERCLOCKWISE_90 ->
                             maxPos = minPos.offset(originalSize.getZ() - 1, originalSize.getY() - 1, -originalSize.getX() + 1);
-                    case CLOCKWISE_180 -> // For 180° rotation: X becomes -X, Z becomes -Z
+                    case CLOCKWISE_90 ->
+                            maxPos = minPos.offset(-originalSize.getZ() + 1, originalSize.getY() - 1, originalSize.getX() - 1);
+                    case CLOCKWISE_180 ->
                             maxPos = minPos.offset(-originalSize.getX() + 1, originalSize.getY() - 1, -originalSize.getZ() + 1);
-                    default -> // No rotation
+                    default ->
                             maxPos = minPos.offset(originalSize.getX() - 1, originalSize.getY() - 1, originalSize.getZ() - 1);
                 }
                 wand.roomPositions.add(new Pair<>(minPos, maxPos));
