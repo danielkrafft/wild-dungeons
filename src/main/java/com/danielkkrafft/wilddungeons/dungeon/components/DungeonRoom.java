@@ -48,10 +48,9 @@ import org.joml.Vector2i;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.LockSupport;
 
 import static com.danielkkrafft.wilddungeons.block.WDBedrockBlock.MIMIC;
-import static com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate.DestructionRule.*;
+import static com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate.DestructionRule.SHELL_CLEAR;
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialRegistry.DUNGEON_MATERIAL_REGISTRY;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomRegistry.DUNGEON_ROOM_REGISTRY;

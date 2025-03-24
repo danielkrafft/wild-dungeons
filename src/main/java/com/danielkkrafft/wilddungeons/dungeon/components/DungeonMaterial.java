@@ -3,13 +3,8 @@ package com.danielkkrafft.wilddungeons.dungeon.components;
 
 import com.danielkkrafft.wilddungeons.block.WDBlocks;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
-import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
-import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
-import com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomRegistry;
-import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.world.structure.WDStructureTemplate;
-import com.danielkkrafft.wilddungeons.world.structure.WDStructureTemplateManager;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;

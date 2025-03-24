@@ -1,15 +1,11 @@
 package com.danielkkrafft.wilddungeons.ui;
 
-import com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialRegistry;
-import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;

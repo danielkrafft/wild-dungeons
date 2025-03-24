@@ -3,7 +3,6 @@ package com.danielkkrafft.wilddungeons.entity;
 import com.danielkkrafft.wilddungeons.item.Meathook;
 import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
 import com.danielkkrafft.wilddungeons.util.MathUtil;
-import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;

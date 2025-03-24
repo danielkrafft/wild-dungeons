@@ -1,6 +1,5 @@
 package com.danielkkrafft.wilddungeons.ui;
 
-import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.network.ServerPacketHandler;
 import com.danielkkrafft.wilddungeons.network.SimplePacketManager;

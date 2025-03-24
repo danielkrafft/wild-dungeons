@@ -36,9 +36,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -85,13 +83,11 @@ import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
-import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2i;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 
 public class WDEvents {
 

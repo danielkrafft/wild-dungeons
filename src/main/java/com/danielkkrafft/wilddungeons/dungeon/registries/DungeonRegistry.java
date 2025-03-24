@@ -16,7 +16,6 @@ import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonFloorRegi
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialPoolRegistry.OVERWORLD_MATERIAL_POOL_0;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialPoolRegistry.VILLAGE_MATERIAL_POOL;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialRegistry.PIGLIN_FACTORY_MATERIAL;
-import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonPoolRegistry.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.OfferingTemplateRegistry.MEGA_DUNGEON_GAUNTLET_RIFT;
 import static com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession.DungeonExitBehavior.DESTROY;
 import static com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession.DungeonExitBehavior.NEXT;

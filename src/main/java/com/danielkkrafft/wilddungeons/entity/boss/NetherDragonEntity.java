@@ -1,9 +1,7 @@
 package com.danielkkrafft.wilddungeons.entity.boss;
 
-import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.util.UtilityMethods;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -46,11 +44,8 @@ import org.joml.Vector3f;
 import software.bernie.geckolib.animatable.GeoAnimatable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.AnimatableManager;
-import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.animation.AnimationState;
-import software.bernie.geckolib.animation.PlayState;
-import software.bernie.geckolib.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.EnumSet;

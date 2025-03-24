@@ -1,6 +1,5 @@
 package com.danielkkrafft.wilddungeons.ui;
 
-import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonMaterial;
 import com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
@@ -8,10 +7,8 @@ import com.danielkkrafft.wilddungeons.item.RoomExportWand;
 import com.danielkkrafft.wilddungeons.network.ServerPacketHandler;
 import com.danielkkrafft.wilddungeons.network.SimplePacketManager;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
-import com.danielkkrafft.wilddungeons.world.dimension.tools.ReflectionBuddy;
 import com.danielkkrafft.wilddungeons.world.structure.WDStructureTemplateManager;
 import com.google.common.collect.ImmutableList;
-import net.minecraft.FileUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.*;
@@ -24,7 +21,6 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -33,14 +29,12 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.StructureBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.StructureMode;
-import net.minecraft.world.level.storage.LevelResource;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -152,7 +146,10 @@ public class RoomExportScreen extends Screen {
             nameEdit.setValue(resourcePackDropdown.getOptions().get(index).getString());
         });
         try {
-            resourcePackDropdown.setSelectedIndex(resourceLocations.indexOf(Component.literal(nameEdit.getValue())));
+            int selectedIndex = resourceLocations.indexOf(Component.literal(nameEdit.getValue()));
+            if (selectedIndex != -1) {
+                resourcePackDropdown.setSelectedIndex(selectedIndex);
+            }
         } catch (IndexOutOfBoundsException ignored) {}
 
         cancelButton = addRenderableWidget(Button.builder(Component.translatable("gui.cancel"), button -> {
