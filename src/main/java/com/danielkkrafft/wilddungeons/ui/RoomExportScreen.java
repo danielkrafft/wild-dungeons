@@ -50,7 +50,7 @@ public class RoomExportScreen extends Screen {
 
     private static final Component NAME_LABEL = Component.translatable("room_export_wand.name_label");
     private static final Component MODE_LABEL = Component.translatable("room_export_wand.mode_label");
-    private static final ImmutableList<StructureMode> ALL_MODES = ImmutableList.of(StructureMode.SAVE, StructureMode.LOAD, StructureMode.DATA);
+    private static final ImmutableList<StructureMode> ALL_MODES = ImmutableList.of(StructureMode.SAVE, StructureMode.LOAD/*, StructureMode.DATA*/);
     private StructureMode mode = StructureMode.SAVE;
     private CycleButton<StructureMode> modeButton;
 
@@ -69,6 +69,7 @@ public class RoomExportScreen extends Screen {
     private SelectedMaterialDetailList dungeonMaterialList;
     private WDDropdown materialDropdown;
     private WDDropdown resourcePackDropdown;
+    private Checkbox additiveRoomLoading;
 
     private Button cancelButton;
 
@@ -151,6 +152,10 @@ public class RoomExportScreen extends Screen {
                 resourcePackDropdown.setSelectedIndex(selectedIndex);
             }
         } catch (IndexOutOfBoundsException ignored) {}
+        additiveRoomLoading = addRenderableWidget(Checkbox.builder(Component.translatable("room_export_wand.button.additive_room_loading"), font)
+                .pos(width - 155, 38)
+                .selected(RoomExportWand.getAdditiveRoomLoading(roomExportWand))
+                .onValueChange(((checkbox, b) -> updateMode(mode))).build());
 
         cancelButton = addRenderableWidget(Button.builder(Component.translatable("gui.cancel"), button -> {
             confirmAction = false;
@@ -277,6 +282,7 @@ public class RoomExportScreen extends Screen {
             }
             case LOAD_AREA -> {
                 tag.putBoolean("loadWithMaterials", loadWithMaterials.selected());
+                tag.putBoolean("additiveRoomLoading", additiveRoomLoading.selected());
                 tag.putInt("materialIndex", materialDropdown.getSelectedIndex());
             }
         }

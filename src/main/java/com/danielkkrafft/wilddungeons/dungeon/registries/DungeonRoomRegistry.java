@@ -56,12 +56,7 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate SECRET_1 = createSimple("secret/1").setClazz(SecretRoom.class)
             .set(SHOP_TABLE, OfferingTemplateTableRegistry.FREE_CUSTOM_WEAPON_TABLE);
     public static final DungeonRoomTemplate SHOP_1 = createSimple("shop/1");
-    public static final DungeonRoomTemplate LOOT_1 = create(
-            "loot",
-            List.of(
-                    of("loot/1", EMPTY_BLOCK_POS),
-                    of("loot/2", new BlockPos(0, 4, 0))
-            ))
+    public static final DungeonRoomTemplate LOOT_1 = createSimple("single_perk")
             .setClazz(LootRoom.class);
     public static final DungeonRoomTemplate REST = create(
             "rest",
@@ -151,20 +146,9 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_7 = createSimple("nether/cave/sprawl_7");
     public static final DungeonRoomTemplate NETHER_CAVE_COMBAT_1 = copyOf(NETHER_CAVE_SPRAWL_7, "nether_cave_combat_1").set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR).setClazz(CombatRoom.class);
 
-    public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_8 = create(
-            "nether_cave_sprawl_8",
-            List.of(
-                    of("nether/cave/sprawl_8_1", EMPTY_BLOCK_POS),
-                    of("nether/cave/sprawl_8_2", new BlockPos(23, 0, -8)),
-                    of("nether/cave/sprawl_8_3", new BlockPos(23, 3, 22))
-            ));
+    public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_8 = createSimple("nether/cave/sprawl_8");
     public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_9 = createSimple("nether/cave/sprawl_9");
-    public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_10 = create(
-            "nether_cave_sprawl_10",
-            List.of(
-                    of("nether/cave/sprawl_10_1", EMPTY_BLOCK_POS),
-                    of("nether/cave/sprawl_10_2", new BlockPos(7, 0, 0))
-            ));
+    public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_10 = createSimple("nether/cave/sprawl_10");
     public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_11 = createSimple("nether/cave/sprawl_11");
     public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_12 = createSimple("nether/cave/sprawl_12");
     public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_13 = createSimple("nether/cave/sprawl_13");
@@ -183,13 +167,7 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate NETHER_PIPEWORKS_LAVAFALLS = createSimple("nether/pipeworks/lava_falls").set(BLOCKING_MATERIAL_INDEX, 1);
     public static final DungeonRoomTemplate NETHER_PIPEWORKS_TO_FACTORY = createSimple("nether/pipeworks/pipe_to_factory").set(BLOCKING_MATERIAL_INDEX, 1).set(INTENSITY, 1).set(SOUNDSCAPE, SoundscapeTemplateRegistry.PIGLIN_FACTORY);
     public static final DungeonRoomTemplate NETHER_FACTORY_PARKOUR_1 = createSimple("nether/factory/parkour1").set(BLOCKING_MATERIAL_INDEX, 1);
-    public static final DungeonRoomTemplate NETHER_FACTORY_PARKOUR_2 = create(
-            "nether_factory_parkour_2",
-            List.of(
-                    of("nether/factory/parkour2_1", EMPTY_BLOCK_POS),
-                    of("nether/factory/parkour2_2", new BlockPos(9, 0, 7))
-            ))
-            .set(BLOCKING_MATERIAL_INDEX, 1);
+    public static final DungeonRoomTemplate NETHER_FACTORY_PARKOUR_2 = createSimple("nether/factory/parkour2").set(BLOCKING_MATERIAL_INDEX, 1);
     public static final DungeonRoomTemplate NETHER_FACTORY_REST_1 = createSimple("nether/factory/rest1").set(BLOCKING_MATERIAL_INDEX, 1);
     public static final DungeonRoomTemplate NETHER_FACTORY_SHOP_1 = createSimple("nether/factory/shop1").set(BLOCKING_MATERIAL_INDEX, 1);
     public static final DungeonRoomTemplate NETHER_FACTORY_SHOP_2 = createSimple("nether/factory/shop2").set(BLOCKING_MATERIAL_INDEX, 1);

@@ -67,9 +67,9 @@ public class DungeonMaterialRegistry {
                     .add(END_STONE_BRICK_WALL.defaultBlockState(), 1),
             new WeightedPool<BlockState>()
                     .add(PEARLESCENT_FROGLIGHT.defaultBlockState(), 1),
-                    new WeightedPool<BlockState>()
+            new WeightedPool<BlockState>()
                     .add(END_STONE_BRICKS.defaultBlockState(), 1));
-    public static final DungeonMaterial OAK_WOOD = create(
+    public static final DungeonMaterial WOOD = create(
             "OAK_WOOD",
             new WeightedPool<BlockState>()
                     .add(STRIPPED_OAK_WOOD.defaultBlockState(), 2)
@@ -108,43 +108,43 @@ public class DungeonMaterialRegistry {
 
     public static final DungeonMaterial OVERWORLD_MATERIAL_0 = create(
             "OVERWORLD_MATERIAL_0",
-                    new WeightedPool<BlockState>()
-                            .add(COBBLESTONE.defaultBlockState(), 2)
-                            .add(MOSSY_COBBLESTONE.defaultBlockState(), 1)
-                            .add(STONE.defaultBlockState(), 4)
-                            .add(GRANITE.defaultBlockState(), 1)
-                            .add(ANDESITE.defaultBlockState(), 1)
-                            .add(DIORITE.defaultBlockState(), 1),
-                    new WeightedPool<BlockState>()
-                            .add(COBBLESTONE_STAIRS.defaultBlockState(), 2)
-                            .add(MOSSY_COBBLESTONE_STAIRS.defaultBlockState(), 1)
-                            .add(STONE_STAIRS.defaultBlockState(), 4)
-                            .add(GRANITE_STAIRS.defaultBlockState(), 1)
-                            .add(ANDESITE_STAIRS.defaultBlockState(), 1)
-                            .add(DIORITE_STAIRS.defaultBlockState(), 1),
-                    new WeightedPool<BlockState>()
-                            .add(COBBLESTONE_SLAB.defaultBlockState(), 2)
-                            .add(MOSSY_COBBLESTONE_SLAB.defaultBlockState(), 1)
-                            .add(STONE_SLAB.defaultBlockState(), 4)
-                            .add(GRANITE_SLAB.defaultBlockState(), 1)
-                            .add(ANDESITE_SLAB.defaultBlockState(), 1)
-                            .add(DIORITE_SLAB.defaultBlockState(), 1),
-                    new WeightedPool<BlockState>()
-                            .add(COBBLESTONE_WALL.defaultBlockState(), 2)
-                            .add(MOSSY_COBBLESTONE_WALL.defaultBlockState(), 1)
-                            .add(GRANITE_WALL.defaultBlockState(), 1)
-                            .add(ANDESITE_WALL.defaultBlockState(), 1)
-                            .add(DIORITE_WALL.defaultBlockState(), 1),
-                    new WeightedPool<BlockState>()
-                            .add(LANTERN.defaultBlockState(), 50)
-                            .add(SOUL_LANTERN.defaultBlockState(), 1),
-                    new WeightedPool<BlockState>()
-                            .add(COBBLESTONE.defaultBlockState(), 1)
-                            .add(MOSSY_COBBLESTONE.defaultBlockState(), 1)
-                            .add(STONE.defaultBlockState(), 1)
-                            .add(GRANITE.defaultBlockState(), 1)
-                            .add(ANDESITE.defaultBlockState(), 1)
-                            .add(DIORITE.defaultBlockState(), 1))
+            new WeightedPool<BlockState>()
+                    .add(COBBLESTONE.defaultBlockState(), 2)
+                    .add(MOSSY_COBBLESTONE.defaultBlockState(), 1)
+                    .add(STONE.defaultBlockState(), 4)
+                    .add(GRANITE.defaultBlockState(), 1)
+                    .add(ANDESITE.defaultBlockState(), 1)
+                    .add(DIORITE.defaultBlockState(), 1),
+            new WeightedPool<BlockState>()
+                    .add(COBBLESTONE_STAIRS.defaultBlockState(), 2)
+                    .add(MOSSY_COBBLESTONE_STAIRS.defaultBlockState(), 1)
+                    .add(STONE_STAIRS.defaultBlockState(), 4)
+                    .add(GRANITE_STAIRS.defaultBlockState(), 1)
+                    .add(ANDESITE_STAIRS.defaultBlockState(), 1)
+                    .add(DIORITE_STAIRS.defaultBlockState(), 1),
+            new WeightedPool<BlockState>()
+                    .add(COBBLESTONE_SLAB.defaultBlockState(), 2)
+                    .add(MOSSY_COBBLESTONE_SLAB.defaultBlockState(), 1)
+                    .add(STONE_SLAB.defaultBlockState(), 4)
+                    .add(GRANITE_SLAB.defaultBlockState(), 1)
+                    .add(ANDESITE_SLAB.defaultBlockState(), 1)
+                    .add(DIORITE_SLAB.defaultBlockState(), 1),
+            new WeightedPool<BlockState>()
+                    .add(COBBLESTONE_WALL.defaultBlockState(), 2)
+                    .add(MOSSY_COBBLESTONE_WALL.defaultBlockState(), 1)
+                    .add(GRANITE_WALL.defaultBlockState(), 1)
+                    .add(ANDESITE_WALL.defaultBlockState(), 1)
+                    .add(DIORITE_WALL.defaultBlockState(), 1),
+            new WeightedPool<BlockState>()
+                    .add(LANTERN.defaultBlockState(), 50)
+                    .add(SOUL_LANTERN.defaultBlockState(), 1),
+            new WeightedPool<BlockState>()
+                    .add(COBBLESTONE.defaultBlockState(), 1)
+                    .add(MOSSY_COBBLESTONE.defaultBlockState(), 1)
+                    .add(STONE.defaultBlockState(), 1)
+                    .add(GRANITE.defaultBlockState(), 1)
+                    .add(ANDESITE.defaultBlockState(), 1)
+                    .add(DIORITE.defaultBlockState(), 1))
             .addBasicBlockSet(
                     new WeightedPool<BlockState>()
                             .add(COBBLESTONE.defaultBlockState(), 1)
@@ -170,43 +170,43 @@ public class DungeonMaterialRegistry {
                             .add(SOUL_LANTERN.defaultBlockState(), 1));
     public static final DungeonMaterial OVERWORLD_MATERIAL_1 = create(
             "OVERWORLD_MATERIAL_1",
-                    new WeightedPool<BlockState>()
-                            .add(COBBLESTONE.defaultBlockState(), 7)
-                            .add(MOSSY_COBBLESTONE.defaultBlockState(), 5)
-                            .add(STONE.defaultBlockState(), 4)
-                            .add(GRANITE.defaultBlockState(), 1)
-                            .add(ANDESITE.defaultBlockState(), 1)
-                            .add(DIORITE.defaultBlockState(), 1),
-                    new WeightedPool<BlockState>()
-                            .add(COBBLESTONE_STAIRS.defaultBlockState(), 7)
-                            .add(MOSSY_COBBLESTONE_STAIRS.defaultBlockState(), 5)
-                            .add(STONE_STAIRS.defaultBlockState(), 4)
-                            .add(GRANITE_STAIRS.defaultBlockState(), 1)
-                            .add(ANDESITE_STAIRS.defaultBlockState(), 1)
-                            .add(DIORITE_STAIRS.defaultBlockState(), 1),
-                    new WeightedPool<BlockState>()
-                            .add(COBBLESTONE_SLAB.defaultBlockState(), 7)
-                            .add(MOSSY_COBBLESTONE_SLAB.defaultBlockState(), 5)
-                            .add(STONE_SLAB.defaultBlockState(), 4)
-                            .add(GRANITE_SLAB.defaultBlockState(), 1)
-                            .add(ANDESITE_SLAB.defaultBlockState(), 1)
-                            .add(DIORITE_SLAB.defaultBlockState(), 1),
-                    new WeightedPool<BlockState>()
-                            .add(COBBLESTONE_WALL.defaultBlockState(), 7)
-                            .add(MOSSY_COBBLESTONE_WALL.defaultBlockState(), 5)
-                            .add(GRANITE_WALL.defaultBlockState(), 1)
-                            .add(ANDESITE_WALL.defaultBlockState(), 1)
-                            .add(DIORITE_WALL.defaultBlockState(), 1),
-                    new WeightedPool<BlockState>()
-                            .add(LANTERN.defaultBlockState(), 45)
-                            .add(SOUL_LANTERN.defaultBlockState(), 5),
-                    new WeightedPool<BlockState>()
-                            .add(COBBLESTONE.defaultBlockState(), 1)
-                            .add(MOSSY_COBBLESTONE.defaultBlockState(), 10)
-                            .add(STONE.defaultBlockState(), 1)
-                            .add(GRANITE.defaultBlockState(), 1)
-                            .add(ANDESITE.defaultBlockState(), 1)
-                            .add(DIORITE.defaultBlockState(), 1))
+            new WeightedPool<BlockState>()
+                    .add(COBBLESTONE.defaultBlockState(), 7)
+                    .add(MOSSY_COBBLESTONE.defaultBlockState(), 5)
+                    .add(STONE.defaultBlockState(), 4)
+                    .add(GRANITE.defaultBlockState(), 1)
+                    .add(ANDESITE.defaultBlockState(), 1)
+                    .add(DIORITE.defaultBlockState(), 1),
+            new WeightedPool<BlockState>()
+                    .add(COBBLESTONE_STAIRS.defaultBlockState(), 7)
+                    .add(MOSSY_COBBLESTONE_STAIRS.defaultBlockState(), 5)
+                    .add(STONE_STAIRS.defaultBlockState(), 4)
+                    .add(GRANITE_STAIRS.defaultBlockState(), 1)
+                    .add(ANDESITE_STAIRS.defaultBlockState(), 1)
+                    .add(DIORITE_STAIRS.defaultBlockState(), 1),
+            new WeightedPool<BlockState>()
+                    .add(COBBLESTONE_SLAB.defaultBlockState(), 7)
+                    .add(MOSSY_COBBLESTONE_SLAB.defaultBlockState(), 5)
+                    .add(STONE_SLAB.defaultBlockState(), 4)
+                    .add(GRANITE_SLAB.defaultBlockState(), 1)
+                    .add(ANDESITE_SLAB.defaultBlockState(), 1)
+                    .add(DIORITE_SLAB.defaultBlockState(), 1),
+            new WeightedPool<BlockState>()
+                    .add(COBBLESTONE_WALL.defaultBlockState(), 7)
+                    .add(MOSSY_COBBLESTONE_WALL.defaultBlockState(), 5)
+                    .add(GRANITE_WALL.defaultBlockState(), 1)
+                    .add(ANDESITE_WALL.defaultBlockState(), 1)
+                    .add(DIORITE_WALL.defaultBlockState(), 1),
+            new WeightedPool<BlockState>()
+                    .add(LANTERN.defaultBlockState(), 45)
+                    .add(SOUL_LANTERN.defaultBlockState(), 5),
+            new WeightedPool<BlockState>()
+                    .add(COBBLESTONE.defaultBlockState(), 1)
+                    .add(MOSSY_COBBLESTONE.defaultBlockState(), 10)
+                    .add(STONE.defaultBlockState(), 1)
+                    .add(GRANITE.defaultBlockState(), 1)
+                    .add(ANDESITE.defaultBlockState(), 1)
+                    .add(DIORITE.defaultBlockState(), 1))
             .addBasicBlockSet(
                     new WeightedPool<BlockState>()
                             .add(STONE.defaultBlockState(), 4)
@@ -324,17 +324,17 @@ public class DungeonMaterialRegistry {
     public static final DungeonMaterial VILLAGE_MATERIAL = create(
             "VILLAGE_MATERIAL",
             new WeightedPool<BlockState>()
-                    .add(OAK_PLANKS.defaultBlockState(),1),
+                    .add(OAK_PLANKS.defaultBlockState(), 1),
             new WeightedPool<BlockState>()
-                    .add(OAK_STAIRS.defaultBlockState(),1),
+                    .add(OAK_STAIRS.defaultBlockState(), 1),
             new WeightedPool<BlockState>()
-                    .add(OAK_SLAB.defaultBlockState(),1),
+                    .add(OAK_SLAB.defaultBlockState(), 1),
             new WeightedPool<BlockState>()
-                    .add(OAK_FENCE.defaultBlockState(),1),
+                    .add(OAK_FENCE.defaultBlockState(), 1),
             new WeightedPool<BlockState>()
-                    .add(TORCH.defaultBlockState(),1),
+                    .add(TORCH.defaultBlockState(), 1),
             new WeightedPool<BlockState>()
-                    .add(AIR.defaultBlockState(),1)
+                    .add(AIR.defaultBlockState(), 1)
     );
     public static final DungeonMaterial PIGLIN_FACTORY_MATERIAL = create(
             "PIGLIN_FACTORY_MATERIAL",
@@ -429,6 +429,46 @@ public class DungeonMaterialRegistry {
             );
 
 
+    public static final DungeonMaterial TRANSLATION_MATERIAL = create("translation_debug",//todo delete when all rooms have been converted
+            new WeightedPool<BlockState>()
+                    .add(COBBLESTONE.defaultBlockState(), 1),
+            new WeightedPool<BlockState>()
+                    .add(COBBLESTONE_STAIRS.defaultBlockState(), 1),
+            new WeightedPool<BlockState>()
+                    .add(COBBLESTONE_SLAB.defaultBlockState(), 1),
+            new WeightedPool<BlockState>()
+                    .add(COBBLESTONE_WALL.defaultBlockState(), 1),
+            new WeightedPool<BlockState>()
+                    .add(SHROOMLIGHT.defaultBlockState(), 1),
+            new WeightedPool<BlockState>()
+                    .add(STONE.defaultBlockState(), 1)
+    )
+            .setHangingLights(new WeightedPool<BlockState>().add(SEA_LANTERN.defaultBlockState(), 1))
+
+            .addBasicBlockSet(new WeightedPool<BlockState>().add(SANDSTONE.defaultBlockState(), 1))
+            .addStairBlockSet(new WeightedPool<BlockState>().add(SANDSTONE_STAIRS.defaultBlockState(), 1))
+            .addSlabBlockSet(new WeightedPool<BlockState>().add(SANDSTONE_SLAB.defaultBlockState(), 1))
+            .addWallBlockSet(new WeightedPool<BlockState>().add(SANDSTONE_WALL.defaultBlockState(), 1))
+            .addLightBlockSet(new WeightedPool<BlockState>().add(VERDANT_FROGLIGHT.defaultBlockState(), 1))
+            .addHangingLightBlockSet(new WeightedPool<BlockState>().add(REDSTONE_LAMP.defaultBlockState(), 1))
+            .addHiddenBlockSet(new WeightedPool<BlockState>().add(SANDSTONE.defaultBlockState(), 1))
+
+            .addBasicBlockSet(new WeightedPool<BlockState>().add(OAK_PLANKS.defaultBlockState(), 1))
+            .addStairBlockSet(new WeightedPool<BlockState>().add(OAK_STAIRS.defaultBlockState(), 1))
+            .addSlabBlockSet(new WeightedPool<BlockState>().add(OAK_SLAB.defaultBlockState(), 1))
+            .addWallBlockSet(new WeightedPool<BlockState>().add(OAK_FENCE.defaultBlockState(), 1))
+            .addLightBlockSet(new WeightedPool<BlockState>().add(PEARLESCENT_FROGLIGHT.defaultBlockState(), 1))
+            .addHangingLightBlockSet(new WeightedPool<BlockState>().add(OCHRE_FROGLIGHT.defaultBlockState(), 1))
+            .addHiddenBlockSet(new WeightedPool<BlockState>().add(OAK_PLANKS.defaultBlockState(), 1))
+
+            .addBasicBlockSet(new WeightedPool<BlockState>().add(NETHERRACK.defaultBlockState(), 1))
+            .addStairBlockSet(new WeightedPool<BlockState>().add(NETHER_BRICK_STAIRS.defaultBlockState(), 1))
+            .addSlabBlockSet(new WeightedPool<BlockState>().add(NETHER_BRICK_SLAB.defaultBlockState(), 1))
+            .addWallBlockSet(new WeightedPool<BlockState>().add(NETHER_BRICK_WALL.defaultBlockState(), 1))
+            .addLightBlockSet(new WeightedPool<BlockState>().add(JACK_O_LANTERN.defaultBlockState(), 1))
+            .addHangingLightBlockSet(new WeightedPool<BlockState>().add(GLOWSTONE.defaultBlockState(), 1))
+            .addHiddenBlockSet(new WeightedPool<BlockState>().add(NETHERRACK.defaultBlockState(), 1))
+            ;
 
     public static DungeonMaterial create(String name, WeightedPool<BlockState> defaultBasicBlocks, WeightedPool<BlockState> defaultStairBlocks, WeightedPool<BlockState> defaultSlabBlocks, WeightedPool<BlockState> defaultWallBlocks, WeightedPool<BlockState> defaultLightBlocks, WeightedPool<BlockState> defaultHiddenBlocks) {
         DungeonMaterial material = new DungeonMaterial(name, defaultBasicBlocks, defaultStairBlocks, defaultSlabBlocks, defaultWallBlocks, defaultLightBlocks, defaultHiddenBlocks);

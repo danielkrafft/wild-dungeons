@@ -8,11 +8,9 @@ import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialR
 public class DungeonMaterialPoolRegistry {
     public static final WeightedPool<DungeonMaterial> ALL_MATERIAL_POOL = new WeightedPool<DungeonMaterial>()
             .add(STONE_BRICK, 1)
-            .add(SANDSTONEY, 1)
-            .add(RED_SANDSTONEY, 1)
             .add(PRISMARINE, 1)
             .add(END_STONE,1)
-            .add(OAK_WOOD,1)
+            .add(WOOD,1)
             .add(OVERWORLD_MATERIAL_0,1)
             .add(OVERWORLD_MATERIAL_1,1)
             .add(OVERWORLD_MATERIAL_2,1);

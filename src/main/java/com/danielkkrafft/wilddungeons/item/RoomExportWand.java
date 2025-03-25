@@ -14,6 +14,7 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.ListTag;
@@ -119,7 +120,7 @@ public class RoomExportWand extends Item {
                     }
                 }
                 case LOAD -> {
-                    loadStructure(context);
+                    loadStructure(context.getClickedPos(), (ServerLevel) context.getLevel(), context.getItemInHand(), context.getHorizontalDirection());
                     return InteractionResult.SUCCESS;
                 }
             }
@@ -334,11 +335,9 @@ public class RoomExportWand extends Item {
         itemStack.set(WAND_ROOM_NAME, roomName);
     }
 
-    public static void loadStructure(UseOnContext context) {
-        BlockPos clickedPos = context.getClickedPos().above();
-        ServerLevel level = (ServerLevel) context.getLevel();
-        ItemStack itemStack = context.getItemInHand();
-        Rotation rotation = switch (context.getHorizontalDirection()) {
+    public static void loadStructure(BlockPos clickedPos, ServerLevel serverLevel, ItemStack itemStack, Direction horizontalDirection) {
+        BlockPos finalClickPos = clickedPos.above();
+        Rotation rotation = switch (horizontalDirection) {
             case WEST -> Rotation.CLOCKWISE_90;
             case NORTH -> Rotation.CLOCKWISE_180;
             case EAST -> Rotation.COUNTERCLOCKWISE_90;
@@ -348,23 +347,25 @@ public class RoomExportWand extends Item {
         Optional<WDStructureTemplate> wdStructureTemplate = WDStructureTemplateManager.INSTANCE.get(WildDungeons.rl(getRoomName(itemStack)));
 
         RoomExportWand wand = (RoomExportWand) itemStack.getItem();
-        wand.roomPositions = new ArrayList<>();
+        if (!getAdditiveRoomLoading(itemStack)){
+            wand.roomPositions = new ArrayList<>();
+        }
         int materialIndex = getMaterialIndex(itemStack);
 
         if (wdStructureTemplate.isPresent()) {
             if (materialIndex != -1){
-                TemplateHelper.wandPlaceInWorld(wdStructureTemplate.get(), getMaterialIndex(itemStack), level, clickedPos, settings);
+                TemplateHelper.wandPlaceInWorld(wdStructureTemplate.get(), getMaterialIndex(itemStack), serverLevel, finalClickPos, settings);
             } else {
                 for (Pair<StructureTemplate, BlockPos> innerTemplatePair : wdStructureTemplate.get().innerTemplates) {
                     StructureTemplate innerTemplate = innerTemplatePair.getFirst();
                     BlockPos offset = innerTemplatePair.getSecond().rotate(rotation);
-                    innerTemplate.placeInWorld(level, clickedPos.offset(offset), clickedPos, settings, level.random, 2);
+                    innerTemplate.placeInWorld(serverLevel, finalClickPos.offset(offset), finalClickPos, settings, serverLevel.random, 2);
                 }
             }
 
             wdStructureTemplate.get().innerTemplates.forEach(pair -> {
                 BlockPos offset = pair.getSecond().rotate(rotation);
-                BlockPos minPos = clickedPos.offset(offset);
+                BlockPos minPos = finalClickPos.offset(offset);
                 Vec3i originalSize = pair.getFirst().getSize();
                 BlockPos maxPos;
                 switch (rotation) {
@@ -384,9 +385,9 @@ public class RoomExportWand extends Item {
             structureTemplate.ifPresent(template -> {
 
                 if (materialIndex != -1){
-                    TemplateHelper.wandPlaceInWorld(template, materialIndex, level, clickedPos, settings);
+                    TemplateHelper.wandPlaceInWorld(template, materialIndex, serverLevel, finalClickPos, settings);
                 } else {
-                    template.placeInWorld(level, clickedPos, clickedPos, settings, level.random, 2);
+                    template.placeInWorld(serverLevel, finalClickPos, finalClickPos, settings, serverLevel.random, 2);
                 }
 
 
@@ -394,15 +395,15 @@ public class RoomExportWand extends Item {
                 BlockPos maxPos;
                 switch (rotation) {
                     case COUNTERCLOCKWISE_90 ->
-                            maxPos = clickedPos.offset(originalSize.getZ() - 1, originalSize.getY() - 1, -originalSize.getX() + 1);
+                            maxPos = finalClickPos.offset(originalSize.getZ() - 1, originalSize.getY() - 1, -originalSize.getX() + 1);
                     case CLOCKWISE_90 ->
-                            maxPos = clickedPos.offset(-originalSize.getZ() + 1, originalSize.getY() - 1, originalSize.getX() - 1);
+                            maxPos = finalClickPos.offset(-originalSize.getZ() + 1, originalSize.getY() - 1, originalSize.getX() - 1);
                     case CLOCKWISE_180 ->
-                            maxPos = clickedPos.offset(-originalSize.getX() + 1, originalSize.getY() - 1, -originalSize.getZ() + 1);
+                            maxPos = finalClickPos.offset(-originalSize.getX() + 1, originalSize.getY() - 1, -originalSize.getZ() + 1);
                     default ->
-                            maxPos = clickedPos.offset(originalSize.getX() - 1, originalSize.getY() - 1, originalSize.getZ() - 1);
+                            maxPos = finalClickPos.offset(originalSize.getX() - 1, originalSize.getY() - 1, originalSize.getZ() - 1);
                 }
-                wand.roomPositions.add(new Pair<>(clickedPos, maxPos));
+                wand.roomPositions.add(new Pair<>(finalClickPos, maxPos));
             });
 
         }
@@ -425,4 +426,11 @@ public class RoomExportWand extends Item {
         return itemStack.has(WAND_MATERIAL_INT) ? itemStack.get(WAND_MATERIAL_INT) : -1;
     }
 
+    public static void setAdditiveRoomLoading(ItemStack itemStack, boolean b) {
+        itemStack.set(WAND_ADDITIVE_ROOM_LOADING, b);
+    }
+
+    public static boolean getAdditiveRoomLoading(ItemStack itemStack) {
+        return itemStack.has(WAND_ADDITIVE_ROOM_LOADING) && itemStack.get(WAND_ADDITIVE_ROOM_LOADING);
+    }
 }

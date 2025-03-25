@@ -66,6 +66,7 @@ public class ServerPacketHandler {
                                 } else {
                                     RoomExportWand.placeWithMaterials(itemStack, -1);
                                 }
+                                RoomExportWand.setAdditiveRoomLoading(itemStack, data.getBoolean("additiveRoomLoading"));
                                 context.player().sendSystemMessage(Component.translatable("message.room_export_wand.load.success", RoomExportWand.getRoomName(itemStack)));
                             }
                         }
