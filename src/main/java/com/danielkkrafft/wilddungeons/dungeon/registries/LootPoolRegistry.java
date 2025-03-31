@@ -11,6 +11,7 @@ public class LootPoolRegistry {
     public static final WeightedPool<ItemTemplate> COMMON_LOOT_POOL = new WeightedPool<ItemTemplate>().setName("COMMON_LOOT_POOL");
     public static final WeightedPool<ItemTemplate> MEDIUM_LOOT_POOL = new WeightedPool<ItemTemplate>().setName("MEDIUM_LOOT_POOL");
     public static final WeightedPool<ItemTemplate> RARE_LOOT_POOL = new WeightedPool<ItemTemplate>().setName("RARE_LOOT_POOL");
+    public static final WeightedPool<ItemTemplate> EPIC_LOOT_POOL = new WeightedPool<ItemTemplate>().setName("EPIC_LOOT_POOL");
 
     public static void setupLootPools(){
         COMMON_LOOT_POOL
@@ -41,7 +42,9 @@ public class LootPoolRegistry {
                 .add(MAGMA_CREAM,1)
                 .add(LEAPING_POTION,1)
                 .add(STRENGTH_POTION,1)
-        ;
+                .add(CYAN_WOOL, 1)
+                .add(PAPER, 1)
+                .add(GREEN_DYE, 1);
         LOOT_POOL_REGISTRY.add(COMMON_LOOT_POOL);
 
         MEDIUM_LOOT_POOL
@@ -72,9 +75,9 @@ public class LootPoolRegistry {
                 .add(BLAZE_ROD, 1)
                 .add(ENDER_PEARL, 1)
                 .add(EMERALD, 1)
-
-
-        ;
+                .add(LEATHER_HORSE_ARMOR, 1)
+                .add(BLANK_MAP, 1)
+                .add(SHROOMLIGHT, 1);
         LOOT_POOL_REGISTRY.add(MEDIUM_LOOT_POOL);
 
         RARE_LOOT_POOL
@@ -83,9 +86,13 @@ public class LootPoolRegistry {
                 .add(DIAMOND, 1)
                 .add(EMERALD, 1)
                 .add(BLAZE_ROD, 1)
-                .add(ENDER_PEARL, 1)
-
-        ;
+                .add(ENDER_PEARL, 1);
         LOOT_POOL_REGISTRY.add(RARE_LOOT_POOL);
+
+        EPIC_LOOT_POOL
+                .add(DIAMOND_AXE, 1)
+                .add(NETHER_STAR, 1)
+                .add(PINK_SHULKER_BOX, 1)
+                .add(ELYTRA, 1);
     }
 }

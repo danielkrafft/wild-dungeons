@@ -15,7 +15,8 @@ public class LootTableRegistry {
         BASIC_LOOT_TABLE
                 .add(COMMON_LOOT_POOL, 1)
                 .add(MEDIUM_LOOT_POOL, 5)
-                .add(RARE_LOOT_POOL, 10);
+                .add(RARE_LOOT_POOL, 10)
+                .add(EPIC_LOOT_POOL, 50);
         LOOT_TABLE_REGISTRY.add(BASIC_LOOT_TABLE);
     }
 }

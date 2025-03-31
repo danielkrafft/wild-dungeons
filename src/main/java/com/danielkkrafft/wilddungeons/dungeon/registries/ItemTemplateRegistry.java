@@ -62,6 +62,17 @@ public class ItemTemplateRegistry {
     public static ItemTemplate SPIDER_EYE = create("spider_eye_8", Items.SPIDER_EYE, 8).setDeviance(1.5f);
     public static ItemTemplate RABBIT_FOOT = create("rabbit_foot_2", Items.RABBIT_FOOT, 2);
 
+    public static ItemTemplate DIAMOND_AXE = create("diamond_axe", Items.DIAMOND_AXE, 1);
+    public static ItemTemplate NETHER_STAR = create("nether_star", Items.NETHER_STAR, 1);
+    public static ItemTemplate CYAN_WOOL = create("cyan_wool", Items.CYAN_WOOL, 32).setDeviance(2.0f);
+    public static ItemTemplate PAPER = create("paper", Items.PAPER, 15).setDeviance(2.0f);
+    public static ItemTemplate PINK_SHULKER_BOX = create("pink_shulker_box", Items.PINK_SHULKER_BOX, 1);
+    public static ItemTemplate LEATHER_HORSE_ARMOR = create("leather_horse_armor", Items.LEATHER_HORSE_ARMOR, 1);
+    public static ItemTemplate GREEN_DYE = create("green_dye", Items.GREEN_DYE, 10).setDeviance(2.5f);
+    public static ItemTemplate BLANK_MAP = create("blank_map", Items.MAP, 1);
+    public static ItemTemplate ELYTRA = create("elytra", Items.ELYTRA, 1);
+    public static ItemTemplate SHROOMLIGHT = create("shroomlight", Items.SHROOMLIGHT, 20).setDeviance(2.5f);
+
     public static ItemTemplate AMOGUS_STAFF = create("amogus_staff", WDItems.AMOGUS_STAFF.get(), 1);
     public static ItemTemplate LASER_SWORD = create("laser_sword", WDItems.LASER_SWORD_ITEM.get(), 1);
     public static ItemTemplate FIREWORK_GUN = create("firework_gun", WDItems.FIREWORK_GUN_ITEM.get(), 1);
