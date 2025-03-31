@@ -2,6 +2,7 @@ package com.danielkkrafft.wilddungeons.util;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.components.*;
+import com.danielkkrafft.wilddungeons.dungeon.components.perk.DungeonPerk;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.*;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateOrientation;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;

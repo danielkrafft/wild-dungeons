@@ -3,7 +3,7 @@ package com.danielkkrafft.wilddungeons.dungeon.session;
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.components.ConnectionPoint;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
-import com.danielkkrafft.wilddungeons.dungeon.components.DungeonPerk;
+import com.danielkkrafft.wilddungeons.dungeon.components.perk.DungeonPerk;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonPerkTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
@@ -50,7 +50,7 @@ public class DungeonSession {
     private final ResourceKey<Level> entranceLevelKey;
     private final HashMap<String, Boolean> playersInside = new HashMap<>();
     private final HashMap<String, DungeonStats> playerStats = new HashMap<>();
-    private final HashMap<String, DungeonPerk> perks = new HashMap<>();
+    private final List<DungeonPerk> perks = new ArrayList<>();
     @Serializer.IgnoreSerialization private List<DungeonFloor> floors = new ArrayList<>();
     private final String template;
     private int shutdownTimer = SHUTDOWN_TIME;
@@ -65,7 +65,8 @@ public class DungeonSession {
     public DungeonTemplate getTemplate() {return DUNGEON_REGISTRY.get(this.template);}
     public int getLives() {return this.lives;}
     public boolean isMarkedForShutdown() {return this.markedForShutdown;}
-    public HashMap<String, DungeonPerk> getPerks() {return this.perks;}
+    public List<DungeonPerk> getPerks() {return this.perks;}
+    public DungeonPerk getPerkByClass(Class<? extends DungeonPerk> clazz) {return this.getPerks().stream().filter(perk -> perk.getClass().toString().equals(clazz.toString())).findAny().orElse(null);}
     public String getSessionKey() {return DungeonSessionManager.buildDungeonSessionKey(this.entranceUUID);}
     public DungeonStats getStats(String uuid) {return this.playerStats.get(uuid);}
     public List<WDPlayer> getPlayers() { return this.playersInside.keySet().stream().map(uuid -> WDPlayerManager.getInstance().getOrCreateServerWDPlayer(uuid)).toList(); }
@@ -109,7 +110,7 @@ public class DungeonSession {
         this.playersInside.put(wdPlayer.getUUID(), true);
         playerStats.putIfAbsent(wdPlayer.getUUID(), new DungeonSession.DungeonStats());
         floor.attemptEnter(wdPlayer);
-        reassignPotions();
+        this.getPerks().forEach(perk -> perk.onDungeonEnter(wdPlayer));
         shutdownTimer = SHUTDOWN_TIME;
     }
 
@@ -174,10 +175,11 @@ public class DungeonSession {
      * @param perkTemplate The perk to add
      */
     public void givePerk(DungeonPerkTemplate perkTemplate) {
-        DungeonPerk perk = this.getPerks().containsKey(perkTemplate.name()) ? this.getPerks().get(perkTemplate.name()) : new DungeonPerk(perkTemplate.name(), DungeonSessionManager.buildDungeonSessionKey(this.getEntranceUUID()));
+        DungeonPerk perk = this.getPerkByClass(perkTemplate.getClazz());
+        if (perk == null) perk = perkTemplate.asPerk(DungeonSessionManager.buildDungeonSessionKey(this.getEntranceUUID()));
 
         perk.count++;
-        this.getPerks().put(perkTemplate.name(), perk);
+        this.getPerks().add(perk);
         perk.onCollect(false);
     }
 
@@ -287,14 +289,6 @@ public class DungeonSession {
         });
         SaveSystem.DeleteSession(this);
         markedForShutdown = true;
-    }
-
-    public void reassignPotions() {
-        getPerks().forEach((name, perk) -> {
-            if (PerkRegistry.DUNGEON_PERK_REGISTRY.get(perk.name).isPotionEffect()){
-                perk.onCollect(true);
-            }
-        });
     }
 
     /**

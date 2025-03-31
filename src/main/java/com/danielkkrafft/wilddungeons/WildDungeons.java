@@ -2,7 +2,7 @@ package com.danielkkrafft.wilddungeons;
 
 import com.danielkkrafft.wilddungeons.block.WDBlocks;
 import com.danielkkrafft.wilddungeons.block.WDFluids;
-import com.danielkkrafft.wilddungeons.dungeon.components.DungeonPerk;
+import com.danielkkrafft.wilddungeons.dungeon.components.perk.DungeonPerk;
 import com.danielkkrafft.wilddungeons.dungeon.registries.PerkRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.registries.SoundscapeTemplateRegistry;
 import com.danielkkrafft.wilddungeons.entity.AmogusEntity;
@@ -69,7 +69,6 @@ public class WildDungeons {
 
         modEventBus.register(WildDungeons.class);
         NeoForge.EVENT_BUS.register(WDEvents.class);
-        NeoForge.EVENT_BUS.register(DungeonPerk.class);
     }
 
     @SubscribeEvent

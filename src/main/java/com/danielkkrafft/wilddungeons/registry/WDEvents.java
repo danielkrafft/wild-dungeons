@@ -488,11 +488,10 @@ public class WDEvents {
                 } else {
                     respawnPoint = room.getBranch().getFloor().getBranches().get(room.getBranch().getRootOrActualIndex()-1).getRooms().getLast().getSpawnPoint(room.getBranch().getFloor().getLevel());
                 }
-
+                wdPlayer.getCurrentDungeon().getPerks().forEach(perk -> perk.onPlayerRespawn(wdPlayer));
                 wdPlayer.setRiftCooldown(140);
                 player.teleportTo(respawnPoint.getX(), respawnPoint.getY(), respawnPoint.getZ());
                 wdPlayer.getCurrentDungeon().getStats(wdPlayer.getUUID()).deaths += 1;
-                wdPlayer.getCurrentDungeon().reassignPotions();
             } else {
                 wdPlayer.getCurrentDungeon().fail();
             }
