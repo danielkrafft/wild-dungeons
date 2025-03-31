@@ -25,6 +25,7 @@ public class OfferingTemplateRegistry {
     public static final OfferingTemplate LEATHER = createItem("LEATHER", ItemTemplateRegistry.LEATHER, OVERWORLD, 4, 1.5f);
     //potion effects do not transfer into offerings as neither OfferingTemplates nor Offerings have a way to store potion effects.
     //could be added later, but I am writing this with 3 days left to work on this project so it's just out of scope for now -Skylor
+    // daniel - i didn't look but couldn't we just cause offerings to reference itemtemplates rather than items if we want them to retain all the same properties without making duplicate properties in offeringtemplate
 //    public static final OfferingTemplate HEALTH_POTION = createItem("HEALTH_POTION", ItemTemplateRegistry.HEALTH_POTION, OVERWORLD, 8, 1.5f);
 //    public static final OfferingTemplate REGENERATION_POTION = createItem("REGENERATION_POTION", ItemTemplateRegistry.REGENERATION_POTION_SPLASH, OVERWORLD, 8, 1.5f);
 
@@ -32,6 +33,17 @@ public class OfferingTemplateRegistry {
     public static final OfferingTemplate BLAZE_RODS = createItem("BLAZE_RODS", ItemTemplateRegistry.BLAZE_ROD, NETHER, 4, 1.5f);
     public static final OfferingTemplate ENDER_PEARLS = createItem("ENDER_PEARLS", ItemTemplateRegistry.ENDER_PEARL, END, 4, 1.5f);
     public static final OfferingTemplate COAL = createItem("COAL",ItemTemplateRegistry.COAL, OVERWORLD, 2, 1.5f);
+
+    public static final OfferingTemplate CHARCOAL = createItem("CHARCOAL", ItemTemplateRegistry.CHARCOAL, OVERWORLD, 2, 1.5f);
+    public static final OfferingTemplate OAK_LOGS = createItem("OAK_LOGS", ItemTemplateRegistry.OAK_LOGS, OVERWORLD, 2, 1.5f);
+    public static final OfferingTemplate STONE_PICKAXE = createItem("STONE_PICKAXE", ItemTemplateRegistry.STONE_PICKAXE, OVERWORLD, 1, 1.0f);
+    public static final OfferingTemplate STONE_SHOVEL = createItem("STONE_SHOVEL", ItemTemplateRegistry.STONE_SHOVEL, OVERWORLD, 1, 1.0f);
+    public static final OfferingTemplate GOLD_INGOTS = createItem("GOLD_INGOTS", ItemTemplateRegistry.GOLD_INGOTS, OVERWORLD, 5, 1.5f);
+    public static final OfferingTemplate DIAMOND = createItem("DIAMOND", ItemTemplateRegistry.DIAMOND, OVERWORLD, 8, 1.5f);
+    public static final OfferingTemplate REDSTONE = createItem("REDSTONE", ItemTemplateRegistry.REDSTONE, OVERWORLD, 3, 1.5f);
+    public static final OfferingTemplate ELYTRA = createItem("ELYTRA", ItemTemplateRegistry.ELYTRA, END, 16, 1.5f);
+    public static final OfferingTemplate DIAMOND_AXE = createItem("DIAMOND_AXE", ItemTemplateRegistry.DIAMOND_AXE, OVERWORLD, 16, 1.5f);
+    public static final OfferingTemplate RAW_IRON = createItem("RAW_IRON", ItemTemplateRegistry.IRON_RAW, OVERWORLD, 5, 1.5f);
 
     public static final OfferingTemplate FREE_AMOGUS_STAFF = createItem("FREE_AMOGUS_STAFF", ItemTemplateRegistry.AMOGUS_STAFF, OVERWORLD, 0, 1.0f).setRenderScale(2.0f);
     public static final OfferingTemplate FREE_LASER_SWORD = createItem("FREE_LASER_SWORD", ItemTemplateRegistry.LASER_SWORD, OVERWORLD, 0, 1.0f).setRenderScale(2.0f);

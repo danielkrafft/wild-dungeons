@@ -94,5 +94,6 @@ public class LootPoolRegistry {
                 .add(NETHER_STAR, 1)
                 .add(PINK_SHULKER_BOX, 1)
                 .add(ELYTRA, 1);
+        LOOT_POOL_REGISTRY.add(EPIC_LOOT_POOL);
     }
 }
