@@ -45,7 +45,7 @@ public class RiftStructurePiece extends TemplateStructurePiece {
             } else if (biome.is(BiomeTags.IS_NETHER)) {
                 offering = NETHER_RIFT_POOL.getRandom().asOffering(serverLevelAccessor.getLevel());
             } else if (biome.is(BiomeTags.IS_END)) {
-                offering = END_RIFT_POOL.getRandom().asOffering(serverLevelAccessor.getLevel());
+                offering = OVERWORLD_RIFT_POOL.getRandom().asOffering(serverLevelAccessor.getLevel()); //replace with end dungeons in the future
             }
             if (offering == null) return;
 
