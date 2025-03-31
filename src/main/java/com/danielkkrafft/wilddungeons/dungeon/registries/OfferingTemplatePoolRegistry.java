@@ -24,7 +24,10 @@ public class OfferingTemplatePoolRegistry {
                 .add(FREE_FIRE_RESIST,1)
                 .add(FREE_STRENGTH,1)
                 .add(FREE_NIGHT_VISION,1)
-                .add(FREE_HEALTH_BOOST,1);
+                .add(FREE_HEALTH_BOOST,1)
+                .add(FREE_MOVEMENT_SPEED, 3)
+                .add(FREE_DIG_SPEED, 3)
+                .add(FREE_BIG_ABSORPTION, 3);
         OFFERING_TEMPLATE_POOL_REGISTRY.add(FREE_PERK_POOL);
 
         CHEAP_BASIC_POOL

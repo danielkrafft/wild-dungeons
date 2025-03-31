@@ -24,12 +24,14 @@ public class PermanentFireResistPerk extends DungeonPerk {
     @Override
     public void onDungeonEnter(WDPlayer wdPlayer) {
         super.onDungeonEnter(wdPlayer);
+        wdPlayer.getServerPlayer().removeEffect(MobEffects.FIRE_RESISTANCE);
         wdPlayer.getServerPlayer().addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, -1));
     }
 
     @Override
     public void onPlayerRespawn(WDPlayer wdPlayer) {
         super.onPlayerRespawn(wdPlayer);
+        wdPlayer.getServerPlayer().removeEffect(MobEffects.FIRE_RESISTANCE);
         wdPlayer.getServerPlayer().addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, -1));
     }
 

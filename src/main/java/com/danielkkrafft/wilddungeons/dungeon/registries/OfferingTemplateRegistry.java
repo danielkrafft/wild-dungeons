@@ -47,6 +47,9 @@ public class OfferingTemplateRegistry {
     public static final OfferingTemplate FREE_STRENGTH = createPerk("FREE_STRENGTH", PerkRegistry.STRENGTH, OVERWORLD, 0, 1);
     public static final OfferingTemplate FREE_NIGHT_VISION = createPerk("NIGHT_VISION", PerkRegistry.NIGHT_VISION, OVERWORLD, 0, 1);
     public static final OfferingTemplate FREE_HEALTH_BOOST = createPerk("FREE_HEALTH_BOOST", PerkRegistry.HEALTH_BOOST, OVERWORLD, 0, 1);
+    public static final OfferingTemplate FREE_MOVEMENT_SPEED = createPerk("FREE_MOVEMENT_SPEED", PerkRegistry.MOVEMENT_SPEED, OVERWORLD, 0, 1);
+    public static final OfferingTemplate FREE_DIG_SPEED = createPerk("FREE_DIG_SPEED", PerkRegistry.DIG_SPEED, OVERWORLD, 0, 1);
+    public static final OfferingTemplate FREE_BIG_ABSORPTION = createPerk("FREE_BIG_ABSORPTION", PerkRegistry.BIG_ABSORPTION, OVERWORLD, 0, 1);
 
     public static final OfferingTemplate EXTRA_LIFE_NORMAL = createPerk("EXTRA_LIFE_NORMAL", PerkRegistry.EXTRA_LIFE, OVERWORLD, 8, 1.5f);
     public static final OfferingTemplate EXTRA_LIFE_NETHER = createPerk("EXTRA_LIFE_NETHER", PerkRegistry.EXTRA_LIFE, NETHER, 4, 1.5f);

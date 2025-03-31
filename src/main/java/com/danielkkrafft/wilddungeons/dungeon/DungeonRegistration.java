@@ -48,7 +48,6 @@ public class DungeonRegistration {
         DungeonPoolRegistry.setupDungeonPools();
 
         PerkRegistry.setupPerks();
-        PerkPoolRegistry.setupPerkPools();
 
         OfferingTemplateRegistry.setupOfferings();
         OfferingTemplatePoolRegistry.setupOfferingPools();

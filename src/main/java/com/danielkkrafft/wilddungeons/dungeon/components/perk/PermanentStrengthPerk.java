@@ -15,18 +15,23 @@ public class PermanentStrengthPerk extends DungeonPerk{
     public void onCollect(boolean silent) {
         super.onCollect(silent);
         List<WDPlayer> players = getSession().getPlayers();
-        players.forEach(wdPlayer -> wdPlayer.getServerPlayer().addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, -1)));
+        players.forEach(wdPlayer -> {
+            wdPlayer.getServerPlayer().removeEffect(MobEffects.DAMAGE_BOOST);
+            wdPlayer.getServerPlayer().addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, -1, this.count-1));
+        });
     }
 
     @Override
     public void onDungeonEnter(WDPlayer wdPlayer) {
         super.onDungeonEnter(wdPlayer);
-        wdPlayer.getServerPlayer().addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, -1));
+        wdPlayer.getServerPlayer().removeEffect(MobEffects.DAMAGE_BOOST);
+        wdPlayer.getServerPlayer().addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, -1, this.count-1));
     }
 
     @Override
     public void onPlayerRespawn(WDPlayer wdPlayer) {
         super.onPlayerRespawn(wdPlayer);
-        wdPlayer.getServerPlayer().addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, -1));
+        wdPlayer.getServerPlayer().removeEffect(MobEffects.DAMAGE_BOOST);
+        wdPlayer.getServerPlayer().addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, -1, this.count-1));
     }
 }

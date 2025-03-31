@@ -66,8 +66,10 @@
   "dungeon.perk.PermanentFireResistPerk": "Permanent Fire Resistance",
   "dungeon.perk.PermanentStrengthPerk": "Permanent Strength",
   "dungeon.perk.PermanentNightVisionPerk": "Permanent Night Vision",
-  "dungeon.perk.PermanentHealthBoostPerk": "Permanent Health Boost III",
-  "dungeon.perk.PermanentSpeedPerk": "Permanent Speed",
+  "dungeon.perk.PermanentHealthBoostPerk": "Permanent Health Boost",
+  "dungeon.perk.PermanentMovementSpeedPerk": "Permanent Movement Speed",
+  "dungeon.perk.PermanentDigSpeedPerk": "Permanent Dig Speed",
+  "dungeon.perk.BigAbsorptionPerk": "Reasonable Amount of Absorption",
 
   "key.categories.wilddungeons": "Wild Dungeons",
   "key.wilddungeons.toggle_essence_type": "Toggle Essence Type",

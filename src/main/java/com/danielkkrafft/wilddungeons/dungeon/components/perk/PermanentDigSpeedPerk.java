@@ -6,8 +6,8 @@ import net.minecraft.world.effect.MobEffects;
 
 import java.util.List;
 
-public class PermanentNightVisionPerk extends DungeonPerk {
-    public PermanentNightVisionPerk(String sessionKey) {
+public class PermanentDigSpeedPerk extends DungeonPerk{
+    public PermanentDigSpeedPerk(String sessionKey) {
         super(sessionKey);
     }
 
@@ -16,22 +16,22 @@ public class PermanentNightVisionPerk extends DungeonPerk {
         super.onCollect(silent);
         List<WDPlayer> players = getSession().getPlayers();
         players.forEach(wdPlayer -> {
-            wdPlayer.getServerPlayer().removeEffect(MobEffects.NIGHT_VISION);
-            wdPlayer.getServerPlayer().addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, -1));
+            wdPlayer.getServerPlayer().removeEffect(MobEffects.DIG_SPEED);
+            wdPlayer.getServerPlayer().addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, -1, this.count-1));
         });
     }
 
     @Override
     public void onDungeonEnter(WDPlayer wdPlayer) {
         super.onDungeonEnter(wdPlayer);
-        wdPlayer.getServerPlayer().removeEffect(MobEffects.NIGHT_VISION);
-        wdPlayer.getServerPlayer().addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, -1));
+        wdPlayer.getServerPlayer().removeEffect(MobEffects.DIG_SPEED);
+        wdPlayer.getServerPlayer().addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, -1, this.count-1));
     }
 
     @Override
     public void onPlayerRespawn(WDPlayer wdPlayer) {
         super.onPlayerRespawn(wdPlayer);
-        wdPlayer.getServerPlayer().removeEffect(MobEffects.NIGHT_VISION);
-        wdPlayer.getServerPlayer().addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, -1));
+        wdPlayer.getServerPlayer().removeEffect(MobEffects.DIG_SPEED);
+        wdPlayer.getServerPlayer().addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, -1, this.count-1));
     }
 }
