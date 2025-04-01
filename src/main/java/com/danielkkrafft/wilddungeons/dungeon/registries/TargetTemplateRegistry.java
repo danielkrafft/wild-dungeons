@@ -20,7 +20,7 @@ public class TargetTemplateRegistry {
     public static final TargetTemplate SPIDER = createMob("SPIDER", EntityType.SPIDER);
     public static final TargetTemplate CREEPER = createMob("CREEPER", EntityType.CREEPER);
     public static final TargetTemplate FAST_CREEPER = createMob("FAST_CREEPER", EntityType.CREEPER).addMobEffect(MobEffects.MOVEMENT_SPEED, 2);
-    public static final TargetTemplate PILLAGER = createMob("PILLAGER", EntityType.PILLAGER);
+    public static final TargetTemplate PILLAGER = createMob("PILLAGER", EntityType.PILLAGER).setMainHandItem(Items.CROSSBOW);
     public static final TargetTemplate BLAZE = createMob("BLAZE", EntityType.BLAZE);
     public static final TargetTemplate BEEFY_BLAZE = createMob("BEEFY_BLAZE", EntityType.BLAZE).addMobEffect(MobEffects.HEALTH_BOOST, 3);
     public static final TargetTemplate CAVE_SPIDER = createMob("CAVE_SPIDER", EntityType.CAVE_SPIDER);
@@ -35,6 +35,17 @@ public class TargetTemplateRegistry {
     public static final TargetTemplate GHAST = createMob("GHAST", EntityType.GHAST);
     public static final TargetTemplate HOGLIN = createMob("HOGLIN", EntityType.HOGLIN);
 
+    public static final TargetTemplate BREEZE = createMob("BREEZE", EntityType.BREEZE);
+    public static final TargetTemplate ENDERMITE = createMob("ENDERMITE", EntityType.ENDERMITE);
+    public static final TargetTemplate BOGGED = createMob("BOGGED", EntityType.BOGGED);
+    public static final TargetTemplate MAGMA_CUBE = createMob("MAGMA_CUBE", EntityType.MAGMA_CUBE);
+    public static final TargetTemplate RAVAGER = createMob("RAVAGER", EntityType.RAVAGER);
+    public static final TargetTemplate SILVERFISH = createMob("SILVERFISH", EntityType.SILVERFISH);
+    public static final TargetTemplate SLIME = createMob("SLIME", EntityType.SLIME);
+    public static final TargetTemplate VEX = createMob("VEX", EntityType.VEX);
+    public static final TargetTemplate WITCH = createMob("WITCH", EntityType.WITCH);
+
+    public static final TargetTemplate WARDEN = createMob("WARDEN", EntityType.WARDEN);
     public static final TargetTemplate WITHER = createMob("WITHER", EntityType.WITHER);
     public static final TargetTemplate NETHER_DRAGON = createMob("NETHER_DRAGON", WDEntities.NETHER_DRAGON.get());
     public static final TargetTemplate MUTANT_BOGGED = createMob("MUTANT_BOGGED", WDEntities.MUTANT_BOGGED.get());
