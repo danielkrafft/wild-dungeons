@@ -25,6 +25,7 @@ public class PerkRegistry {
     public static final DungeonPerkTemplate ATTACK_SPEED = create(AttackSpeedPerk.class, new Vector2i(3,2));
     public static final DungeonPerkTemplate POISON_IMMUNITY = create(PoisonImmunePerk.class, new Vector2i(0, 3)).setUnique();
     public static final DungeonPerkTemplate STEP_HEIGHT = create(StepHeightPerk.class, new Vector2i(1, 3));
+    public static final DungeonPerkTemplate DODGE = create(DodgePerk.class, new Vector2i(2, 3)); // not implemented
 
 
     public static DungeonPerkTemplate create(Class<? extends DungeonPerk> clazz, Vector2i position){
