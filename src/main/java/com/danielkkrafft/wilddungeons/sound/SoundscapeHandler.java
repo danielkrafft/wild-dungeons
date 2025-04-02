@@ -11,6 +11,7 @@ import net.minecraft.sounds.SoundSource;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientPauseChangeEvent;
 import net.neoforged.neoforge.client.event.sound.PlaySoundEvent;
 
 import java.util.ArrayList;
@@ -85,6 +86,15 @@ public class SoundscapeHandler {
         if (event.getSound().getLocation().toString().contains("music")) {
 //            WildDungeons.getLogger().info("CANCELLING SOUND: {}", event.getName());
             event.setSound(null);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPause(ClientPauseChangeEvent.Post event) {
+        if (Minecraft.getInstance().options.getSoundSourceVolume(SoundSource.MUSIC) == 0.0f) {
+            currentlyPlayingSounds.forEach(SynchronizedSoundLoop::stopPlaying);
+            currentlyPlayingSounds.clear();
+            return;
         }
     }
 }
