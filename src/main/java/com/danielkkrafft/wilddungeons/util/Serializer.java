@@ -84,6 +84,7 @@ public class Serializer
         addCustom(Property.class);
         addCustom(Mirror.class);
         addCustom(Rotation.class);
+        addCustom(LootChoiceRoom.class);
     }
 
     private static void addCustom(Class<?> clazz) {

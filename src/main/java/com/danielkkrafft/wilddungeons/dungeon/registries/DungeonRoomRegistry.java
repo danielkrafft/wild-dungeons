@@ -3,6 +3,7 @@ package com.danielkkrafft.wilddungeons.dungeon.registries;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.*;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
+import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
@@ -95,6 +96,7 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate OVERWORLD_REST_ROOM = createSimple("overworld/rest_basic");
     public static final DungeonRoomTemplate OVERWORLD_SHOP_ROOM = createSimple("overworld/shop");
     public static final DungeonRoomTemplate OVERWORLD_FREE_PERK = createSimple("overworld/free_perk").setClazz(LootRoom.class);
+    public static final DungeonRoomTemplate OVERWORLD_DOUBLE_LOOT = createSimple("overworld/double_loot").setClazz(LootChoiceRoom.class);
     public static final DungeonRoomTemplate OVERWORLD_EXIT_ROOM = createSimple("overworld/exit");
     public static final DungeonRoomTemplate OVERWORLD_TRANSITION_ROOM = create(
             "transition",
@@ -183,7 +185,7 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate NETHER_FACTORY_TRAP_1 = createSimple("nether/factory/trap1").set(BLOCKING_MATERIAL_INDEX, 1);
     public static final DungeonRoomTemplate NETHER_FACTORY_COMBAT_1 = copyOf(NETHER_FACTORY_SPRAWL_3, "nether_factory_combat_1").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
     public static final DungeonRoomTemplate NETHER_FACTORY_COMBAT_2 = copyOf(NETHER_FACTORY_SPRAWL_2, "nether_factory_combat_2").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
-    public static final DungeonRoomTemplate NETHER_FACTORY_KEY_COMBAT = copyOf(NETHER_FACTORY_COMBAT_1, "nether_factory_key_combat").setRoomClearOffering(OfferingTemplateRegistry.DUNGEON_KEY);
+    public static final DungeonRoomTemplate NETHER_FACTORY_KEY_COMBAT = copyOf(NETHER_FACTORY_COMBAT_1, "nether_factory_key_combat").set(ROOM_CLEAR_REWARD_POOL, WeightedPool.of(OfferingTemplateRegistry.DUNGEON_KEY));
     public static final DungeonRoomTemplate NETHER_FACTORY_TRI_BRANCH = create("nether_factory_tri_branch",
             List.of(
                     of("nether/factory/tribranch_1", EMPTY_BLOCK_POS),
@@ -212,7 +214,7 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
             ))
             .setClazz(BossRoom.class)
             .set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR)
-            .setRoomClearOffering(OfferingTemplateRegistry.EXIT_RIFT)
+            .set(ROOM_CLEAR_REWARD_POOL, WeightedPool.of(OfferingTemplateRegistry.EXIT_RIFT))
             .set(ENEMY_TABLE, EnemyTableRegistry.NETHER_DRAGON_ARENA)
             .set(BOSS_SPAWN_POS, new Vec3(3.0, 40.0, 3.0));
 

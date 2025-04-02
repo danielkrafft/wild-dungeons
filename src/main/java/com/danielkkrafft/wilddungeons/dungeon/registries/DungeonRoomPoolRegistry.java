@@ -83,7 +83,8 @@ public class DungeonRoomPoolRegistry {
         OVERWORLD_SHOP_ROOM_POOL
                 .add(OVERWORLD_SHOP_ROOM,1);
         OVERWORLD_LOOT_ROOM_POOL
-                .add(OVERWORLD_FREE_PERK,1);
+                .add(OVERWORLD_FREE_PERK,1)
+                .add(OVERWORLD_DOUBLE_LOOT, 1);
 
         VILLAGE_PATH_POOL
                 .add(VILLAGE_1,1)

@@ -30,7 +30,6 @@ public final class DungeonRoomTemplate implements DungeonRegistration.DungeonCom
     private List<Vec3> offerings;
     private List<StructureTemplate.StructureBlockInfo> lootBlocks;
     private List<StructureTemplate.StructureBlockInfo> dataMarkers;
-    private DungeonRegistration.OfferingTemplate roomClearOffering = null;
     private WDStructureTemplate wdStructureTemplate;
 
 
@@ -139,7 +138,6 @@ public final class DungeonRoomTemplate implements DungeonRegistration.DungeonCom
         return dataMarkers;
     }
 
-    public DungeonRegistration.OfferingTemplate roomClearOffering() {return roomClearOffering;}
     public Class<?> getClazz() {
         return clazz;
     }
@@ -189,11 +187,6 @@ public final class DungeonRoomTemplate implements DungeonRegistration.DungeonCom
         return this;
     }
 
-    public DungeonRoomTemplate setRoomClearOffering(DungeonRegistration.OfferingTemplate roomClearOffering) {
-        this.roomClearOffering = roomClearOffering;
-        return this;
-    }
-
     public DungeonRoomTemplate setProperties(HashMap<HierarchicalProperty<?>, Object> prop) {this.PROPERTIES = prop; return this;}
 
     private DungeonRoomTemplate setWDStructureTemplate(WDStructureTemplate wdStructureTemplate) {
@@ -212,7 +205,6 @@ public final class DungeonRoomTemplate implements DungeonRegistration.DungeonCom
                 .setOfferings(template.offerings)
                 .setLootBlocks(template.lootBlocks)
                 .setDataMarkers(template.dataMarkers)
-                .setRoomClearOffering(template.roomClearOffering)
                 .setWDStructureTemplate(template.wdStructureTemplate)
                 .setProperties(new HashMap<>(template.PROPERTIES));
     }

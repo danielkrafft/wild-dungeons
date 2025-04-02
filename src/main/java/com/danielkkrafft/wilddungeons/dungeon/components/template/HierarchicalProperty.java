@@ -38,6 +38,7 @@ public class HierarchicalProperty<T> {
     public static final HierarchicalProperty<DungeonRegistration.SoundscapeTemplate> SOUNDSCAPE = new HierarchicalProperty<>(new TypeToken<>() {}, SoundscapeTemplateRegistry.NETHER_CAVES);
     public static final HierarchicalProperty<Vec3> BOSS_SPAWN_POS = new HierarchicalProperty<>(new TypeToken<>() {}, Vec3.ZERO);
     public static final HierarchicalProperty<WeightedTable<DungeonRegistration.OfferingTemplate>> SHOP_TABLE = new HierarchicalProperty<>(new TypeToken<>() {}, OfferingTemplateTableRegistry.BASIC_SHOP_TABLE);
+    public static final HierarchicalProperty<WeightedPool<DungeonRegistration.OfferingTemplate>> ROOM_CLEAR_REWARD_POOL = new HierarchicalProperty<>(new TypeToken<>() {}, null);
 
 
     private final TypeToken<T> type;
