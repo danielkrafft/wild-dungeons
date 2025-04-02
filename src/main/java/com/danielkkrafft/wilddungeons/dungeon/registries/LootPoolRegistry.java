@@ -42,9 +42,15 @@ public class LootPoolRegistry {
                 .add(MAGMA_CREAM,1)
                 .add(LEAPING_POTION,1)
                 .add(STRENGTH_POTION,1)
-                .add(CYAN_WOOL, 1)
-                .add(PAPER, 1)
-                .add(GREEN_DYE, 1);
+                .add(CYAN_WOOL, 3)
+                .add(PAPER, 3)
+                .add(PUFFERFISH, 3)
+                .add(MUSHROOM_STEW, 3)
+                .add(WOODEN_AXE, 3)
+                .add(PRISMARINE_BRICKS, 3)
+                .add(LEATHER_BOOTS, 3)
+                .add(EGG, 3)
+                .add(GREEN_DYE, 3);
         LOOT_POOL_REGISTRY.add(COMMON_LOOT_POOL);
 
         MEDIUM_LOOT_POOL
@@ -72,12 +78,16 @@ public class LootPoolRegistry {
                 .add(GOLD_INGOTS, 15)
                 .add(LAPIS_LAZULI, 2)
                 .add(DIAMOND, 1)
+                .add(END_STONE, 3)
+                .add(IRON_BOOTS, 3)
+                .add(IRON_PICKAXE, 3)
+                .add(SMOOTH_QUARTZ, 3)
                 .add(BLAZE_ROD, 1)
                 .add(ENDER_PEARL, 1)
                 .add(EMERALD, 1)
-                .add(LEATHER_HORSE_ARMOR, 1)
+                .add(LEATHER_HORSE_ARMOR, 3)
                 .add(BLANK_MAP, 1)
-                .add(SHROOMLIGHT, 1);
+                .add(SHROOMLIGHT, 3);
         LOOT_POOL_REGISTRY.add(MEDIUM_LOOT_POOL);
 
         RARE_LOOT_POOL

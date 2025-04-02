@@ -37,6 +37,7 @@ public class OfferingTemplateRegistry {
     public static final OfferingTemplate CHARCOAL = createItem("CHARCOAL", ItemTemplateRegistry.CHARCOAL, OVERWORLD, 2, 1.5f);
     public static final OfferingTemplate OAK_LOGS = createItem("OAK_LOGS", ItemTemplateRegistry.OAK_LOGS, OVERWORLD, 2, 1.5f);
     public static final OfferingTemplate STONE_PICKAXE = createItem("STONE_PICKAXE", ItemTemplateRegistry.STONE_PICKAXE, OVERWORLD, 1, 1.0f);
+    public static final OfferingTemplate IRON_PICKAXE = createItem("IRON_PICKAXE", ItemTemplateRegistry.IRON_PICKAXE, OVERWORLD, 6, 1.5f);
     public static final OfferingTemplate STONE_SHOVEL = createItem("STONE_SHOVEL", ItemTemplateRegistry.STONE_SHOVEL, OVERWORLD, 1, 1.0f);
     public static final OfferingTemplate GOLD_INGOTS = createItem("GOLD_INGOTS", ItemTemplateRegistry.GOLD_INGOTS, OVERWORLD, 5, 1.5f);
     public static final OfferingTemplate DIAMOND = createItem("DIAMOND", ItemTemplateRegistry.DIAMOND, OVERWORLD, 8, 1.5f);
@@ -64,6 +65,19 @@ public class OfferingTemplateRegistry {
     public static final OfferingTemplate FREE_BIG_ABSORPTION = createPerk("FREE_BIG_ABSORPTION", PerkRegistry.BIG_ABSORPTION, OVERWORLD, 0, 1);
     public static final OfferingTemplate FREE_ATTACK_SPEED = createPerk("FREE_ATTACK_SPEED", PerkRegistry.ATTACK_SPEED, OVERWORLD, 0, 1);
     public static final OfferingTemplate FREE_POISON_IMMUNITY = createPerk("FREE_POISON_IMMUNITY", PerkRegistry.POISON_IMMUNITY, OVERWORLD, 0, 1);
+    public static final OfferingTemplate FREE_STEP_HEIGHT = createPerk("FREE_STEP_HEIGHT", PerkRegistry.STEP_HEIGHT, OVERWORLD, 0, 1);
+
+    public static final OfferingTemplate STRENGTH_NORMAL = createPerk("STRENGTH_NORMAL", PerkRegistry.STRENGTH, OVERWORLD, 20, 1.5f);
+    public static final OfferingTemplate STRENGTH_NETHER = createPerk("STRENGTH_NETHER", PerkRegistry.STRENGTH, NETHER, 12, 1.5f);
+    public static final OfferingTemplate STRENGTH_END = createPerk("STRENGTH_END", PerkRegistry.STRENGTH, END, 12, 1.5f);
+
+    public static final OfferingTemplate HEALTH_BOOST_NORMAL = createPerk("HEALTH_BOOST_NORMAL", PerkRegistry.HEALTH_BOOST, OVERWORLD, 20, 1.5f);
+    public static final OfferingTemplate HEALTH_BOOST_NETHER = createPerk("HEALTH_BOOST_NETHER", PerkRegistry.HEALTH_BOOST, NETHER, 12, 1.5f);
+    public static final OfferingTemplate HEALTH_BOOST_END = createPerk("HEALTH_BOOST_END", PerkRegistry.HEALTH_BOOST, END, 12, 1.5f);
+
+    public static final OfferingTemplate MOVEMENT_SPEED_NORMAL = createPerk("MOVEMENT_SPEED_NORMAL", PerkRegistry.MOVEMENT_SPEED, OVERWORLD, 20, 1.5f);
+    public static final OfferingTemplate MOVEMENT_SPEED_NETHER = createPerk("MOVEMENT_SPEED_NETHER", PerkRegistry.MOVEMENT_SPEED, NETHER, 12, 1.5f);
+    public static final OfferingTemplate MOVEMENT_SPEED_END = createPerk("MOVEMENT_SPEED_END", PerkRegistry.MOVEMENT_SPEED, END, 12, 1.5f);
 
     public static final OfferingTemplate EXTRA_LIFE_NORMAL = createPerk("EXTRA_LIFE_NORMAL", PerkRegistry.EXTRA_LIFE, OVERWORLD, 8, 1.5f);
     public static final OfferingTemplate EXTRA_LIFE_NETHER = createPerk("EXTRA_LIFE_NETHER", PerkRegistry.EXTRA_LIFE, NETHER, 4, 1.5f);

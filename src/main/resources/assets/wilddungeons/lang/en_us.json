@@ -77,6 +77,7 @@
   "dungeon.perk.BigAbsorptionPerk": "Reasonable Amount of Absorption",
   "dungeon.perk.AttackSpeedPerk": "+10% Attack Speed",
   "dungeon.perk.PoisonImmunePerk": "Poison Immunity",
+  "dungeon.perk.StepHeightPerk": "+0.5 Step Height",
 
   "key.categories.wilddungeons": "Wild Dungeons",
   "key.wilddungeons.toggle_essence_type": "Toggle Essence Type",

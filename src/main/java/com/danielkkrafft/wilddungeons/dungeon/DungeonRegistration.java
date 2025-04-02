@@ -24,6 +24,7 @@ import net.minecraft.world.level.Level;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class DungeonRegistration {
     public static void setupRegistries() {
@@ -153,6 +154,7 @@ public class DungeonRegistration {
         private String name;
         private String type;
         private String entityType;
+        private Consumer<Object> behavior;
         private int helmetItem = -1;
         private boolean helmetAlwaysSpawn = false;
         private int chestItem =- 1;
@@ -181,6 +183,7 @@ public class DungeonRegistration {
 
         public DungeonTarget asEnemy() {
             DungeonTarget enemy = new DungeonTarget(DungeonTarget.Type.valueOf(this.type), this.entityType);
+            enemy.behavior = behavior;
             enemy.helmetItem = helmetAlwaysSpawn ? helmetItem : RandomUtil.randFloatBetween(0, 1) < randomChance ? helmetItem : -1;
             enemy.chestItem = chestAlwaysSpawn ? chestItem : RandomUtil.randFloatBetween(0, 1) < randomChance ? chestItem : -1;
             enemy.legsItem = legsAlwaysSpawn ? legsItem : RandomUtil.randFloatBetween(0, 1) < randomChance ? legsItem : -1;
@@ -218,6 +221,7 @@ public class DungeonRegistration {
         public TargetTemplate addMobEffect(Holder<MobEffect> effect, int amplifier,boolean alwaysSpawnAll) {this.mobEffects.add(Pair.of(BuiltInRegistries.MOB_EFFECT.getId(effect.value()), amplifier));allEffects=alwaysSpawnAll; return this;}
         public TargetTemplate setRandomChance(float randomChance) {this.randomChance = randomChance; return this;}
         public TargetTemplate setHealthMultiplier(double mult) {this.healthMultiplier = mult; return this;}
+        public TargetTemplate addSpawnBehavior(Consumer<Object> behavior) {this.behavior = behavior; return this;}
     }
 
     public static class ItemTemplate implements DungeonComponent {

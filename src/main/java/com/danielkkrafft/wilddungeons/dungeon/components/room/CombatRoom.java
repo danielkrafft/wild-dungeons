@@ -9,6 +9,7 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalPr
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateOrientation;
 import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
+import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -116,9 +117,9 @@ public class CombatRoom extends TargetPurgeRoom {
         this.getActivePlayers().forEach(player -> {
             player.setSoundScape(this.getProperty(SOUNDSCAPE), this.getProperty(INTENSITY), false);
         });
-        DungeonRegistration.OfferingTemplate offeringTemplate = getTemplate().get(HierarchicalProperty.ROOM_CLEAR_REWARD_POOL).getRandom();
+        WeightedPool<DungeonRegistration.OfferingTemplate> offeringTemplate = getTemplate().get(HierarchicalProperty.ROOM_CLEAR_REWARD_POOL);
         if (offeringTemplate == null) return;
-        Offering offering = offeringTemplate.asOffering(this.getBranch().getFloor().getLevel());
+        Offering offering = offeringTemplate.getRandom().asOffering(this.getBranch().getFloor().getLevel());
         List<BlockPos> validPoints = sampleSpawnablePositions(getBranch().getFloor().getLevel(), 5, Mth.ceil(Math.max(offering.getBoundingBox().getXsize(), offering.getBoundingBox().getZsize())));
         BlockPos finalPos = calculateClosestPoint(validPoints,5);
         offering.setPos(Vec3.atCenterOf(finalPos));

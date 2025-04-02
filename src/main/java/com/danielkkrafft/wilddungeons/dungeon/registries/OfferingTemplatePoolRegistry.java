@@ -30,7 +30,8 @@ public class OfferingTemplatePoolRegistry {
                 .add(FREE_DIG_SPEED, 1)
                 .add(FREE_BIG_ABSORPTION, 1)
                 .add(FREE_ATTACK_SPEED, 1)
-                .add(FREE_POISON_IMMUNITY, 1);
+                .add(FREE_POISON_IMMUNITY, 1)
+                .add(FREE_STEP_HEIGHT, 1);
         OFFERING_TEMPLATE_POOL_REGISTRY.add(FREE_PERK_POOL);
 
         CHEAP_BASIC_POOL
@@ -48,6 +49,7 @@ public class OfferingTemplatePoolRegistry {
                 .add(STONE_SHOVEL, 1)
                 .add(GOLD_INGOTS, 1)
                 .add(RAW_IRON, 1)
+                .add(IRON_PICKAXE, 1)
         ;
         OFFERING_TEMPLATE_POOL_REGISTRY.add(CHEAP_BASIC_POOL);
 
@@ -63,8 +65,8 @@ public class OfferingTemplatePoolRegistry {
         OFFERING_TEMPLATE_POOL_REGISTRY.add(MEDIUM_BASIC_POOL);
 
         EXPENSIVE_BASIC_POOL
-                .add(ELYTRA, 1)
-                .add(DIAMOND_AXE, 1)
+                .add(ELYTRA, 3)
+                .add(DIAMOND_AXE, 3)
                 .add(SWORD_DAMAGE_NORMAL,1)
                 .add(SWORD_DAMAGE_NETHER,1)
                 .add(SWORD_DAMAGE_END,1)
@@ -75,7 +77,16 @@ public class OfferingTemplatePoolRegistry {
                 .add(BOW_DAMAGE_NETHER,1)
                 .add(BOW_DAMAGE_END,1)
                 .add(EXTRA_LIFE_NETHER,1)
-                .add(EXTRA_LIFE_END,1);
+                .add(EXTRA_LIFE_END,1)
+                .add(STRENGTH_NORMAL, 1)
+                .add(STRENGTH_NETHER, 1)
+                .add(STRENGTH_END, 1)
+                .add(HEALTH_BOOST_NORMAL, 1)
+                .add(HEALTH_BOOST_NETHER, 1)
+                .add(HEALTH_BOOST_END, 1)
+                .add(MOVEMENT_SPEED_NORMAL, 1)
+                .add(MOVEMENT_SPEED_NETHER, 1)
+                .add(MOVEMENT_SPEED_END, 1);
         OFFERING_TEMPLATE_POOL_REGISTRY.add(EXPENSIVE_BASIC_POOL);
     }
 }

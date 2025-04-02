@@ -73,6 +73,17 @@ public class ItemTemplateRegistry {
     public static ItemTemplate ELYTRA = create("elytra", Items.ELYTRA, 1);
     public static ItemTemplate SHROOMLIGHT = create("shroomlight", Items.SHROOMLIGHT, 20).setDeviance(2.5f);
 
+    public static ItemTemplate PUFFERFISH = create("pufferfish", Items.PUFFERFISH, 3).setDeviance(2.0f);
+    public static ItemTemplate END_STONE = create("end_stone", Items.END_STONE, 16).setDeviance(2.0f);
+    public static ItemTemplate SMOOTH_QUARTZ = create("smooth_quartz", Items.SMOOTH_QUARTZ, 8).setDeviance(2.0f);
+    public static ItemTemplate MUSHROOM_STEW = create("mushroom_stew", Items.MUSHROOM_STEW, 1).setDeviance(1.0f);
+    public static ItemTemplate WOODEN_AXE = create("wooden_axe", Items.WOODEN_AXE, 1).setDeviance(1.0f);
+    public static ItemTemplate PRISMARINE_BRICKS = create("prismarine_bricks", Items.PRISMARINE_BRICKS, 16).setDeviance(2.0f);
+    public static ItemTemplate LEATHER_BOOTS = create("leather_boots", Items.LEATHER_BOOTS, 1).setDeviance(1.0f);
+    public static ItemTemplate IRON_BOOTS = create("iron_boots", Items.IRON_BOOTS, 1).setDeviance(1.0f);
+    public static ItemTemplate EGG = create("egg", Items.EGG, 6).setDeviance(2.0f);
+    public static ItemTemplate IRON_PICKAXE = create("iron_pickaxe", Items.IRON_PICKAXE, 1).setDeviance(1.0f);
+
     public static ItemTemplate AMOGUS_STAFF = create("amogus_staff", WDItems.AMOGUS_STAFF.get(), 1);
     public static ItemTemplate LASER_SWORD = create("laser_sword", WDItems.LASER_SWORD_ITEM.get(), 1);
     public static ItemTemplate FIREWORK_GUN = create("firework_gun", WDItems.FIREWORK_GUN_ITEM.get(), 1);

@@ -22,6 +22,7 @@ import net.minecraft.world.phys.Vec3;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public class DungeonTarget {
     public enum Type {BLOCK, ENTITY, SPAWNER} //TODO implement custom spawners (light level issue, max entity issue)
@@ -37,6 +38,7 @@ public class DungeonTarget {
     public int mainHandItem = -1;
     public int offHandItem = -1;
     public double healthMultiplier = 1.0f;
+    public Consumer<Object> behavior;
     public List<Pair<Integer, Integer>> mobEffects = new ArrayList<>();
 
     public DungeonTarget(Type type, String entityTypeKey) {
@@ -84,6 +86,7 @@ public class DungeonTarget {
             BlockPos finalPos = room.calculateFurthestPoint(validPoints,20);
 
             entity.setPos(Vec3.atCenterOf(finalPos));
+            if (this.behavior != null) this.behavior.accept(entity);
             this.uuid = entity.getStringUUID();
             this.startPos = finalPos;
             this.spawned = true;
