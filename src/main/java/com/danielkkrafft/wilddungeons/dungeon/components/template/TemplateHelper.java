@@ -418,8 +418,8 @@ public class TemplateHelper {
     public static BlockState replaceChest(BlockState blockState,  DungeonRoom room){
         //IMPORTANT: do NOT replace Trapped Chests as this will break some rooms
         //todo replace with a property in the wd template
-        if (blockState.is(Blocks.CHEST))  {blockState = RandomUtil.randFloatBetween(0, 1) < room.getProperty(HierarchicalProperty.CHEST_SPAWN_CHANCE) ? Blocks.CHEST.defaultBlockState() : Blocks.AIR.defaultBlockState();}
-        else if (blockState.is(Blocks.BARREL)) {blockState = RandomUtil.randFloatBetween(0, 1) < room.getProperty(HierarchicalProperty.CHEST_SPAWN_CHANCE) ? Blocks.BARREL.defaultBlockState() : Blocks.AIR.defaultBlockState();}
+        if (blockState.is(Blocks.CHEST))  {blockState = RandomUtil.randFloatBetween(0, 1) < room.getProperty(HierarchicalProperty.CHEST_SPAWN_CHANCE) ? Blocks.CHEST.defaultBlockState().setValue(HORIZONTAL_FACING, blockState.getValue(HORIZONTAL_FACING)) : Blocks.AIR.defaultBlockState();}
+        else if (blockState.is(Blocks.BARREL)) {blockState = RandomUtil.randFloatBetween(0, 1) < room.getProperty(HierarchicalProperty.CHEST_SPAWN_CHANCE) ? Blocks.BARREL.defaultBlockState().setValue(FACING, blockState.getValue(FACING)) : Blocks.AIR.defaultBlockState();}
         return blockState;
     }
 
