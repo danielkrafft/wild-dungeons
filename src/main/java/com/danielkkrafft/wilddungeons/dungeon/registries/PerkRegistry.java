@@ -22,6 +22,7 @@ public class PerkRegistry {
     public static final DungeonPerkTemplate MOVEMENT_SPEED = create(PermanentMovementSpeedPerk.class, new Vector2i(0, 2));
     public static final DungeonPerkTemplate DIG_SPEED = create(PermanentDigSpeedPerk.class, new Vector2i(1, 2));
     public static final DungeonPerkTemplate BIG_ABSORPTION = create(BigAbsorptionPerk.class, new Vector2i(2, 2));
+    public static final DungeonPerkTemplate ATTACK_SPEED = create(AttackSpeedPerk.class, new Vector2i(3,2));
 
 
     public static DungeonPerkTemplate create(Class<? extends DungeonPerk> clazz, Vector2i position){

@@ -9,6 +9,10 @@
   "item.wilddungeons.wd_dungeon_key": "Dungeon Key",
   "item.wilddungeons.amogus_staff": "Imposter Staff",
   "item.wilddungeons.room_export_wand": "Room Export Wand",
+  "item.wilddungeons.offering_item": "Offering Item",
+  "item.wilddungeons.rift_item": "Rift Item",
+  "item.wilddungeons.essence_bottle": "Essence Bottle",
+  "item.wilddungeons.nether_dragon_spawn_egg": "Nether Dragon Spawn Egg",
 
   "block.wilddungeons.connection_block": "Connection Block",
   "block.wilddungeons.rift_block": "Rift Block",
@@ -42,6 +46,7 @@
   "block.wilddungeons.wd_bedrock": "Dungeon Bedrock",
   "block.wilddungeons.wd_doorway": "Doorway",
   "block.wilddungeons.wd_lockable": "Dungeon Lock",
+  "block.wilddungeons.spawn_block": "Spawn Block",
 
   "entity.wilddungeons.essence_orb": "Essence Orb",
   "entity.wilddungeons.offering": "Offering",

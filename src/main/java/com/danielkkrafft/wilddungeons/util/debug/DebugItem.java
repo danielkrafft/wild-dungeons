@@ -13,6 +13,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -30,10 +31,14 @@ public class DebugItem extends Item {
         if (!(player instanceof ServerPlayer serverPlayer)) return InteractionResultHolder.fail(player.getItemInHand(usedHand));
         WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer.getStringUUID());
 
-        WildDungeons.getLogger().info("DUNGEON CONTENTS:");
-        wdPlayer.getCurrentFloor().getBranches().forEach(branch -> {
-            WildDungeons.getLogger().info("BRANCH #{} CONTAINS {} ROOMS", branch.getIndex(), branch.getRooms().size());
-        });
+        WildDungeons.getLogger().info(String.valueOf(serverPlayer.getAttribute(Attributes.ATTACK_SPEED).getBaseValue()));
+        serverPlayer.getAttribute(Attributes.ATTACK_SPEED).setBaseValue(serverPlayer.getAttribute(Attributes.ATTACK_SPEED).getBaseValue()*2);
+        WildDungeons.getLogger().info(String.valueOf(serverPlayer.getAttribute(Attributes.ATTACK_SPEED).getBaseValue()));
+
+//        WildDungeons.getLogger().info("DUNGEON CONTENTS:");
+//        wdPlayer.getCurrentFloor().getBranches().forEach(branch -> {
+//            WildDungeons.getLogger().info("BRANCH #{} CONTAINS {} ROOMS", branch.getIndex(), branch.getRooms().size());
+//        });
 
 
         //logNonDungeonStuff(wdPlayer);

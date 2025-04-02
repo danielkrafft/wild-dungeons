@@ -28,7 +28,8 @@ public class OfferingTemplatePoolRegistry {
                 .add(FREE_HEALTH_BOOST,1)
                 .add(FREE_MOVEMENT_SPEED, 1)
                 .add(FREE_DIG_SPEED, 1)
-                .add(FREE_BIG_ABSORPTION, 1);
+                .add(FREE_BIG_ABSORPTION, 1)
+                .add(FREE_ATTACK_SPEED, 1);
         OFFERING_TEMPLATE_POOL_REGISTRY.add(FREE_PERK_POOL);
 
         CHEAP_BASIC_POOL
