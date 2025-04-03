@@ -47,6 +47,7 @@ public class TargetPurgeRoom extends LockableEventRoom {
             if (!target.spawned) return;
             if (Objects.equals(target.uuid, uuid)) toRemove.add(target);
         });
+
         toRemove.forEach(target -> {
             targets.remove(target);
         });
