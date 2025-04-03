@@ -1,9 +1,11 @@
 package com.danielkkrafft.wilddungeons.render;
 
+import com.danielkkrafft.wilddungeons.WildDungeons;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AnimatedTexture {
@@ -24,5 +26,14 @@ public class AnimatedTexture {
         long tickCount = level.getGameTime();
         int index = (int)((tickCount) / frameTime) % frames.size();
         return frames.get(index);
+    }
+
+    //Must follow 0001.png format
+    public static AnimatedTexture auto(String path, int frames, int frameTime) {
+        List<ResourceLocation> list = new ArrayList<>();
+        for (int i = 1; i <= frames; i++) {
+            list.add(WildDungeons.rl(path+"/"+String.format("%04d", i)+".png"));
+        }
+        return new AnimatedTexture(list, frameTime);
     }
 }

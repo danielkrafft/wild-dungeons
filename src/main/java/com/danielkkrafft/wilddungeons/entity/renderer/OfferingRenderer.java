@@ -49,16 +49,8 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
     private static final Vector2i MESSAGE_BUBBLE_TEXTURE_RESOLUTION = new Vector2i(48, 32);
     private static final Vector2i PERKS_TEXTURE_RESOLUTION = new Vector2i(64, 64);
     private static final ResourceLocation RIFT_TEXTURE = WildDungeons.rl("textures/entity/rift.png");
-    private static final AnimatedTexture RIFT_ANIMATION = new AnimatedTexture(List.of(
-            WildDungeons.rl("textures/entity/rift/rift-0001.png"),
-            WildDungeons.rl("textures/entity/rift/rift-0002.png"),
-            WildDungeons.rl("textures/entity/rift/rift-0003.png"),
-            WildDungeons.rl("textures/entity/rift/rift-0004.png"),
-            WildDungeons.rl("textures/entity/rift/rift-0005.png"),
-            WildDungeons.rl("textures/entity/rift/rift-0006.png"),
-            WildDungeons.rl("textures/entity/rift/rift-0007.png"),
-            WildDungeons.rl("textures/entity/rift/rift-0008.png")
-    ), 2);
+    private static final AnimatedTexture RIFT_ANIMATION = AnimatedTexture.auto("textures/entity/rift", 100, 2);
+    private static final AnimatedTexture RIFT_2_ANIMATION = AnimatedTexture.auto("textures/entity/rift2", 100, 2);
 
     private static final ResourceLocation EXPERIENCE_ORB_LOCATION = ResourceLocation.withDefaultNamespace("textures/entity/experience_orb.png");
 
@@ -209,7 +201,7 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
             poseStack.translate(0.0f, 0.5f, 0.0f);
             poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
             if (Minecraft.getInstance().player == null) return;
-            float extraScaleFactor = (float) (2.5f - Math.min(entity.position().distanceTo(Minecraft.getInstance().player.position()) / 15.0f, 2.5f));
+            float extraScaleFactor = (float) (2.5f - Math.min(entity.position().distanceTo(Minecraft.getInstance().player.position()) / 15.0f, 2.5f)) * 2;
             poseStack.scale(0.1F+extraScaleFactor, 0.1F+extraScaleFactor, 0.1F+extraScaleFactor);
 
             //Custom Shader Version
@@ -229,9 +221,21 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
 
             PoseStack.Pose posestack$pose = poseStack.last();
             VertexConsumer vertexconsumer = buffer.getBuffer(RenderType.itemEntityTranslucentCull(RIFT_ANIMATION.getCurrentFrame()));
-            drawCircle(0.0f, 0.0f, 20, 0.5f, vertexconsumer, posestack$pose, packedLight);
-            vertexconsumer = buffer.getBuffer(RenderType.entityTranslucentEmissive(RIFT_ANIMATION.getCurrentFrame()));
-            drawCircle(0.0f, 0.0f, 20, 0.5f, vertexconsumer, posestack$pose, packedLight);
+
+            vertex(vertexconsumer, posestack$pose, -1.0f, -1.0f, 0.0f, 1.0f, 0xF000F0, 1.0f, entity.getSecondaryColor());
+            vertex(vertexconsumer, posestack$pose, 1.0f, -1.0f, 1.0f, 1.0f, 0xF000F0, 1.0f, entity.getSecondaryColor());
+            vertex(vertexconsumer, posestack$pose, 1.0f, 1.0f, 1.0f, 0.0f, 0xF000F0, 1.0f, entity.getSecondaryColor());
+            vertex(vertexconsumer, posestack$pose, -1.0f, 1.0f, 0.0f, 0.0f, 0xF000F0, 1.0f, entity.getSecondaryColor());
+
+            poseStack.translate(0.0f, 0.0f, 0.01f);
+
+            vertexconsumer = buffer.getBuffer(RenderType.itemEntityTranslucentCull(RIFT_2_ANIMATION.getCurrentFrame()));
+
+            vertex(vertexconsumer, posestack$pose, -1.0f, -1.0f, 0.0f, 1.0f, 0xF000F0, 1.0f, entity.getPrimaryColor());
+            vertex(vertexconsumer, posestack$pose, 1.0f, -1.0f, 1.0f, 1.0f, 0xF000F0, 1.0f, entity.getPrimaryColor());
+            vertex(vertexconsumer, posestack$pose, 1.0f, 1.0f, 1.0f, 0.0f, 0xF000F0, 1.0f, entity.getPrimaryColor());
+            vertex(vertexconsumer, posestack$pose, -1.0f, 1.0f, 0.0f, 0.0f, 0xF000F0, 1.0f, entity.getPrimaryColor());
+
             poseStack.popPose();
         }
 
