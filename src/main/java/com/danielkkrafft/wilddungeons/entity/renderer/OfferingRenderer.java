@@ -6,6 +6,7 @@ import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.danielkkrafft.wilddungeons.registry.WDShaders;
+import com.danielkkrafft.wilddungeons.render.AnimatedTexture;
 import com.danielkkrafft.wilddungeons.render.RiftRenderType;
 import com.danielkkrafft.wilddungeons.util.ColorUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -35,6 +36,7 @@ import org.joml.Vector2i;
 import org.joml.Vector3f;
 
 import java.util.HexFormat;
+import java.util.List;
 
 public class OfferingRenderer extends EntityRenderer<Offering> {
     private final ItemRenderer itemRenderer;
@@ -47,6 +49,16 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
     private static final Vector2i MESSAGE_BUBBLE_TEXTURE_RESOLUTION = new Vector2i(48, 32);
     private static final Vector2i PERKS_TEXTURE_RESOLUTION = new Vector2i(64, 64);
     private static final ResourceLocation RIFT_TEXTURE = WildDungeons.rl("textures/entity/rift.png");
+    private static final AnimatedTexture RIFT_ANIMATION = new AnimatedTexture(List.of(
+            WildDungeons.rl("textures/entity/rift/rift-0001.png"),
+            WildDungeons.rl("textures/entity/rift/rift-0002.png"),
+            WildDungeons.rl("textures/entity/rift/rift-0003.png"),
+            WildDungeons.rl("textures/entity/rift/rift-0004.png"),
+            WildDungeons.rl("textures/entity/rift/rift-0005.png"),
+            WildDungeons.rl("textures/entity/rift/rift-0006.png"),
+            WildDungeons.rl("textures/entity/rift/rift-0007.png"),
+            WildDungeons.rl("textures/entity/rift/rift-0008.png")
+    ), 2);
 
     private static final ResourceLocation EXPERIENCE_ORB_LOCATION = ResourceLocation.withDefaultNamespace("textures/entity/experience_orb.png");
 
@@ -199,18 +211,27 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
             if (Minecraft.getInstance().player == null) return;
             float extraScaleFactor = (float) (2.5f - Math.min(entity.position().distanceTo(Minecraft.getInstance().player.position()) / 15.0f, 2.5f));
             poseStack.scale(0.1F+extraScaleFactor, 0.1F+extraScaleFactor, 0.1F+extraScaleFactor);
-            if (WDShaders.RIFT_SHADER == null) return;
-            RenderSystem.setShader(() -> WDShaders.RIFT_SHADER);
-            VertexConsumer vertexconsumer = buffer.getBuffer(RiftRenderType.getRiftRenderType());
-            Vector3f pRGB = entity.getPrimaryColorRGB();
-            Vector3f sRGB = entity.getSecondaryColorRGB();
-            Vector3f bgRGB = entity.getBackgroundColorRGB();
-            WDShaders.RIFT_SHADER.safeGetUniform("BGColor").set(bgRGB.x,bgRGB.y,bgRGB.z);
-            WDShaders.RIFT_SHADER.safeGetUniform("PrimaryColor").set(pRGB.x,pRGB.y,pRGB.z);
-            WDShaders.RIFT_SHADER.safeGetUniform("SecondaryColor").set(sRGB.x,sRGB.y,sRGB.z);
+
+            //Custom Shader Version
+//            if (WDShaders.RIFT_SHADER == null) return;
+//            RenderSystem.setShader(() -> WDShaders.RIFT_SHADER);
+//            VertexConsumer vertexconsumer = buffer.getBuffer(RiftRenderType.getRiftRenderType());
+//            Vector3f pRGB = entity.getPrimaryColorRGB();
+//            Vector3f sRGB = entity.getSecondaryColorRGB();
+//            Vector3f bgRGB = entity.getBackgroundColorRGB();
+//            WDShaders.RIFT_SHADER.safeGetUniform("BGColor").set(bgRGB.x,bgRGB.y,bgRGB.z);
+//            WDShaders.RIFT_SHADER.safeGetUniform("PrimaryColor").set(pRGB.x,pRGB.y,pRGB.z);
+//            WDShaders.RIFT_SHADER.safeGetUniform("SecondaryColor").set(sRGB.x,sRGB.y,sRGB.z);
+
+            //Animated Texture Version
+
+
+
             PoseStack.Pose posestack$pose = poseStack.last();
+            VertexConsumer vertexconsumer = buffer.getBuffer(RenderType.itemEntityTranslucentCull(RIFT_ANIMATION.getCurrentFrame()));
             drawCircle(0.0f, 0.0f, 20, 0.5f, vertexconsumer, posestack$pose, packedLight);
-            //renderPerkRing(poseStack, entity, partialTicks, buffer, 0.6f);
+            vertexconsumer = buffer.getBuffer(RenderType.entityTranslucentEmissive(RIFT_ANIMATION.getCurrentFrame()));
+            drawCircle(0.0f, 0.0f, 20, 0.5f, vertexconsumer, posestack$pose, packedLight);
             poseStack.popPose();
         }
 

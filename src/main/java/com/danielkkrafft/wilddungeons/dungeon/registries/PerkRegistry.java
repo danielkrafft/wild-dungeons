@@ -63,7 +63,6 @@ public class PerkRegistry {
     //Bulldozer - Lives no longer respawn players (they can keep fighting until no more lives)
     //Hurricane - Taking damage spawns 4 (stacks) wind charges in random directions
     //Reach - +10% Reach
-
     //Friend of Arthropods - All arthropods become friendly towards the player
     //Medusa - Inflict weak slowness on enemies in a 10 (stackable) degree cone within 5 (stackable) blocks of the player's look direction
     //Vine Boom - Randomly every 8-16 seconds, emits a knockback pulse which pushes enemies away (also plays vine boom sound) (stacking decreases duration)
