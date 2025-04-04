@@ -28,8 +28,9 @@ public class PerkRegistry {
     public static final DungeonPerkTemplate DODGE = create(DodgePerk.class, new Vector2i(2, 3)); // not implemented
     public static final DungeonPerkTemplate ONE_PUNCH_MAN = create(OnePunchManPerk.class, new Vector2i(3, 3)); // not implemented
     public static final DungeonPerkTemplate EXPLOSION_IMMUNITY = create(ExplosionImmunePerk.class, new Vector2i(0, 4)).setUnique(); // not implemented
-    //Big red button - taking damage spawns lit tnt somewhere in the room
-    //Critical hit - dealing damage has a stackable chance to deal 3x damage
+    public static final DungeonPerkTemplate BIG_RED_BUTTON = create(BigRedButtonPerk.class, new Vector2i(1, 4)); // not implemented
+    public static final DungeonPerkTemplate CRITICAL_HIT = create(CriticalHitPerk.class, new Vector2i(2, 4)); // not implemented
+    //Critical hit - dealing damage has a stackable 10% chance to deal 3x damage
     //Gills - you can breathe indefinitely underwater
     //XP Boost - XP and essence orbs grant +10% points
     //Overkill - Enemies that get one-shot drop 1.5x XP
