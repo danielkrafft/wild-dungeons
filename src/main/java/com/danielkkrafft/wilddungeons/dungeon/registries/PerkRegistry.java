@@ -25,9 +25,9 @@ public class PerkRegistry {
     public static final DungeonPerkTemplate ATTACK_SPEED = create(AttackSpeedPerk.class, new Vector2i(3,2));
     public static final DungeonPerkTemplate POISON_IMMUNITY = create(PoisonImmunePerk.class, new Vector2i(0, 3)).setUnique();
     public static final DungeonPerkTemplate STEP_HEIGHT = create(StepHeightPerk.class, new Vector2i(1, 3));
-    public static final DungeonPerkTemplate DODGE = create(DodgePerk.class, new Vector2i(2, 3)); // not implemented, stackable chance to completely ignore damage
-    //One punch man - Killing mobs with fists grants +0.1 stacking fist damage
-    //Explosion immunity - immune to explosive damage
+    public static final DungeonPerkTemplate DODGE = create(DodgePerk.class, new Vector2i(2, 3)); // not implemented
+    public static final DungeonPerkTemplate ONE_PUNCH_MAN = create(OnePunchManPerk.class, new Vector2i(3, 3)); // not implemented
+    public static final DungeonPerkTemplate EXPLOSION_IMMUNITY = create(ExplosionImmunePerk.class, new Vector2i(0, 4)).setUnique(); // not implemented
     //Big red button - taking damage spawns lit tnt somewhere in the room
     //Critical hit - dealing damage has a stackable chance to deal 3x damage
     //Gills - you can breathe indefinitely underwater
