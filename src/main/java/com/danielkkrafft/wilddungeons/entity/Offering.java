@@ -16,6 +16,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
@@ -27,6 +28,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
@@ -40,6 +43,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import net.neoforged.neoforge.network.PacketDistributor;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
 import java.awt.*;
@@ -290,15 +294,25 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     }
 
     @Override
-    public void playerTouch(Player player) {
-        super.playerTouch(player);
+    public @NotNull InteractionResult interact(@NotNull Player player, @NotNull InteractionHand hand) {
         if (player instanceof ServerPlayer serverPlayer) {
             WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer);
-            attemptPurchase(wdPlayer);
+            boolean purchased = attemptPurchase(wdPlayer);
+            if (purchased){
+                return InteractionResult.SUCCESS;
+            } else {
+                return InteractionResult.FAIL;
+            }
         }
+        return InteractionResult.CONSUME;
     }
 
-    public void attemptPurchase(WDPlayer player) {
+    @Override
+    public boolean isPickable() {
+        return true;
+    }
+
+    public boolean attemptPurchase(WDPlayer player) {
         if (!purchased) {
             int levels = switch (this.getOfferingCostType()) {
                 case OVERWORLD -> player.getServerPlayer().experienceLevel;
@@ -307,8 +321,40 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
             };
 
             if (this.getCostAmount() == 0 || this.getCostAmount() <= levels) {
+                // For Type.ITEM, check inventory space first before committing to purchase
+                if (this.getOfferingType() == Type.ITEM) {
+                    ItemStack itemStack = this.getItemStack().copy();
+                    boolean isFireworkGun = itemStack.is(WDItems.FIREWORK_GUN_ITEM.get());
+
+                    int openSlots = 0;
+                    for (ItemStack stack : player.getServerPlayer().getInventory().items) {
+                        if (stack.isEmpty()) {
+                            openSlots++;
+                        }
+                    }
+
+                    if (isFireworkGun && openSlots <= 1) {
+                        player.getServerPlayer().sendSystemMessage(Component.translatable("wilddungeons.offering.inventory_full"),true);
+                        return false;
+                    }
+
+                    if (!player.getServerPlayer().getInventory().add(itemStack)) {
+                        player.getServerPlayer().sendSystemMessage(Component.translatable("wilddungeons.offering.inventory_full"),true);
+                        return false;
+                    }
+
+                    if (isFireworkGun) {
+                        ItemStack firework = new ItemStack(Items.FIREWORK_ROCKET);
+                        firework.set(DataComponents.FIREWORKS, new Fireworks(1, List.of(new FireworkExplosion(FireworkExplosion.Shape.CREEPER, IntList.of(Color.GREEN.getRGB()), IntList.of(Color.RED.getRGB()), true, true))));
+                        firework.setCount(64);
+                        player.getServerPlayer().getInventory().add(firework.copy());
+                    }
+                }
+
+                // If we reached here, the purchase can proceed
                 this.purchased = true;
 
+                // Deduct the cost only after ensuring purchase can complete
                 switch (this.getOfferingCostType()) {
                     case OVERWORLD -> player.getServerPlayer().giveExperienceLevels(-this.getCostAmount());
                     case NETHER -> player.giveEssenceLevels(-this.getCostAmount(), NETHER);
@@ -326,29 +372,33 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
                 }
 
                 if (this.getOfferingType() == Type.ITEM) {
+                    // Entity is removed after successful inventory addition
                     this.remove(RemovalReason.DISCARDED);
-                    ItemStack itemStack = this.getItemStack();
-                    boolean isFireworkGun = itemStack.is(WDItems.FIREWORK_GUN_ITEM.get());//this is temporary for the video but maybe we should leave it? :D
-                    player.getServerPlayer().addItem(itemStack);
-                    if (isFireworkGun) {//after giving the item so the ammo doesn't get put in before the gun
-                        ItemStack firework = new ItemStack(Items.FIREWORK_ROCKET);
-                        firework.set(DataComponents.FIREWORKS, new Fireworks(1, List.of(new FireworkExplosion(FireworkExplosion.Shape.CREEPER, IntList.of(Color.GREEN.getRGB()), IntList.of(Color.RED.getRGB()), true, true))));
-                        firework.setCount(64);
-                        player.getServerPlayer().addItem(firework);
-                    }
                 }
 
                 if (this.getOfferingType() == Type.PERK) {
                     this.remove(RemovalReason.DISCARDED);
                     player.getCurrentDungeon().givePerk(this.getPerk());
                 }
+
+                if (this.getOfferingType() == Type.RIFT) {
+                    handleRift(player);
+                }
+
+                return true;
+            } else {
+                WildDungeons.getLogger().info("Not enough levels to purchase offering: {}. Cost: {}. Levels: {}", this.offerID, this.getCostAmount(), levels);
+                player.getServerPlayer().sendSystemMessage(Component.translatable("wilddungeons.offering.not_enough_levels", this.getOfferingCostType().toString()),true);
+                return false;
+            }
+        } else {
+            if (this.getOfferingType() == Type.RIFT) {
+                handleRift(player);
+                return true;
             }
         }
 
-        if (this.getOfferingType() == Type.RIFT && purchased) {
-            handleRift(player);
-        }
-
+        return false;
     }
 
     public void handleRift(WDPlayer wdPlayer) {
