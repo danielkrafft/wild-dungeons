@@ -274,7 +274,7 @@ public class WDPlayer {
 
     @SubscribeEvent
     public void onClientTick(ClientTickEvent.Post event) {
-        while (TOGGLE_ESSENCE_TYPE.get().consumeClick()) {
+        while (TOGGLE_ESSENCE_TYPE.consumeClick()) {
             EssenceOrb.Type[] values = EssenceOrb.Type.values();
             int index = this.getRecentEssence().ordinal();
             this.setRecentEssence(values[(index + 1) % values.length]);

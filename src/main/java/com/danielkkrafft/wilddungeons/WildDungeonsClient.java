@@ -14,8 +14,4 @@ public class WildDungeonsClient {
         // Perform logic in that should only be executed on the physical client
     }
 
-    @SubscribeEvent
-    public static void registerKeymappings(RegisterKeyMappingsEvent event) {
-        event.register(TOGGLE_ESSENCE_TYPE.get());
-    }
 }

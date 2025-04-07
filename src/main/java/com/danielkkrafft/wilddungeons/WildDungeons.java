@@ -34,6 +34,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.common.NeoForge;
@@ -42,6 +43,8 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.slf4j.Logger;
+
+import static com.danielkkrafft.KeyBindings.TOGGLE_ESSENCE_TYPE;
 
 @Mod(WildDungeons.MODID)
 public class WildDungeons {
@@ -158,6 +161,13 @@ public class WildDungeons {
         event.registerLayerDefinition(AmogusModel.LAYER_LOCATION, AmogusModel::createBodyLayer);
     }
 
+    @SubscribeEvent
+    public static void registerKeymappings(RegisterKeyMappingsEvent event) {
+        //so... turns out if you register the keybinding in a 'dist = client' class, it doesn't register in the keybinding list. BUT, if you register it in the common class, it does. So we have to do this here, and then filter for the client
+        if (net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) {
+            event.register(TOGGLE_ESSENCE_TYPE);
+        }
+    }
     public static ResourceLocation rl(String path) {
         return ResourceLocation.fromNamespaceAndPath(MODID, path);
     }
