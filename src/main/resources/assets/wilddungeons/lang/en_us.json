@@ -113,5 +113,8 @@
   "dungeon_material.wall": "Wall %s",
   "dungeon_material.light": "Light %s",
   "dungeon_material.hanging_light": "Hanging Light %s",
-  "dungeon_material.hidden": "Secret %s"
+  "dungeon_material.hidden": "Secret %s",
+
+  "tooltip.wilddungeons.meathook_1": "Hold 'use' to charge, release to fire.",
+  "tooltip.wilddungeons.meathook_2": "'Sneak' to retract hook"
 }

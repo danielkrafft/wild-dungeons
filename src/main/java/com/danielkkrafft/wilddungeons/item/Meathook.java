@@ -5,6 +5,7 @@ import com.danielkkrafft.wilddungeons.registry.WDDataComponents;
 import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
 import com.danielkkrafft.wilddungeons.util.MathUtil;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -14,12 +15,12 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.UUID;
 
 public class Meathook extends WDWeapon {
@@ -31,7 +32,11 @@ public class Meathook extends WDWeapon {
     private static final int chargeSeconds = 1;
 
     public Meathook() {
-        super(NAME);
+        super(NAME, new Item.Properties()
+                .stacksTo(1)
+                .rarity(Rarity.RARE)
+                .durability(1000)
+        );
         this.addLoopingAnimation(AnimationList.idle.toString());//0s long
         this.addAnimation(AnimationList.charge.toString(), 2.13f / chargeSeconds);//2.13s long
         this.addLoopingAnimation(AnimationList.hold.toString());//0s long
@@ -205,5 +210,12 @@ public class Meathook extends WDWeapon {
         } else if (it.getComponents().has(WDDataComponents.HOOK_UUID.get())) {
             it.remove(WDDataComponents.HOOK_UUID.get());
         }
+    }
+
+    @Override
+    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag tooltipFlag) {
+        tooltipComponents.add(Component.translatable("tooltip.wilddungeons.meathook_1"));
+        tooltipComponents.add(Component.translatable("tooltip.wilddungeons.meathook_2"));
+        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
     }
 }
