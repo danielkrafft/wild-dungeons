@@ -133,13 +133,19 @@ public class RoomExportScreen extends Screen {
 
 
         resourcePackDropdown = addRenderableWidget(new WDDropdown(minecraft, width-205, 59, 200, 20, Component.translatable("room_export_wand.dungeon_materials")));
-        ArrayList<Component> resourceLocations = WDStructureTemplateManager.INSTANCE.listGenerated().map(resourceLocation -> Component.literal(resourceLocation.getPath().replace("structure/", "").replace(".nbt", ""))).collect(Collectors.toCollection(ArrayList::new));
-        Map<ResourceLocation, Resource> resourceLocationPackResourcesMap = DungeonSessionManager.getInstance().server.getResourceManager().listResources("structure", (resourceLocation -> resourceLocation.getNamespace().equals("wilddungeons") && resourceLocation.getPath().endsWith(".nbt")));
-        for (ResourceLocation resourceLocation : resourceLocationPackResourcesMap.keySet()) {
-            resourceLocations.add(Component.literal(resourceLocation.getPath().replace("structure/", "").replace(".nbt", "")));
+
+        ArrayList<Component> resourceLocations = new ArrayList<>();
+
+        //this manager only exists on the server, and this screen only exists on the client. In a multiplayer environment, this will be null, but it will work in single player
+        if (WDStructureTemplateManager.INSTANCE != null){
+            resourceLocations = WDStructureTemplateManager.INSTANCE.listGenerated().map(resourceLocation -> Component.literal(resourceLocation.getPath().replace("structure/", "").replace(".nbt", ""))).collect(Collectors.toCollection(ArrayList::new));
+            Map<ResourceLocation, Resource> resourceLocationPackResourcesMap = DungeonSessionManager.getInstance().server.getResourceManager().listResources("structure", (resourceLocation -> resourceLocation.getNamespace().equals("wilddungeons") && resourceLocation.getPath().endsWith(".nbt")));
+            for (ResourceLocation resourceLocation : resourceLocationPackResourcesMap.keySet()) {
+                resourceLocations.add(Component.literal(resourceLocation.getPath().replace("structure/", "").replace(".nbt", "")));
+            }
         }
-        resourceLocations = new ArrayList<>(resourceLocations.stream().distinct().toList());
         //remove duplicates
+        resourceLocations = new ArrayList<>(resourceLocations.stream().distinct().toList());
         resourceLocations.sort(Comparator.comparing(Component::getString));
         resourcePackDropdown.setOptions(resourceLocations);
         resourcePackDropdown.setMaxVisibleOptions(resourcePackDropdown.calculateMaxDisplayableOptions(this.height));
@@ -201,6 +207,7 @@ public class RoomExportScreen extends Screen {
         materialDropdown.active = materialDropdown.visible = false;
         dungeonMaterialList.active = dungeonMaterialList.visible = false;
         resourcePackDropdown.active = resourcePackDropdown.visible = false;
+        additiveRoomLoading.active = additiveRoomLoading.visible = false;
         this.mode = mode;
 
         switch (mode) {
@@ -214,6 +221,7 @@ public class RoomExportScreen extends Screen {
                 materialDropdown.active = materialDropdown.visible = loadWithMaterials.selected();
                 dungeonMaterialList.active = dungeonMaterialList.visible = loadWithMaterials.selected();
                 resourcePackDropdown.active = resourcePackDropdown.visible = true;
+                additiveRoomLoading.active = additiveRoomLoading.visible = true;
             }
             case DATA -> {
                 //todo room properties go here

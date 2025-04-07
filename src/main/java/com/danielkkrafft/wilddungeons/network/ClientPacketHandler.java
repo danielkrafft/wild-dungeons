@@ -1,26 +1,30 @@
 package com.danielkkrafft.wilddungeons.network;
 
 import com.danielkkrafft.wilddungeons.dungeon.registries.SoundscapeTemplateRegistry;
+import com.danielkkrafft.wilddungeons.item.RoomExportWand;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.danielkkrafft.wilddungeons.render.DecalRenderer;
 import com.danielkkrafft.wilddungeons.sound.DynamicPitchSound;
 import com.danielkkrafft.wilddungeons.sound.SoundscapeHandler;
 import com.danielkkrafft.wilddungeons.ui.ConnectionBlockEditScreen;
+import com.danielkkrafft.wilddungeons.ui.RoomExportScreen;
 import com.danielkkrafft.wilddungeons.ui.WDLoadingScreen;
 import com.danielkkrafft.wilddungeons.ui.WDPostDungeonScreen;
 import com.danielkkrafft.wilddungeons.util.Serializer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.HashSet;
 
 public class ClientPacketHandler {
     public enum Packets {
-        REMOVE_DECAL, ADD_DECAL, SYNC_DECALS, SWITCH_SOUNDSCAPE, PLAY_DYNAMIC_SOUND, POST_DUNGEON_SCREEN, LOADING_SCREEN, NULL_SCREEN, OPEN_CONNECTION_BLOCK_UI, UPDATE_WD_PLAYER;
+        REMOVE_DECAL, ADD_DECAL, SYNC_DECALS, SWITCH_SOUNDSCAPE, PLAY_DYNAMIC_SOUND, POST_DUNGEON_SCREEN, LOADING_SCREEN, NULL_SCREEN, OPEN_CONNECTION_BLOCK_UI, UPDATE_WD_PLAYER, OPEN_WAND_SCREEN;
 
         public CompoundTag asTag() {
             CompoundTag tag = new CompoundTag();
@@ -75,6 +79,12 @@ public class ClientPacketHandler {
             }
             case UPDATE_WD_PLAYER -> {
                 WDPlayerManager.getInstance().replaceClientPlayer(Serializer.fromCompoundTag(data.getCompound("player")));
+            }
+            case OPEN_WAND_SCREEN -> {
+                assert Minecraft.getInstance().player != null;
+                ItemStack itemStack = Minecraft.getInstance().player.getItemInHand(Minecraft.getInstance().player.getUsedItemHand());
+                ClientLevel level = Minecraft.getInstance().level;
+                Minecraft.getInstance().setScreen(new RoomExportScreen(itemStack , ((RoomExportWand)itemStack.getItem()).getDungeonMaterials(itemStack, level)));
             }
         }
     }
