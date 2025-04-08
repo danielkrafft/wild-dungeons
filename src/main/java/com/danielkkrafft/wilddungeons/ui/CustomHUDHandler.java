@@ -29,7 +29,7 @@ public class CustomHUDHandler {
         }
 
         if (event.getName().getPath().equals("crosshair") ) {
-            event.setCanceled(ItemPreviewLayer.INSTANCE.shouldCancelRender());
+            event.setCanceled(ItemPreviewTooltipLayer.INSTANCE.shouldCancelRender());
         }
     }
 }

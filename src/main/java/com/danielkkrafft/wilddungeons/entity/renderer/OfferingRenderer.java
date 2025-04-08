@@ -5,12 +5,9 @@ import com.danielkkrafft.wilddungeons.entity.EssenceOrb;
 import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
-import com.danielkkrafft.wilddungeons.registry.WDShaders;
 import com.danielkkrafft.wilddungeons.render.AnimatedTexture;
-import com.danielkkrafft.wilddungeons.render.RiftRenderType;
-import com.danielkkrafft.wilddungeons.ui.ItemPreviewLayer;
+import com.danielkkrafft.wilddungeons.ui.ItemPreviewTooltipLayer;
 import com.danielkkrafft.wilddungeons.util.ColorUtil;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -18,7 +15,6 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
@@ -36,13 +32,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.joml.Vector2i;
-import org.joml.Vector3f;
 
-import java.awt.*;
 import java.util.HexFormat;
-import java.util.List;
 
-import static com.danielkkrafft.wilddungeons.ui.ItemPreviewLayer.RIGHT_CLICK_ANIMATION_TEST;
 
 public class OfferingRenderer extends EntityRenderer<Offering> {
     private final ItemRenderer itemRenderer;
@@ -106,17 +98,7 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
         }
 
         if (entity.isLookingAtMe(Minecraft.getInstance().player)){
-            ItemPreviewLayer.INSTANCE.setPreviewEntity(entity);
-
-//            renderInteractionButton(entity, poseStack, buffer);
-//            String text = switch (entity.getOfferingType()) {
-//                case ITEM -> entity.getItemStack().getDisplayName().getString();
-//                case PERK -> entity.getPerk().name();//todo translatable names for perks
-//                case RIFT -> "Rift";//todo get the rift name
-//            };
-//            Minecraft.getInstance().player.displayClientMessage(Component.literal(text),true);
-//
-////            renderInteractionText(entity,poseStack,buffer,packedLight);
+            ItemPreviewTooltipLayer.INSTANCE.setPreviewEntity(entity);
         }
 
         poseStack.popPose();
@@ -394,30 +376,6 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
             vertex(vertexconsumer, posestack$pose, -0.25f - size/2 - xOrigin, yOrigin + size/2, j, k, l, f, f2, packedLight, hueOffset);
             poseStack.popPose();
         }
-    }
-
-    public void renderInteractionButton(Offering entity, PoseStack poseStack, MultiBufferSource buffer){
-        poseStack.pushPose();
-        poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
-        if (entity.getCostAmount() == 0){
-            poseStack.translate(0.0f, 0.65f, .25f);
-        } else {
-            float bubbleScale = (1.0f - entity.getBubbleTimer() / Offering.BUBBLE_ANIMATION_TIME);
-            poseStack.scale(bubbleScale, bubbleScale, bubbleScale);
-            poseStack.translate(0.0f, 0.9f, .25f);
-        }
-        poseStack.scale(0.15f,0.15f, 0.15f);
-
-        int key = Minecraft.getInstance().options.keyUse.getKey().getValue();
-
-        PoseStack.Pose posestack$pose = poseStack.last();
-        VertexConsumer vertexconsumer = buffer.getBuffer(RenderType.itemEntityTranslucentCull(RIGHT_CLICK_ANIMATION_TEST.getCurrentFrame()));
-
-        vertex(vertexconsumer, posestack$pose, -1.0f, -1.0f, 0.0f, 1.0f, 0xF000F0, 1.0f);
-        vertex(vertexconsumer, posestack$pose, 1.0f, -1.0f, 1.0f, 1.0f, 0xF000F0, 1.0f);
-        vertex(vertexconsumer, posestack$pose, 1.0f, 1.0f, 1.0f, 0.0f, 0xF000F0, 1.0f);
-        vertex(vertexconsumer, posestack$pose, -1.0f, 1.0f, 0.0f, 0.0f, 0xF000F0, 1.0f);
-        poseStack.popPose();
     }
 
     public void renderInteractionText(Offering entity, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
