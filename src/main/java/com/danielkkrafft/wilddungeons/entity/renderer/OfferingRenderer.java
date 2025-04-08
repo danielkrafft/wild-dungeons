@@ -88,20 +88,20 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
         poseStack.pushPose();
         poseStack.scale(entity.getRenderScale(), entity.getRenderScale(), entity.getRenderScale());
 
-        if (entity.getOfferingType() == Offering.Type.ITEM) {
-            renderItemModel(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
-        }
-
-        if (entity.getOfferingType() == Offering.Type.PERK) {
-            renderPerk(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
-        }
-
-        if (entity.getOfferingType() == Offering.Type.RIFT) {
-            renderRift(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
+        switch (entity.getOfferingType()) {
+            case ITEM -> renderItemModel(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
+            case PERK -> renderPerk(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
+            case RIFT -> renderRift(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
+            case null, default -> {
+            }
         }
 
         if (entity.getCostAmount() > 0) {
             renderBubble(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
+        }
+
+        if (entity.isLookingAtMe(Minecraft.getInstance().player)){
+            renderInteractionText(entity, poseStack, buffer, packedLight);
         }
 
         poseStack.popPose();
@@ -325,17 +325,6 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
             poseStack.popPose();
 
             renderCost(entity, entityYaw, partialTicks, poseStack, buffer, packedLight, wdPlayer);
-            switch (entity.getOfferingType()) {
-                case ITEM -> {
-                    renderInteractionText(entity, entityYaw, partialTicks, poseStack, buffer, packedLight, entity.getItemStack().getDisplayName().getString());
-                }
-                case PERK -> {
-                    renderInteractionText(entity, entityYaw, partialTicks, poseStack, buffer, packedLight, entity.getPerk().name());
-                }
-                case RIFT -> {
-                    renderInteractionText(entity, entityYaw, partialTicks, poseStack, buffer, packedLight, "Rift");
-                }
-            }
             poseStack.popPose();
         } else {
             entity.setBubbleTimer(Offering.BUBBLE_ANIMATION_TIME);
@@ -343,16 +332,14 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
     }
 
     public void renderCost(Offering entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight, WDPlayer wdPlayer) {
-        String text = "x " + entity.getCostAmount();
+        String text = "x" + entity.getCostAmount();
         int textWidth = Minecraft.getInstance().font.width(text);
-        int textHeight = Minecraft.getInstance().font.lineHeight;
-        int totalWidth = (int) (textWidth + (textHeight * 1.5));
+        int totalWidth = (int) (textWidth + (Minecraft.getInstance().font.lineHeight * 1.5f));
         // Cost Label
         {
 
             int textColor = HexFormat.fromHexDigits("ff0000");
-
-            int levels = switch(entity.getOfferingCostType()) {
+            int levels = switch (entity.getOfferingCostType()) {
                 case OVERWORLD -> Minecraft.getInstance().player.experienceLevel;
                 case NETHER -> Mth.floor(wdPlayer.getEssenceLevel(EssenceOrb.Type.NETHER));
                 case END -> Mth.floor(wdPlayer.getEssenceLevel(EssenceOrb.Type.END));
@@ -363,11 +350,11 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
             }
 
             poseStack.pushPose();
-            poseStack.translate(0.0f, 0.75f, 0.03f);
-            poseStack.scale(0.03f,0.03f, 0.03f);
+            poseStack.translate(0.15f, 0.75f, 0.03f);
+            poseStack.scale(0.03f, 0.03f, 0.03f);
             poseStack.mulPose(Axis.YP.rotationDegrees(180));
             poseStack.mulPose(Axis.ZN.rotationDegrees(180));
-            Minecraft.getInstance().font.drawInBatch(text, (int) -((((float) textWidth / totalWidth) - 0.5) * totalWidth), -(Minecraft.getInstance().font.lineHeight / 2f), textColor, false, poseStack.last().pose(), buffer, Font.DisplayMode.NORMAL, 0, packedLight);
+            Minecraft.getInstance().font.drawInBatch(text, (float) -textWidth * 0.5f, 0, textColor, false, poseStack.last().pose(), buffer, Font.DisplayMode.NORMAL, 0, packedLight);
             poseStack.popPose();
         }
 
@@ -376,11 +363,11 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
             int hueOffset = EssenceOrb.getHueOffset(entity.getOfferingCostType());
 
             poseStack.pushPose();
-            poseStack.translate(0.0, 0.0, 0.01f);
+            poseStack.translate(0, 0.65f, 0.01f);
 
             float size = 0.3f;
             float xOrigin = ((float) textWidth / totalWidth) - 0.5f;
-            float yOrigin = 0.75f;
+            float yOrigin = 0;
 
             int i = 3;
             float f = (float)(i % 4 * 16 + 0) / 64.0F;
@@ -403,20 +390,37 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
         }
     }
 
-    public void renderInteractionText(Offering entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight, String purchaseableName) {
+    public void renderInteractionText(Offering entity, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
         poseStack.pushPose();
-        poseStack.translate(0.0f, 1f, 0.03f);
-        poseStack.scale(0.01f,0.01f, 0.01f);
+        poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
+        if (entity.getOfferingType().equals(Offering.Type.PERK) && entity.getCostAmount() == 0){
+            poseStack.translate(0.0f, 0.5f, 0.03f);
+        } else {
+            float bubbleScale = (1.0f - entity.getBubbleTimer() / Offering.BUBBLE_ANIMATION_TIME);
+            poseStack.scale(bubbleScale, bubbleScale, bubbleScale);
+            poseStack.translate(0.0f, 1f, 0.03f);
+        }
+        poseStack.scale(0.015f,0.015f, 0.015f);
         poseStack.mulPose(Axis.YP.rotationDegrees(180));
         poseStack.mulPose(Axis.ZN.rotationDegrees(180));
 
         //get the players interaction button
         String key = Minecraft.getInstance().options.keyUse.getTranslatedKeyMessage().getString();
-        String text = Component.translatable("wilddungeons.offering.interact", key).getString();
+        String text;
+        if (entity.getCostAmount() > 0){
+            text = Component.translatable("wilddungeons.offering.interact", key).getString();
+        } else {
+            text = Component.translatable("wilddungeons.offering.interact_no_cost", key).getString();
+        }
         int textWidth = Minecraft.getInstance().font.width(text);
         Minecraft.getInstance().font.drawInBatch(text, (float) -textWidth * 0.5f, -10, 0xFFFFFF, false, poseStack.last().pose(), buffer, Font.DisplayMode.NORMAL, 0, packedLight);
 
-        text = purchaseableName;
+        text = switch (entity.getOfferingType()) {
+            case ITEM -> entity.getItemStack().getDisplayName().getString();
+            case PERK -> entity.getPerk().name();//todo translatable names for perks
+            case RIFT -> "Rift";//todo get the rift name
+        };
+
         textWidth = Minecraft.getInstance().font.width(text);
         Minecraft.getInstance().font.drawInBatch(text, (float) -textWidth * 0.5f, 0, 0xFFFFFF, false, poseStack.last().pose(), buffer, Font.DisplayMode.NORMAL, 0, packedLight);
 
