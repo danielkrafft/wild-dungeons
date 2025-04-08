@@ -325,7 +325,17 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
             poseStack.popPose();
 
             renderCost(entity, entityYaw, partialTicks, poseStack, buffer, packedLight, wdPlayer);
-            renderInteractionText(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
+            switch (entity.getOfferingType()) {
+                case ITEM -> {
+                    renderInteractionText(entity, entityYaw, partialTicks, poseStack, buffer, packedLight, entity.getItemStack().getDisplayName().getString());
+                }
+                case PERK -> {
+                    renderInteractionText(entity, entityYaw, partialTicks, poseStack, buffer, packedLight, entity.getPerk().name());
+                }
+                case RIFT -> {
+                    renderInteractionText(entity, entityYaw, partialTicks, poseStack, buffer, packedLight, "Rift");
+                }
+            }
             poseStack.popPose();
         } else {
             entity.setBubbleTimer(Offering.BUBBLE_ANIMATION_TIME);
@@ -393,18 +403,20 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
         }
     }
 
-    public void renderInteractionText(Offering entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
+    public void renderInteractionText(Offering entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight, String purchaseableName) {
         poseStack.pushPose();
         poseStack.translate(0.0f, 1f, 0.03f);
         poseStack.scale(0.01f,0.01f, 0.01f);
         poseStack.mulPose(Axis.YP.rotationDegrees(180));
         poseStack.mulPose(Axis.ZN.rotationDegrees(180));
 
-        String text = Component.translatable("wilddungeons.offering.interact").getString();
+        //get the players interaction button
+        String key = Minecraft.getInstance().options.keyUse.getTranslatedKeyMessage().getString();
+        String text = Component.translatable("wilddungeons.offering.interact", key).getString();
         int textWidth = Minecraft.getInstance().font.width(text);
         Minecraft.getInstance().font.drawInBatch(text, (float) -textWidth * 0.5f, -10, 0xFFFFFF, false, poseStack.last().pose(), buffer, Font.DisplayMode.NORMAL, 0, packedLight);
 
-        text = entity.getItemStack().getDisplayName().getString();
+        text = purchaseableName;
         textWidth = Minecraft.getInstance().font.width(text);
         Minecraft.getInstance().font.drawInBatch(text, (float) -textWidth * 0.5f, 0, 0xFFFFFF, false, poseStack.last().pose(), buffer, Font.DisplayMode.NORMAL, 0, packedLight);
 

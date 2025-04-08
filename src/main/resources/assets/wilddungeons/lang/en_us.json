@@ -119,5 +119,5 @@
   "tooltip.wilddungeons.meathook_2": "'Sneak' to retract hook",
   "wilddungeons.offering.not_enough_levels": "Not Enough %s XP",
   "wilddungeons.offering.inventory_full": "Your Inventory is too full!",
-  "wilddungeons.offering.interact": "Interact to purchase"
+  "wilddungeons.offering.interact": "%s to purchase"
 }
