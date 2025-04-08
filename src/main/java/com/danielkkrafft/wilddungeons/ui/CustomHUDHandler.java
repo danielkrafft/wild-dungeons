@@ -27,5 +27,9 @@ public class CustomHUDHandler {
                 event.setCanceled(true);
             }
         }
+
+        if (event.getName().getPath().equals("crosshair") ) {
+            event.setCanceled(ItemPreviewLayer.INSTANCE.shouldCancelRender());
+        }
     }
 }

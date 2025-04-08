@@ -120,5 +120,12 @@
   "wilddungeons.offering.not_enough_levels": "Not Enough %s XP",
   "wilddungeons.offering.inventory_full": "Your Inventory is too full!",
   "wilddungeons.offering.interact": "%s to purchase",
-  "wilddungeons.offering.interact_no_cost": "%s to obtain"
+  "wilddungeons.offering.interact_no_cost": "%s to obtain",
+  "wilddungeons.offering.-1": "Go Back",
+  "wilddungeons.offering.win": "Exit Rift",
+  "wilddungeons.offering.wd-mega_dungeon": "Mega Dungeon Rift",
+  "wilddungeons.offering.wd-mega_dungeon_gauntlet": "Mega Dungeon Gauntlet Rift",
+  "wilddungeons.offering.wd-piglin_factory": "Piglin Factory Rift",
+  "wilddungeons.offering.wd-reaction_dungeon": "Reaction Dungeon Rift",
+  "wilddungeons.offering.wd-dungeon_1": "END TEST Rift"
 }

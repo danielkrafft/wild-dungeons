@@ -40,10 +40,12 @@ import net.minecraft.world.item.component.FireworkExplosion;
 import net.minecraft.world.item.component.Fireworks;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Vector2i;
 import org.joml.Vector3f;
 
 import java.awt.*;
@@ -58,6 +60,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     public static final int BUBBLE_ANIMATION_TIME = 10;
 
     public enum Type {ITEM, PERK, RIFT}
+    public enum CostType {OVERWORLD, NETHER, END, ITEM}
 
     private String type;
     private String costType;
@@ -151,6 +154,45 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
         vec31 = vec31.normalize();
         double dot = vec3.dot(vec31);
         return length < 10 && dot > 1.0 - 0.5 / length && player.hasLineOfSight(this);
+    }
+
+    public Vector2i getScreenPosition(Player player) {
+        // Get positions
+        Vec3 playerPos = player.position().add(0, player.getEyeHeight(), 0); // Use eye position
+        Vec3 offeringPos = this.position();
+        Vec3 offset = offeringPos.subtract(playerPos);
+
+        // Get player's view vector
+        Vec3 viewVec = player.getViewVector(1.0F);
+
+        // Create a coordinate system
+        Vec3 forward = viewVec.normalize();
+        Vec3 worldUp = new Vec3(0, 1, 0);
+        Vec3 right = worldUp.cross(forward).normalize();
+        Vec3 up = forward.cross(right).normalize();
+
+        // Calculate relative position
+        double forwardDot = offset.dot(forward);
+        if (forwardDot <= 0) {
+            // Behind the player, not visible
+            return new Vector2i(Integer.MAX_VALUE, Integer.MAX_VALUE);
+        }
+
+        // Project onto view plane
+        double rightDot = offset.dot(right);
+        double upDot = offset.dot(up);
+
+        // Convert to normalized coordinates (-1 to 1)
+        double distance = offset.length();
+        double v = distance * Math.tan(Math.toRadians(35)); //70 * 0.5f // assuming 70 degree FOV
+        double normalizedX = -rightDot / v;
+        double normalizedY = -upDot / v;
+
+        // Scale to reasonable screen coordinates
+        int screenX = (int)(normalizedX * 100);
+        int screenY = (int)(normalizedY * 100);
+
+        return new Vector2i(screenX, screenY);
     }
 
     @Override
@@ -324,7 +366,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
                 // For Type.ITEM, check inventory space first before committing to purchase
                 if (this.getOfferingType() == Type.ITEM) {
                     ItemStack itemStack = this.getItemStack().copy();
-                    boolean isFireworkGun = itemStack.is(WDItems.FIREWORK_GUN_ITEM.get());
+                    boolean isFireworkGun = itemStack.is(WDItems.FIREWORK_GUN_ITEM.get());// could be expanded in the future for an offering that gives multiple items instead
 
                     int openSlots = 0;
                     for (ItemStack stack : player.getServerPlayer().getInventory().items) {

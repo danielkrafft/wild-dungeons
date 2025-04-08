@@ -8,6 +8,7 @@ import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.danielkkrafft.wilddungeons.registry.WDShaders;
 import com.danielkkrafft.wilddungeons.render.AnimatedTexture;
 import com.danielkkrafft.wilddungeons.render.RiftRenderType;
+import com.danielkkrafft.wilddungeons.ui.ItemPreviewLayer;
 import com.danielkkrafft.wilddungeons.util.ColorUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
@@ -17,6 +18,7 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
@@ -36,8 +38,11 @@ import net.minecraft.world.item.ItemStack;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 
+import java.awt.*;
 import java.util.HexFormat;
 import java.util.List;
+
+import static com.danielkkrafft.wilddungeons.ui.ItemPreviewLayer.RIGHT_CLICK_ANIMATION_TEST;
 
 public class OfferingRenderer extends EntityRenderer<Offering> {
     private final ItemRenderer itemRenderer;
@@ -101,7 +106,17 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
         }
 
         if (entity.isLookingAtMe(Minecraft.getInstance().player)){
-            renderInteractionText(entity, poseStack, buffer, packedLight);
+            ItemPreviewLayer.INSTANCE.setPreviewEntity(entity);
+
+//            renderInteractionButton(entity, poseStack, buffer);
+//            String text = switch (entity.getOfferingType()) {
+//                case ITEM -> entity.getItemStack().getDisplayName().getString();
+//                case PERK -> entity.getPerk().name();//todo translatable names for perks
+//                case RIFT -> "Rift";//todo get the rift name
+//            };
+//            Minecraft.getInstance().player.displayClientMessage(Component.literal(text),true);
+//
+////            renderInteractionText(entity,poseStack,buffer,packedLight);
         }
 
         poseStack.popPose();
@@ -151,10 +166,7 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
         renderMultipleFromCount(this.itemRenderer, poseStack, buffer, entity.renderItemHighlight() ? 0xF000F0 : packedLight, itemstack, bakedmodel, flag, this.random);
         poseStack.popPose();
         if (entity.renderItemHighlight()) {
-            poseStack.pushPose();
-            poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
             renderItemHighlight(poseStack, entity, partialTicks, buffer, entity.getRenderScale() * .2f);
-            poseStack.popPose();
         }
     }
 
@@ -218,8 +230,6 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
 
             //Animated Texture Version
 
-
-
             PoseStack.Pose posestack$pose = poseStack.last();
             VertexConsumer vertexconsumer = buffer.getBuffer(RenderType.itemEntityTranslucentCull(RIFT_ANIMATION.getCurrentFrame()));
 
@@ -239,8 +249,6 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
 
             poseStack.popPose();
         }
-
-
     }
 
     public void renderPerkRing(PoseStack poseStack, Offering entity, float partialTicks, MultiBufferSource buffer, float radius) {
@@ -261,22 +269,21 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
     }
 
     public void renderItemHighlight(PoseStack poseStack, Offering entity, float partialTicks, MultiBufferSource buffer, float radius) {
-        {
-            poseStack.pushPose();
-            poseStack.translate(0.0, entity.getBbHeight()*0.5f, -0.05);
-            poseStack.mulPose(Axis.ZN.rotationDegrees(-entity.tickCount));
-            radius += 0.1f * Mth.sin((entity.tickCount + partialTicks) * 0.1f);
+        poseStack.pushPose();
+        poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
+        poseStack.translate(0.0, 0.05, -0.05);
+        poseStack.mulPose(Axis.ZN.rotationDegrees(-entity.tickCount));
+        radius += 0.1f * Mth.sin((entity.tickCount + partialTicks) * 0.1f);
 
 
-            VertexConsumer vertexconsumer = buffer.getBuffer(ITEM_RING_RENDERTYPE);
-            PoseStack.Pose posestack$pose = poseStack.last();
-            vertex(vertexconsumer, posestack$pose, -radius, -radius, 0.0f, 1.0f, 0xF000F0, 1.0f);
-            vertex(vertexconsumer, posestack$pose, radius, -radius, 1.0f, 1.0f, 0xF000F0, 1.0f);
-            vertex(vertexconsumer, posestack$pose, radius, radius, 1.0f, 0.0f, 0xF000F0, 1.0f);
-            vertex(vertexconsumer, posestack$pose, -radius, radius, 0.0f, 0.0f, 0xF000F0, 1.0f);
+        VertexConsumer vertexconsumer = buffer.getBuffer(ITEM_RING_RENDERTYPE);
+        PoseStack.Pose posestack$pose = poseStack.last();
+        vertex(vertexconsumer, posestack$pose, -radius, -radius, 0.0f, 1.0f, 0xF000F0, 1.0f);
+        vertex(vertexconsumer, posestack$pose, radius, -radius, 1.0f, 1.0f, 0xF000F0, 1.0f);
+        vertex(vertexconsumer, posestack$pose, radius, radius, 1.0f, 0.0f, 0xF000F0, 1.0f);
+        vertex(vertexconsumer, posestack$pose, -radius, radius, 0.0f, 0.0f, 0xF000F0, 1.0f);
 
-            poseStack.popPose();
-        }
+        poseStack.popPose();
     }
 
     public void drawCircle(float centerX, float centerY, int vertices, float radius, VertexConsumer vertexConsumer, PoseStack.Pose poseStack$pose, int packedLight) {
@@ -337,7 +344,6 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
         int totalWidth = (int) (textWidth + (Minecraft.getInstance().font.lineHeight * 1.5f));
         // Cost Label
         {
-
             int textColor = HexFormat.fromHexDigits("ff0000");
             int levels = switch (entity.getOfferingCostType()) {
                 case OVERWORLD -> Minecraft.getInstance().player.experienceLevel;
@@ -390,11 +396,35 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
         }
     }
 
+    public void renderInteractionButton(Offering entity, PoseStack poseStack, MultiBufferSource buffer){
+        poseStack.pushPose();
+        poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
+        if (entity.getCostAmount() == 0){
+            poseStack.translate(0.0f, 0.65f, .25f);
+        } else {
+            float bubbleScale = (1.0f - entity.getBubbleTimer() / Offering.BUBBLE_ANIMATION_TIME);
+            poseStack.scale(bubbleScale, bubbleScale, bubbleScale);
+            poseStack.translate(0.0f, 0.9f, .25f);
+        }
+        poseStack.scale(0.15f,0.15f, 0.15f);
+
+        int key = Minecraft.getInstance().options.keyUse.getKey().getValue();
+
+        PoseStack.Pose posestack$pose = poseStack.last();
+        VertexConsumer vertexconsumer = buffer.getBuffer(RenderType.itemEntityTranslucentCull(RIGHT_CLICK_ANIMATION_TEST.getCurrentFrame()));
+
+        vertex(vertexconsumer, posestack$pose, -1.0f, -1.0f, 0.0f, 1.0f, 0xF000F0, 1.0f);
+        vertex(vertexconsumer, posestack$pose, 1.0f, -1.0f, 1.0f, 1.0f, 0xF000F0, 1.0f);
+        vertex(vertexconsumer, posestack$pose, 1.0f, 1.0f, 1.0f, 0.0f, 0xF000F0, 1.0f);
+        vertex(vertexconsumer, posestack$pose, -1.0f, 1.0f, 0.0f, 0.0f, 0xF000F0, 1.0f);
+        poseStack.popPose();
+    }
+
     public void renderInteractionText(Offering entity, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
         poseStack.pushPose();
         poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
         if (entity.getOfferingType().equals(Offering.Type.PERK) && entity.getCostAmount() == 0){
-            poseStack.translate(0.0f, 0.5f, 0.03f);
+            poseStack.translate(0.0f, 0.55f, 0.03f);
         } else {
             float bubbleScale = (1.0f - entity.getBubbleTimer() / Offering.BUBBLE_ANIMATION_TIME);
             poseStack.scale(bubbleScale, bubbleScale, bubbleScale);
@@ -404,7 +434,6 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
         poseStack.mulPose(Axis.YP.rotationDegrees(180));
         poseStack.mulPose(Axis.ZN.rotationDegrees(180));
 
-        //get the players interaction button
         String key = Minecraft.getInstance().options.keyUse.getTranslatedKeyMessage().getString();
         String text;
         if (entity.getCostAmount() > 0){
