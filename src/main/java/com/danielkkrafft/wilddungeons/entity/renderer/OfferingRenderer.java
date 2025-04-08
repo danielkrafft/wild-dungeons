@@ -26,6 +26,7 @@ import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -303,19 +304,12 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
         if (entity.isLookingAtMe(Minecraft.getInstance().player) && entity.getCostAmount() > 0) {
             WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateClientWDPlayer(Minecraft.getInstance().player);
 
-            String text = "x " + entity.getCostAmount();
-            int textWidth = Minecraft.getInstance().font.width(text);
-            int textHeight = Minecraft.getInstance().font.lineHeight;
-            int totalWidth = (int) (textWidth + (textHeight * 1.5));
-
             float bubbleScale = (1.0f - entity.getBubbleTimer() / Offering.BUBBLE_ANIMATION_TIME);
             poseStack.pushPose();
             if (entity.getOfferingType().equals(Offering.Type.RIFT)) poseStack.translate(0.0f,0.5f,0.00f);
             poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
             if (entity.getOfferingType().equals(Offering.Type.RIFT)) poseStack.translate(0.0f,0.5f,0.03f);
             poseStack.scale(bubbleScale, bubbleScale, bubbleScale);
-
-
 
             poseStack.pushPose();
             float xPos = ((float) MESSAGE_BUBBLE_TEXTURE_RESOLUTION.x / MESSAGE_BUBBLE_TEXTURE_RESOLUTION.y) * 0.5f;
@@ -330,16 +324,19 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
             Minecraft.getInstance().renderBuffers().bufferSource().endBatch(RENDER_TYPE);
             poseStack.popPose();
 
-
-            this.renderCost(entity, entityYaw, partialTicks, poseStack, buffer, packedLight, text, textWidth, textHeight, totalWidth, wdPlayer);
+            renderCost(entity, entityYaw, partialTicks, poseStack, buffer, packedLight, wdPlayer);
+            renderInteractionText(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
             poseStack.popPose();
         } else {
             entity.setBubbleTimer(Offering.BUBBLE_ANIMATION_TIME);
         }
     }
 
-    public void renderCost(Offering entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight, String text, int textWidth, int textHeight, int totalWidth, WDPlayer wdPlayer) {
-
+    public void renderCost(Offering entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight, WDPlayer wdPlayer) {
+        String text = "x " + entity.getCostAmount();
+        int textWidth = Minecraft.getInstance().font.width(text);
+        int textHeight = Minecraft.getInstance().font.lineHeight;
+        int totalWidth = (int) (textWidth + (textHeight * 1.5));
         // Cost Label
         {
 
@@ -394,6 +391,24 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
             vertex(vertexconsumer, posestack$pose, -0.25f - size/2 - xOrigin, yOrigin + size/2, j, k, l, f, f2, packedLight, hueOffset);
             poseStack.popPose();
         }
+    }
+
+    public void renderInteractionText(Offering entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
+        poseStack.pushPose();
+        poseStack.translate(0.0f, 1f, 0.03f);
+        poseStack.scale(0.01f,0.01f, 0.01f);
+        poseStack.mulPose(Axis.YP.rotationDegrees(180));
+        poseStack.mulPose(Axis.ZN.rotationDegrees(180));
+
+        String text = Component.translatable("wilddungeons.offering.interact").getString();
+        int textWidth = Minecraft.getInstance().font.width(text);
+        Minecraft.getInstance().font.drawInBatch(text, (float) -textWidth * 0.5f, -10, 0xFFFFFF, false, poseStack.last().pose(), buffer, Font.DisplayMode.NORMAL, 0, packedLight);
+
+        text = entity.getItemStack().getDisplayName().getString();
+        textWidth = Minecraft.getInstance().font.width(text);
+        Minecraft.getInstance().font.drawInBatch(text, (float) -textWidth * 0.5f, 0, 0xFFFFFF, false, poseStack.last().pose(), buffer, Font.DisplayMode.NORMAL, 0, packedLight);
+
+        poseStack.popPose();
     }
 
     public static void renderMultipleFromCount(

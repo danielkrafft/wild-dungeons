@@ -118,5 +118,6 @@
   "tooltip.wilddungeons.meathook_1": "Hold 'use' to charge, release to fire.",
   "tooltip.wilddungeons.meathook_2": "'Sneak' to retract hook",
   "wilddungeons.offering.not_enough_levels": "Not Enough %s XP",
-  "wilddungeons.offering.inventory_full": "Your Inventory is too full!"
+  "wilddungeons.offering.inventory_full": "Your Inventory is too full!",
+  "wilddungeons.offering.interact": "Interact to purchase"
 }
