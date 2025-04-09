@@ -13,6 +13,7 @@ import net.minecraft.world.level.levelgen.RandomState;
 import net.minecraft.world.level.levelgen.WorldgenRandom;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
@@ -25,7 +26,7 @@ public class RiftStructure extends Structure {
     }
 
     @Override
-    protected Optional<GenerationStub> findGenerationPoint(GenerationContext context) {
+    protected @NotNull Optional<GenerationStub> findGenerationPoint(GenerationContext context) {
         WorldgenRandom worldgenrandom = context.random();
         int x = context.chunkPos().getMinBlockX() + worldgenrandom.nextInt(16);
         int z = context.chunkPos().getMinBlockZ() + worldgenrandom.nextInt(16);

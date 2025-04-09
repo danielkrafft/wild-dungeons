@@ -51,7 +51,7 @@ public class ItemPreviewTooltipLayer implements LayeredDraw.Layer {
     }
 
     private void renderTooltip(@NotNull GuiGraphics guiGraphics, Offering offering, LocalPlayer player) {
-        Vector2i pos = offering.getScreenPosition(player).add(guiGraphics.guiWidth() / 2 + 16, guiGraphics.guiHeight() / 2 + 16);
+        Vector2i pos = offering.getScreenPosition(player).add(guiGraphics.guiWidth() / 2 + 16, guiGraphics.guiHeight() / 2);
         pos = new Vector2i(
                 (int) (previewPosition.x * (1 - LERP_FACTOR) + pos.x * LERP_FACTOR),
                 (int) (previewPosition.y * (1 - LERP_FACTOR) + pos.y * LERP_FACTOR)
