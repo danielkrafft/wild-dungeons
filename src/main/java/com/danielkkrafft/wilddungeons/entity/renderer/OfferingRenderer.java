@@ -340,7 +340,7 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
             }
 
             poseStack.pushPose();
-            poseStack.translate(0.2f, 0.9f, 0.03f);
+            poseStack.translate(0.25f, 0.9f, 0.03f);
             poseStack.scale(0.03f, 0.03f, 0.03f);
             poseStack.mulPose(Axis.YP.rotationDegrees(180));
             poseStack.mulPose(Axis.ZN.rotationDegrees(180));
