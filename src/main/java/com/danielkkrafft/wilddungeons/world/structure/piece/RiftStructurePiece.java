@@ -22,7 +22,8 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlac
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 import net.minecraft.world.phys.Vec3;
 
-import static com.danielkkrafft.wilddungeons.dungeon.registries.RiftPoolRegistry.*;
+import static com.danielkkrafft.wilddungeons.dungeon.registries.RiftPoolRegistry.NETHER_RIFT_POOL;
+import static com.danielkkrafft.wilddungeons.dungeon.registries.RiftPoolRegistry.OVERWORLD_RIFT_POOL;
 
 public class RiftStructurePiece extends TemplateStructurePiece {
     public RiftStructurePiece(StructureTemplateManager structureTemplateManager, ResourceLocation location, BlockPos templatePosition) {

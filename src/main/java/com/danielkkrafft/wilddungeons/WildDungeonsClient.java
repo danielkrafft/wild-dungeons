@@ -2,11 +2,7 @@ package com.danielkkrafft.wilddungeons;
 
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
-
-import static com.danielkkrafft.KeyBindings.TOGGLE_ESSENCE_TYPE;
 
 @Mod(value = WildDungeons.MODID, dist = Dist.CLIENT)
 public class WildDungeonsClient {

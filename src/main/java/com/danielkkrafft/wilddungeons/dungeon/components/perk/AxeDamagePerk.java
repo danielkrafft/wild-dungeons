@@ -1,6 +1,5 @@
 package com.danielkkrafft.wilddungeons.dungeon.components.perk;
 
-import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import net.minecraft.server.level.ServerPlayer;

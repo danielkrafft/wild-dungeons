@@ -8,7 +8,7 @@ import net.minecraft.network.chat.Component;
 
 import java.util.List;
 
-import static com.danielkkrafft.wilddungeons.dungeon.registries.PerkRegistry.*;
+import static com.danielkkrafft.wilddungeons.dungeon.registries.PerkRegistry.DUNGEON_PERK_REGISTRY;
 
 public class DungeonPerk {
 
