@@ -71,6 +71,13 @@ public class EssenceOrb extends ExperienceOrb implements IEntityWithComplexSpawn
             case END -> END_HUE_OFFSET;
         };
     }
+    public static int getHueOffset(Offering.CostType type) {
+        return switch(type) {
+            case OVERWORLD, ITEM -> 0xFFFFFFFF;
+            case NETHER -> NETHER_HUE_OFFSET;
+            case END -> END_HUE_OFFSET;
+        };
+    }
 
     public EssenceOrb(EntityType<? extends ExperienceOrb> entityType, Level level) {
         super(entityType, level);

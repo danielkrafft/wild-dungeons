@@ -14,6 +14,8 @@ import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.danielkkrafft.wilddungeons.registry.WDItems;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -23,6 +25,7 @@ import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -52,18 +55,17 @@ import java.awt.*;
 import java.util.List;
 
 import static com.danielkkrafft.wilddungeons.dungeon.registries.PerkRegistry.DUNGEON_PERK_REGISTRY;
-import static com.danielkkrafft.wilddungeons.entity.EssenceOrb.Type.END;
-import static com.danielkkrafft.wilddungeons.entity.EssenceOrb.Type.NETHER;
 
 public class Offering extends Entity implements IEntityWithComplexSpawn {
 
     public static final int BUBBLE_ANIMATION_TIME = 10;
 
     public enum Type {ITEM, PERK, RIFT}
-    public enum CostType {OVERWORLD, NETHER, END, ITEM}
+    public enum CostType {OVERWORLD, NETHER, END, ITEM}//todo
 
     private String type;
     private String costType;
+    private String costItemID;
     private String purchaseBehavior;
     private String offerID;
     private int amount;
@@ -81,12 +83,12 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     }
 
     public Type getOfferingType() {return Type.valueOf(this.type);}
-    public EssenceOrb.Type getOfferingCostType() {
-        EssenceOrb.Type type;
+    public CostType getOfferingCostType() {
+        CostType type;
         try {
-            type = EssenceOrb.Type.valueOf(this.costType);
+            type = CostType.valueOf(this.costType);
         } catch (Exception e) {
-            type = EssenceOrb.Type.OVERWORLD;
+            type = CostType.OVERWORLD;
         }
         return type;
     }
@@ -95,6 +97,24 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     public int getAmount() {return this.amount;}
     public int getCostAmount() {return this.getEntityData().get(costAmount);}
     public void setCostAmount(int cost) {this.getEntityData().set(costAmount, cost);}
+    public String getCostItemID() {return this.costItemID;}
+    public Item getCostItem() {
+        Item item = Items.AIR;
+        try {
+            item = BuiltInRegistries.ITEM.getOptional(ResourceLocation.parse(this.costItemID)).orElse(Items.AIR);
+        } catch (Exception e) {
+            WildDungeons.getLogger().info("Failed to get cost item: {}", this.costItemID);
+        }
+        return item;
+    }
+    public void setCostItemID(String costID) {this.costItemID = costID;}
+    public void setCostItem(Item item) {
+        if (item != null) {
+            this.costItemID = BuiltInRegistries.ITEM.getKey(item).toString();
+        } else {
+            this.costItemID = "minecraft:air";
+        }
+    }
     public boolean isPurchased() {return this.purchased;}
     public float getBubbleTimer() {return this.bubbleTimer;}
     public void setBubbleTimer(float time) {this.bubbleTimer = time;}
@@ -112,7 +132,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     public Offering(Level level) {super(WDEntities.OFFERING.get(), level);}
 
 
-    public Offering(Level level, Type type, int amount, String offerID, EssenceOrb.Type costType, int costAmount) {
+    public Offering(Level level, Type type, int amount, String offerID, CostType costType, int costAmount) {
         super(WDEntities.OFFERING.get(), level);
         this.type = type.toString();
         this.amount = amount;
@@ -248,6 +268,10 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
         compound.putInt("secondaryColor", this.secondaryColor);
         compound.putInt("soundLoop", this.soundLoop);
         compound.putBoolean("highlightItem", this.entityData.get(highlightItem));
+        if (this.costItemID == null) {
+            this.costItemID = "minecraft:air";
+        }
+        compound.putString("costItemID", this.costItemID);
     }
 
     @Override
@@ -255,7 +279,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
 //        WildDungeons.getLogger().info("READING ADDITIONAL SAVE DATA");
         if (compound.getString("type").isEmpty()) {
             this.type = Type.ITEM.toString();
-            this.costType = EssenceOrb.Type.OVERWORLD.toString();
+            this.costType = CostType.OVERWORLD.toString();
             this.offerID = "dirt";
             this.amount = 1;
             this.setCostAmount(0);
@@ -265,12 +289,14 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
             this.secondaryColor = 0xFFFFFFFF;
             this.soundLoop = 0;
             this.entityData.set(highlightItem, false);
+            this.setCostItemID("minecraft:air");
         } else {
             this.type = compound.getString("type");
             this.costType = compound.getString("costType");
             this.offerID = compound.getString("offerID");
             this.amount = compound.getInt("amount");
             this.setCostAmount(compound.getInt("costAmount"));
+            this.setCostItemID(compound.getString("costItemID"));
             this.purchased = compound.getBoolean("purchased");
             this.renderScale = compound.getFloat("renderScale");
             this.primaryColor = compound.getInt("primaryColor");
@@ -286,6 +312,10 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
         buffer.writeUtf(this.type);
         buffer.writeUtf(this.costType);
         buffer.writeUtf(this.offerID);
+        if (this.costItemID == null) {
+            this.costItemID = "minecraft:air";
+        }
+        buffer.writeUtf(this.costItemID);
         buffer.writeInt(this.amount);
         buffer.writeInt(this.getCostAmount());
         buffer.writeBoolean(this.purchased);
@@ -301,6 +331,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
         this.type = buffer.readUtf();
         this.costType = buffer.readUtf();
         this.offerID = buffer.readUtf();
+        this.setCostItemID(buffer.readUtf());
         this.amount = buffer.readInt();
         this.setCostAmount(buffer.readInt());
         this.purchased = buffer.readBoolean();
@@ -356,13 +387,14 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
 
     public boolean attemptPurchase(WDPlayer player) {
         if (!purchased) {
-            int levels = switch (this.getOfferingCostType()) {
+            int ownedCurrency = switch (this.getOfferingCostType()) {
                 case OVERWORLD -> player.getServerPlayer().experienceLevel;
-                case NETHER -> Mth.floor(player.getEssenceLevel(NETHER));
-                case END -> Mth.floor(player.getEssenceLevel(END));
+                case NETHER -> Mth.floor(player.getEssenceLevel(EssenceOrb.Type.NETHER));
+                case END -> Mth.floor(player.getEssenceLevel(EssenceOrb.Type.END));
+                case ITEM -> player.getServerPlayer().getInventory().countItem(this.getCostItem());
             };
 
-            if (this.getCostAmount() == 0 || this.getCostAmount() <= levels) {
+            if (this.getCostAmount() == 0 || this.getCostAmount() <= ownedCurrency) {
                 // For Type.ITEM, check inventory space first before committing to purchase
                 if (this.getOfferingType() == Type.ITEM) {
                     ItemStack itemStack = this.getItemStack().copy();
@@ -399,8 +431,32 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
                 // Deduct the cost only after ensuring purchase can complete
                 switch (this.getOfferingCostType()) {
                     case OVERWORLD -> player.getServerPlayer().giveExperienceLevels(-this.getCostAmount());
-                    case NETHER -> player.giveEssenceLevels(-this.getCostAmount(), NETHER);
-                    case END -> player.giveEssenceLevels(-this.getCostAmount(), END);
+                    case NETHER -> player.giveEssenceLevels(-this.getCostAmount(), EssenceOrb.Type.NETHER);
+                    case END -> player.giveEssenceLevels(-this.getCostAmount(), EssenceOrb.Type.END);
+                    case ITEM -> {
+                        ItemStack itemStack = this.getCostItem().getDefaultInstance();
+                        itemStack.setCount(this.getCostAmount());
+                        int remainingCost = this.getCostAmount();
+                            // Iterate through the inventory to collect items from multiple stacks if needed
+                        for (int i = 0; i < player.getServerPlayer().getInventory().getContainerSize() && remainingCost > 0; i++) {
+                            ItemStack stackInSlot = player.getServerPlayer().getInventory().getItem(i);
+                            if (!stackInSlot.isEmpty() && stackInSlot.is(this.getCostItem())) {
+                                int amountToTake = Math.min(stackInSlot.getCount(), remainingCost);
+                                stackInSlot.shrink(amountToTake);
+                                remainingCost -= amountToTake;
+
+                                // If the stack is empty after taking items, set the slot to empty
+                                if (stackInSlot.isEmpty()) {
+                                    player.getServerPlayer().getInventory().setItem(i, ItemStack.EMPTY);
+                                }
+                            }
+                        }
+
+                        // If we couldn't find enough items, log an error
+                        if (remainingCost > 0) {
+                            WildDungeons.getLogger().info("Failed to find enough of cost item: {}, missing {}", this.costItemID, remainingCost);
+                        }
+                    }
                 }
 
                 this.setCostAmount(0);
@@ -429,8 +485,20 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
 
                 return true;
             } else {
-                WildDungeons.getLogger().info("Not enough levels to purchase offering: {}. Cost: {}. Levels: {}", this.offerID, this.getCostAmount(), levels);
-                player.getServerPlayer().sendSystemMessage(Component.translatable("wilddungeons.offering.not_enough_levels", this.getOfferingCostType().toString()),true);
+                WildDungeons.getLogger().info("Not enough levels to purchase offering: {}. Cost: {}. Levels: {}", this.offerID, this.getCostAmount(), ownedCurrency);
+                switch (getOfferingCostType()) {
+                    case OVERWORLD, NETHER, END -> {
+                        player.getServerPlayer().sendSystemMessage(Component.translatable("wilddungeons.offering.not_enough_levels", this.getOfferingCostType().toString()),true);
+                    }
+                    case ITEM -> {
+                        Item item = this.getCostItem();
+                        if (item != null) {
+                            player.getServerPlayer().sendSystemMessage(Component.translatable("wilddungeons.offering.not_enough_items", item.getDescription(), this.getCostAmount()),true);
+                        } else {
+                            player.getServerPlayer().sendSystemMessage(Component.translatable("wilddungeons.offering.not_enough_items", "unknown item", this.getCostAmount()),true);
+                        }
+                    }
+                }
                 return false;
             }
         } else {

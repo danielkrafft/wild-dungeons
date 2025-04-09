@@ -95,15 +95,16 @@ public class DungeonRegistration {
         private final Offering.Type type;
         private final int amount;
         private final String id;
-        private final EssenceOrb.Type costType;
-        private final int costAmount;
+        private Offering.CostType costType;
+        private Item costItem;
+        private int costAmount;
         private final float deviance;
         private float renderScale = 1.0f;
         private int colorTint;
         private int soundLoop;
         private boolean showRing = false;
 
-        public OfferingTemplate(String name, Offering.Type type, int amount, String id, EssenceOrb.Type costType, int costAmount, float costDeviance) {
+        public OfferingTemplate(String name, Offering.Type type, int amount, String id, Offering.CostType costType, int costAmount, float costDeviance) {
             this.name = name;
             this.type = type;
             this.amount = amount;
@@ -117,8 +118,14 @@ public class DungeonRegistration {
         public OfferingTemplate setColorTint(int colorTint) {this.colorTint = colorTint; return this;}
         public OfferingTemplate setSoundLoop(SoundEvent soundLoop) {this.soundLoop = BuiltInRegistries.SOUND_EVENT.getId(soundLoop); return this;}
         public OfferingTemplate setShowRing(boolean showRing) {this.showRing = showRing; return this;}
+        public OfferingTemplate setCostItem(Item item, int amount) {
+            this.costType = Offering.CostType.ITEM;
+            this.costAmount = amount;
+            this.costItem = item;
+            return this;
+        }
 
-        public OfferingTemplate(String name, ItemTemplate itemTemplate, EssenceOrb.Type costType, int costAmount, float costDeviance) {
+        public OfferingTemplate(String name, ItemTemplate itemTemplate, Offering.CostType costType, int costAmount, float costDeviance) {
              this(name, Offering.Type.ITEM, itemTemplate.getDeviatedCount(), String.valueOf(itemTemplate.itemID), costType, costAmount, costDeviance);
         }
 
@@ -126,6 +133,9 @@ public class DungeonRegistration {
             int adjustedAmount = RandomUtil.randIntBetween((int) (amount / deviance), (int) (amount * deviance));
             int adjustedCost = RandomUtil.randIntBetween((int) (costAmount / deviance), (int) (costAmount * deviance));
             Offering offering = new Offering(level, type, adjustedAmount, id, costType, adjustedCost);
+            if (costType.equals(Offering.CostType.ITEM)){
+                offering.setCostItem(costItem);
+            }
             offering.setRenderScale(renderScale);
             offering.setSoundLoop(soundLoop);
             offering.setShowItemHighlight(showRing);
@@ -142,7 +152,7 @@ public class DungeonRegistration {
         public Offering.Type type() {return type;}
         public int amount() {return amount;}
         public String id() {return id;}
-        public EssenceOrb.Type costType() {return costType;}
+        public Offering.CostType costType() {return costType;}
         public int costAmount() {return costAmount;}
         public float deviance() {return deviance;}
         public float renderScale() {return renderScale;}

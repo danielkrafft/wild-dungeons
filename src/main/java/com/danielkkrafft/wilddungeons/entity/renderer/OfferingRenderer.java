@@ -31,6 +31,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import org.joml.Vector2i;
 
 import java.util.HexFormat;
@@ -327,18 +328,19 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
         // Cost Label
         {
             int textColor = HexFormat.fromHexDigits("ff0000");
-            int levels = switch (entity.getOfferingCostType()) {
+            int currencyAmount = switch (entity.getOfferingCostType()) {
                 case OVERWORLD -> Minecraft.getInstance().player.experienceLevel;
                 case NETHER -> Mth.floor(wdPlayer.getEssenceLevel(EssenceOrb.Type.NETHER));
                 case END -> Mth.floor(wdPlayer.getEssenceLevel(EssenceOrb.Type.END));
+                case ITEM -> wdPlayer.getServerPlayer().getInventory().countItem(entity.getCostItem());
             };
 
-            if (levels >= entity.getCostAmount()) {
+            if (currencyAmount >= entity.getCostAmount()) {
                 textColor = HexFormat.fromHexDigits("ffffff");
             }
 
             poseStack.pushPose();
-            poseStack.translate(0.15f, 0.75f, 0.03f);
+            poseStack.translate(0.2f, 0.9f, 0.03f);
             poseStack.scale(0.03f, 0.03f, 0.03f);
             poseStack.mulPose(Axis.YP.rotationDegrees(180));
             poseStack.mulPose(Axis.ZN.rotationDegrees(180));
@@ -348,33 +350,60 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
 
         // Cost Icon
         {
-            int hueOffset = EssenceOrb.getHueOffset(entity.getOfferingCostType());
+            Offering.CostType costType = entity.getOfferingCostType();
+            switch (costType) {
+                case OVERWORLD, NETHER, END -> {
+                    int hueOffset = EssenceOrb.getHueOffset(costType);
 
-            poseStack.pushPose();
-            poseStack.translate(0, 0.65f, 0.01f);
+                    poseStack.pushPose();
+                    poseStack.translate(0, 0.8f, 0.01f);
 
-            float size = 0.3f;
-            float xOrigin = ((float) textWidth / totalWidth) - 0.5f;
-            float yOrigin = 0;
+                    float size = 0.3f;
+                    float xOrigin = ((float) textWidth / totalWidth) - 0.5f;
+                    float yOrigin = 0;
 
-            int i = 3;
-            float f = (float)(i % 4 * 16 + 0) / 64.0F;
-            float f1 = (float)(i % 4 * 16 + 16) / 64.0F;
-            float f2 = (float)(i / 4 * 16 + 0) / 64.0F;
-            float f3 = (float)(i / 4 * 16 + 16) / 64.0F;
+                    int i = 3;
+                    float f = (float)(i % 4 * 16 + 0) / 64.0F;
+                    float f1 = (float)(i % 4 * 16 + 16) / 64.0F;
+                    float f2 = (float)(i / 4 * 16 + 0) / 64.0F;
+                    float f3 = (float)(i / 4 * 16 + 16) / 64.0F;
 
-            float f8 = ((float)entity.tickCount + partialTicks) / 2.0F;
-            int j = (int)((Mth.sin(f8 + 0.0F) + 1.0F) * 0.5F * 255.0F);
-            int k = 255;
-            int l = (int)((Mth.sin(f8 + (float) (Math.PI * 4.0 / 3.0)) + 1.0F) * 0.1F * 255.0F);
+                    float f8 = ((float)entity.tickCount + partialTicks) / 2.0F;
+                    int j = (int)((Mth.sin(f8 + 0.0F) + 1.0F) * 0.5F * 255.0F);
+                    int k = 255;
+                    int l = (int)((Mth.sin(f8 + (float) (Math.PI * 4.0 / 3.0)) + 1.0F) * 0.1F * 255.0F);
 
-            VertexConsumer vertexconsumer = buffer.getBuffer(RENDER_TYPE_3);
-            PoseStack.Pose posestack$pose = poseStack.last();
-            vertex(vertexconsumer, posestack$pose, -0.25f - size/2 - xOrigin, yOrigin - size/2, j, k, l, f, f3, packedLight, hueOffset);
-            vertex(vertexconsumer, posestack$pose, -0.25f + size/2 - xOrigin, yOrigin - size/2, j, k, l, f1, f3, packedLight, hueOffset);
-            vertex(vertexconsumer, posestack$pose, -0.25f + size/2 - xOrigin, yOrigin + size/2, j, k, l, f1, f2, packedLight, hueOffset);
-            vertex(vertexconsumer, posestack$pose, -0.25f - size/2 - xOrigin, yOrigin + size/2, j, k, l, f, f2, packedLight, hueOffset);
-            poseStack.popPose();
+                    VertexConsumer vertexconsumer = buffer.getBuffer(RENDER_TYPE_3);
+                    PoseStack.Pose posestack$pose = poseStack.last();
+                    vertex(vertexconsumer, posestack$pose, -0.25f - size/2 - xOrigin, yOrigin - size/2, j, k, l, f, f3, packedLight, hueOffset);
+                    vertex(vertexconsumer, posestack$pose, -0.25f + size/2 - xOrigin, yOrigin - size/2, j, k, l, f1, f3, packedLight, hueOffset);
+                    vertex(vertexconsumer, posestack$pose, -0.25f + size/2 - xOrigin, yOrigin + size/2, j, k, l, f1, f2, packedLight, hueOffset);
+                    vertex(vertexconsumer, posestack$pose, -0.25f - size/2 - xOrigin, yOrigin + size/2, j, k, l, f, f2, packedLight, hueOffset);
+                    poseStack.popPose();
+                }
+                case ITEM -> {
+                    Item item = entity.getCostItem();
+                    poseStack.pushPose();
+                    float size = 0.35f;
+                    float xOrigin = ((float) textWidth / totalWidth) - 0.5f;
+
+                    // Position the item to the left of the text
+                    poseStack.translate(-0.25f - xOrigin, .8f, 0.01f);
+                    poseStack.scale(size, size, size);
+
+                    // Create the itemstack with the correct count
+                    ItemStack itemStack = new ItemStack(item);
+                    itemStack.setCount(entity.getCostAmount());
+
+                    // Render the item
+                    BakedModel bakedModel = this.itemRenderer.getModel(itemStack, entity.level(), null, entity.getId());
+                    this.itemRenderer.render(itemStack, ItemDisplayContext.GUI, false,
+                            poseStack, buffer, packedLight,
+                            OverlayTexture.NO_OVERLAY, bakedModel);
+
+                    poseStack.popPose();
+                }
+            }
         }
     }
 
@@ -435,7 +464,7 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
             poseStack.translate(f3, f4, f5);
         }
 
-        boolean shouldSpread = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(item).shouldSpreadAsEntity(item);
+        boolean shouldSpread = IClientItemExtensions.of(item).shouldSpreadAsEntity(item);
         for (int j = 0; j < i; j++) {
             poseStack.pushPose();
             if (j > 0 && shouldSpread) {

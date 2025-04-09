@@ -365,7 +365,7 @@ public class DungeonRoom {
                 destination = String.valueOf(this.getBranch().getFloor().getIndex() + 1);
             }
 
-            Offering rift = new Offering(this.getBranch().getFloor().getLevel(), Offering.Type.RIFT, 1, destination, EssenceOrb.Type.OVERWORLD, 0);
+            Offering rift = new Offering(this.getBranch().getFloor().getLevel(), Offering.Type.RIFT, 1, destination, Offering.CostType.OVERWORLD, 0);
             Vec3 pos1 = StructureTemplate.transform(pos, this.getSettings().getMirror(), this.getSettings().getRotation(), TemplateHelper.EMPTY_BLOCK_POS).add(this.position.getX(), this.position.getY(), this.position.getZ());
             WildDungeons.getLogger().info("ADDING RIFT AT {}", pos1);
             rift.setPos(pos1);

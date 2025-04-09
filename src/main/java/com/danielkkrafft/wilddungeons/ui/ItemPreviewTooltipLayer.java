@@ -5,6 +5,7 @@ import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.render.AnimatedTexture;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -62,13 +63,13 @@ public class ItemPreviewTooltipLayer implements LayeredDraw.Layer {
             }
             case PERK -> {
                 List<Component> list = List.of(
-                        Component.translatable("wilddungeons.perk." + offering.getPerk().name()),
+                        Component.translatable("wilddungeons.perk." + offering.getPerk().name()).withStyle(ChatFormatting.BOLD).withStyle(ChatFormatting.GOLD),
                         Component.translatable("wilddungeons.perk." + offering.getPerk().name() + ".desc")
                 );
                 guiGraphics.renderComponentTooltip(Minecraft.getInstance().font, list, pos.x, pos.y);
             }
             case RIFT -> {
-                guiGraphics.renderTooltip(Minecraft.getInstance().font, Component.translatable("wilddungeons.offering." + offering.getOfferingId()), pos.x, pos.y);
+                guiGraphics.renderTooltip(Minecraft.getInstance().font, Component.translatable("wilddungeons.offering." + offering.getOfferingId()).withStyle(ChatFormatting.OBFUSCATED), pos.x, pos.y);
             }
         }
         previewPosition = pos;

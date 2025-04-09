@@ -4,13 +4,13 @@ import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.DungeonComponentRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.OfferingTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonPerkTemplate;
-import com.danielkkrafft.wilddungeons.entity.EssenceOrb;
 import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
+import net.minecraft.world.item.Items;
 
 import java.util.ArrayList;
 
-import static com.danielkkrafft.wilddungeons.entity.EssenceOrb.Type.*;
+import static com.danielkkrafft.wilddungeons.entity.Offering.CostType.*;
 import static com.danielkkrafft.wilddungeons.entity.Offering.Type.PERK;
 import static com.danielkkrafft.wilddungeons.entity.Offering.Type.RIFT;
 
@@ -19,8 +19,8 @@ public class OfferingTemplateRegistry {
     public static ArrayList<OfferingTemplate> offerings = new ArrayList<>();
 
     public static final OfferingTemplate ARROWS = createItem("ARROWS", ItemTemplateRegistry.ARROWS, OVERWORLD, 4, 1.5f);
-    public static final OfferingTemplate STEAKS = createItem("STEAKS", ItemTemplateRegistry.COOKED_BEEF, OVERWORLD, 4, 1.5f);
-    public static final OfferingTemplate BAKED_POTATOES = createItem("BAKED_POTATOES", ItemTemplateRegistry.BAKED_POTATOES, OVERWORLD, 4, 1.5f);
+    public static final OfferingTemplate STEAKS = createItem("STEAKS", ItemTemplateRegistry.COOKED_BEEF, OVERWORLD, 4, 1.5f).setCostItem(Items.BEEF, 99);
+    public static final OfferingTemplate BAKED_POTATOES = createItem("BAKED_POTATOES", ItemTemplateRegistry.BAKED_POTATOES, OVERWORLD, 4, 1.5f).setCostItem(Items.POTATO, 32);
     public static final OfferingTemplate IRON_INGOTS = createItem("IRON_INGOTS", ItemTemplateRegistry.IRON_INGOTS, OVERWORLD, 6, 1.5f);
     public static final OfferingTemplate LEATHER = createItem("LEATHER", ItemTemplateRegistry.LEATHER, OVERWORLD, 4, 1.5f);
     //potion effects do not transfer into offerings as neither OfferingTemplates nor Offerings have a way to store potion effects.
@@ -103,25 +103,25 @@ public class OfferingTemplateRegistry {
 
     public static final OfferingTemplate EXIT_RIFT = createRift("EXIT_RIFT", "win", OVERWORLD, 0, 1.5f).setSoundLoop(WDSoundEvents.RIFT_AURA.value());
 
-    public static OfferingTemplate create(String name, Offering.Type type, int amount, String offeringID, EssenceOrb.Type costType, int xpLevel, float rarity){
+    public static OfferingTemplate create(String name, Offering.Type type, int amount, String offeringID, Offering.CostType costType, int xpLevel, float rarity){
         OfferingTemplate offering = new OfferingTemplate(name, type, amount, offeringID, costType, xpLevel, rarity);
         offerings.add(offering);
         return offering;
     }
 
-    public static OfferingTemplate createRift(String name, String riftID, EssenceOrb.Type costType, int xpLevel, float deviance){
+    public static OfferingTemplate createRift(String name, String riftID, Offering.CostType costType, int xpLevel, float deviance){
         OfferingTemplate offering = new OfferingTemplate(name, RIFT, 1, riftID, costType, xpLevel, deviance);
         offerings.add(offering);
         return offering;
     }
 
-    public static OfferingTemplate createPerk(String name, DungeonPerkTemplate perkTemplate, EssenceOrb.Type costType, int xpLevel, float deviance){
+    public static OfferingTemplate createPerk(String name, DungeonPerkTemplate perkTemplate, Offering.CostType costType, int xpLevel, float deviance){
         OfferingTemplate offering = new OfferingTemplate(name, PERK, 1, perkTemplate.name(), costType, xpLevel, deviance);
         offerings.add(offering);
         return offering;
     }
 
-    public static OfferingTemplate createItem(String name, DungeonRegistration.ItemTemplate itemTemplate, EssenceOrb.Type costType, int costAmount, float costDeviance) {
+    public static OfferingTemplate createItem(String name, DungeonRegistration.ItemTemplate itemTemplate, Offering.CostType costType, int costAmount, float costDeviance) {
         OfferingTemplate offering = new OfferingTemplate(name, itemTemplate, costType, costAmount, costDeviance);
         offerings.add(offering);
         return offering;
