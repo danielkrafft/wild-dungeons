@@ -322,7 +322,7 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
     }
 
     public void renderCost(Offering entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight, WDPlayer wdPlayer) {
-        String text = "x" + entity.getCostAmount();
+        String text = "x " + entity.getCostAmount();
         int textWidth = Minecraft.getInstance().font.width(text);
         int totalWidth = (int) (textWidth + (Minecraft.getInstance().font.lineHeight * 1.5f));
         // Cost Label
