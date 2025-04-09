@@ -30,7 +30,6 @@ public class PerkRegistry {
     public static final DungeonPerkTemplate EXPLOSION_IMMUNITY = create(ExplosionImmunePerk.class, new Vector2i(0, 4)).setUnique(); // not implemented
     public static final DungeonPerkTemplate BIG_RED_BUTTON = create(BigRedButtonPerk.class, new Vector2i(1, 4)); // not implemented
     public static final DungeonPerkTemplate CRITICAL_HIT = create(CriticalHitPerk.class, new Vector2i(2, 4)); // not implemented
-    //Critical hit - dealing damage has a stackable 10% chance to deal 3x damage
     //Gills - you can breathe indefinitely underwater
     //XP Boost - XP and essence orbs grant +10% points
     //Overkill - Enemies that get one-shot drop 1.5x XP
@@ -88,7 +87,7 @@ public class PerkRegistry {
     //Shareholder Distribution - Deletes all items from the collector's inventory. Gain 1 life for each 200 items destroyed in this way
     //Divine Guidance - Decals which lead to the exit are colored green
     //Iron Guard - Spawn 10 Iron Golems which teleport into active combat rooms and fight mobs but do not refresh on death
-
+    //Midas Touch
 
 
 

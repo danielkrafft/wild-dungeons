@@ -85,6 +85,7 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
 
         poseStack.pushPose();
         poseStack.scale(entity.getRenderScale(), entity.getRenderScale(), entity.getRenderScale());
+        poseStack.translate(0.0f, 0.5f, 0.0f);
 
         switch (entity.getOfferingType()) {
             case ITEM -> renderItemModel(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
@@ -98,7 +99,7 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
             renderBubble(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
         }
 
-        if (entity.isLookingAtMe(Minecraft.getInstance().player)){
+        if (entity.isLookingAtMe(Minecraft.getInstance().player, 1.0)){
             ItemPreviewTooltipLayer.INSTANCE.setPreviewEntity(entity);
         }
 
@@ -291,7 +292,7 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
     }
 
     public void renderBubble(Offering entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
-        if (entity.isLookingAtMe(Minecraft.getInstance().player) && entity.getCostAmount() > 0) {
+        if (entity.isLookingAtMe(Minecraft.getInstance().player, 1.0) && entity.getCostAmount() > 0) {
             WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateClientWDPlayer(Minecraft.getInstance().player);
 
             float bubbleScale = (1.0f - entity.getBubbleTimer() / Offering.BUBBLE_ANIMATION_TIME);

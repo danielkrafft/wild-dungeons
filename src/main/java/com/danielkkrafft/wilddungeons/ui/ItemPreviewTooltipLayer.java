@@ -42,7 +42,7 @@ public class ItemPreviewTooltipLayer implements LayeredDraw.Layer {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null || player.jumpableVehicle() != null) return;
 
-        if (previewEntity instanceof Offering offering && offering.isLookingAtMe(player)) {
+        if (previewEntity instanceof Offering offering && offering.isLookingAtMe(player, 1.2)) {
             renderTooltip(guiGraphics, offering, player);
             renderCursor(guiGraphics, offering);
         } else {
@@ -98,7 +98,7 @@ public class ItemPreviewTooltipLayer implements LayeredDraw.Layer {
     }
 
     public boolean shouldCancelRender() {
-        return previewEntity != null && Minecraft.getInstance().hitResult instanceof EntityHitResult entityHitResult && entityHitResult.getEntity() == previewEntity;
+        return previewEntity != null && previewEntity instanceof Offering offering && offering.isLookingAtMe(Minecraft.getInstance().player, 1.2) && Minecraft.getInstance().hitResult instanceof EntityHitResult entityHitResult && entityHitResult.getEntity() == previewEntity;
     }
 
     @SubscribeEvent

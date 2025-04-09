@@ -165,13 +165,13 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
         return perk;
     }
 
-    public boolean isLookingAtMe(Player player) {
+    public boolean isLookingAtMe(Player player, double dotFactor) {
         Vec3 vec3 = player.getViewVector(1.0F).normalize();
-        Vec3 vec31 = new Vec3(this.getX() - player.getX(), this.getEyeY() - player.getEyeY(), this.getZ() - player.getZ());
+        Vec3 vec31 = new Vec3(this.getX() - player.getX(), this.getY()+0.5 - player.getEyeY(), this.getZ() - player.getZ());
         double length = vec31.length();
         vec31 = vec31.normalize();
         double dot = vec3.dot(vec31);
-        return length < 10 && dot > 1.0 - 0.5 / length && player.hasLineOfSight(this);
+        return length < 10 && dot > dotFactor - 0.5 / length && player.hasLineOfSight(this);
     }
 
     public Vector2i getScreenPosition(Player player) {

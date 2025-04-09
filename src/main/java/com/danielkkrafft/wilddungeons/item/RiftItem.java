@@ -22,7 +22,7 @@ public class RiftItem extends Item {
 //        Offering offering = new Offering(context.getLevel(), Offering.Type.RIFT, 1, "random", Offering.CostType.XP_LEVEL, cost);
         Offering offering = OfferingTemplateRegistry.REACTION_TEST_RIFT.asOffering(context.getLevel());
         offering.setCostAmount(cost);
-        Vec3 clickLocation = context.getClickLocation().add(0.0,0.5,0.0);
+        Vec3 clickLocation = context.getClickLocation().add(0.0,0.0,0.0);
         offering.setPos(new Vec3(Math.round(clickLocation.x*2.0)/2.0, Math.round(clickLocation.y*2.0)/2.0, Math.round(clickLocation.z*2.0)/2.0));
         WildDungeons.getLogger().info("SPAWNING RIFT AT {}", offering.position());
         context.getLevel().addFreshEntity(offering);
