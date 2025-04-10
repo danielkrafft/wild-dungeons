@@ -68,10 +68,7 @@ import net.neoforged.neoforge.common.EffectCures;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.entity.EntityMobGriefingEvent;
 import net.neoforged.neoforge.event.entity.EntityStruckByLightningEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
-import net.neoforged.neoforge.event.entity.living.LivingExperienceDropEvent;
-import net.neoforged.neoforge.event.entity.living.LivingUseTotemEvent;
+import net.neoforged.neoforge.event.entity.living.*;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerXpEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
@@ -464,13 +461,6 @@ public class WDEvents {
                 BlockPos respawnPoint;
                 DungeonRoom room = wdPlayer.getCurrentRoom();
                 if (room == null) {
-                    room.getBoundingBoxes().forEach(boundingBox -> {
-                        player.level().getEntitiesOfClass(Monster.class, AABB.of(boundingBox.inflatedBy(10))).forEach(monster -> {
-                            if (monster.getTarget() == player) {
-                                monster.setTarget(null);
-                            }
-                        });
-                    });
                     DungeonFloor floor = wdPlayer.getCurrentFloor();
                     int index = 0;
                     for (DungeonBranch branch : floor.getBranches()) {
@@ -482,6 +472,14 @@ public class WDEvents {
                     }
                     room = floor.getBranches().get(index).getRooms().getFirst();
                 }
+
+                room.getBoundingBoxes().forEach(boundingBox -> {
+                    player.level().getEntitiesOfClass(Monster.class, AABB.of(boundingBox.inflatedBy(10))).forEach(monster -> {
+                        if (monster.getTarget() == player) {
+                            monster.setTarget(null);
+                        }
+                    });
+                });
 
                 if (room.getBranch().getIndex() == 0) {
                     respawnPoint = room.getBranch().getRooms().getFirst().getSpawnPoint(room.getBranch().getFloor().getLevel());
@@ -531,5 +529,16 @@ public class WDEvents {
     @SubscribeEvent
     public static void onReloadListener(AddReloadListenerEvent event){
         event.addListener(WDStructureTemplateManager.StructureTemplateManagerReloadListener);
+    }
+
+    @SubscribeEvent
+    public static void canMobEffectBeApplied(MobEffectEvent.Applicable event){
+        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
+            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer);
+            if (wdPlayer.getCurrentDungeon() == null) return;
+            if (event.getEffectInstance().isInfiniteDuration()) {
+                event.setResult(MobEffectEvent.Applicable.Result.DO_NOT_APPLY);
+            }
+        }
     }
 }
