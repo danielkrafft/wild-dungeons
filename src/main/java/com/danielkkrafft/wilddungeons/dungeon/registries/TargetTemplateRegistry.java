@@ -24,7 +24,7 @@ public class TargetTemplateRegistry {
     public static final TargetTemplate SPIDER = createMob("SPIDER", EntityType.SPIDER);
     public static final TargetTemplate CREEPER = createMob("CREEPER", EntityType.CREEPER);
     public static final TargetTemplate FAST_CREEPER = createMob("FAST_CREEPER", EntityType.CREEPER).addMobEffect(MobEffects.MOVEMENT_SPEED, 2);
-    public static final TargetTemplate PILLAGER = createMob("PILLAGER", EntityType.PILLAGER).setMainHandItem(Items.CROSSBOW);
+    public static final TargetTemplate PILLAGER = createMob("PILLAGER", EntityType.PILLAGER).setMainHandItem(Items.CROSSBOW, true);
     public static final TargetTemplate BLAZE = createMob("BLAZE", EntityType.BLAZE);
     public static final TargetTemplate BEEFY_BLAZE = createMob("BEEFY_BLAZE", EntityType.BLAZE).addMobEffect(MobEffects.HEALTH_BOOST, 3);
     public static final TargetTemplate CAVE_SPIDER = createMob("CAVE_SPIDER", EntityType.CAVE_SPIDER);
@@ -32,7 +32,7 @@ public class TargetTemplateRegistry {
     public static final TargetTemplate ENDERMAN = createMob("ENDERMAN", EntityType.ENDERMAN);
     public static final TargetTemplate HUSK = createMob("HUSK", EntityType.HUSK);
     public static final TargetTemplate STRAY = createMob("STRAY", EntityType.STRAY);
-    public static final TargetTemplate VINDICATOR = createMob("VINDICATOR", EntityType.VINDICATOR).setMainHandItem(Items.IRON_AXE);
+    public static final TargetTemplate VINDICATOR = createMob("VINDICATOR", EntityType.VINDICATOR).setMainHandItem(Items.IRON_AXE, true);
     public static final TargetTemplate EVOKER = createMob("EVOKER", EntityType.EVOKER);
     public static final TargetTemplate WITHER_SKELETON = createMob("WITHER_SKELETON", EntityType.WITHER_SKELETON).setMainHandItem(Items.STONE_SWORD,true);
     public static final TargetTemplate PIGLIN = createMob("PIGLIN", EntityType.PIGLIN);

@@ -227,7 +227,7 @@ public class DungeonRegistration {
         public TargetTemplate setOffHandItem(Item item) {this.offHandItem = Item.getId(item); return this;}
         public TargetTemplate setOffHandItem(Item item, boolean alwaysSpawn) {this.offHandItem = Item.getId(item);this.offHandAlwaysSpawn=alwaysSpawn; return this;}
         public TargetTemplate addMobEffect(Holder<MobEffect> effect, int amplifier) {this.mobEffects.add(Pair.of(BuiltInRegistries.MOB_EFFECT.getId(effect.value()), amplifier)); return this;}
-        public TargetTemplate addMobEffect(Holder<MobEffect> effect, int amplifier,boolean alwaysSpawnAll) {this.mobEffects.add(Pair.of(BuiltInRegistries.MOB_EFFECT.getId(effect.value()), amplifier));allEffects=alwaysSpawnAll; return this;}
+        public TargetTemplate addMobEffect(Holder<MobEffect> effect, int amplifier, boolean alwaysSpawnAll) {this.mobEffects.add(Pair.of(BuiltInRegistries.MOB_EFFECT.getId(effect.value()), amplifier));allEffects=alwaysSpawnAll; return this;}
         public TargetTemplate setRandomChance(float randomChance) {this.randomChance = randomChance; return this;}
         public TargetTemplate setHealthMultiplier(double mult) {this.healthMultiplier = mult; return this;}
         public TargetTemplate addSpawnBehavior(Consumer<Object> behavior) {this.behavior = behavior; return this;}
