@@ -21,7 +21,7 @@ public class DungeonRoomPoolRegistry {
     public static final WeightedPool<DungeonRoomTemplate> OVERWORLD_LOOT_ROOM_POOL = new WeightedPool<>();
     public static final WeightedPool<DungeonRoomTemplate> OVERWORLD_SHOP_ROOM_POOL = new WeightedPool<>();
 
-    public static final WeightedPool<DungeonRoomTemplate> VILLAGE_PATH_POOL = new WeightedPool<>();
+    public static final WeightedPool<DungeonRoomTemplate> VILLAGE_SEWER_POOL = new WeightedPool<>();
 
     public static final WeightedPool<DungeonRoomTemplate> PIGLIN_FACTORY_CAVE_SPRAWL_ROOM_POOL = new WeightedPool<>();
     public static final WeightedPool<DungeonRoomTemplate> PIGLIN_FACTORY_PIPEWORKS_ROOM_POOL = new WeightedPool<>();
@@ -86,16 +86,6 @@ public class DungeonRoomPoolRegistry {
                 .add(OVERWORLD_FREE_PERK,1)
                 .add(OVERWORLD_DOUBLE_LOOT, 1);
 
-        VILLAGE_PATH_POOL
-                .add(VILLAGE_1,1)
-                .add(VILLAGE_PATH_1,1)
-                .add(VILLAGE_PATH_CROSSING,1)
-                .add(VILLAGE_PATH_FARM,1)
-                .add(VILLAGE_FORGE,1)
-                .add(VILLAGE_CENTER,1)
-                .add(VILLAGE_SINGLE_HUT,1)
-                .add(VILLAGE_FENCED_HORSES,1);
-
         PIGLIN_FACTORY_CAVE_SPRAWL_ROOM_POOL
                 .add(NETHER_CAVE_SPRAWL_1, 1)
                 .add(NETHER_CAVE_SPRAWL_2, 1)
@@ -143,5 +133,22 @@ public class DungeonRoomPoolRegistry {
         PIGLIN_FACTORY_SHOP_ROOM_POOL
                 .add(NETHER_FACTORY_SHOP_1, 1)
                 .add(NETHER_FACTORY_SHOP_2, 1);
+
+        VILLAGE_SEWER_POOL
+                .add(VILLAGE_SEWER_1, 1)
+                .add(VILLAGE_SEWER_2, 1)
+                .add(VILLAGE_SEWER_3, 1)
+                .add(VILLAGE_SEWER_4, 1)
+                .add(VILLAGE_SEWER_5, 1)
+                .add(VILLAGE_SEWER_6, 1)
+                .add(VILLAGE_SEWER_7, 1)
+                .add(VILLAGE_SEWER_8, 1)
+                .add(VILLAGE_SEWER_9, 1)
+                .add(VILLAGE_SEWER_10, 1)
+                .add(VILLAGE_SEWER_11, 1)
+                .add(VILLAGE_SEWER_12, 1)
+                .add(VILLAGE_SEWER_13, 1)
+                .add(VILLAGE_SEWER_ELEVATOR, 1)
+                .add(VILLAGE_SEWER_DEELEVATOR, 1);
     }
 }

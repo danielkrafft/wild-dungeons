@@ -91,7 +91,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
         return type;
     }
     public String getOfferingId() {return this.offerID;}
-    public void setOfferingId(String offerID) {this.offerID = offerID;}
+    public Offering setOfferingId(String offerID) {this.offerID = offerID;return this;}
     public int getAmount() {return this.amount;}
     public int getCostAmount() {return this.getEntityData().get(costAmount);}
     public void setCostAmount(int cost) {this.getEntityData().set(costAmount, cost);}
@@ -123,7 +123,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     public int getSecondaryColor() {return this.secondaryColor;}
     public void setSecondaryColor(int secondaryColor) {this.secondaryColor = secondaryColor;}
     public int getSoundLoop() {return this.soundLoop;}
-    public void setSoundLoop(int soundEvent) {this.soundLoop = soundEvent;}
+    public Offering setSoundLoop(int soundEvent) {this.soundLoop = soundEvent;return this;}
     public boolean renderItemHighlight() {return this.entityData.get(highlightItem);}
     public void setShowItemHighlight(boolean shouldShow) {this.entityData.set(highlightItem, shouldShow);}
 

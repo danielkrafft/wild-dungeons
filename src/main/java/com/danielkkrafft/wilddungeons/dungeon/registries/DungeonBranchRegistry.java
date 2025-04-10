@@ -90,28 +90,7 @@ public class DungeonBranchRegistry {
                     .addSimple(OVERWORLD_EXIT_ROOM))
             .set(MATERIAL, OVERWORLD_MATERIAL_POOL_2);
 
-    public static final DungeonBranchTemplate SANDY_STARTER_BRANCH = copyOf(OVERWORLD_STARTER_BRANCH, "SANDY_STARTER_BRANCH")
-            .set(MATERIAL, SANDY_MATERIAL_POOL);
-    public static final DungeonBranchTemplate SANDY_FREE_STUFF_BRANCH_0 = copyOf(OVERWORLD_FREE_STUFF_BRANCH_0, "SANDY_FREE_STUFF_BRANCH_0")
-            .set(MATERIAL, SANDY_MATERIAL_POOL);
-    public static final DungeonBranchTemplate SANDY_SPRAWL_0 = copyOf(OVERWORLD_SPRAWL_0, "SANDY_SPRAWL_0")
-            .set(MATERIAL, SANDY_MATERIAL_POOL);
-    public static final DungeonBranchTemplate SANDY_ENDING_BRANCH = copyOf(OVERWORLD_ENDING_BRANCH, "SANDY_ENDING_BRANCH")
-            .set(MATERIAL, SANDY_MATERIAL_POOL);
 
-    public static final DungeonBranchTemplate RED_SANDY_STARTER_BRANCH = copyOf(OVERWORLD_STARTER_BRANCH, "RED_SANDY_STARTER_BRANCH")
-            .set(MATERIAL, RED_SANDY_MATERIAL_POOL);
-    public static final DungeonBranchTemplate RED_SANDY_FREE_STUFF_BRANCH_0 = copyOf(OVERWORLD_FREE_STUFF_BRANCH_0, "RED_SANDY_FREE_STUFF_BRANCH_0")
-            .set(MATERIAL, RED_SANDY_MATERIAL_POOL);
-    public static final DungeonBranchTemplate RED_SANDY_SPRAWL_0 = copyOf(OVERWORLD_SPRAWL_0, "RED_SANDY_SPRAWL_0")
-            .set(MATERIAL, RED_SANDY_MATERIAL_POOL);
-    public static final DungeonBranchTemplate RED_SANDY_ENDING_BRANCH = copyOf(OVERWORLD_ENDING_BRANCH, "RED_SANDY_ENDING_BRANCH")
-            .set(MATERIAL, RED_SANDY_MATERIAL_POOL);
-
-    public static final DungeonBranchTemplate VILLAGE_PATH_BRANCH = create("VILLAGE_PATH_BRANCH")
-            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
-                    .add(VILLAGE_PATH_POOL, 10))
-            .set(MATERIAL, VILLAGE_MATERIAL_POOL);
     public static final DungeonBranchTemplate PIGLIN_FACTORY_START_BRANCH = create("PIGLIN_FACTORY_START_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .addSimple(NETHER_CAVE_ENTRANCE_ROOM));
@@ -178,6 +157,17 @@ public class DungeonBranchRegistry {
                     .addSimple(NETHER_FACTORY_BOSS_ROOM))
             .setRootOriginBranchIndex(6)
             .set(SOUNDSCAPE, SoundscapeTemplateRegistry.NETHER_DRAGON);
+
+    public static final DungeonBranchTemplate VILLAGE_SEWER_START_BRANCH = create("VILLAGE_SEWER_START_BRANCH")
+            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
+                    .addSimple(VILLAGE_SEWER_START))
+            .set(MATERIAL, VILLAGE_SEWER_MATERIAL_POOL)
+            .set(HAS_BEDROCK_SHELL, true);
+    public static final DungeonBranchTemplate VILLAGE_SEWER_ALL = create("VILLAGE_SEWER_ALL")
+            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
+                    .add(VILLAGE_SEWER_POOL,50))
+            .set(MATERIAL, VILLAGE_SEWER_MATERIAL_POOL)
+            .set(HAS_BEDROCK_SHELL, true);
 
     public static DungeonBranchTemplate copyOf(DungeonBranchTemplate branch, String name) {
         DungeonBranchTemplate copy = DungeonBranchTemplate.copyOf(branch, name);

@@ -24,7 +24,7 @@ public class DungeonMaterialPoolRegistry {
             .add(SANDSTONEY, 1);
     public static final WeightedPool<DungeonMaterial> RED_SANDY_MATERIAL_POOL = new WeightedPool<DungeonMaterial>()
             .add(RED_SANDSTONEY, 1);
-    public static final WeightedPool<DungeonMaterial> VILLAGE_MATERIAL_POOL = new WeightedPool<DungeonMaterial>()
-            .add(VILLAGE_MATERIAL, 1);
+    public static final WeightedPool<DungeonMaterial> VILLAGE_SEWER_MATERIAL_POOL = new WeightedPool<DungeonMaterial>()
+            .add(VILLAGE_SEWER_MATERIAL, 1);
 
 }

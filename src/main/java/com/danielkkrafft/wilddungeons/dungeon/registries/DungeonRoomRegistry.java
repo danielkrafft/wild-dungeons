@@ -129,14 +129,7 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
             ))
             .set(INTENSITY, 0)
             .set(SHOP_TABLE, OfferingTemplateTableRegistry.FREE_CUSTOM_WEAPON_TABLE);
-    public static final DungeonRoomTemplate VILLAGE_1 = createSimple("village/village_1");
-    public static final DungeonRoomTemplate VILLAGE_FORGE = createSimple("village/village_forge");
-    public static final DungeonRoomTemplate VILLAGE_PATH_1 = createSimple("village/village_path_1");
-    public static final DungeonRoomTemplate VILLAGE_PATH_CROSSING = createSimple("village/village_path_crossing");
-    public static final DungeonRoomTemplate VILLAGE_PATH_FARM = createSimple("village/village_path_farm");
-    public static final DungeonRoomTemplate VILLAGE_CENTER = createSimple("village/village_center");
-    public static final DungeonRoomTemplate VILLAGE_SINGLE_HUT = createSimple("village/village_single_hut");
-    public static final DungeonRoomTemplate VILLAGE_FENCED_HORSES = createSimple("village/village_fenced_horses");
+
     public static final DungeonRoomTemplate NETHER_CAVE_ENTRANCE_ROOM = createSimple("nether/cave/entrance");
     public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_1 = createSimple("nether/cave/sprawl_1");
     public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_2 = createSimple("nether/cave/sprawl_2");
@@ -217,6 +210,25 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
             .set(ROOM_CLEAR_REWARD_POOL, WeightedPool.of(OfferingTemplateRegistry.EXIT_RIFT))
             .set(ENEMY_TABLE, EnemyTableRegistry.NETHER_DRAGON_ARENA)
             .set(BOSS_SPAWN_POS, new Vec3(3.0, 40.0, 3.0));
+
+    public static final DungeonRoomTemplate VILLAGE_SEWER_1 = createSimple("village/sewer/1");
+    public static final DungeonRoomTemplate VILLAGE_SEWER_2 = createSimple("village/sewer/2");
+    public static final DungeonRoomTemplate VILLAGE_SEWER_3 = createSimple("village/sewer/3");
+    public static final DungeonRoomTemplate VILLAGE_SEWER_4 = createSimple("village/sewer/4");
+    public static final DungeonRoomTemplate VILLAGE_SEWER_5 = createSimple("village/sewer/5");
+    public static final DungeonRoomTemplate VILLAGE_SEWER_6 = createSimple("village/sewer/6");
+    public static final DungeonRoomTemplate VILLAGE_SEWER_7 = createSimple("village/sewer/7");
+    public static final DungeonRoomTemplate VILLAGE_SEWER_8 = createSimple("village/sewer/8");
+    public static final DungeonRoomTemplate VILLAGE_SEWER_9 = createSimple("village/sewer/9");
+    public static final DungeonRoomTemplate VILLAGE_SEWER_10 = createSimple("village/sewer/10");
+    public static final DungeonRoomTemplate VILLAGE_SEWER_11 = createSimple("village/sewer/11");
+    public static final DungeonRoomTemplate VILLAGE_SEWER_12 = createSimple("village/sewer/12");
+    public static final DungeonRoomTemplate VILLAGE_SEWER_13 = createSimple("village/sewer/13");
+    public static final DungeonRoomTemplate VILLAGE_SEWER_CHESTCAP = createSimple("village/sewer/chestcap");//todo make this a secret room
+    public static final DungeonRoomTemplate VILLAGE_SEWER_ELEVATOR = createSimple("village/sewer/elevator");
+    public static final DungeonRoomTemplate VILLAGE_SEWER_DEELEVATOR = createSimple("village/sewer/deelevator");
+    public static final DungeonRoomTemplate VILLAGE_SEWER_START = createSimple("village/sewer/start");
+
 
 
     public static DungeonRoomTemplate copyOf(DungeonRoomTemplate template, String name) {

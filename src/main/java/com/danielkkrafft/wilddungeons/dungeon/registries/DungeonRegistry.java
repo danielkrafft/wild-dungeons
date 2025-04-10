@@ -13,8 +13,7 @@ import static com.danielkkrafft.wilddungeons.dungeon.components.template.Hierarc
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonFloorPoolRegistry.OVERWORLD_FLOOR_POOL;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonFloorPoolRegistry.VILLAGE_FLOOR_POOL;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonFloorRegistry.*;
-import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialPoolRegistry.OVERWORLD_MATERIAL_POOL_0;
-import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialPoolRegistry.VILLAGE_MATERIAL_POOL;
+import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialPoolRegistry.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialRegistry.PIGLIN_FACTORY_MATERIAL;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.OfferingTemplateRegistry.MEGA_DUNGEON_GAUNTLET_RIFT;
 import static com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession.DungeonExitBehavior.DESTROY;
@@ -90,7 +89,7 @@ public class DungeonRegistry {
             .setFloorTemplates(new DungeonLayout<DungeonFloorTemplate>()
                     .add(VILLAGE_FLOOR_POOL, 1)
             )
-            .set(MATERIAL, VILLAGE_MATERIAL_POOL)
+            .set(MATERIAL, VILLAGE_SEWER_MATERIAL_POOL)
             .set(HAS_BEDROCK_SHELL, false)
             .set(DISPLAY_NAME, "VILLAGE DUNGEON")
             .set(ICON, "1-2")

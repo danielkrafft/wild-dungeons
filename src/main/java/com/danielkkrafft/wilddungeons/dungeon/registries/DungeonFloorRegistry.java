@@ -61,28 +61,6 @@ public class DungeonFloorRegistry {
             .set(HierarchicalProperty.DIFFICULTY_MODIFIER, 2.0)
             .setOrigin(new BlockPos(0, 150, 0));
 
-    public static final DungeonFloorTemplate OVERWORLD_SANDY_FLOOR = create("overworld_sandy_floor")
-            .setBranchTemplates(new DungeonLayout<DungeonBranchTemplate>()
-                    .addSimple(SANDY_STARTER_BRANCH)
-                    .addSimple(SANDY_SPRAWL_0)
-                    .addSimple(SANDY_FREE_STUFF_BRANCH_0)
-                    .addSimple(SANDY_SPRAWL_0)
-                    .addSimple(SANDY_FREE_STUFF_BRANCH_0)
-                    .addSimple(SANDY_SPRAWL_0)
-                    .addSimple(SANDY_FREE_STUFF_BRANCH_0)
-                    .addSimple(SANDY_ENDING_BRANCH))
-            .setOrigin(new BlockPos(0, 150, 0));
-    public static final DungeonFloorTemplate OVERWORLD_RED_SANDY_FLOOR = create("overworld_red_sandy_floor")
-            .setBranchTemplates(new DungeonLayout<DungeonBranchTemplate>()
-                    .addSimple(RED_SANDY_STARTER_BRANCH)
-                    .addSimple(RED_SANDY_SPRAWL_0)
-                    .addSimple(RED_SANDY_FREE_STUFF_BRANCH_0)
-                    .addSimple(RED_SANDY_SPRAWL_0)
-                    .addSimple(RED_SANDY_FREE_STUFF_BRANCH_0)
-                    .addSimple(RED_SANDY_SPRAWL_0)
-                    .addSimple(RED_SANDY_FREE_STUFF_BRANCH_0)
-                    .addSimple(RED_SANDY_ENDING_BRANCH))
-            .setOrigin(new BlockPos(0, 150, 0));
 
     public static final DungeonFloorTemplate PIGLIN_FACTORY_FLOOR = create("piglin_factory_floor")
             .setBranchTemplates(new DungeonLayout<DungeonBranchTemplate>()
@@ -108,10 +86,9 @@ public class DungeonFloorRegistry {
     public static final DungeonFloorTemplate VILLAGE_FLOOR = create("village")
             .setBranchTemplates(
                     new DungeonLayout<DungeonBranchTemplate>()
-                            .addSimple(STARTER_BRANCH)
+                            .addSimple(VILLAGE_SEWER_START_BRANCH)
                             .add(new WeightedPool<DungeonBranchTemplate>()
-                                    .add(VILLAGE_PATH_BRANCH, 1),5)
-                            .addSimple(ENDING_BRANCH)
+                                    .add(VILLAGE_SEWER_ALL, 1),3)
             );
 
     public static DungeonFloorTemplate copyOf(DungeonFloorTemplate floor, String name) {

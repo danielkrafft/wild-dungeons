@@ -321,21 +321,7 @@ public class DungeonMaterialRegistry {
                     new WeightedPool<BlockState>()
                             .add(LANTERN.defaultBlockState(), 1));
 
-    public static final DungeonMaterial VILLAGE_MATERIAL = create(
-            "VILLAGE_MATERIAL",
-            new WeightedPool<BlockState>()
-                    .add(OAK_PLANKS.defaultBlockState(), 1),
-            new WeightedPool<BlockState>()
-                    .add(OAK_STAIRS.defaultBlockState(), 1),
-            new WeightedPool<BlockState>()
-                    .add(OAK_SLAB.defaultBlockState(), 1),
-            new WeightedPool<BlockState>()
-                    .add(OAK_FENCE.defaultBlockState(), 1),
-            new WeightedPool<BlockState>()
-                    .add(TORCH.defaultBlockState(), 1),
-            new WeightedPool<BlockState>()
-                    .add(AIR.defaultBlockState(), 1)
-    );
+
     public static final DungeonMaterial PIGLIN_FACTORY_MATERIAL = create(
             "PIGLIN_FACTORY_MATERIAL",
             new WeightedPool<BlockState>()
@@ -427,6 +413,19 @@ public class DungeonMaterialRegistry {
             .addLightBlockSet(new WeightedPool<BlockState>().add(SHROOMLIGHT.defaultBlockState(), 1))
             .setHangingLights(new WeightedPool<BlockState>().add(SOUL_LANTERN.defaultBlockState(), 1)
             );
+
+    public static final DungeonMaterial VILLAGE_SEWER_MATERIAL = create("village_sewer",
+            new WeightedPool<BlockState>().add(COBBLESTONE.defaultBlockState(),1).add(MOSSY_COBBLESTONE.defaultBlockState(),1),
+            new WeightedPool<BlockState>().add(COBBLESTONE_STAIRS.defaultBlockState(),1).add(MOSSY_COBBLESTONE_STAIRS.defaultBlockState(),1),
+            new WeightedPool<BlockState>().add(COBBLESTONE_SLAB.defaultBlockState(),1).add(MOSSY_COBBLESTONE_SLAB.defaultBlockState(),1),
+            new WeightedPool<BlockState>().add(COBBLESTONE_WALL.defaultBlockState(),1).add(MOSSY_COBBLESTONE_WALL.defaultBlockState(),1),
+            new WeightedPool<BlockState>().add(LANTERN.defaultBlockState(),1),
+            new WeightedPool<BlockState>().add(MOSSY_COBBLESTONE.defaultBlockState(),1)
+    )
+            .addLightBlockSet(new WeightedPool<BlockState>().add(SOUL_LANTERN.defaultBlockState(),1))
+            .setHangingLights(new WeightedPool<BlockState>().add(LANTERN.defaultBlockState(),1))
+            .addHangingLightBlockSet(new WeightedPool<BlockState>().add(SOUL_LANTERN.defaultBlockState(),1))
+            .addBasicBlockSet(new WeightedPool<BlockState>().add(POLISHED_ANDESITE.defaultBlockState(),1));
 
 
     public static final DungeonMaterial TRANSLATION_MATERIAL = create("translation_debug",//todo delete when all rooms have been converted

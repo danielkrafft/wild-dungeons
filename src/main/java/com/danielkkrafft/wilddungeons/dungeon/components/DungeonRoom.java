@@ -53,6 +53,7 @@ import static com.danielkkrafft.wilddungeons.dungeon.components.template.Dungeon
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialRegistry.DUNGEON_MATERIAL_REGISTRY;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomRegistry.DUNGEON_ROOM_REGISTRY;
+import static com.danielkkrafft.wilddungeons.dungeon.registries.OfferingTemplateRegistry.EXIT_RIFT;
 
 public class DungeonRoom {
     private final String templateKey;
@@ -364,7 +365,7 @@ public class DungeonRoom {
                 destination = String.valueOf(this.getBranch().getFloor().getIndex() + 1);
             }
 
-            Offering rift = new Offering(this.getBranch().getFloor().getLevel(), Offering.Type.RIFT, 1, destination, Offering.CostType.OVERWORLD, 0);
+            Offering rift = EXIT_RIFT.asOffering(this.getBranch().getFloor().getLevel()).setOfferingId(destination).setSoundLoop(0);
             Vec3 pos1 = StructureTemplate.transform(pos, this.getSettings().getMirror(), this.getSettings().getRotation(), TemplateHelper.EMPTY_BLOCK_POS).add(this.position.getX(), this.position.getY(), this.position.getZ());
             WildDungeons.getLogger().info("ADDING RIFT AT {}", pos1);
             rift.setPos(pos1);
