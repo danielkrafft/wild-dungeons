@@ -533,7 +533,7 @@ public class WDEvents {
 
     @SubscribeEvent
     public static void canMobEffectBeApplied(MobEffectEvent.Applicable event){
-        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
+        if (event.getEntity() instanceof ServerPlayer serverPlayer && !serverPlayer.isCreative() && !serverPlayer.isSpectator()) {
             WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer);
             if (wdPlayer.getCurrentDungeon() == null) return;
             if (event.getEffectInstance().isInfiniteDuration()) {

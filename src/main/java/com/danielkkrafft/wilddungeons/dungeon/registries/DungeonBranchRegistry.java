@@ -165,7 +165,13 @@ public class DungeonBranchRegistry {
             .set(HAS_BEDROCK_SHELL, true);
     public static final DungeonBranchTemplate VILLAGE_SEWER_ALL = create("VILLAGE_SEWER_ALL")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
-                    .add(VILLAGE_SEWER_POOL,50))
+                    .add(VILLAGE_SEWER_POOL,15))
+            .set(MATERIAL, VILLAGE_SEWER_MATERIAL_POOL)
+            .set(HAS_BEDROCK_SHELL, true);
+    public static final DungeonBranchTemplate VILLAGE_SEWER_ENDING_BRANCH = create("VILLAGE_SEWER_ENDING_BRANCH")
+            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
+                    .addSimple(VILLAGE_SEWER_13)
+                    .addSimple(VILLAGE_PIPE_TO_METRO))
             .set(MATERIAL, VILLAGE_SEWER_MATERIAL_POOL)
             .set(HAS_BEDROCK_SHELL, true);
 

@@ -88,7 +88,8 @@ public class DungeonFloorRegistry {
                     new DungeonLayout<DungeonBranchTemplate>()
                             .addSimple(VILLAGE_SEWER_START_BRANCH)
                             .add(new WeightedPool<DungeonBranchTemplate>()
-                                    .add(VILLAGE_SEWER_ALL, 1),3)
+                                    .add(VILLAGE_SEWER_ALL, 1),2)
+                            .addSimple(VILLAGE_SEWER_ENDING_BRANCH)
             );
 
     public static DungeonFloorTemplate copyOf(DungeonFloorTemplate floor, String name) {

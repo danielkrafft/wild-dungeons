@@ -31,9 +31,9 @@ public class DebugItem extends Item {
         if (!(player instanceof ServerPlayer serverPlayer)) return InteractionResultHolder.fail(player.getItemInHand(usedHand));
         WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer.getStringUUID());
 
-        WildDungeons.getLogger().info(String.valueOf(serverPlayer.getAttribute(Attributes.ATTACK_SPEED).getBaseValue()));
-        serverPlayer.getAttribute(Attributes.ATTACK_SPEED).setBaseValue(serverPlayer.getAttribute(Attributes.ATTACK_SPEED).getBaseValue()*2);
-        WildDungeons.getLogger().info(String.valueOf(serverPlayer.getAttribute(Attributes.ATTACK_SPEED).getBaseValue()));
+//        WildDungeons.getLogger().info(String.valueOf(serverPlayer.getAttribute(Attributes.ATTACK_SPEED).getBaseValue()));
+//        serverPlayer.getAttribute(Attributes.ATTACK_SPEED).setBaseValue(serverPlayer.getAttribute(Attributes.ATTACK_SPEED).getBaseValue()*2);
+//        WildDungeons.getLogger().info(String.valueOf(serverPlayer.getAttribute(Attributes.ATTACK_SPEED).getBaseValue()));
 
 //        WildDungeons.getLogger().info("DUNGEON CONTENTS:");
 //        wdPlayer.getCurrentFloor().getBranches().forEach(branch -> {
@@ -42,7 +42,7 @@ public class DebugItem extends Item {
 
 
         //logNonDungeonStuff(wdPlayer);
-        //logDungeonStuff((ServerLevel) level, wdPlayer);
+        logDungeonStuff((ServerLevel) level, wdPlayer);
 
         return InteractionResultHolder.pass(player.getItemInHand(usedHand));
     }

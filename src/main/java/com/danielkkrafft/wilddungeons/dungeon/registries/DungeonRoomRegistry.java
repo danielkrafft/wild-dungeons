@@ -224,10 +224,11 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate VILLAGE_SEWER_11 = createSimple("village/sewer/11");
     public static final DungeonRoomTemplate VILLAGE_SEWER_12 = createSimple("village/sewer/12");
     public static final DungeonRoomTemplate VILLAGE_SEWER_13 = createSimple("village/sewer/13");
-    public static final DungeonRoomTemplate VILLAGE_SEWER_CHESTCAP = createSimple("village/sewer/chestcap");//todo make this a secret room
+    public static final DungeonRoomTemplate VILLAGE_SEWER_CHESTCAP = createSimple("village/sewer/chestcap").setClazz(SecretRoom.class);
     public static final DungeonRoomTemplate VILLAGE_SEWER_ELEVATOR = createSimple("village/sewer/elevator");
     public static final DungeonRoomTemplate VILLAGE_SEWER_DEELEVATOR = createSimple("village/sewer/deelevator");
     public static final DungeonRoomTemplate VILLAGE_SEWER_START = createSimple("village/sewer/start");
+    public static final DungeonRoomTemplate VILLAGE_PIPE_TO_METRO = createSimple("village/sewer/pipe_to_metro");
 
 
 

@@ -24,6 +24,7 @@ import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.RailShape;
 import net.minecraft.world.level.block.state.properties.StairsShape;
@@ -392,6 +393,9 @@ public class TemplateHelper {
                         BlockEntity blockentity1 = serverLevel.getBlockEntity(structuretemplate$structureblockinfo.pos());
                         if (blockentity1 != null) {
                             blockentity1.loadWithComponents(structuretemplate$structureblockinfo.nbt(), serverLevel.registryAccess());
+                            if (blockentity1 instanceof SpawnerBlockEntity spawnerBlockEntity) {//todo replace this with the special spawner block entity and a system that randomizes the spawner
+                                spawnerBlockEntity.setEntityId(EntityType.ZOMBIE, serverLevel.getRandom());
+                            }
                         }
                     }
 

@@ -419,12 +419,10 @@ public class DungeonMaterialRegistry {
             new WeightedPool<BlockState>().add(COBBLESTONE_STAIRS.defaultBlockState(),1).add(MOSSY_COBBLESTONE_STAIRS.defaultBlockState(),1),
             new WeightedPool<BlockState>().add(COBBLESTONE_SLAB.defaultBlockState(),1).add(MOSSY_COBBLESTONE_SLAB.defaultBlockState(),1),
             new WeightedPool<BlockState>().add(COBBLESTONE_WALL.defaultBlockState(),1).add(MOSSY_COBBLESTONE_WALL.defaultBlockState(),1),
-            new WeightedPool<BlockState>().add(LANTERN.defaultBlockState(),1),
+            new WeightedPool<BlockState>().add(LANTERN.defaultBlockState(),5).add(SOUL_LANTERN.defaultBlockState(),1),
             new WeightedPool<BlockState>().add(MOSSY_COBBLESTONE.defaultBlockState(),1)
     )
-            .addLightBlockSet(new WeightedPool<BlockState>().add(SOUL_LANTERN.defaultBlockState(),1))
-            .setHangingLights(new WeightedPool<BlockState>().add(LANTERN.defaultBlockState(),1))
-            .addHangingLightBlockSet(new WeightedPool<BlockState>().add(SOUL_LANTERN.defaultBlockState(),1))
+            .setHangingLights(new WeightedPool<BlockState>().add(LANTERN.defaultBlockState(),5).add(SOUL_LANTERN.defaultBlockState(),1))
             .addBasicBlockSet(new WeightedPool<BlockState>().add(POLISHED_ANDESITE.defaultBlockState(),1));
 
 

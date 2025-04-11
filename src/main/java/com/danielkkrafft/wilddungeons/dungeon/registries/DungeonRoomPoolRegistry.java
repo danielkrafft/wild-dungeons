@@ -148,6 +148,7 @@ public class DungeonRoomPoolRegistry {
                 .add(VILLAGE_SEWER_11, 1)
                 .add(VILLAGE_SEWER_12, 1)
                 .add(VILLAGE_SEWER_13, 1)
+                .add(VILLAGE_SEWER_CHESTCAP, 1)
                 .add(VILLAGE_SEWER_ELEVATOR, 1)
                 .add(VILLAGE_SEWER_DEELEVATOR, 1);
     }
