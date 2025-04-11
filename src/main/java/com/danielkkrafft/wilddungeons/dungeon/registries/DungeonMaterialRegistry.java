@@ -415,10 +415,10 @@ public class DungeonMaterialRegistry {
             );
 
     public static final DungeonMaterial VILLAGE_SEWER_MATERIAL = create("village_sewer",
-            new WeightedPool<BlockState>().add(COBBLESTONE.defaultBlockState(),1).add(MOSSY_COBBLESTONE.defaultBlockState(),1),
-            new WeightedPool<BlockState>().add(COBBLESTONE_STAIRS.defaultBlockState(),1).add(MOSSY_COBBLESTONE_STAIRS.defaultBlockState(),1),
-            new WeightedPool<BlockState>().add(COBBLESTONE_SLAB.defaultBlockState(),1).add(MOSSY_COBBLESTONE_SLAB.defaultBlockState(),1),
-            new WeightedPool<BlockState>().add(COBBLESTONE_WALL.defaultBlockState(),1).add(MOSSY_COBBLESTONE_WALL.defaultBlockState(),1),
+            new WeightedPool<BlockState>().add(COBBLESTONE.defaultBlockState(),3).add(MOSSY_COBBLESTONE.defaultBlockState(),1),
+            new WeightedPool<BlockState>().add(COBBLESTONE_STAIRS.defaultBlockState(),3).add(MOSSY_COBBLESTONE_STAIRS.defaultBlockState(),1),
+            new WeightedPool<BlockState>().add(COBBLESTONE_SLAB.defaultBlockState(),3).add(MOSSY_COBBLESTONE_SLAB.defaultBlockState(),1),
+            new WeightedPool<BlockState>().add(COBBLESTONE_WALL.defaultBlockState(),3).add(MOSSY_COBBLESTONE_WALL.defaultBlockState(),1),
             new WeightedPool<BlockState>().add(LANTERN.defaultBlockState(),5).add(SOUL_LANTERN.defaultBlockState(),1),
             new WeightedPool<BlockState>().add(MOSSY_COBBLESTONE.defaultBlockState(),1)
     )

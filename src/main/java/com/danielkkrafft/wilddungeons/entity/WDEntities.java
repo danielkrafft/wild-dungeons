@@ -74,4 +74,9 @@ public class WDEntities {
             .sized(5, 2)
             .fireImmune()
             .build(WildDungeons.rl("nether_dragon").toString()));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<BusinessGolem>> BUSINESS_GOLEM = ENTITIES.register("business_golem", () -> EntityType.Builder
+            .of(BusinessGolem::new, MobCategory.MONSTER)
+            .sized(1.4f, 2.7f)
+            .build(WildDungeons.rl("business_golem").toString()));
 }

@@ -393,8 +393,8 @@ public class TemplateHelper {
                         BlockEntity blockentity1 = serverLevel.getBlockEntity(structuretemplate$structureblockinfo.pos());
                         if (blockentity1 != null) {
                             blockentity1.loadWithComponents(structuretemplate$structureblockinfo.nbt(), serverLevel.registryAccess());
-                            if (blockentity1 instanceof SpawnerBlockEntity spawnerBlockEntity) {//todo replace this with the special spawner block entity and a system that randomizes the spawner
-                                spawnerBlockEntity.setEntityId(EntityType.ZOMBIE, serverLevel.getRandom());
+                            if (blockentity1 instanceof SpawnerBlockEntity spawnerBlockEntity) {//todo replace this with the special spawner block entity. Consider grabbing it from the a datamarker?
+                                spawnerBlockEntity.setEntityId(EntityType.ZOMBIE, serverLevel.getRandom());//todo pull from the room target pool instead
                             }
                         }
                     }

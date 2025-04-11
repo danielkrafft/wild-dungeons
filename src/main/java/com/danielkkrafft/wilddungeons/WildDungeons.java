@@ -5,11 +5,13 @@ import com.danielkkrafft.wilddungeons.block.WDFluids;
 import com.danielkkrafft.wilddungeons.dungeon.registries.PerkRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.registries.SoundscapeTemplateRegistry;
 import com.danielkkrafft.wilddungeons.entity.AmogusEntity;
+import com.danielkkrafft.wilddungeons.entity.BusinessGolem;
 import com.danielkkrafft.wilddungeons.entity.WDEntities;
 import com.danielkkrafft.wilddungeons.entity.boss.BreezeGolem;
 import com.danielkkrafft.wilddungeons.entity.boss.MutantBogged;
 import com.danielkkrafft.wilddungeons.entity.boss.NetherDragonEntity;
 import com.danielkkrafft.wilddungeons.entity.model.AmogusModel;
+import com.danielkkrafft.wilddungeons.entity.model.BusinessGolemModel;
 import com.danielkkrafft.wilddungeons.entity.renderer.*;
 import com.danielkkrafft.wilddungeons.network.SimplePacketManager;
 import com.danielkkrafft.wilddungeons.registry.*;
@@ -103,10 +105,11 @@ public class WildDungeons {
         event.registerEntityRenderer(WDEntities.NETHER_DRAGON.get(), NetherDragonRenderer::new);
         event.registerEntityRenderer(WDEntities.PIERCING_ARROW.get(), PiercingArrowRenderer::new);
         event.registerEntityRenderer(WDEntities.WIND_CHARGE_PROJECTILE.get(), WindChargeProjectileRenderer::new);
-        event.registerEntityRenderer(WDEntities.WIND_CHARGE_PROJECTILE.get(), WindChargeProjectileRenderer::new);
+        event.registerEntityRenderer(WDEntities.WIND_CHARGE_PROJECTILE.get(), WindChargeProjectileRenderer::new);//double registered? error?
         event.registerEntityRenderer(WDEntities.GRAPPLING_HOOK.get(), GrapplingHookRenderer::new);
         event.registerEntityRenderer(WDEntities.LASER_BEAM.get(), LaserbeamRenderer::new);
         event.registerEntityRenderer(WDEntities.ESSENCE_BOTTLE.get(), ThrownItemRenderer::new);
+        event.registerEntityRenderer(WDEntities.BUSINESS_GOLEM.get(), BusinessGolemRenderer::new);
     }
 
     @SubscribeEvent
@@ -153,11 +156,13 @@ public class WildDungeons {
         e.put(WDEntities.MUTANT_BOGGED.get(), MutantBogged.setAttributes());
         e.put(WDEntities.AMOGUS.get(), AmogusEntity.setAttributes());
         e.put(WDEntities.NETHER_DRAGON.get(), NetherDragonEntity.setAttributes());
+        e.put(WDEntities.BUSINESS_GOLEM.get(), BusinessGolem.createAttributes().build());
     }
 
     @SubscribeEvent
     public static void registerLayerDefinition(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(AmogusModel.LAYER_LOCATION, AmogusModel::createBodyLayer);
+        event.registerLayerDefinition(BusinessGolemModel.LAYER_LOCATION, BusinessGolemModel::createBodyLayer);
     }
 
     @SubscribeEvent
