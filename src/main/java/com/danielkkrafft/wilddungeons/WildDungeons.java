@@ -4,14 +4,13 @@ import com.danielkkrafft.wilddungeons.block.WDBlocks;
 import com.danielkkrafft.wilddungeons.block.WDFluids;
 import com.danielkkrafft.wilddungeons.dungeon.registries.PerkRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.registries.SoundscapeTemplateRegistry;
-import com.danielkkrafft.wilddungeons.entity.AmogusEntity;
-import com.danielkkrafft.wilddungeons.entity.BusinessGolem;
-import com.danielkkrafft.wilddungeons.entity.WDEntities;
+import com.danielkkrafft.wilddungeons.entity.*;
 import com.danielkkrafft.wilddungeons.entity.boss.BreezeGolem;
 import com.danielkkrafft.wilddungeons.entity.boss.MutantBogged;
 import com.danielkkrafft.wilddungeons.entity.boss.NetherDragonEntity;
 import com.danielkkrafft.wilddungeons.entity.model.AmogusModel;
 import com.danielkkrafft.wilddungeons.entity.model.BusinessGolemModel;
+import com.danielkkrafft.wilddungeons.entity.model.BusinessIllagerModel;
 import com.danielkkrafft.wilddungeons.entity.renderer.*;
 import com.danielkkrafft.wilddungeons.network.SimplePacketManager;
 import com.danielkkrafft.wilddungeons.registry.*;
@@ -110,6 +109,8 @@ public class WildDungeons {
         event.registerEntityRenderer(WDEntities.LASER_BEAM.get(), LaserbeamRenderer::new);
         event.registerEntityRenderer(WDEntities.ESSENCE_BOTTLE.get(), ThrownItemRenderer::new);
         event.registerEntityRenderer(WDEntities.BUSINESS_GOLEM.get(), BusinessGolemRenderer::new);
+        event.registerEntityRenderer(WDEntities.BUSINESS_VINDICATOR.get(), BusinessVindicatorRenderer::new);
+        event.registerEntityRenderer(WDEntities.BUSINESS_EVOKER.get(), BusinessEvokerRenderer::new);
     }
 
     @SubscribeEvent
@@ -157,12 +158,15 @@ public class WildDungeons {
         e.put(WDEntities.AMOGUS.get(), AmogusEntity.setAttributes());
         e.put(WDEntities.NETHER_DRAGON.get(), NetherDragonEntity.setAttributes());
         e.put(WDEntities.BUSINESS_GOLEM.get(), BusinessGolem.createAttributes().build());
+        e.put(WDEntities.BUSINESS_VINDICATOR.get(), BusinessVindicator.createAttributes().build());
+        e.put(WDEntities.BUSINESS_EVOKER.get(), BusinessEvoker.createAttributes().build());
     }
 
     @SubscribeEvent
     public static void registerLayerDefinition(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(AmogusModel.LAYER_LOCATION, AmogusModel::createBodyLayer);
         event.registerLayerDefinition(BusinessGolemModel.LAYER_LOCATION, BusinessGolemModel::createBodyLayer);
+        event.registerLayerDefinition(BusinessIllagerModel.LAYER_LOCATION, BusinessIllagerModel::createBodyLayer);
     }
 
     @SubscribeEvent

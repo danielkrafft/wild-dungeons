@@ -79,4 +79,12 @@ public class WDEntities {
             .of(BusinessGolem::new, MobCategory.MONSTER)
             .sized(1.4f, 2.7f)
             .build(WildDungeons.rl("business_golem").toString()));
+    public static final DeferredHolder<EntityType<?>, EntityType<BusinessVindicator>> BUSINESS_VINDICATOR = ENTITIES.register("business_vindicator", () -> EntityType.Builder
+            .of(BusinessVindicator::new, MobCategory.MONSTER)
+            .sized(0.6f, 1.8f)
+            .build(WildDungeons.rl("business_vindicator").toString()));
+    public static final DeferredHolder<EntityType<?>, EntityType<BusinessEvoker>> BUSINESS_EVOKER = ENTITIES.register("business_evoker", () -> EntityType.Builder
+            .of(BusinessEvoker::new, MobCategory.MONSTER)
+            .sized(0.6f, 1.8f)
+            .build(WildDungeons.rl("business_evoker").toString()));
 }
