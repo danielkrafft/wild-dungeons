@@ -2,8 +2,8 @@
 	"credit": "Made with Blockbench",
 	"ambientocclusion": false,
 	"textures": {
-		"0": "emerald_pile",
-		"particle": "emerald_pile"
+		"0": "wilddungeons:block/emerald_pile",
+		"particle": "wilddungeons:block/emerald_pile"
 	},
 	"elements": [
 		{
