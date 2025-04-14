@@ -63,7 +63,7 @@ public class WDBlocks {
     public static final DeferredBlock<Block> WD_BEDROCK = registerWithItem("wd_bedrock", () -> new WDBedrockBlock(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).requiresCorrectToolForDrops().strength(-1.0F, 3600000.0F)));
     public static final DeferredBlock<Block> WD_LOCKABLE = registerWithItem("wd_lockable", () -> new LockableBlock(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).requiresCorrectToolForDrops().strength(-1.0F, 3600000.0F).noOcclusion().noLootTable()));
 
-    public static final DeferredBlock<Block> EMERALD_PILE = BLOCKS.register("emerald_pile", () -> new EmeraldPileBlock(BlockBehaviour.Properties.of().mapColor(MapColor.EMERALD).strength(1.5F, 6.0F).noOcclusion().instabreak().sound(SoundType.AMETHYST)));
+    public static final DeferredBlock<Block> EMERALD_PILE = registerWithItem("emerald_pile", () -> new EmeraldPileBlock(BlockBehaviour.Properties.of().mapColor(MapColor.EMERALD).strength(1.5F, 6.0F).noOcclusion().instabreak().sound(SoundType.AMETHYST)));
 
     private static <T extends Block> DeferredBlock<T> registerWithItem(String name, Supplier<T> supplier, Item.@NotNull Properties properties) {
         DeferredBlock<T> block = BLOCKS.register(name, supplier);

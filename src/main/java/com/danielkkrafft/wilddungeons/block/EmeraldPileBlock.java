@@ -1,10 +1,15 @@
 package com.danielkkrafft.wilddungeons.block;
 
+import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.registry.WDBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -16,10 +21,14 @@ import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
+@EventBusSubscriber(modid = WildDungeons.MODID)
 public class EmeraldPileBlock extends Block {
     public static final int MAX_EMERALD_COUNT = 40;
     public static final IntegerProperty EMERALD_COUNT = IntegerProperty.create("emerald_count", 0, MAX_EMERALD_COUNT);
@@ -100,5 +109,20 @@ public class EmeraldPileBlock extends Block {
         }
         return super.onDestroyedByPlayer(state, level, pos, player, willHarvest, fluid);
 
+    }
+
+
+    @SubscribeEvent
+    public static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
+        ItemStack itemStack = event.getItemStack();
+        if (itemStack.is(Items.EMERALD)) {
+            ItemStack emeraldPileStack = WDBlocks.EMERALD_PILE.toStack();
+            InteractionResult result = emeraldPileStack.useOn(new BlockPlaceContext(event.getEntity(), event.getHand(), emeraldPileStack, event.getHitVec()));
+            if (result != InteractionResult.FAIL) {
+                event.getEntity().swing(event.getHand());
+                itemStack.shrink(1);
+                event.setCanceled(true);
+            }
+        }
     }
 }
