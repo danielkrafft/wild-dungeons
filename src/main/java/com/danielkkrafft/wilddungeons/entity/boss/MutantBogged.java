@@ -1,6 +1,6 @@
 package com.danielkkrafft.wilddungeons.entity.boss;
 
-import com.danielkkrafft.wilddungeons.block.WDBlocks;
+import com.danielkkrafft.wilddungeons.registry.WDBlocks;
 import com.danielkkrafft.wilddungeons.entity.PiercingArrow;
 import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
 import com.danielkkrafft.wilddungeons.util.UtilityMethods;

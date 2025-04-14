@@ -1,0 +1,109 @@
+{
+  "variants": {
+    "model=1,facing=south": {
+      "model": "wilddungeons:block/emerald_pile_1"
+    },
+    "model=2,facing=south": {
+      "model": "wilddungeons:block/emerald_pile_2"
+    },
+    "model=3,facing=south": {
+      "model": "wilddungeons:block/emerald_pile_3"
+    },
+    "model=4,facing=south": {
+      "model": "wilddungeons:block/emerald_pile_5"
+    },
+    "model=5,facing=south": {
+      "model": "wilddungeons:block/emerald_pile_10"
+    },
+    "model=6,facing=south": {
+      "model": "wilddungeons:block/emerald_pile_20"
+    },
+    "model=7,facing=south": {
+      "model": "wilddungeons:block/emerald_pile_40"
+    },
+    "model=1,facing=west": {
+      "model": "wilddungeons:block/emerald_pile_1",
+      "y": 90
+    },
+    "model=2,facing=west": {
+      "model": "wilddungeons:block/emerald_pile_2",
+      "y": 90
+    },
+    "model=3,facing=west": {
+      "model": "wilddungeons:block/emerald_pile_3",
+      "y": 90
+    },
+    "model=4,facing=west": {
+      "model": "wilddungeons:block/emerald_pile_5",
+      "y": 90
+    },
+    "model=5,facing=west": {
+      "model": "wilddungeons:block/emerald_pile_10",
+      "y": 90
+    },
+    "model=6,facing=west": {
+      "model": "wilddungeons:block/emerald_pile_20",
+      "y": 90
+    },
+    "model=7,facing=west": {
+      "model": "wilddungeons:block/emerald_pile_40",
+      "y": 90
+    },
+    "model=1,facing=north": {
+      "model": "wilddungeons:block/emerald_pile_1",
+      "y": 180
+    },
+    "model=2,facing=north": {
+      "model": "wilddungeons:block/emerald_pile_2",
+      "y": 180
+    },
+    "model=3,facing=north": {
+      "model": "wilddungeons:block/emerald_pile_3",
+      "y": 180
+    },
+    "model=4,facing=north": {
+      "model": "wilddungeons:block/emerald_pile_5",
+      "y": 180
+    },
+    "model=5,facing=north": {
+      "model": "wilddungeons:block/emerald_pile_10",
+      "y": 180
+    },
+    "model=6,facing=north": {
+      "model": "wilddungeons:block/emerald_pile_20",
+      "y": 180
+    },
+    "model=7,facing=north": {
+      "model": "wilddungeons:block/emerald_pile_40",
+      "y": 180
+    },
+    "model=1,facing=east": {
+      "model": "wilddungeons:block/emerald_pile_1",
+      "y": 270
+    },
+    "model=2,facing=east": {
+      "model": "wilddungeons:block/emerald_pile_2",
+      "y": 270
+    },
+    "model=3,facing=east": {
+      "model": "wilddungeons:block/emerald_pile_3",
+      "y": 270
+    },
+    "model=4,facing=east": {
+      "model": "wilddungeons:block/emerald_pile_5",
+      "y": 270
+    },
+    "model=5,facing=east": {
+      "model": "wilddungeons:block/emerald_pile_10",
+      "y": 270
+    },
+    "model=6,facing=east": {
+      "model": "wilddungeons:block/emerald_pile_20",
+      "y": 270
+    },
+    "model=7,facing=east": {
+      "model": "wilddungeons:block/emerald_pile_40",
+      "y": 270
+    }
+  }
+}

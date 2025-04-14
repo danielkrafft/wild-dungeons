@@ -1,7 +1,7 @@
 package com.danielkkrafft.wilddungeons;
 
-import com.danielkkrafft.wilddungeons.block.WDBlocks;
-import com.danielkkrafft.wilddungeons.block.WDFluids;
+import com.danielkkrafft.wilddungeons.registry.WDBlocks;
+import com.danielkkrafft.wilddungeons.registry.WDFluids;
 import com.danielkkrafft.wilddungeons.dungeon.registries.PerkRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.registries.SoundscapeTemplateRegistry;
 import com.danielkkrafft.wilddungeons.entity.*;
@@ -27,6 +27,10 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemNameBlockItem;
+import net.minecraft.world.level.block.Blocks;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -176,6 +180,28 @@ public class WildDungeons {
             event.register(TOGGLE_ESSENCE_TYPE);
         }
     }
+
+    @SubscribeEvent
+    public static void onRegistry(RegisterEvent event) {
+        event.register(BuiltInRegistries.ITEM.key(), registry -> {
+            // Replace the emerald item
+            registry.register(
+                    WildDungeons.rl("emerald"),
+                    new BlockItem(WDBlocks.EMERALD_PILE.get(), new Item.Properties())
+            );
+        });
+    }
+
+//    @SubscribeEvent
+//    public static void onRegistry(RegisterEvent event) {
+//        if (event.getRegistryKey().equals(Registries.ITEM)) {
+//            // Replace the emerald item
+//            event.register(Registries.ITEM,
+//                    ResourceLocation.withDefaultNamespace("emerald"),
+//                    () -> new BlockItem(WDBlocks.EMERALD_PILE.get(), new Item.Properties()));
+//        }
+//    }
+
     public static ResourceLocation rl(String path) {
         return ResourceLocation.fromNamespaceAndPath(MODID, path);
     }

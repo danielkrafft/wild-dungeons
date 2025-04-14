@@ -1,7 +1,7 @@
 package com.danielkkrafft.wilddungeons.dungeon.components;
 
 
-import com.danielkkrafft.wilddungeons.block.WDBlocks;
+import com.danielkkrafft.wilddungeons.registry.WDBlocks;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.world.structure.WDStructureTemplate;

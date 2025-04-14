@@ -1,5 +1,6 @@
 package com.danielkkrafft.wilddungeons.block;
 
+import com.danielkkrafft.wilddungeons.registry.WDBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerPlayer;

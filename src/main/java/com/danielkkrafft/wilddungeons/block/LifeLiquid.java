@@ -1,5 +1,7 @@
 package com.danielkkrafft.wilddungeons.block;
 
+import com.danielkkrafft.wilddungeons.registry.WDBlocks;
+import com.danielkkrafft.wilddungeons.registry.WDFluids;
 import com.danielkkrafft.wilddungeons.registry.WDItems;
 import com.danielkkrafft.wilddungeons.registry.WDTags;
 import net.minecraft.core.BlockPos;
