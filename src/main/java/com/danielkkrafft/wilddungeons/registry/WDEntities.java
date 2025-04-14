@@ -8,6 +8,7 @@ import com.danielkkrafft.wilddungeons.entity.boss.NetherDragonEntity;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -88,4 +89,12 @@ public class WDEntities {
             .of(BusinessEvoker::new, MobCategory.MONSTER)
             .sized(0.6f, 1.8f)
             .build(WildDungeons.rl("business_evoker").toString()));
+    public static final DeferredHolder<EntityType<?>, EntityType<EmeraldWisp>> SMALL_EMERALD_WISP = ENTITIES.register("small_emerald_wisp", () -> EntityType.Builder
+            .of((EntityType<EmeraldWisp> entityType, Level level) -> new EmeraldWisp(entityType, level, false), MobCategory.MONSTER)
+            .sized(0.6f, 0.3f)
+            .build(WildDungeons.rl("small_emerald_wisp").toString()));
+    public static final DeferredHolder<EntityType<?>, EntityType<EmeraldWisp>> LARGE_EMERALD_WISP = ENTITIES.register("large_emerald_wisp", () -> EntityType.Builder
+            .of((EntityType<EmeraldWisp> entityType, Level level) -> new EmeraldWisp(entityType, level, true), MobCategory.MONSTER)
+            .sized(1f, 0.5f)
+            .build(WildDungeons.rl("large_emerald_wisp").toString()));
 }

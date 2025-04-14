@@ -16,6 +16,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.animal.IronGolem;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.NotNull;
 
 @OnlyIn(Dist.CLIENT)
 public class BusinessGolemRenderer extends MobRenderer<BusinessGolem, BusinessGolemModel<BusinessGolem>> {
@@ -25,11 +26,11 @@ public class BusinessGolemRenderer extends MobRenderer<BusinessGolem, BusinessGo
         super(context, new BusinessGolemModel<>(context.bakeLayer(BusinessGolemModel.LAYER_LOCATION)), 0.7F);
     }
 
-    public ResourceLocation getTextureLocation(BusinessGolem entity) {
+    public @NotNull ResourceLocation getTextureLocation(@NotNull BusinessGolem entity) {
         return GOLEM_LOCATION;
     }
 
-    protected void setupRotations(BusinessGolem entity, PoseStack poseStack, float bob, float yBodyRot, float partialTick, float scale) {
+    protected void setupRotations(@NotNull BusinessGolem entity, @NotNull PoseStack poseStack, float bob, float yBodyRot, float partialTick, float scale) {
         super.setupRotations(entity, poseStack, bob, yBodyRot, partialTick, scale);
         if (!((double)entity.walkAnimation.speed() < 0.01)) {
             float f1 = entity.walkAnimation.position(partialTick) + 6.0F;

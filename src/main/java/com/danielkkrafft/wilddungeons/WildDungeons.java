@@ -1,5 +1,6 @@
 package com.danielkkrafft.wilddungeons;
 
+import com.danielkkrafft.wilddungeons.entity.model.EmeraldWispModel;
 import com.danielkkrafft.wilddungeons.registry.WDBlocks;
 import com.danielkkrafft.wilddungeons.registry.WDFluids;
 import com.danielkkrafft.wilddungeons.dungeon.registries.PerkRegistry;
@@ -22,6 +23,7 @@ import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -111,6 +113,8 @@ public class WildDungeons {
         event.registerEntityRenderer(WDEntities.BUSINESS_GOLEM.get(), BusinessGolemRenderer::new);
         event.registerEntityRenderer(WDEntities.BUSINESS_VINDICATOR.get(), BusinessVindicatorRenderer::new);
         event.registerEntityRenderer(WDEntities.BUSINESS_EVOKER.get(), BusinessEvokerRenderer::new);
+        event.registerEntityRenderer(WDEntities.SMALL_EMERALD_WISP.get(), (EntityRendererProvider.Context context) -> new EmeraldWispRenderer(context, false));
+        event.registerEntityRenderer(WDEntities.LARGE_EMERALD_WISP.get(), (EntityRendererProvider.Context context) -> new EmeraldWispRenderer(context, true));
     }
 
     @SubscribeEvent
@@ -160,6 +164,8 @@ public class WildDungeons {
         e.put(WDEntities.BUSINESS_GOLEM.get(), BusinessGolem.createAttributes().build());
         e.put(WDEntities.BUSINESS_VINDICATOR.get(), BusinessVindicator.createAttributes().build());
         e.put(WDEntities.BUSINESS_EVOKER.get(), BusinessEvoker.createAttributes().build());
+        e.put(WDEntities.SMALL_EMERALD_WISP.get(), EmeraldWisp.createAttributes(false).build());
+        e.put(WDEntities.LARGE_EMERALD_WISP.get(), EmeraldWisp.createAttributes(true).build());
     }
 
     @SubscribeEvent
@@ -167,6 +173,8 @@ public class WildDungeons {
         event.registerLayerDefinition(AmogusModel.LAYER_LOCATION, AmogusModel::createBodyLayer);
         event.registerLayerDefinition(BusinessGolemModel.LAYER_LOCATION, BusinessGolemModel::createBodyLayer);
         event.registerLayerDefinition(BusinessIllagerModel.LAYER_LOCATION, BusinessIllagerModel::createBodyLayer);
+        event.registerLayerDefinition(EmeraldWispModel.SMALL_LAYER_LOCATION, () -> EmeraldWispModel.createBodyLayer(false));
+        event.registerLayerDefinition(EmeraldWispModel.LARGE_LAYER_LOCATION, () -> EmeraldWispModel.createBodyLayer(true));
     }
 
     @SubscribeEvent
