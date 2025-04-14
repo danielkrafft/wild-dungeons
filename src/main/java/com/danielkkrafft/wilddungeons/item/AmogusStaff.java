@@ -1,7 +1,7 @@
 package com.danielkkrafft.wilddungeons.item;
 
 import com.danielkkrafft.wilddungeons.entity.AmogusEntity;
-import com.danielkkrafft.wilddungeons.entity.WDEntities;
+import com.danielkkrafft.wilddungeons.registry.WDEntities;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.EquipmentSlot;

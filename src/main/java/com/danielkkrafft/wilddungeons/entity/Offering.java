@@ -11,6 +11,7 @@ import com.danielkkrafft.wilddungeons.network.ClientPacketHandler;
 import com.danielkkrafft.wilddungeons.network.SimplePacketManager;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
+import com.danielkkrafft.wilddungeons.registry.WDEntities;
 import com.danielkkrafft.wilddungeons.registry.WDItems;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.core.component.DataComponents;

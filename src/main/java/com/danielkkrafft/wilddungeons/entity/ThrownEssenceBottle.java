@@ -1,5 +1,6 @@
 package com.danielkkrafft.wilddungeons.entity;
 
+import com.danielkkrafft.wilddungeons.registry.WDEntities;
 import com.danielkkrafft.wilddungeons.registry.WDItems;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;

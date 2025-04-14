@@ -1,7 +1,6 @@
 package com.danielkkrafft.wilddungeons.registry;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.entity.WDEntities;
 import com.danielkkrafft.wilddungeons.item.*;
 import com.danielkkrafft.wilddungeons.util.debug.DebugItem;
 import net.minecraft.world.item.*;

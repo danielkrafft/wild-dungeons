@@ -7,7 +7,7 @@ import com.danielkkrafft.wilddungeons.dungeon.components.ConnectionPoint;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonMaterial;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
 import com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialRegistry;
-import com.danielkkrafft.wilddungeons.entity.WDEntities;
+import com.danielkkrafft.wilddungeons.registry.WDEntities;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import com.danielkkrafft.wilddungeons.world.structure.WDStructureTemplate;
 import com.mojang.datafixers.util.Pair;

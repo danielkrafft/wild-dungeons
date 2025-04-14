@@ -1,5 +1,6 @@
 package com.danielkkrafft.wilddungeons.entity;
 
+import com.danielkkrafft.wilddungeons.registry.WDEntities;
 import com.danielkkrafft.wilddungeons.util.MathUtil;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import net.minecraft.core.BlockPos;

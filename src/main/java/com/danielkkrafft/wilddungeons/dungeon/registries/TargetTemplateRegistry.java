@@ -2,7 +2,7 @@ package com.danielkkrafft.wilddungeons.dungeon.registries;
 
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.DungeonComponentRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.TargetTemplate;
-import com.danielkkrafft.wilddungeons.entity.WDEntities;
+import com.danielkkrafft.wilddungeons.registry.WDEntities;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.monster.Slime;
