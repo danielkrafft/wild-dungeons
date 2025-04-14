@@ -12,6 +12,7 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -19,6 +20,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -111,11 +113,28 @@ public class EmeraldPileBlock extends Block {
 
     }
 
+    @Override
+    public @NotNull ItemStack getCloneItemStack(@NotNull BlockState state, @NotNull HitResult target, @NotNull LevelReader level, @NotNull BlockPos pos, @NotNull Player player) {
+        int count = state.getValue(EMERALD_COUNT);
+        return new ItemStack(Items.EMERALD, count);
+    }
 
     @SubscribeEvent
     public static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
+        if (event.getLevel().isClientSide() || event.getItemStack().isEmpty()) {
+            return;
+        }
         ItemStack itemStack = event.getItemStack();
         if (itemStack.is(Items.EMERALD)) {
+            BlockPos pos = event.getHitVec().getBlockPos();
+            BlockState state = event.getLevel().getBlockState(pos);
+
+            // Check if the targeted block has functionality (like containers/GUI blocks)
+            // Don't cancel those interactions
+            if (state.hasBlockEntity() && !event.getEntity().isShiftKeyDown()) {
+                return;
+            }
+
             ItemStack emeraldPileStack = WDBlocks.EMERALD_PILE.toStack();
             InteractionResult result = emeraldPileStack.useOn(new BlockPlaceContext(event.getEntity(), event.getHand(), emeraldPileStack, event.getHitVec()));
             if (result != InteractionResult.FAIL) {
