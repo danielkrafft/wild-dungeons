@@ -4,13 +4,17 @@ import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.registry.WDBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
@@ -20,6 +24,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -47,6 +52,12 @@ public class EmeraldPileBlock extends Block {
     public EmeraldPileBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any().setValue(EMERALD_COUNT, 1).setValue(MODEL, 1));
+    }
+
+    @Override
+    protected @NotNull ItemInteractionResult useItemOn(@NotNull ItemStack stack, @NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hitResult) {
+        level.addParticle(ParticleTypes.COMPOSTER, pos.getX() + level.random.nextFloat(), pos.getY() + level.random.nextFloat(), pos.getZ() + level.random.nextFloat(), 0, 0, 0);
+        return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
     }
 
     @Nullable
@@ -114,6 +125,15 @@ public class EmeraldPileBlock extends Block {
     }
 
     @Override
+    public void onBlockExploded(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Explosion explosion) {
+        int count = state.getValue(EMERALD_COUNT);
+        for (int i = 0; i < count; i++) {
+            Block.popResource(level, pos, Items.EMERALD.getDefaultInstance());
+        }
+        super.onBlockExploded(state, level, pos, explosion);
+    }
+
+    @Override
     public @NotNull ItemStack getCloneItemStack(@NotNull BlockState state, @NotNull HitResult target, @NotNull LevelReader level, @NotNull BlockPos pos, @NotNull Player player) {
         int count = state.getValue(EMERALD_COUNT);
         return new ItemStack(Items.EMERALD, count);
@@ -129,8 +149,6 @@ public class EmeraldPileBlock extends Block {
             BlockPos pos = event.getHitVec().getBlockPos();
             BlockState state = event.getLevel().getBlockState(pos);
 
-            // Check if the targeted block has functionality (like containers/GUI blocks)
-            // Don't cancel those interactions
             if (state.hasBlockEntity() && !event.getEntity().isShiftKeyDown()) {
                 return;
             }
