@@ -8,6 +8,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -22,6 +23,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.damagesource.DamageContainer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,7 +36,7 @@ public class EmeraldWisp extends PathfinderMob implements TraceableEntity {
     private static final EntityDataAccessor<Boolean> DATA_IS_IGNITED = SynchedEntityData.defineId(EmeraldWisp.class, EntityDataSerializers.BOOLEAN);
     protected int oldSwell;
     protected int swell;
-    private int explosionRadius = 1;
+    private int explosionRadius = 2;
 
     public EmeraldWisp(EntityType<? extends PathfinderMob> entityType, Level level) {
         super(entityType, level);
@@ -52,14 +54,18 @@ public class EmeraldWisp extends PathfinderMob implements TraceableEntity {
 
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new FloatGoal(this));
-        this.goalSelector.addGoal(2, new SwellGoal(this));
-        this.goalSelector.addGoal(4, new MeleeAttackGoal(this, 1.0F, false));
         this.goalSelector.addGoal(5, new WaterAvoidingRandomFlyingGoal(this, 0.8));
         this.goalSelector.addGoal(9, new LookAtPlayerGoal(this, Player.class, 3.0F, 1.0F));
         this.goalSelector.addGoal(10, new LookAtPlayerGoal(this, Mob.class, 8.0F));
         this.goalSelector.addGoal(11, new RandomLookAroundGoal(this));
-        this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, true, (target) -> target != this.getOwner()));
         this.targetSelector.addGoal(2, new HurtByTargetGoal(this));
+        registerSpecificGoals();
+    }
+
+    protected void registerSpecificGoals() {
+        this.goalSelector.addGoal(2, new SwellGoal(this));
+        this.goalSelector.addGoal(4, new MeleeAttackGoal(this, 1.0F, false));
+        this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, true, (target) -> target != this.getOwner()));
     }
 
     public int getMaxSwell() {
@@ -72,7 +78,7 @@ public class EmeraldWisp extends PathfinderMob implements TraceableEntity {
         builder.define(DATA_IS_IGNITED, false);
     }
 
-    public void addAdditionalSaveData(CompoundTag compound) {
+    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
 
         compound.putByte("ExplosionRadius", (byte) this.explosionRadius);
@@ -142,7 +148,9 @@ public class EmeraldWisp extends PathfinderMob implements TraceableEntity {
             }
         }
 
+        float xRot = this.getXRot();
         super.tick();
+        this.setXRot(xRot);
     }
 
     public void setTarget(@javax.annotation.Nullable LivingEntity target) {
@@ -254,5 +262,28 @@ public class EmeraldWisp extends PathfinderMob implements TraceableEntity {
                 this.wisp.setSwellDir(1);
             }
         }
+    }
+
+    @Override
+    public boolean isDamageSourceBlocked(DamageSource damageSource) {
+        if (damageSource.is(DamageTypes.EXPLOSION))
+            return true;
+        return super.isDamageSourceBlocked(damageSource);
+    }
+
+    @Override
+    public void handleDamageEvent(DamageSource damageSource) {
+        if (damageSource.is(DamageTypes.EXPLOSION))
+            return;
+        super.handleDamageEvent(damageSource);
+    }
+
+    @Override
+    public void onDamageTaken(DamageContainer damageContainer) {
+        if (damageContainer.getSource().is(DamageTypes.EXPLOSION)){
+            damageContainer.setNewDamage(0);
+            damageContainer.setPostAttackInvulnerabilityTicks(0);
+        }
+        super.onDamageTaken(damageContainer);
     }
 }

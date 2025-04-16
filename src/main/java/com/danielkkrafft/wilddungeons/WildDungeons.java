@@ -1,8 +1,5 @@
 package com.danielkkrafft.wilddungeons;
 
-import com.danielkkrafft.wilddungeons.entity.model.EmeraldWispModel;
-import com.danielkkrafft.wilddungeons.registry.WDBlocks;
-import com.danielkkrafft.wilddungeons.registry.WDFluids;
 import com.danielkkrafft.wilddungeons.dungeon.registries.PerkRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.registries.SoundscapeTemplateRegistry;
 import com.danielkkrafft.wilddungeons.entity.*;
@@ -12,6 +9,7 @@ import com.danielkkrafft.wilddungeons.entity.boss.NetherDragonEntity;
 import com.danielkkrafft.wilddungeons.entity.model.AmogusModel;
 import com.danielkkrafft.wilddungeons.entity.model.BusinessGolemModel;
 import com.danielkkrafft.wilddungeons.entity.model.BusinessIllagerModel;
+import com.danielkkrafft.wilddungeons.entity.model.EmeraldWispModel;
 import com.danielkkrafft.wilddungeons.entity.renderer.*;
 import com.danielkkrafft.wilddungeons.network.SimplePacketManager;
 import com.danielkkrafft.wilddungeons.registry.*;
@@ -115,6 +113,8 @@ public class WildDungeons {
         event.registerEntityRenderer(WDEntities.BUSINESS_EVOKER.get(), BusinessEvokerRenderer::new);
         event.registerEntityRenderer(WDEntities.SMALL_EMERALD_WISP.get(), (EntityRendererProvider.Context context) -> new EmeraldWispRenderer(context, false));
         event.registerEntityRenderer(WDEntities.LARGE_EMERALD_WISP.get(), (EntityRendererProvider.Context context) -> new EmeraldWispRenderer(context, true));
+        event.registerEntityRenderer(WDEntities.FRIENDLY_EMERALD_WISP.get(), (EntityRendererProvider.Context context) -> new EmeraldWispRenderer(context, false));
+        event.registerEntityRenderer(WDEntities.FRIENDLY_LARGE_EMERALD_WISP.get(), (EntityRendererProvider.Context context) -> new EmeraldWispRenderer(context, true));
     }
 
     @SubscribeEvent
@@ -166,6 +166,8 @@ public class WildDungeons {
         e.put(WDEntities.BUSINESS_EVOKER.get(), BusinessEvoker.createAttributes().build());
         e.put(WDEntities.SMALL_EMERALD_WISP.get(), EmeraldWisp.createAttributes().build());
         e.put(WDEntities.LARGE_EMERALD_WISP.get(), LargeEmeraldWisp.createAttributes().build());
+        e.put(WDEntities.FRIENDLY_EMERALD_WISP.get(), FriendlyEmeraldWisp.createAttributes().build());
+        e.put(WDEntities.FRIENDLY_LARGE_EMERALD_WISP.get(), FriendlyLargeEmeraldWisp.createAttributes().build());
     }
 
     @SubscribeEvent

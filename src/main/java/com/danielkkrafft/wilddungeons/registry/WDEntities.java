@@ -8,7 +8,6 @@ import com.danielkkrafft.wilddungeons.entity.boss.NetherDragonEntity;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -97,4 +96,12 @@ public class WDEntities {
             .of(LargeEmeraldWisp::new, MobCategory.MONSTER)
             .sized(1f, 0.5f)
             .build(WildDungeons.rl("large_emerald_wisp").toString()));
+    public static final DeferredHolder<EntityType<?>, EntityType<FriendlyEmeraldWisp>> FRIENDLY_EMERALD_WISP = ENTITIES.register("friendly_emerald_wisp", () -> EntityType.Builder
+            .of(FriendlyEmeraldWisp::new, MobCategory.MONSTER)
+            .sized(0.6f, 0.3f)
+            .build(WildDungeons.rl("friendly_emerald_wisp").toString()));
+    public static final DeferredHolder<EntityType<?>, EntityType<FriendlyLargeEmeraldWisp>> FRIENDLY_LARGE_EMERALD_WISP = ENTITIES.register("large_friendly_emerald_wisp", () -> EntityType.Builder
+            .of(FriendlyLargeEmeraldWisp::new, MobCategory.MONSTER)
+            .sized(1f, 0.5f)
+            .build(WildDungeons.rl("large_friendly_emerald_wisp").toString()));
 }
