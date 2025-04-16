@@ -22,6 +22,7 @@ public class WDCreativeTabs {
             .displayItems((params, output) -> {
                 output.accept(MEATHOOK_ITEM.get());
                 output.accept(AMOGUS_STAFF.get());
+                output.accept(EMERALD_STAFF.get());
                 output.accept(LASER_SWORD_ITEM.get());
                 output.accept(FIREWORK_GUN_ITEM.get());
 

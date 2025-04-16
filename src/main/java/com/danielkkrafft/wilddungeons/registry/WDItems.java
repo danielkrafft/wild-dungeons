@@ -18,6 +18,7 @@ public class WDItems {
     public static final DeferredItem<Item> MEATHOOK_ITEM = ITEMS.register("meathook", Meathook::new);
     public static final DeferredItem<Item> ESSENCE_BOTTLE = ITEMS.register("essence_bottle", EssenceBottleItem::new);
     public static final DeferredItem<Item> AMOGUS_STAFF = ITEMS.register("amogus_staff", AmogusStaff::new);
+    public static final DeferredItem<Item> EMERALD_STAFF = ITEMS.register("emerald_staff", EmeraldStaff::new);
     public static final DeferredItem<Item> LASER_SWORD_ITEM = ITEMS.register("laser_sword", LaserSword::new);
     public static final DeferredItem<Item> FIREWORK_GUN_ITEM = ITEMS.register("firework_gun", FireworkGun::new);
     public static final DeferredItem<Item> LIFE_LIQUID_BUCKET = ITEMS.register("life_liquid_bucket", () -> new BucketItem(WDFluids.LIFE_LIQUID.get(), (new Item.Properties()).craftRemainder(Items.BUCKET).stacksTo(1)));
