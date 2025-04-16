@@ -3,6 +3,7 @@ package com.danielkkrafft.wilddungeons.registry;
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.entity.*;
 import com.danielkkrafft.wilddungeons.entity.boss.BreezeGolem;
+import com.danielkkrafft.wilddungeons.entity.boss.BusinessCEO;
 import com.danielkkrafft.wilddungeons.entity.boss.MutantBogged;
 import com.danielkkrafft.wilddungeons.entity.boss.NetherDragonEntity;
 import net.minecraft.core.registries.Registries;
@@ -104,4 +105,8 @@ public class WDEntities {
             .of(FriendlyLargeEmeraldWisp::new, MobCategory.MONSTER)
             .sized(1f, 0.5f)
             .build(WildDungeons.rl("large_friendly_emerald_wisp").toString()));
+    public static final DeferredHolder<EntityType<?>, EntityType<BusinessCEO>> BUSINESS_CEO = ENTITIES.register("business_ceo", () -> EntityType.Builder
+            .of(BusinessCEO::new, MobCategory.MONSTER)
+            .sized(1.1f, 2.8f)
+            .build(WildDungeons.rl("business_ceo").toString()));
 }

@@ -4,6 +4,7 @@ import com.danielkkrafft.wilddungeons.dungeon.registries.PerkRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.registries.SoundscapeTemplateRegistry;
 import com.danielkkrafft.wilddungeons.entity.*;
 import com.danielkkrafft.wilddungeons.entity.boss.BreezeGolem;
+import com.danielkkrafft.wilddungeons.entity.boss.BusinessCEO;
 import com.danielkkrafft.wilddungeons.entity.boss.MutantBogged;
 import com.danielkkrafft.wilddungeons.entity.boss.NetherDragonEntity;
 import com.danielkkrafft.wilddungeons.entity.model.AmogusModel;
@@ -115,6 +116,7 @@ public class WildDungeons {
         event.registerEntityRenderer(WDEntities.LARGE_EMERALD_WISP.get(), (EntityRendererProvider.Context context) -> new EmeraldWispRenderer(context, true));
         event.registerEntityRenderer(WDEntities.FRIENDLY_EMERALD_WISP.get(), (EntityRendererProvider.Context context) -> new EmeraldWispRenderer(context, false));
         event.registerEntityRenderer(WDEntities.FRIENDLY_LARGE_EMERALD_WISP.get(), (EntityRendererProvider.Context context) -> new EmeraldWispRenderer(context, true));
+        event.registerEntityRenderer(WDEntities.BUSINESS_CEO.get(), BusinessCEORenderer::new);
     }
 
     @SubscribeEvent
@@ -168,6 +170,7 @@ public class WildDungeons {
         e.put(WDEntities.LARGE_EMERALD_WISP.get(), LargeEmeraldWisp.createAttributes().build());
         e.put(WDEntities.FRIENDLY_EMERALD_WISP.get(), FriendlyEmeraldWisp.createAttributes().build());
         e.put(WDEntities.FRIENDLY_LARGE_EMERALD_WISP.get(), FriendlyLargeEmeraldWisp.createAttributes().build());
+        e.put(WDEntities.BUSINESS_CEO.get(), BusinessCEO.setAttributes());
     }
 
     @SubscribeEvent

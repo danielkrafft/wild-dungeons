@@ -190,9 +190,6 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
-        if (hasCustomName()) {
-            bossEvent.setName(getDisplayName());
-        }
         compound.putInt("AX", this.anchorPoint.getX());
         compound.putInt("AY", this.anchorPoint.getY());
         compound.putInt("AZ", this.anchorPoint.getZ());
