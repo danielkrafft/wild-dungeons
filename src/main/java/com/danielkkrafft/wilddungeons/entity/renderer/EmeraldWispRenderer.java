@@ -15,9 +15,12 @@ public class EmeraldWispRenderer extends MobRenderer<EmeraldWisp, EmeraldWispMod
     private static final ResourceLocation LARGE_EMERALD_WISP = WildDungeons.rl("textures/entity/village/large_emerald_wisp.png");
     private static final float BASE_SCALE = 1.0F;
 
+    private final boolean isLarge;
+
     public EmeraldWispRenderer(EntityRendererProvider.Context context, boolean isLarge) {
         super(context, new EmeraldWispModel<>(context.bakeLayer(
                 isLarge ? EmeraldWispModel.LARGE_LAYER_LOCATION : EmeraldWispModel.SMALL_LAYER_LOCATION)), 0.25f);
+        this.isLarge = isLarge;
     }
 
     @Override
@@ -39,6 +42,6 @@ public class EmeraldWispRenderer extends MobRenderer<EmeraldWisp, EmeraldWispMod
 
     @Override
     public @NotNull ResourceLocation getTextureLocation(@NotNull EmeraldWisp entity) {
-        return entity.isLarge() ? LARGE_EMERALD_WISP : EMERALD_WISP;
+        return isLarge ? LARGE_EMERALD_WISP : EMERALD_WISP;
     }
 }

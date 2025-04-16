@@ -90,11 +90,11 @@ public class WDEntities {
             .sized(0.6f, 1.8f)
             .build(WildDungeons.rl("business_evoker").toString()));
     public static final DeferredHolder<EntityType<?>, EntityType<EmeraldWisp>> SMALL_EMERALD_WISP = ENTITIES.register("small_emerald_wisp", () -> EntityType.Builder
-            .of((EntityType<EmeraldWisp> entityType, Level level) -> new EmeraldWisp(entityType, level, false), MobCategory.MONSTER)
+            .of(EmeraldWisp::new, MobCategory.MONSTER)
             .sized(0.6f, 0.3f)
             .build(WildDungeons.rl("small_emerald_wisp").toString()));
-    public static final DeferredHolder<EntityType<?>, EntityType<EmeraldWisp>> LARGE_EMERALD_WISP = ENTITIES.register("large_emerald_wisp", () -> EntityType.Builder
-            .of((EntityType<EmeraldWisp> entityType, Level level) -> new EmeraldWisp(entityType, level, true), MobCategory.MONSTER)
+    public static final DeferredHolder<EntityType<?>, EntityType<LargeEmeraldWisp>> LARGE_EMERALD_WISP = ENTITIES.register("large_emerald_wisp", () -> EntityType.Builder
+            .of(LargeEmeraldWisp::new, MobCategory.MONSTER)
             .sized(1f, 0.5f)
             .build(WildDungeons.rl("large_emerald_wisp").toString()));
 }

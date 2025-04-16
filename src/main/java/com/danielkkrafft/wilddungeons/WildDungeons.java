@@ -164,8 +164,8 @@ public class WildDungeons {
         e.put(WDEntities.BUSINESS_GOLEM.get(), BusinessGolem.createAttributes().build());
         e.put(WDEntities.BUSINESS_VINDICATOR.get(), BusinessVindicator.createAttributes().build());
         e.put(WDEntities.BUSINESS_EVOKER.get(), BusinessEvoker.createAttributes().build());
-        e.put(WDEntities.SMALL_EMERALD_WISP.get(), EmeraldWisp.createAttributes(false).build());
-        e.put(WDEntities.LARGE_EMERALD_WISP.get(), EmeraldWisp.createAttributes(true).build());
+        e.put(WDEntities.SMALL_EMERALD_WISP.get(), EmeraldWisp.createAttributes().build());
+        e.put(WDEntities.LARGE_EMERALD_WISP.get(), LargeEmeraldWisp.createAttributes().build());
     }
 
     @SubscribeEvent

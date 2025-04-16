@@ -30,18 +30,15 @@ import java.util.EnumSet;
 public class EmeraldWisp extends PathfinderMob implements TraceableEntity {
     @javax.annotation.Nullable
     Entity owner;
-    boolean isLarge;
     private static final EntityDataAccessor<Integer> DATA_SWELL_DIR = SynchedEntityData.defineId(EmeraldWisp.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> DATA_IS_IGNITED = SynchedEntityData.defineId(EmeraldWisp.class, EntityDataSerializers.BOOLEAN);
-    private int oldSwell;
-    private int swell;
-    private int maxSwell = 30;
+    protected int oldSwell;
+    protected int swell;
     private int explosionRadius = 1;
 
-    public EmeraldWisp(EntityType<? extends PathfinderMob> entityType, Level level, boolean isLarge) {
+    public EmeraldWisp(EntityType<? extends PathfinderMob> entityType, Level level) {
         super(entityType, level);
         this.moveControl = new FlyingMoveControl(this, 20, true);
-        this.isLarge = isLarge;
     }
 
     @Override
@@ -54,7 +51,6 @@ public class EmeraldWisp extends PathfinderMob implements TraceableEntity {
     }
 
     protected void registerGoals() {
-        super.registerGoals();
         this.goalSelector.addGoal(0, new FloatGoal(this));
         this.goalSelector.addGoal(2, new SwellGoal(this));
         this.goalSelector.addGoal(4, new MeleeAttackGoal(this, 1.0F, false));
@@ -62,9 +58,12 @@ public class EmeraldWisp extends PathfinderMob implements TraceableEntity {
         this.goalSelector.addGoal(9, new LookAtPlayerGoal(this, Player.class, 3.0F, 1.0F));
         this.goalSelector.addGoal(10, new LookAtPlayerGoal(this, Mob.class, 8.0F));
         this.goalSelector.addGoal(11, new RandomLookAroundGoal(this));
-//        this.targetSelector.addGoal(2, new Vex.VexCopyOwnerTargetGoal(this));
-        this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, true));
+        this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, true, (target) -> target != this.getOwner()));
         this.targetSelector.addGoal(2, new HurtByTargetGoal(this));
+    }
+
+    public int getMaxSwell() {
+        return 30;
     }
 
     protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
@@ -76,16 +75,13 @@ public class EmeraldWisp extends PathfinderMob implements TraceableEntity {
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
 
-        compound.putShort("Fuse", (short) this.maxSwell);
         compound.putByte("ExplosionRadius", (byte) this.explosionRadius);
         compound.putBoolean("ignited", this.isIgnited());
     }
 
-    public void readAdditionalSaveData(CompoundTag compound) {
+    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        if (compound.contains("Fuse", 99)) {
-            this.maxSwell = compound.getShort("Fuse");
-        }
+
 
         if (compound.contains("ExplosionRadius", 99)) {
             this.explosionRadius = compound.getByte("ExplosionRadius");
@@ -102,7 +98,7 @@ public class EmeraldWisp extends PathfinderMob implements TraceableEntity {
     }
 
     public float getSwelling(float partialTicks) {
-        return Mth.lerp(partialTicks, (float) this.oldSwell, (float) this.swell) / (float) (this.maxSwell - 2);
+        return Mth.lerp(partialTicks, (float) this.oldSwell, (float) this.swell) / (float) (this.getMaxSwell() - 2);
     }
 
     public int getSwellDir() {
@@ -113,14 +109,13 @@ public class EmeraldWisp extends PathfinderMob implements TraceableEntity {
         this.entityData.set(DATA_SWELL_DIR, state);
     }
 
-    private void explodeWisp() {
+    public void explodeWisp() {
         if (!this.level().isClientSide) {
             this.dead = true;
-            this.level().explode(this, this.getX(), this.getY(), this.getZ(), (float) this.explosionRadius * (isLarge ? 2 : 1), Level.ExplosionInteraction.MOB);
+            this.level().explode(this, this.getX(), this.getY(), this.getZ(), (float) this.explosionRadius, Level.ExplosionInteraction.MOB);
             this.triggerOnDeathMobEffects(RemovalReason.KILLED);
             this.discard();
         }
-
     }
 
     public void tick() {
@@ -141,8 +136,8 @@ public class EmeraldWisp extends PathfinderMob implements TraceableEntity {
                 this.swell = 0;
             }
 
-            if (this.swell >= this.maxSwell) {
-                this.swell = this.maxSwell;
+            if (this.swell >= this.getMaxSwell()) {
+                this.swell = this.getMaxSwell();
                 this.explodeWisp();
             }
         }
@@ -157,7 +152,7 @@ public class EmeraldWisp extends PathfinderMob implements TraceableEntity {
 
     }
 
-    protected SoundEvent getHurtSound(DamageSource damageSource) {
+    protected SoundEvent getHurtSound(@NotNull DamageSource damageSource) {
         return SoundEvents.VEX_HURT;
     }
 
@@ -169,7 +164,14 @@ public class EmeraldWisp extends PathfinderMob implements TraceableEntity {
         this.entityData.set(DATA_IS_IGNITED, true);
     }
 
-    public static AttributeSupplier.Builder createAttributes(boolean isLarge) {
+    public void extinguish() {
+        this.entityData.set(DATA_IS_IGNITED, false);
+        this.swell = 0;
+        this.oldSwell = 0;
+        this.setSwellDir(-1);
+    }
+
+    public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 16f)
                 .add(Attributes.FLYING_SPEED, 0.2F)
@@ -211,11 +213,6 @@ public class EmeraldWisp extends PathfinderMob implements TraceableEntity {
         }
 
         this.calculateEntityAnimation(false);
-    }
-
-
-    public boolean isLarge() {
-        return isLarge;
     }
 
     public static class SwellGoal extends Goal {
