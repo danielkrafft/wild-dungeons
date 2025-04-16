@@ -128,6 +128,8 @@
 
   "tooltip.wilddungeons.meathook_1": "Hold 'use' to charge, release to fire.",
   "tooltip.wilddungeons.meathook_2": "'Sneak' to retract hook",
+  "tooltip.wilddungeons.emerald_staff_1": "'use' to consume an emerald",
+  "tooltip.wilddungeons.emerald_staff_2": "and summon a friendly wisp",
 
   "wilddungeons.offering.not_enough_levels": "Not Enough %s XP",
   "wilddungeons.offering.not_enough_items": "Not Enough %s",

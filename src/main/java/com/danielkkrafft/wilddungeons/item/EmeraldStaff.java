@@ -4,6 +4,7 @@ import com.danielkkrafft.wilddungeons.entity.EmeraldWisp;
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -11,9 +12,12 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 public class EmeraldStaff extends WDWeapon{
     public static final String NAME = "emerald_staff";
@@ -80,5 +84,12 @@ public class EmeraldStaff extends WDWeapon{
             level.playSound(null, pos, SoundEvents.ILLUSIONER_CAST_SPELL, SoundSource.PLAYERS, 1.0F, 1.0F);
         }
         return super.use(level, player, usedHand);
+    }
+
+    @Override
+    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag tooltipFlag) {
+        tooltipComponents.add(Component.translatable("tooltip.wilddungeons.emerald_staff_1"));
+        tooltipComponents.add(Component.translatable("tooltip.wilddungeons.emerald_staff_2"));
+        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
     }
 }
