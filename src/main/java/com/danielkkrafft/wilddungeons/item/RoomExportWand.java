@@ -1,10 +1,10 @@
 package com.danielkkrafft.wilddungeons.item;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.registry.WDBlocks;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonMaterial;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
+import com.danielkkrafft.wilddungeons.registry.WDBlocks;
 import com.danielkkrafft.wilddungeons.ui.RoomExportScreen;
 import com.danielkkrafft.wilddungeons.world.structure.WDStructureTemplate;
 import com.danielkkrafft.wilddungeons.world.structure.WDStructureTemplateManager;
@@ -121,6 +121,7 @@ public class RoomExportWand extends Item {
                 }
                 case LOAD -> {
                     loadStructure(context.getClickedPos(), (ServerLevel) context.getLevel(), context.getItemInHand(), context.getHorizontalDirection());
+                    setMode(context.getItemInHand(),StructureMode.SAVE);
                     return InteractionResult.SUCCESS;
                 }
             }
@@ -354,7 +355,7 @@ public class RoomExportWand extends Item {
 
         if (wdStructureTemplate.isPresent()) {
             if (materialIndex != -1){
-                TemplateHelper.wandPlaceInWorld(wdStructureTemplate.get(), getMaterialIndex(itemStack), serverLevel, finalClickPos, settings);
+                TemplateHelper.wandPlaceInWorld(wdStructureTemplate.get(), materialIndex, serverLevel, finalClickPos, settings);
             } else {
                 for (Pair<StructureTemplate, BlockPos> innerTemplatePair : wdStructureTemplate.get().innerTemplates) {
                     StructureTemplate innerTemplate = innerTemplatePair.getFirst();

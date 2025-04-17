@@ -120,6 +120,7 @@ public class LockableEventRoom extends DungeonRoom {
 
     @Override
     public void processDataMarker(BlockPos pos, String metadata) {
+        super.processDataMarker(pos, metadata);
         if (metadata.equals("wd_gate")) {
             BlockState state = this.isClear() ? Blocks.AIR.defaultBlockState() : WDBedrockBlock.of(Blocks.REDSTONE_BLOCK);
             this.getBranch().getFloor().getLevel().setBlock(pos, state, 130);

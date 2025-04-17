@@ -174,6 +174,26 @@ public class DungeonBranchRegistry {
                     .addSimple(VILLAGE_PIPE_TO_METRO))
             .set(MATERIAL, VILLAGE_SEWER_MATERIAL_POOL)
             .set(HAS_BEDROCK_SHELL, true);
+    public static final DungeonBranchTemplate VILLAGE_METRO_START_BRANCH = create("VILLAGE_METRO_START_BRANCH")
+            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
+                    .addSimple(VILLAGE_METRO_CENTER)
+            )
+            .set(MATERIAL, VILLAGE_MATERIAL_POOL);
+    public static final DungeonBranchTemplate VILLAGE_METRO_STREETS_BRANCH = create("VILLAGE_METRO_STREETS_BRANCH")
+            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
+                    .add(VILLAGE_WIDE_PATH_POOL,10)
+                    .add(VILLAGE_MEDIUM_PLOTS,10)
+            )
+            .set(MATERIAL, VILLAGE_MATERIAL_POOL)
+            .setRootOriginBranchIndex(4);
+    public static final DungeonBranchTemplate VILLAGE_METRO_ENDING_BRANCH = create("VILLAGE_METRO_ENDING_BRANCH")
+            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
+                    .add(VILLAGE_WIDE_PATH_POOL,2)
+                    .addSimple(VILLAGE_METRO_TOWER_START)
+                    .addSimple(VILLAGE_METRO_TOWER_END)
+            )
+            .set(MATERIAL, VILLAGE_MATERIAL_POOL)
+            .setRootOriginBranchIndex(4);
 
     public static DungeonBranchTemplate copyOf(DungeonBranchTemplate branch, String name) {
         DungeonBranchTemplate copy = DungeonBranchTemplate.copyOf(branch, name);

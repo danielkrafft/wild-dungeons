@@ -37,7 +37,7 @@ public final class DungeonBranchTemplate implements DungeonRegistration.DungeonC
             }
             tries++;
         }
-        WildDungeons.getLogger().warn("Failed to generate branch {} after 2 tries", this.name);
+        WildDungeons.getLogger().warn("Failed to generate branch {} after 4 tries", this.name);
         floor.getBranches().remove(newBranch);
         return null;
     }

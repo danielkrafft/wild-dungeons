@@ -31,13 +31,11 @@ public class DungeonRegistration {
         LootPoolRegistry.setupLootPools();
         LootTableRegistry.setupLootTables();
 
-        EnemyPoolRegistry.setupEnemyPools();
         EnemyTableRegistry.setupEnemyTables();
 
         DungeonMaterialRegistry.setupDungeonMaterials();
 
         DungeonRoomRegistry.setupDungeonRooms();
-        DungeonRoomPoolRegistry.setupRoomPools();
 
         DungeonBranchRegistry.setupBranches();
 

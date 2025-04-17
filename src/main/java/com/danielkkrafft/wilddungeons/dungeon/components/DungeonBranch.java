@@ -227,7 +227,7 @@ public class DungeonBranch {
         newEntrancePoint.setConnectedPoint(exitPoint);
         exitPoint.unBlock();
         openConnections += nextRoom.connectionPoints().size() - 2;
-        room.onGenerate();
+        room.onGenerate();//todo this is no longer where the room is actually generated
     }
 
     /**

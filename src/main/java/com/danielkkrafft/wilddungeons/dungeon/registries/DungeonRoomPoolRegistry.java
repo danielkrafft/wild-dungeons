@@ -146,6 +146,12 @@ public class DungeonRoomPoolRegistry {
     public static final WeightedPool<DungeonRoomTemplate> VILLAGE_WIDE_PATH_POOL = create("VILLAGE_WIDE_PATH_POOL")
             .add(VILLAGE_METRO_WIDE_PATH, 1);
 
+    public static final WeightedPool<DungeonRoomTemplate> VILLAGE_MEDIUM_PLOTS = create("VILLAGE_MEDIUM_PLOTS")
+            .add(VILLAGE_METRO_MEDIUM,1);
+
+    public static final WeightedPool<DungeonRoomTemplate> VILLAGE_SMALL_PLOTS = create("VILLAGE_SMALL_PLOTS")
+            .add(VILLAGE_METRO_SMALL,1);
+
 
 
     public static WeightedPool<DungeonRoomTemplate> create(String name) {

@@ -425,6 +425,17 @@ public class DungeonMaterialRegistry {
             .setHangingLights(new WeightedPool<BlockState>().add(LANTERN.defaultBlockState(),5).add(SOUL_LANTERN.defaultBlockState(),1))
             .addBasicBlockSet(new WeightedPool<BlockState>().add(POLISHED_ANDESITE.defaultBlockState(),1));
 
+    public static final DungeonMaterial VILLAGE_MATERIAL = create("village_metro",
+        new WeightedPool<BlockState>().add(POLISHED_ANDESITE.defaultBlockState(), 1),
+            new WeightedPool<BlockState>().add(POLISHED_ANDESITE_STAIRS.defaultBlockState(), 1),
+            new WeightedPool<BlockState>().add(POLISHED_ANDESITE_SLAB.defaultBlockState(), 1),
+            new WeightedPool<BlockState>().add(ANDESITE_WALL.defaultBlockState(), 1),
+            new WeightedPool<BlockState>().add(LANTERN.defaultBlockState(), 1),
+            new WeightedPool<BlockState>().add(POLISHED_ANDESITE.defaultBlockState(), 1)
+    )
+            .setHangingLights(new WeightedPool<BlockState>().add(LANTERN.defaultBlockState(), 1))
+            .addBasicBlockSet(new WeightedPool<BlockState>().add(SMOOTH_STONE.defaultBlockState(), 1));
+
 
     public static final DungeonMaterial TRANSLATION_MATERIAL = create("translation_debug",//todo delete when all rooms have been converted
             new WeightedPool<BlockState>()

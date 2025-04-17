@@ -230,6 +230,15 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate VILLAGE_SEWER_START = createSimple("village/sewer/start");
     public static final DungeonRoomTemplate VILLAGE_PIPE_TO_METRO = createSimple("village/sewer/pipe_to_metro");
 
+    public static final DungeonRoomTemplate VILLAGE_METRO_CENTER = createSimple("village/metro/center");
+    public static final DungeonRoomTemplate VILLAGE_METRO_WIDE_PATH = createSimple("village/metro/path_wide");
+    public static final DungeonRoomTemplate VILLAGE_METRO_MEDIUM = createSimple("village/metro/medium");
+    public static final DungeonRoomTemplate VILLAGE_METRO_SMALL = createSimple("village/metro/small");
+
+    public static final DungeonRoomTemplate VILLAGE_METRO_TOWER_START = createSimple("village/tower/tower_start");
+    public static final DungeonRoomTemplate VILLAGE_METRO_TOWER_END = createSimple("village/tower/tower_temp");
+
+
 
 
     public static DungeonRoomTemplate copyOf(DungeonRoomTemplate template, String name) {

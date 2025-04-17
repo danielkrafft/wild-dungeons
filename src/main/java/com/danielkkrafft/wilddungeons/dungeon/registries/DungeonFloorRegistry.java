@@ -87,10 +87,14 @@ public class DungeonFloorRegistry {
             .setBranchTemplates(
                     new DungeonLayout<DungeonBranchTemplate>()
                             .addSimple(VILLAGE_SEWER_START_BRANCH)
-                            .add(new WeightedPool<DungeonBranchTemplate>()
-                                    .add(VILLAGE_SEWER_ALL, 1),2)
+                            .addSimple(VILLAGE_SEWER_ALL)
+                            .addSimple(VILLAGE_SEWER_ALL)
                             .addSimple(VILLAGE_SEWER_ENDING_BRANCH)
-            );
+                            .addSimple(VILLAGE_METRO_START_BRANCH)
+                            .addSimple(VILLAGE_METRO_ENDING_BRANCH)
+                            .addSimple(VILLAGE_METRO_STREETS_BRANCH)
+                            .addSimple(VILLAGE_METRO_STREETS_BRANCH)
+            ).setOrigin(new BlockPos(0,-50,0));
 
     public static DungeonFloorTemplate copyOf(DungeonFloorTemplate floor, String name) {
         DungeonFloorTemplate copy = DungeonFloorTemplate.copyOf(floor, name);
