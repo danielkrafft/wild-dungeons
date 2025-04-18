@@ -1,8 +1,8 @@
 package com.danielkkrafft.wilddungeons.dungeon.components;
 
 
-import com.danielkkrafft.wilddungeons.registry.WDBlocks;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
+import com.danielkkrafft.wilddungeons.registry.WDBlocks;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.world.structure.WDStructureTemplate;
 import net.minecraft.util.StringRepresentable;
@@ -27,17 +27,17 @@ public class DungeonMaterial implements DungeonRegistration.DungeonComponent {
     public ArrayList<WeightedPool<BlockState>> hangingLightBlockStates;
     public ArrayList<WeightedPool<BlockState>> hiddenBlockStates;
 
-    public DungeonMaterial(String name, WeightedPool<BlockState> defaultBasicBlocks, WeightedPool<BlockState> defaultStairBlocks, WeightedPool<BlockState> defaultSlabBlocks, WeightedPool<BlockState> defaultWallBlocks, WeightedPool<BlockState> defaultLightBlocks, WeightedPool<BlockState> defaultHiddenBlocks) {
+    public DungeonMaterial(String name, WeightedPool<BlockState> defaultBasicBlocks, WeightedPool<BlockState> defaultStairBlocks, WeightedPool<BlockState> defaultSlabBlocks, WeightedPool<BlockState> defaultWallBlocks, WeightedPool<BlockState> defaultLightBlocks, WeightedPool<BlockState> defaultHangingLights, WeightedPool<BlockState> defaultHiddenBlocks) {
         this.name = name;
         this.basicBlockStates = new ArrayList<>(List.of(defaultBasicBlocks));
         this.stairBlockStates = new ArrayList<>(List.of(defaultStairBlocks));
         this.slabBlockStates = new ArrayList<>(List.of(defaultSlabBlocks));
         this.wallBlockStates = new ArrayList<>(List.of(defaultWallBlocks));
         this.lightBlockStates = new ArrayList<>(List.of(defaultLightBlocks));
+        this.hangingLightBlockStates = new ArrayList<>(List.of(defaultHangingLights));
         this.hiddenBlockStates = new ArrayList<>(List.of(defaultHiddenBlocks));
     }
 
-    public DungeonMaterial setHangingLights(WeightedPool<BlockState> hangingLightBlockStates) {this.hangingLightBlockStates = new ArrayList<>(List.of(hangingLightBlockStates)); return this;}
     public DungeonMaterial addBasicBlockSet(WeightedPool<BlockState> blockStates) {this.basicBlockStates.add(blockStates); return this;}
     public DungeonMaterial addStairBlockSet(WeightedPool<BlockState> blockStates) {this.stairBlockStates.add(blockStates); return this;}
     public DungeonMaterial addSlabBlockSet(WeightedPool<BlockState> blockStates) {this.slabBlockStates.add(blockStates); return this;}
