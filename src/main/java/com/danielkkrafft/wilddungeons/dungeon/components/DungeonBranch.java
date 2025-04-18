@@ -138,15 +138,10 @@ public class DungeonBranch {
 
             ConnectionPoint entrancePoint = pointsToTry.remove(new Random().nextInt(pointsToTry.size()));
             List<ConnectionPoint> exitPoints;
-            Boolean anywhereInLastBranch = this.getTemplate().isSubBranch();
-            if (this.getRooms().isEmpty() || anywhereInLastBranch){
+            if (this.getRooms().isEmpty()){
                 int branchIndex = this.getTemplate().rootOriginBranchIndex() == -1 ? this.getFloor().getBranches().size() - 2 : this.getTemplate().rootOriginBranchIndex();
                 DungeonBranch lastBranch = getFloor().getBranches().get(branchIndex);
-                if (anywhereInLastBranch) {
-                    exitPoints = new ArrayList<>(lastBranch.getValidExitPoints(entrancePoint));
-                } else {
-                    exitPoints = new ArrayList<>(lastBranch.getRooms().getLast().getValidExitPoints(entrancePoint));
-                }
+                exitPoints = new ArrayList<>(lastBranch.getRooms().getLast().getValidExitPoints(entrancePoint));
             } else exitPoints = new ArrayList<>(getValidExitPoints(entrancePoint));
 
             // Compile an iterable list of "Valid Points" (Exit Points which are confirmed not to result in BoundingBox conflicts)
@@ -159,7 +154,7 @@ public class DungeonBranch {
                 TemplateOrientation orientation = TemplateHelper.handleRoomTransformation(entrancePoint, exitPoint);
                 ConnectionPoint proposedPoint = ConnectionPoint.copy(entrancePoint);
                 position.set(ConnectionPoint.getOffset(orientation, TemplateHelper.EMPTY_BLOCK_POS, proposedPoint, exitPoint).offset(exitPoint.getDirection(exitPoint.getRoom().getOrientation()).getNormal()));
-                if (entrancePoint.isInner() || exitPoint.isInner() || getFloor().areBoundingBoxesValid(nextRoom.getBoundingBoxes(orientation, position))) {
+                if (exitPoint.isInner() || getFloor().areBoundingBoxesValid(nextRoom.getBoundingBoxes(orientation, position))) {
                     exitPoint.tempOrientation = orientation;
                     validPoints.add(exitPoint);
                 }
@@ -167,8 +162,7 @@ public class DungeonBranch {
             if (validPoints.isEmpty()) continue;
 
             // Assuming we have found at least one valid point, points are scored based on a variety of weights, and the room is finally placed into the world
-
-            ConnectionPoint exitPoint = ConnectionPoint.selectBestPoint(validPoints, this, Y_TARGET, 70.0, 200.0, 200.0, 30.0);
+            ConnectionPoint exitPoint = ConnectionPoint.selectBestPoint(validPoints, this, Y_TARGET, this.getProperty(HierarchicalProperty.BRANCH_DISTANCE_WEIGHT), this.getProperty(HierarchicalProperty.FLOOR_DISTANCE_WEIGHT), 200.0, 30.0);
             placeRoom(exitPoint, entrancePoint, nextRoom);
             return true;
         }

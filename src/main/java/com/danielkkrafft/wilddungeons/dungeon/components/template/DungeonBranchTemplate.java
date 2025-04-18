@@ -15,7 +15,6 @@ public final class DungeonBranchTemplate implements DungeonRegistration.DungeonC
     private HashMap<DungeonRoomTemplate, Integer> mandatoryRooms = new HashMap<>();
     private HashMap<DungeonRoomTemplate, Integer> limitedRooms = new HashMap<>();
     private int rootOriginBranchIndex = -1;
-    private boolean subBranch = false;
 
     public HashMap<HierarchicalProperty<?>, Object> PROPERTIES = new HashMap<>();
     public <T> DungeonBranchTemplate set(HierarchicalProperty<T> property, T value) { this.PROPERTIES.put(property, value); return this; }
@@ -99,12 +98,4 @@ public final class DungeonBranchTemplate implements DungeonRegistration.DungeonC
         return this;
     }
 
-    public DungeonBranchTemplate setSubBranch(boolean subBranch) {
-        this.subBranch = subBranch;
-        return this;
-    }
-
-    public Boolean isSubBranch() {
-        return subBranch;
-    }
 }
