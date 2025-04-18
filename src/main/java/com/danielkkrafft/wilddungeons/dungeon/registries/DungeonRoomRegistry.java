@@ -231,7 +231,9 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate VILLAGE_PIPE_TO_METRO = createSimple("village/sewer/pipe_to_metro");
 
     public static final DungeonRoomTemplate VILLAGE_METRO_CENTER = createSimple("village/metro/center");
-    public static final DungeonRoomTemplate VILLAGE_METRO_WIDE_PATH = createSimple("village/metro/path_wide");
+    public static final DungeonRoomTemplate VILLAGE_METRO_WIDE_PATH = createSimple("village/metro/path_wide")
+            .set(BLOCKING_MATERIAL_INDEX, 2);
+    public static final DungeonRoomTemplate VILLAGE_METRO_MEDIUM_PLOTS = createSimple("village/metro/medium_with_small_plots");
     public static final DungeonRoomTemplate VILLAGE_METRO_MEDIUM = createSimple("village/metro/medium");
     public static final DungeonRoomTemplate VILLAGE_METRO_SMALL = createSimple("village/metro/small");
 

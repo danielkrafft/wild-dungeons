@@ -2,11 +2,11 @@ package com.danielkkrafft.wilddungeons.dungeon.components.template;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.block.WDBedrockBlock;
-import com.danielkkrafft.wilddungeons.registry.WDBlocks;
 import com.danielkkrafft.wilddungeons.dungeon.components.ConnectionPoint;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonMaterial;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
 import com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialRegistry;
+import com.danielkkrafft.wilddungeons.registry.WDBlocks;
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import com.danielkkrafft.wilddungeons.world.structure.WDStructureTemplate;
@@ -56,8 +56,8 @@ public class TemplateHelper {
 
             List<StructureTemplate.StructureBlockInfo> CONNECTION_BLOCKS = template.getFirst().filterBlocks(template.getSecond(), EMPTY_DUNGEON_SETTINGS, WDBlocks.CONNECTION_BLOCK.get());
             for (StructureTemplate.StructureBlockInfo block : CONNECTION_BLOCKS) {
-
-                Direction blockDirection;
+                boolean inner = false;
+                Direction blockDirection = block.state().getValue(FACING);
                 if (block.pos().getY() == boundingBox.maxY()) {
                     blockDirection = Direction.UP;
                 } else if (block.pos().getY() == boundingBox.minY()) {
@@ -71,7 +71,7 @@ public class TemplateHelper {
                 } else if (block.pos().getX() == boundingBox.maxX()) {
                     blockDirection = Direction.EAST;
                 } else {
-                    continue;
+                    inner = true;
                 }
 
                 ConnectionPoint targetPoint = null;
@@ -85,6 +85,7 @@ public class TemplateHelper {
                     targetPoint = ConnectionPoint.create(block.pos(), blockDirection);
                     targetPoint.setPool(block.nbt().getString("pool"));
                     targetPoint.setType(block.nbt().getString("type"));
+                    targetPoint.setInner(inner);
                     targetPoint.setIndex(connectionPoints.size());
                     connectionPoints.add(targetPoint);
                 } else {

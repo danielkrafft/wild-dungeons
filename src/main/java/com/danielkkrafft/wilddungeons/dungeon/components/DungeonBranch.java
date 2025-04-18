@@ -138,11 +138,16 @@ public class DungeonBranch {
 
             ConnectionPoint entrancePoint = pointsToTry.remove(new Random().nextInt(pointsToTry.size()));
             List<ConnectionPoint> exitPoints;
-            if (this.getRooms().isEmpty()){
+            Boolean anywhereInLastBranch = this.getTemplate().isSubBranch();
+            if (this.getRooms().isEmpty() || anywhereInLastBranch){
                 int branchIndex = this.getTemplate().rootOriginBranchIndex() == -1 ? this.getFloor().getBranches().size() - 2 : this.getTemplate().rootOriginBranchIndex();
                 DungeonBranch lastBranch = getFloor().getBranches().get(branchIndex);
-                exitPoints = new ArrayList<>(lastBranch.getRooms().getLast().getValidExitPoints(entrancePoint));
-            } else exitPoints = getValidExitPoints(entrancePoint);
+                if (anywhereInLastBranch) {
+                    exitPoints = new ArrayList<>(lastBranch.getValidExitPoints(entrancePoint));
+                } else {
+                    exitPoints = new ArrayList<>(lastBranch.getRooms().getLast().getValidExitPoints(entrancePoint));
+                }
+            } else exitPoints = new ArrayList<>(getValidExitPoints(entrancePoint));
 
             // Compile an iterable list of "Valid Points" (Exit Points which are confirmed not to result in BoundingBox conflicts)
             // We calculate rotation, mirror, and offset before checking the room's proposed bounding boxes against the rest of the rooms in the DungeonFloor
@@ -154,7 +159,7 @@ public class DungeonBranch {
                 TemplateOrientation orientation = TemplateHelper.handleRoomTransformation(entrancePoint, exitPoint);
                 ConnectionPoint proposedPoint = ConnectionPoint.copy(entrancePoint);
                 position.set(ConnectionPoint.getOffset(orientation, TemplateHelper.EMPTY_BLOCK_POS, proposedPoint, exitPoint).offset(exitPoint.getDirection(exitPoint.getRoom().getOrientation()).getNormal()));
-                if (getFloor().areBoundingBoxesValid(nextRoom.getBoundingBoxes(orientation, position))) {
+                if (entrancePoint.isInner() || exitPoint.isInner() || getFloor().areBoundingBoxesValid(nextRoom.getBoundingBoxes(orientation, position))) {
                     exitPoint.tempOrientation = orientation;
                     validPoints.add(exitPoint);
                 }

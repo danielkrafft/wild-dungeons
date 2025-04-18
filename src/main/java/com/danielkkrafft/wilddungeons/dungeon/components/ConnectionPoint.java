@@ -50,6 +50,7 @@ public class ConnectionPoint {
     private int index;
     private int connectedPointIndex = -1;
     private String direction;
+    private boolean inner = false;
 
     private BoundingBox boundingBox;
     @Serializer.IgnoreSerialization private BoundingBox cachedBoundingBox = null;
@@ -84,6 +85,8 @@ public class ConnectionPoint {
     public void addPosition(BlockPos pos) {this.boundingBox.encapsulate(pos);}
     public void setIndex(int index) {this.index = index;}
     public int getIndex() {return this.index;}
+    public boolean isInner() {return this.inner;}
+    public void setInner(boolean inner) {this.inner = inner;}
     private ConnectionPoint() {}
 
     public BoundingBox getBoundingBox(TemplateOrientation orientation, BlockPos position) {

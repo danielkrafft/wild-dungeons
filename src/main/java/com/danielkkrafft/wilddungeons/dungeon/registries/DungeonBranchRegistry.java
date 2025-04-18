@@ -174,6 +174,7 @@ public class DungeonBranchRegistry {
                     .addSimple(VILLAGE_PIPE_TO_METRO))
             .set(MATERIAL, VILLAGE_SEWER_MATERIAL_POOL)
             .set(HAS_BEDROCK_SHELL, true);
+
     public static final DungeonBranchTemplate VILLAGE_METRO_START_BRANCH = create("VILLAGE_METRO_START_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .addSimple(VILLAGE_METRO_CENTER)
@@ -182,10 +183,25 @@ public class DungeonBranchRegistry {
     public static final DungeonBranchTemplate VILLAGE_METRO_STREETS_BRANCH = create("VILLAGE_METRO_STREETS_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .add(VILLAGE_WIDE_PATH_POOL,10)
+            )
+            .set(MATERIAL, VILLAGE_MATERIAL_POOL)
+            .set(BLOCKING_MATERIAL_INDEX, 2)
+            .setRootOriginBranchIndex(4);
+    public static final DungeonBranchTemplate VILLAGE_MEDIUM_ATTACHMENT_BRANCH = create("VILLAGE_MEDIUM_ATTACHMENT_BRANCH")
+            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .add(VILLAGE_MEDIUM_PLOTS,10)
             )
             .set(MATERIAL, VILLAGE_MATERIAL_POOL)
-            .setRootOriginBranchIndex(4);
+            .set(BLOCKING_MATERIAL_INDEX, 2)
+            .setSubBranch(true);
+    public static final DungeonBranchTemplate VILLAGE_SMALL_ATTACHMENT_BRANCH = create("VILLAGE_SMALL_ATTACHMENT_BRANCH")
+            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
+                    .add(VILLAGE_SMALL_PLOTS,10)
+            )
+            .set(BLOCKING_MATERIAL_INDEX, 2)
+            .set(MATERIAL, VILLAGE_MATERIAL_POOL)
+            .setSubBranch(true);
+
     public static final DungeonBranchTemplate VILLAGE_METRO_ENDING_BRANCH = create("VILLAGE_METRO_ENDING_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .add(VILLAGE_WIDE_PATH_POOL,2)

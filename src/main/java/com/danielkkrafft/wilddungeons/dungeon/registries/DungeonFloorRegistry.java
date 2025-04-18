@@ -93,7 +93,11 @@ public class DungeonFloorRegistry {
                             .addSimple(VILLAGE_METRO_START_BRANCH)
                             .addSimple(VILLAGE_METRO_ENDING_BRANCH)
                             .addSimple(VILLAGE_METRO_STREETS_BRANCH)
+                            .addSimple(VILLAGE_MEDIUM_ATTACHMENT_BRANCH)
+                            .addSimple(VILLAGE_SMALL_ATTACHMENT_BRANCH)
                             .addSimple(VILLAGE_METRO_STREETS_BRANCH)
+                            .addSimple(VILLAGE_MEDIUM_ATTACHMENT_BRANCH)
+                            .addSimple(VILLAGE_SMALL_ATTACHMENT_BRANCH)
             ).setOrigin(new BlockPos(0,-50,0));
 
     public static DungeonFloorTemplate copyOf(DungeonFloorTemplate floor, String name) {
