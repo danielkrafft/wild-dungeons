@@ -15,12 +15,12 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.*;
 
+import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonBranchRegistry.DUNGEON_BRANCH_REGISTRY;
 
 public class DungeonBranch {
 
     private static final int OPEN_CONNECTIONS_TARGET = 6;
-    private static final int Y_TARGET = 128;
 
     @Serializer.IgnoreSerialization private List<DungeonRoom> branchRooms = new ArrayList<>();
     private final String templateKey;
@@ -65,7 +65,7 @@ public class DungeonBranch {
             totalBranches += this.getFloor().getSession().getFloors().get(i).getBranches().size();
         }
         totalBranches += this.getIndex();
-        return (this.getFloor().getDifficulty() * this.getProperty(HierarchicalProperty.DIFFICULTY_MODIFIER) * Math.max(Math.pow(this.getProperty(HierarchicalProperty.DIFFICULTY_SCALING), totalBranches), 1)); //TODO the difficulty scaling thing doesn't work, it's just another multiplier.. but exponential
+        return (this.getFloor().getDifficulty() * this.getProperty(DIFFICULTY_MODIFIER) * Math.max(Math.pow(this.getProperty(DIFFICULTY_SCALING), totalBranches), 1)); //TODO the difficulty scaling thing doesn't work, it's just another multiplier.. but exponential
     }
 
     /**
@@ -162,7 +162,7 @@ public class DungeonBranch {
             if (validPoints.isEmpty()) continue;
 
             // Assuming we have found at least one valid point, points are scored based on a variety of weights, and the room is finally placed into the world
-            ConnectionPoint exitPoint = ConnectionPoint.selectBestPoint(validPoints, this, Y_TARGET, this.getProperty(HierarchicalProperty.BRANCH_DISTANCE_WEIGHT), this.getProperty(HierarchicalProperty.FLOOR_DISTANCE_WEIGHT), 200.0, 30.0);
+            ConnectionPoint exitPoint = ConnectionPoint.selectBestPoint(validPoints, this, getProperty(ROOM_TARGET_Y), getProperty(BRANCH_DISTANCE_WEIGHT), getProperty(FLOOR_DISTANCE_WEIGHT), getProperty(ROOM_TARGET_Y_WEIGHT) , getProperty(ROOM_GENERATION_RANDOMNESS));
             placeRoom(exitPoint, entrancePoint, nextRoom);
             return true;
         }

@@ -41,6 +41,9 @@ public class HierarchicalProperty<T> {
     public static final HierarchicalProperty<WeightedPool<DungeonRegistration.OfferingTemplate>> ROOM_CLEAR_REWARD_POOL = new HierarchicalProperty<>(new TypeToken<>() {}, null);
     public static final HierarchicalProperty<Integer> BRANCH_DISTANCE_WEIGHT = new HierarchicalProperty<>(new TypeToken<>() {}, 70);
     public static final HierarchicalProperty<Integer> FLOOR_DISTANCE_WEIGHT = new HierarchicalProperty<>(new TypeToken<>() {}, 200);
+    public static final HierarchicalProperty<Integer> ROOM_TARGET_Y_WEIGHT = new HierarchicalProperty<>(new TypeToken<>() {}, 200);
+    public static final HierarchicalProperty<Integer> ROOM_TARGET_Y = new HierarchicalProperty<>(new TypeToken<>() {}, 128);
+    public static final HierarchicalProperty<Integer> ROOM_GENERATION_RANDOMNESS = new HierarchicalProperty<>(new TypeToken<>() {}, 30);
 
 
     private final TypeToken<T> type;
