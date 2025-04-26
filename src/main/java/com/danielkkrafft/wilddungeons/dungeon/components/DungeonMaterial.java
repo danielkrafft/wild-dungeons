@@ -30,7 +30,6 @@ public class DungeonMaterial implements DungeonRegistration.DungeonComponent {
         this.blockStates.put(BlockSetting.BlockType.LIGHT, new ArrayList<>(List.of(defaultLightBlocks)));
         this.blockStates.put(BlockSetting.BlockType.HANGING_LIGHT, new ArrayList<>(List.of(defaultHangingLights)));
         this.blockStates.put(BlockSetting.BlockType.HIDDEN, new ArrayList<>(List.of(defaultHiddenBlocks)));
-        this.blockStates.put(BlockSetting.BlockType.NONE, new ArrayList<>(List.of(new WeightedPool<BlockState>().add(Blocks.AIR.defaultBlockState(), 1))));
     }
 
     public DungeonMaterial add(BlockSetting.BlockType category, WeightedPool<BlockState> blockStates) { this.blockStates.get(category).add(blockStates); return this; }
@@ -45,6 +44,7 @@ public class DungeonMaterial implements DungeonRegistration.DungeonComponent {
             Optional<BlockSetting> blockSettingOptional = dungeonIndexMapping.stream().filter(blockSetting -> blockSetting.blockState.equals(input.getBlock().defaultBlockState())).findFirst();
             if (blockSettingOptional.isPresent()) {
                 BlockSetting blockSetting = blockSettingOptional.get();
+                if (blockSetting.blockType == BlockSetting.BlockType.NONE) return result;
                 int materialIndex = blockSetting.materialIndex;
                 result = get(blockSetting.blockType, materialIndex, noiseScale, pos);
             }
