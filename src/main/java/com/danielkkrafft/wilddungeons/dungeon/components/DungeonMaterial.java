@@ -5,6 +5,7 @@ import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.registry.WDBlocks;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.world.structure.WDStructureTemplate;
+import net.minecraft.core.BlockPos;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -12,99 +13,68 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.Property;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+
+import static net.minecraft.world.level.block.Blocks.COBBLESTONE;
 
 public class DungeonMaterial implements DungeonRegistration.DungeonComponent {
     public String name;
-
-    public ArrayList<WeightedPool<BlockState>> basicBlockStates;
-    public ArrayList<WeightedPool<BlockState>> stairBlockStates;
-    public ArrayList<WeightedPool<BlockState>> slabBlockStates;
-    public ArrayList<WeightedPool<BlockState>> wallBlockStates;
-    public ArrayList<WeightedPool<BlockState>> lightBlockStates;
-    public ArrayList<WeightedPool<BlockState>> hangingLightBlockStates;
-    public ArrayList<WeightedPool<BlockState>> hiddenBlockStates;
+    public Map<BlockSetting.BlockType, ArrayList<WeightedPool<BlockState>>> blockStates = new HashMap<>();
 
     public DungeonMaterial(String name, WeightedPool<BlockState> defaultBasicBlocks, WeightedPool<BlockState> defaultStairBlocks, WeightedPool<BlockState> defaultSlabBlocks, WeightedPool<BlockState> defaultWallBlocks, WeightedPool<BlockState> defaultLightBlocks, WeightedPool<BlockState> defaultHangingLights, WeightedPool<BlockState> defaultHiddenBlocks) {
         this.name = name;
-        this.basicBlockStates = new ArrayList<>(List.of(defaultBasicBlocks));
-        this.stairBlockStates = new ArrayList<>(List.of(defaultStairBlocks));
-        this.slabBlockStates = new ArrayList<>(List.of(defaultSlabBlocks));
-        this.wallBlockStates = new ArrayList<>(List.of(defaultWallBlocks));
-        this.lightBlockStates = new ArrayList<>(List.of(defaultLightBlocks));
-        this.hangingLightBlockStates = new ArrayList<>(List.of(defaultHangingLights));
-        this.hiddenBlockStates = new ArrayList<>(List.of(defaultHiddenBlocks));
+        this.blockStates.put(BlockSetting.BlockType.BASIC, new ArrayList<>(List.of(defaultBasicBlocks)));
+        this.blockStates.put(BlockSetting.BlockType.STAIR, new ArrayList<>(List.of(defaultStairBlocks)));
+        this.blockStates.put(BlockSetting.BlockType.SLAB, new ArrayList<>(List.of(defaultSlabBlocks)));
+        this.blockStates.put(BlockSetting.BlockType.WALL, new ArrayList<>(List.of(defaultWallBlocks)));
+        this.blockStates.put(BlockSetting.BlockType.LIGHT, new ArrayList<>(List.of(defaultLightBlocks)));
+        this.blockStates.put(BlockSetting.BlockType.HANGING_LIGHT, new ArrayList<>(List.of(defaultHangingLights)));
+        this.blockStates.put(BlockSetting.BlockType.HIDDEN, new ArrayList<>(List.of(defaultHiddenBlocks)));
+        this.blockStates.put(BlockSetting.BlockType.NONE, new ArrayList<>(List.of(new WeightedPool<BlockState>().add(Blocks.AIR.defaultBlockState(), 1))));
     }
 
-    public DungeonMaterial addBasicBlockSet(WeightedPool<BlockState> blockStates) {this.basicBlockStates.add(blockStates); return this;}
-    public DungeonMaterial addStairBlockSet(WeightedPool<BlockState> blockStates) {this.stairBlockStates.add(blockStates); return this;}
-    public DungeonMaterial addSlabBlockSet(WeightedPool<BlockState> blockStates) {this.slabBlockStates.add(blockStates); return this;}
-    public DungeonMaterial addWallBlockSet(WeightedPool<BlockState> blockStates) {this.wallBlockStates.add(blockStates); return this;}
-    public DungeonMaterial addLightBlockSet(WeightedPool<BlockState> blockStates) {this.lightBlockStates.add(blockStates); return this;}
-    public DungeonMaterial addHiddenBlockSet(WeightedPool<BlockState> blockStates) {this.hiddenBlockStates.add(blockStates); return this;}
-    public DungeonMaterial addHangingLightBlockSet(WeightedPool<BlockState> blockStates) {this.hangingLightBlockStates.add(blockStates); return this;}
+    public DungeonMaterial add(BlockSetting.BlockType category, WeightedPool<BlockState> blockStates) { this.blockStates.get(category).add(blockStates); return this; }
+    public BlockState get(BlockSetting.BlockType category, int index, double noiseScale, BlockPos pos) { return index > blockStates.get(category).size()-1 ? blockStates.get(category).getFirst().getNoisyRandom(pos, noiseScale) : blockStates.get(category).get(index).getNoisyRandom(pos, noiseScale); }
 
-    public BlockState getBasic(int index) {return index > basicBlockStates.size()-1 ? basicBlockStates.getFirst().getRandom() : basicBlockStates.get(index).getRandom();}
-    public BlockState getStair(int index) {return index > stairBlockStates.size()-1 ? stairBlockStates.getFirst().getRandom() : stairBlockStates.get(index).getRandom();}
-    public BlockState getSlab(int index) {return index > slabBlockStates.size()-1 ? slabBlockStates.getFirst().getRandom() : slabBlockStates.get(index).getRandom();}
-    public BlockState getWall(int index) {return index > wallBlockStates.size()-1 ? wallBlockStates.getFirst().getRandom() : wallBlockStates.get(index).getRandom();}
-    public BlockState getLight(int index) {return index > lightBlockStates.size()-1 ? lightBlockStates.getFirst().getRandom() : lightBlockStates.get(index).getRandom();}
-    public BlockState getHangingLight(int index) {
-        if (hangingLightBlockStates == null || hangingLightBlockStates.isEmpty()) {return Blocks.AIR.defaultBlockState();}
-        return index > hangingLightBlockStates.size()-1 ? hangingLightBlockStates.getFirst().getRandom() : hangingLightBlockStates.get(index).getRandom();
-    }
-    public BlockState getHidden(int index) {return index > hiddenBlockStates.size()-1 ? hiddenBlockStates.getFirst().getRandom() : hiddenBlockStates.get(index).getRandom();}
-
-    public BlockState replace(BlockState input, WDStructureTemplate wdTemplate) {
+    public BlockState replace(BlockState input, double noiseScale, BlockPos pos, WDStructureTemplate wdTemplate) {
         if (input.is(Blocks.AIR)) {return input;}
+
         BlockState result = input;
-        if (wdTemplate != null){
+        if (wdTemplate != null) {
             List<BlockSetting> dungeonIndexMapping = wdTemplate.getDungeonMaterialsAsList();
             Optional<BlockSetting> blockSettingOptional = dungeonIndexMapping.stream().filter(blockSetting -> blockSetting.blockState.equals(input.getBlock().defaultBlockState())).findFirst();
             if (blockSettingOptional.isPresent()) {
                 BlockSetting blockSetting = blockSettingOptional.get();
                 int materialIndex = blockSetting.materialIndex;
-                switch (blockSetting.blockType) {
-                    case BASIC -> result = getBasic(materialIndex);
-                    case STAIR -> result = getStair(materialIndex);
-                    case SLAB -> result = getSlab(materialIndex);
-                    case WALL -> result = getWall(materialIndex);
-                    case LIGHT -> result = getLight(materialIndex);
-                    case HANGING_LIGHT -> result = getHangingLight(materialIndex).trySetValue(BlockStateProperties.HANGING,true);
-                    case HIDDEN -> result = getHidden(materialIndex);
-                }
+                result = get(blockSetting.blockType, materialIndex, noiseScale, pos);
             }
         }
 
-
-
-        if (input.is(WDBlocks.WD_BASIC.get())) {result = getBasic(0);}//todo remove all these when we finish updating the old templates to the new system, and remove the WD Template Blocks
-        else if (input.is(WDBlocks.WD_BASIC_2.get())) {result = getBasic(1);}
-        else if (input.is(WDBlocks.WD_BASIC_3.get())) {result = getBasic(2);}
-        else if (input.is(WDBlocks.WD_BASIC_4.get())) {result = getBasic(3);}
-        else if (input.is(WDBlocks.WD_STAIRS.get())) {result = getStair(0);}
-        else if (input.is(WDBlocks.WD_STAIRS_2.get())) {result = getStair(1);}
-        else if (input.is(WDBlocks.WD_STAIRS_3.get())) {result = getStair(2);}
-        else if (input.is(WDBlocks.WD_STAIRS_4.get())) {result = getStair(3);}
-        else if (input.is(WDBlocks.WD_SLAB.get())) {result = getSlab(0);}
-        else if (input.is(WDBlocks.WD_SLAB_2.get())) {result = getSlab(1);}
-        else if (input.is(WDBlocks.WD_SLAB_3.get())) {result = getSlab(2);}
-        else if (input.is(WDBlocks.WD_SLAB_4.get())) {result = getSlab(3);}
-        else if (input.is(WDBlocks.WD_WALL.get())) {result = getWall(0);}
-        else if (input.is(WDBlocks.WD_WALL_2.get())) {result = getWall(1);}
-        else if (input.is(WDBlocks.WD_WALL_3.get())) {result = getWall(2);}
-        else if (input.is(WDBlocks.WD_WALL_4.get())) {result = getWall(3);}
-        else if (input.is(WDBlocks.WD_LIGHT.get())) {result = getLight(0);}
-        else if (input.is(WDBlocks.WD_LIGHT_2.get())) {result = getLight(1);}
-        else if (input.is(WDBlocks.WD_LIGHT_3.get())) {result = getLight(2);}
-        else if (input.is(WDBlocks.WD_LIGHT_4.get())) {result = getLight(3);}
-        else if (input.is(WDBlocks.WD_HANGING_LIGHT.get())) {result = getHangingLight(0).trySetValue(BlockStateProperties.HANGING,true);}
-        else if (input.is(WDBlocks.WD_HANGING_LIGHT_2.get())) {result = getHangingLight(1).trySetValue(BlockStateProperties.HANGING,true);}
-        else if (input.is(WDBlocks.WD_HANGING_LIGHT_3.get())) {result = getHangingLight(2).trySetValue(BlockStateProperties.HANGING,true);}
-        else if (input.is(WDBlocks.WD_HANGING_LIGHT_4.get())) {result = getHangingLight(3).trySetValue(BlockStateProperties.HANGING,true);}
-        else if (input.is(WDBlocks.WD_SECRET.get())) {result = getHidden(0);}
+        if (input.is(WDBlocks.WD_BASIC.get())) {result = get(BlockSetting.BlockType.BASIC, 0, noiseScale, pos);}//todo remove all these when we finish updating the old templates to the new system, and remove the WD Template Blocks
+        else if (input.is(WDBlocks.WD_BASIC_2.get())) {result = get(BlockSetting.BlockType.BASIC, 1, noiseScale, pos);}
+        else if (input.is(WDBlocks.WD_BASIC_3.get())) {result = get(BlockSetting.BlockType.BASIC, 2, noiseScale, pos);}
+        else if (input.is(WDBlocks.WD_BASIC_4.get())) {result = get(BlockSetting.BlockType.BASIC, 3, noiseScale, pos);}
+        else if (input.is(WDBlocks.WD_STAIRS.get())) {result = get(BlockSetting.BlockType.STAIR, 0, noiseScale, pos);}
+        else if (input.is(WDBlocks.WD_STAIRS_2.get())) {result = get(BlockSetting.BlockType.STAIR, 1, noiseScale, pos);}
+        else if (input.is(WDBlocks.WD_STAIRS_3.get())) {result = get(BlockSetting.BlockType.STAIR, 2, noiseScale, pos);}
+        else if (input.is(WDBlocks.WD_STAIRS_4.get())) {result = get(BlockSetting.BlockType.STAIR, 3, noiseScale, pos);}
+        else if (input.is(WDBlocks.WD_SLAB.get())) {result = get(BlockSetting.BlockType.SLAB, 0, noiseScale, pos);}
+        else if (input.is(WDBlocks.WD_SLAB_2.get())) {result = get(BlockSetting.BlockType.SLAB, 1, noiseScale, pos);}
+        else if (input.is(WDBlocks.WD_SLAB_3.get())) {result = get(BlockSetting.BlockType.SLAB, 2, noiseScale, pos);}
+        else if (input.is(WDBlocks.WD_SLAB_4.get())) {result = get(BlockSetting.BlockType.SLAB, 3, noiseScale, pos);}
+        else if (input.is(WDBlocks.WD_WALL.get())) {result = get(BlockSetting.BlockType.WALL, 0, noiseScale, pos);}
+        else if (input.is(WDBlocks.WD_WALL_2.get())) {result = get(BlockSetting.BlockType.WALL, 1, noiseScale, pos);}
+        else if (input.is(WDBlocks.WD_WALL_3.get())) {result = get(BlockSetting.BlockType.WALL, 2, noiseScale, pos);}
+        else if (input.is(WDBlocks.WD_WALL_4.get())) {result = get(BlockSetting.BlockType.WALL, 3, noiseScale, pos);}
+        else if (input.is(WDBlocks.WD_LIGHT.get())) {result = get(BlockSetting.BlockType.LIGHT, 0, noiseScale, pos);}
+        else if (input.is(WDBlocks.WD_LIGHT_2.get())) {result = get(BlockSetting.BlockType.LIGHT, 1, noiseScale, pos);}
+        else if (input.is(WDBlocks.WD_LIGHT_3.get())) {result = get(BlockSetting.BlockType.LIGHT, 2, noiseScale, pos);}
+        else if (input.is(WDBlocks.WD_LIGHT_4.get())) {result = get(BlockSetting.BlockType.LIGHT, 3, noiseScale, pos);}
+        else if (input.is(WDBlocks.WD_HANGING_LIGHT.get())) {result = get(BlockSetting.BlockType.HANGING_LIGHT, 0, noiseScale, pos).trySetValue(BlockStateProperties.HANGING,true);}
+        else if (input.is(WDBlocks.WD_HANGING_LIGHT_2.get())) {result = get(BlockSetting.BlockType.HANGING_LIGHT, 1, noiseScale, pos).trySetValue(BlockStateProperties.HANGING,true);}
+        else if (input.is(WDBlocks.WD_HANGING_LIGHT_3.get())) {result = get(BlockSetting.BlockType.HANGING_LIGHT, 2, noiseScale, pos).trySetValue(BlockStateProperties.HANGING,true);}
+        else if (input.is(WDBlocks.WD_HANGING_LIGHT_4.get())) {result = get(BlockSetting.BlockType.HANGING_LIGHT, 3, noiseScale, pos).trySetValue(BlockStateProperties.HANGING,true);}
+        else if (input.is(WDBlocks.WD_SECRET.get())) {result = get(BlockSetting.BlockType.HIDDEN, 0, noiseScale, pos);}
 
         for (Property<?> property : input.getProperties()) {
             if (result.hasProperty(property)) {

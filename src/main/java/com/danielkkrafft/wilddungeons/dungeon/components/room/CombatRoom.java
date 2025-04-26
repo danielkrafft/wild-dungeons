@@ -117,7 +117,7 @@ public class CombatRoom extends TargetPurgeRoom {
         this.getActivePlayers().forEach(player -> {
             player.setSoundScape(this.getProperty(SOUNDSCAPE), this.getProperty(INTENSITY), false);
         });
-        WeightedPool<DungeonRegistration.OfferingTemplate> offeringTemplate = getTemplate().get(HierarchicalProperty.ROOM_CLEAR_REWARD_POOL);
+        WeightedPool<DungeonRegistration.OfferingTemplate> offeringTemplate = getProperty(HierarchicalProperty.ROOM_CLEAR_REWARD_POOL);
         if (offeringTemplate == null) return;
         Offering offering = offeringTemplate.getRandom().asOffering(this.getBranch().getFloor().getLevel());
         List<BlockPos> validPoints = sampleSpawnablePositions(getBranch().getFloor().getLevel(), 5, Mth.ceil(Math.max(offering.getBoundingBox().getXsize(), offering.getBoundingBox().getZsize())));

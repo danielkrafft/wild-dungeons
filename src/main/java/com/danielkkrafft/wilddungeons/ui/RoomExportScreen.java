@@ -457,13 +457,13 @@ public class RoomExportScreen extends Screen {
 
         public void setupMaterialEntries(){
             DungeonMaterial dungeonMaterial = getMaterial();
-            addEntryPool(dungeonMaterial.basicBlockStates, BASIC);
-            addEntryPool(dungeonMaterial.stairBlockStates, STAIR);
-            addEntryPool(dungeonMaterial.slabBlockStates, SLAB);
-            addEntryPool(dungeonMaterial.wallBlockStates, WALL);
-            addEntryPool(dungeonMaterial.lightBlockStates, LIGHT);
-            addEntryPool(dungeonMaterial.hangingLightBlockStates, HANGING_LIGHT);
-            addEntryPool(dungeonMaterial.hiddenBlockStates, HIDDEN);
+            addEntryPool(dungeonMaterial.blockStates.get(BASIC), BASIC);
+            addEntryPool(dungeonMaterial.blockStates.get(STAIR), STAIR);
+            addEntryPool(dungeonMaterial.blockStates.get(SLAB), SLAB);
+            addEntryPool(dungeonMaterial.blockStates.get(WALL), WALL);
+            addEntryPool(dungeonMaterial.blockStates.get(LIGHT), LIGHT);
+            addEntryPool(dungeonMaterial.blockStates.get(HANGING_LIGHT), HANGING_LIGHT);
+            addEntryPool(dungeonMaterial.blockStates.get(HIDDEN), HIDDEN);
         }
 
         private void addEntryPool(ArrayList<WeightedPool<BlockState>> weightedPools, DungeonMaterial.BlockSetting.BlockType blockType) {

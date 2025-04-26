@@ -218,7 +218,7 @@ public class ConnectionPoint {
 
             if (blockEntity instanceof ConnectionBlockEntity connectionBlockEntity) {
                 BlockState blockState = blockStateFromString(connectionBlockEntity.unblockedBlockstate);
-                blockState = this.getRoom().getMaterial().replace(blockState, this.getRoom().getTemplate().wdStructureTemplate());
+                blockState = this.getRoom().getMaterial().replace(blockState, this.getRoom().getProperty(HierarchicalProperty.MATERIAL_NOISE), pos, this.getRoom().getTemplate().wdStructureTemplate());
                 connectionBlockEntity.unblockedBlockstate = toString(blockState);
                 this.unBlockedBlockStates.put(pos, connectionBlockEntity.unblockedBlockstate);
             }
@@ -233,7 +233,7 @@ public class ConnectionPoint {
 
     public void hide() {
         ServerLevel level = this.getRoom().getBranch().getFloor().getLevel();
-        getPositions(this.getRoom().getOrientation(), this.getRoom().getPosition()).forEach((pos) -> level.setBlock(pos, this.getRoom().getMaterial().getHidden(0), 2));
+        getPositions(this.getRoom().getOrientation(), this.getRoom().getPosition()).forEach((pos) -> level.setBlock(pos, this.getRoom().getMaterial().get(DungeonMaterial.BlockSetting.BlockType.HIDDEN, 0, this.getRoom().getProperty(HierarchicalProperty.MATERIAL_NOISE), pos), 2));
     }
 
     public void block(int flags) {
@@ -252,9 +252,9 @@ public class ConnectionPoint {
         ServerLevel level = this.getRoom().getBranch().getFloor().getLevel();
         getPositions(this.getRoom().getOrientation(), this.getRoom().getPosition()).forEach((pos) -> {
             if (this.getRoom().getProperty(HierarchicalProperty.DESTRUCTION_RULE).equals(DungeonRoomTemplate.DestructionRule.SHELL) || (this.getRoom().getProperty(HierarchicalProperty.DESTRUCTION_RULE).equals(DungeonRoomTemplate.DestructionRule.SHELL_CLEAR) && !this.getRoom().isClear())) {
-                level.setBlock(pos, WDBedrockBlock.of(this.getRoom().getMaterial().getBasic(getRoom().getProperty(HierarchicalProperty.BLOCKING_MATERIAL_INDEX)).getBlock()), flags);
+                level.setBlock(pos, WDBedrockBlock.of(this.getRoom().getMaterial().get(DungeonMaterial.BlockSetting.BlockType.BASIC, this.getRoom().getProperty(HierarchicalProperty.BLOCKING_MATERIAL_INDEX), this.getRoom().getProperty(HierarchicalProperty.MATERIAL_NOISE), pos).getBlock()), flags);
             } else {
-                level.setBlock(pos, this.getRoom().getMaterial().getBasic(getRoom().getProperty(HierarchicalProperty.BLOCKING_MATERIAL_INDEX)), flags);
+                level.setBlock(pos, this.getRoom().getMaterial().get(DungeonMaterial.BlockSetting.BlockType.BASIC, this.getRoom().getProperty(HierarchicalProperty.BLOCKING_MATERIAL_INDEX), this.getRoom().getProperty(HierarchicalProperty.MATERIAL_NOISE), pos), flags);
             }
         });
     }

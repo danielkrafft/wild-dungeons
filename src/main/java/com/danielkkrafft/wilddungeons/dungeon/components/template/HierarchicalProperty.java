@@ -44,6 +44,7 @@ public class HierarchicalProperty<T> {
     public static final HierarchicalProperty<Integer> ROOM_TARGET_Y_WEIGHT = new HierarchicalProperty<>(new TypeToken<>() {}, 200);
     public static final HierarchicalProperty<Integer> ROOM_TARGET_Y = new HierarchicalProperty<>(new TypeToken<>() {}, 128);
     public static final HierarchicalProperty<Integer> ROOM_GENERATION_RANDOMNESS = new HierarchicalProperty<>(new TypeToken<>() {}, 30);
+    public static final HierarchicalProperty<Double> MATERIAL_NOISE = new HierarchicalProperty<>(new TypeToken<>() {}, 0.15);
 
 
     private final TypeToken<T> type;

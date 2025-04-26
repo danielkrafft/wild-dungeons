@@ -356,6 +356,7 @@ public class TemplateHelper {
 
     public static boolean placeInWorld(DungeonRoom room, StructureTemplate template, DungeonMaterial material, ServerLevelAccessor serverLevel, BlockPos offset, BlockPos pos, StructurePlaceSettings settings, int flags) {
         if (template.palettes.isEmpty()) return false;
+        double noiseScale = room.getProperty(HierarchicalProperty.MATERIAL_NOISE);
         BoundingBox innerBox = template.getBoundingBox(settings, pos).inflatedBy(-1);
 
         List<StructureTemplate.StructureBlockInfo> list = settings.getRandomPalette(template.palettes, offset).blocks();
@@ -368,7 +369,7 @@ public class TemplateHelper {
                 if (room.getProperty(DESTRUCTION_RULE) == DungeonRoomTemplate.DestructionRule.SHELL || room.getProperty(DESTRUCTION_RULE) == DungeonRoomTemplate.DestructionRule.SHELL_CLEAR) {
                     if ((blockstate == WDBlocks.WD_BASIC.get().defaultBlockState() || blockstate == WDBlocks.WD_BASIC_2.get().defaultBlockState() || blockstate == WDBlocks.WD_BASIC_3.get().defaultBlockState() || blockstate == WDBlocks.WD_BASIC_4.get().defaultBlockState()) && !innerBox.isInside(structuretemplate$structureblockinfo.pos())) {
                         if (!room.isPosInsideShell(structuretemplate$structureblockinfo.pos())) {
-                            blockstate = material.replace(structuretemplate$structureblockinfo.state().mirror(settings.getMirror()).rotate(settings.getRotation()), room.getTemplate().wdStructureTemplate());
+                            blockstate = material.replace(structuretemplate$structureblockinfo.state().mirror(settings.getMirror()).rotate(settings.getRotation()), noiseScale, structuretemplate$structureblockinfo.pos(), room.getTemplate().wdStructureTemplate());
                             serverLevel.setBlock(structuretemplate$structureblockinfo.pos(), WDBedrockBlock.of(blockstate.getBlock()), 2);
                             continue;
                         }
@@ -376,9 +377,9 @@ public class TemplateHelper {
                 }
 
                 if (blockstate.hasProperty(STAIRS_SHAPE) || blockstate.hasProperty(RAIL_SHAPE) || blockstate.hasProperty(RAIL_SHAPE_STRAIGHT)) {
-                    blockstate = TemplateHelper.fixBlockStateProperties(material.replace(structuretemplate$structureblockinfo.state(), room.getTemplate().wdStructureTemplate()), settings);
+                    blockstate = TemplateHelper.fixBlockStateProperties(material.replace(structuretemplate$structureblockinfo.state(), noiseScale, structuretemplate$structureblockinfo.pos(), room.getTemplate().wdStructureTemplate()), settings);
                 } else {
-                    blockstate = material.replace(structuretemplate$structureblockinfo.state().mirror(settings.getMirror()).rotate(settings.getRotation()), room.getTemplate().wdStructureTemplate());
+                    blockstate = material.replace(structuretemplate$structureblockinfo.state().mirror(settings.getMirror()).rotate(settings.getRotation()), noiseScale, structuretemplate$structureblockinfo.pos(), room.getTemplate().wdStructureTemplate());
                 }
 
                 blockstate = replaceChest(blockstate, room);//todo this should be moved elsewhere when the NBT is controlling the room properties
@@ -475,9 +476,9 @@ public class TemplateHelper {
                     BlockPos pos = structureBlockInfo.pos().offset(clickedPos);
 
                     if (blockstate.hasProperty(STAIRS_SHAPE) || blockstate.hasProperty(RAIL_SHAPE) || blockstate.hasProperty(RAIL_SHAPE_STRAIGHT)) {
-                        blockstate = fixBlockStateProperties(material.replace(structureBlockInfo.state(), wdTemplate), settings);
+                        blockstate = fixBlockStateProperties(material.replace(structureBlockInfo.state(), 1.0, structureBlockInfo.pos(), wdTemplate), settings);
                     } else {
-                        blockstate = material.replace(blockstate.mirror(settings.getMirror()).rotate(settings.getRotation()), wdTemplate);
+                        blockstate = material.replace(blockstate.mirror(settings.getMirror()).rotate(settings.getRotation()), 1.0, structureBlockInfo.pos(), wdTemplate);
                     }
 
                     if (structureBlockInfo.nbt() != null) {
