@@ -91,14 +91,13 @@ public class DungeonFloorRegistry {
                             .addSimple(VILLAGE_SEWER_ALL)
                             .addSimple(VILLAGE_SEWER_ENDING_BRANCH)
                             .addSimple(VILLAGE_METRO_START_BRANCH)
+                            .addSimple(VILLAGE_METRO_ENDING_BRANCH)//todo this is first so that we don't block it with other branches, but that can cause the difficulty to be off
                             .addSimple(VILLAGE_METRO_STREETS_BRANCH)
                             .addSimple(VILLAGE_METRO_STREETS_2_BRANCH)
                             .addSimple(VILLAGE_METRO_STREETS_BRANCH)
                             .addSimple(VILLAGE_METRO_STREETS_2_BRANCH)
                             .addSimple(VILLAGE_METRO_STREETS_BRANCH)
                             .addSimple(VILLAGE_METRO_STREETS_2_BRANCH)
-                            .addSimple(VILLAGE_METRO_ENDING_BRANCH)
-
             ).setOrigin(new BlockPos(0,-50,0));
 
     public static DungeonFloorTemplate copyOf(DungeonFloorTemplate floor, String name) {

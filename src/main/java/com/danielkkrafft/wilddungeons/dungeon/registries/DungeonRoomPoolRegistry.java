@@ -148,8 +148,6 @@ public class DungeonRoomPoolRegistry {
 
     public static final WeightedPool<DungeonRoomTemplate> VILLAGE_MEDIUM_PLOTS = create("VILLAGE_MEDIUM_PLOTS")
             .add(VILLAGE_METRO_MEDIUM,1);
-    public static final WeightedPool<DungeonRoomTemplate> VILLAGE_MEDIUM_SETUP_PLOTS = create("VILLAGE_MEDIUM_SETUP_PLOTS")
-            .add(VILLAGE_METRO_MEDIUM_PLOTS,1);
 
     public static final WeightedPool<DungeonRoomTemplate> VILLAGE_SMALL_PLOTS = create("VILLAGE_SMALL_PLOTS")
             .add(VILLAGE_METRO_SMALL,1);
