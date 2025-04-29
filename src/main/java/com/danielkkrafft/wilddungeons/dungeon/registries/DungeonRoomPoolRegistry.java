@@ -145,7 +145,7 @@ public class DungeonRoomPoolRegistry {
     
     public static final WeightedPool<DungeonRoomTemplate> VILLAGE_WIDE_PATH_POOL = create("VILLAGE_WIDE_PATH_POOL")
             .add(VILLAGE_METRO_WIDE_CROSSROADS,1)
-            .add(VILLAGE_METRO_WIDE_PATH, 10);
+            .add(VILLAGE_METRO_WIDE_PATH, 5);
 
     public static final WeightedPool<DungeonRoomTemplate> VILLAGE_MEDIUM_PLOTS = create("VILLAGE_MEDIUM_PLOTS")
             .add(VILLAGE_METRO_CHURCH,1)
@@ -194,7 +194,7 @@ public class DungeonRoomPoolRegistry {
             .add(VILLAGE_METRO_AWSEME_SML_ARCH,5)
             .add(VILLAGE_METRO_AWSEME_SML_CART,1)
             .add(VILLAGE_METRO_AWSEME_SML_CORNER_ARCH,5)
-            .add(VILLAGE_METRO_AWSEME_SML_FOUR_ARCH,5)
+            .add(VILLAGE_METRO_AWSEME_SML_FOUR_ARCH,3)
             .add(VILLAGE_METRO_AWSEME_SML_TRI_ARCH,5)
             .add(VILLAGE_METRO_AWSEME_SML_TRI_FOUNTAIN,1)
             ;

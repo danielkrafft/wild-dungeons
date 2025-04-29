@@ -184,7 +184,7 @@ public class DungeonBranchRegistry {
             .set(MATERIAL, VILLAGE_MATERIAL_POOL);
     public static final DungeonBranchTemplate VILLAGE_METRO_STREETS_BRANCH = create("VILLAGE_METRO_STREETS_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
-                    .add(VILLAGE_WIDE_PATH_POOL,5)
+                    .add(VILLAGE_WIDE_PATH_POOL,10)
                     .add(VILLAGE_MEDIUM_PLOTS,20)
                     .add(VILLAGE_SMALL_PLOTS,30)
                     .add(VILLAGE_WIDE_PATH_POOL,1)
@@ -196,14 +196,14 @@ public class DungeonBranchRegistry {
             .setRootOriginBranchIndex(4);
     public static final DungeonBranchTemplate VILLAGE_METRO_STREETS_2_BRANCH = create("VILLAGE_METRO_STREETS_2_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
-                    .add(VILLAGE_WIDE_PATH_POOL,3)
+                    .add(VILLAGE_WIDE_PATH_POOL,5)
                     .add(VILLAGE_MEDIUM_PLOTS,5)
                     .add(VILLAGE_SMALL_PLOTS,50)
             )
             .set(MATERIAL, VILLAGE_MATERIAL_POOL)
             .set(BLOCKING_MATERIAL_INDEX, 2)
             .set(BRANCH_DISTANCE_WEIGHT, 0)
-            .set(FLOOR_DISTANCE_WEIGHT, 0);
+            .set(FLOOR_DISTANCE_WEIGHT, -100);
 
     public static final DungeonBranchTemplate VILLAGE_METRO_ENDING_BRANCH = create("VILLAGE_METRO_ENDING_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
