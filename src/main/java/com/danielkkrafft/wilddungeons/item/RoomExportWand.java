@@ -30,6 +30,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -42,7 +43,9 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlac
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.Palette;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -138,6 +141,35 @@ public class RoomExportWand extends Item {
             }
         }
         return true;
+    }
+
+    private boolean checkDistance(@NotNull BlockPos check, ServerPlayer serverPlayer, BlockPos checkAgainst) {
+        if (checkAgainst != null) {
+            //check to make sure the second pos isn't more than 48 blocks from the first pos in any direction
+            if (Math.abs(checkAgainst.getX() - check.getX()) > 48 || Math.abs(checkAgainst.getY() - check.getY()) > 48 || Math.abs(checkAgainst.getZ() - check.getZ()) > 48) {
+                serverPlayer.sendSystemMessage(Component.translatable("message.room_export_wand.too_far"));
+                return false;
+            }
+        }
+        return true;
+    }
+    private BlockPos getTargetedAirPosition(Player player) {
+        Vec3 startPos = player.getEyePosition();
+        Vec3 lookVec = player.getLookAngle();
+        Vec3 endPos = startPos.add(lookVec.scale(10)); // Look up to 10 blocks away
+
+        // Create a ray and check for block intersection
+        ClipContext context = new ClipContext(startPos, endPos, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player);
+        BlockHitResult hitResult = player.level().clip(context);
+
+        if (hitResult.getType() == HitResult.Type.BLOCK) {
+            // If hit a block, return the block position
+            return hitResult.getBlockPos();
+        } else {
+            // If didn't hit anything, return position 5 blocks away
+            Vec3 targetPos = startPos.add(lookVec.scale(4.0));
+            return new BlockPos((int)targetPos.x, (int)targetPos.y, (int)targetPos.z).below();
+        }
     }
 
     @Override
