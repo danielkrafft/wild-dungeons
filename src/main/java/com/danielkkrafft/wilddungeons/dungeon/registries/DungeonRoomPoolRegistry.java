@@ -144,13 +144,28 @@ public class DungeonRoomPoolRegistry {
             .add(VILLAGE_SEWER_DEELEVATOR, 1);
     
     public static final WeightedPool<DungeonRoomTemplate> VILLAGE_WIDE_PATH_POOL = create("VILLAGE_WIDE_PATH_POOL")
-            .add(VILLAGE_METRO_WIDE_PATH, 1);
+            .add(VILLAGE_METRO_WIDE_CROSSROADS,1)
+            .add(VILLAGE_METRO_WIDE_PATH, 10);
 
     public static final WeightedPool<DungeonRoomTemplate> VILLAGE_MEDIUM_PLOTS = create("VILLAGE_MEDIUM_PLOTS")
-            .add(VILLAGE_METRO_MEDIUM,1);
+            .add(VILLAGE_METRO_CHURCH,1)
+            .add(VILLAGE_METRO_DORM_TOWER,1)
+            .add(VILLAGE_METRO_ILLAGER_TOWER,1)
+            .add(VILLAGE_METRO_LIBRARY,1)
+            .add(VILLAGE_METRO_LUMBERYARD,1)
+            .add(VILLAGE_METRO_PATH_CROSSROAD,1)
+            .add(VILLAGE_METRO_SMITHERY,1)
+            .add(VILLAGE_METRO_TANNERY,1)
+            .add(VILLAGE_METRO_VERTICAL_FARM,1)
+            .add(VILLAGE_METRO_COTTAGE,1)
+            ;
 
     public static final WeightedPool<DungeonRoomTemplate> VILLAGE_SMALL_PLOTS = create("VILLAGE_SMALL_PLOTS")
-            .add(VILLAGE_METRO_SMALL,1);
+            .add(VILLAGE_METRO_CROSS,1)
+            .add(VILLAGE_METRO_FOUNTAIN,1)
+            .add(VILLAGE_METRO_HOME,4)
+            .add(VILLAGE_METRO_TREE,1)
+            ;
 
 
 
