@@ -187,7 +187,7 @@ public class DungeonBranchRegistry {
                     .add(VILLAGE_WIDE_PATH_POOL,10)
                     .add(VILLAGE_MEDIUM_PLOTS,20)
                     .add(VILLAGE_SMALL_PLOTS,30)
-                    .add(VILLAGE_WIDE_PATH_POOL,1)
+                    .add(VILLAGE_WIDE_PATH_POOL,1)//important that the last room is a path so that we can add more in the next branch generation and keep the straight line
             )
             .set(MATERIAL, VILLAGE_MATERIAL_POOL)
             .set(BLOCKING_MATERIAL_INDEX, 2)
