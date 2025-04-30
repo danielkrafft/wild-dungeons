@@ -212,6 +212,8 @@ public class DungeonRegistration {
         @Override
         public String name() {return this.name;}
         public TargetTemplate setEntityType(EntityType<?> entityType) {this.entityType = EntityType.getKey(entityType).toString(); return this;}
+        public EntityType<?> getEntityType() {return EntityType.byString(this.entityType).orElseThrow(() -> new IllegalArgumentException("Invalid entity type: " + this.entityType));}
+        public String getEntityTypeString() {return this.entityType;}
         public TargetTemplate setHelmet(Item item) {this.helmetItem = Item.getId(item); return this;}
         public TargetTemplate setHelmet(Item item, boolean alwaysSpawn) {this.helmetItem = Item.getId(item);this.helmetAlwaysSpawn=alwaysSpawn; return this;}
         public TargetTemplate setChestplate(Item item) {this.chestItem = Item.getId(item); return this;}
@@ -229,6 +231,8 @@ public class DungeonRegistration {
         public TargetTemplate setRandomChance(float randomChance) {this.randomChance = randomChance; return this;}
         public TargetTemplate setHealthMultiplier(double mult) {this.healthMultiplier = mult; return this;}
         public TargetTemplate addSpawnBehavior(Consumer<Object> behavior) {this.behavior = behavior; return this;}
+
+
     }
 
     public static class ItemTemplate implements DungeonComponent {

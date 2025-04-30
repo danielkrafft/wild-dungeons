@@ -9,6 +9,7 @@ import com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialRegistry
 import com.danielkkrafft.wilddungeons.registry.WDBlocks;
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
+import com.danielkkrafft.wilddungeons.util.UtilityMethods;
 import com.danielkkrafft.wilddungeons.world.structure.WDStructureTemplate;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
@@ -395,8 +396,8 @@ public class TemplateHelper {
                         BlockEntity blockentity1 = serverLevel.getBlockEntity(structuretemplate$structureblockinfo.pos());
                         if (blockentity1 != null) {
                             blockentity1.loadWithComponents(structuretemplate$structureblockinfo.nbt(), serverLevel.registryAccess());
-                            if (blockentity1 instanceof SpawnerBlockEntity spawnerBlockEntity) {//todo replace this with the special spawner block entity. Consider grabbing it from the a datamarker?
-                                spawnerBlockEntity.setEntityId(EntityType.ZOMBIE, serverLevel.getRandom());//todo pull from the room target pool instead
+                            if (blockentity1 instanceof SpawnerBlockEntity spawnerBlockEntity) {//todo replace this with the special spawner block entity that has more control over the spawn data
+                                UtilityMethods.setSpawnPotentials(spawnerBlockEntity.getSpawner(), UtilityMethods.createSpawnDataWeightedList(room.getProperty(HierarchicalProperty.ENEMY_TABLE).getLowestWeightedPool()));//todo consider grabbing higher pools?
                             }
                         }
                     }

@@ -76,6 +76,10 @@ public class WeightedPool<T> implements DungeonRegistration.DungeonComponent {
         return result;
     }
 
+    public List<Pair<T, Integer>> getAllWithWeights() {
+        return this.pool;
+    }
+
     public void computeTotalWeight() {
         this.totalWeight = 0;
         this.cumulativeWeights.clear();

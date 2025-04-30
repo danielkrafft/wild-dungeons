@@ -52,4 +52,9 @@ public class WeightedTable<T> implements DungeonRegistration.DungeonComponent {
     public String name() {
         return this.name;
     }
+
+    public WeightedPool<T> getLowestWeightedPool() {
+        if (weightMap.isEmpty()) return null;
+        return weightMap.get(0).getSecond();
+    }
 }
