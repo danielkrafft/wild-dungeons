@@ -3,6 +3,7 @@ package com.danielkkrafft.wilddungeons.block;
 import com.danielkkrafft.wilddungeons.entity.blockentity.ConnectionBlockEntity;
 import com.danielkkrafft.wilddungeons.network.ClientPacketHandler;
 import com.danielkkrafft.wilddungeons.network.SimplePacketManager;
+import com.danielkkrafft.wilddungeons.registry.WDBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
@@ -35,6 +36,8 @@ public class ConnectionBlock extends Block implements EntityBlock {
     @Override
     protected @NotNull InteractionResult useWithoutItem(@NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull BlockHitResult hitResult) {
         if (level.isClientSide) {return InteractionResult.PASS;}
+        boolean holding = player.getMainHandItem().is(WDBlocks.CONNECTION_BLOCK.asItem()) || player.getOffhandItem().is(WDBlocks.CONNECTION_BLOCK.asItem());
+        if (holding) {return InteractionResult.PASS;}
 
         BlockEntity blockentity = level.getBlockEntity(pos);
         if (blockentity instanceof ConnectionBlockEntity connectionBlockEntity && player.canUseGameMasterBlocks()) {
