@@ -243,15 +243,15 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate VILLAGE_METRO_PATH_STAIRS = createSimple("village/metro/path_stairs")
             .set(BLOCKING_MATERIAL_INDEX, 2);
 
-    public static final DungeonRoomTemplate VILLAGE_METRO_CHURCH = createSimple("village/metro/med_church");
-    public static final DungeonRoomTemplate VILLAGE_METRO_DORM_TOWER = createSimple("village/metro/med_dorm_tower");
-    public static final DungeonRoomTemplate VILLAGE_METRO_ILLAGER_TOWER = createSimple("village/metro/med_illager_tower");
-    public static final DungeonRoomTemplate VILLAGE_METRO_LIBRARY = createSimple("village/metro/med_library");
-    public static final DungeonRoomTemplate VILLAGE_METRO_LUMBERYARD = createSimple("village/metro/med_lumberyard");
-    public static final DungeonRoomTemplate VILLAGE_METRO_SMITHERY = createSimple("village/metro/med_smithery");
-    public static final DungeonRoomTemplate VILLAGE_METRO_TANNERY = createSimple("village/metro/med_tannery");
-    public static final DungeonRoomTemplate VILLAGE_METRO_VERTICAL_FARM = createSimple("village/metro/med_vertical_farm");
-    public static final DungeonRoomTemplate VILLAGE_METRO_COTTAGE = createSimple("village/metro/med_cottage");
+    public static final DungeonRoomTemplate VILLAGE_METRO_CHURCH = createSimple("village/metro/daniel/med/church");
+    public static final DungeonRoomTemplate VILLAGE_METRO_DORM_TOWER = createSimple("village/metro/daniel/med/dorm_tower");
+    public static final DungeonRoomTemplate VILLAGE_METRO_ILLAGER_TOWER = createSimple("village/metro/daniel/med/illager_tower");
+    public static final DungeonRoomTemplate VILLAGE_METRO_LIBRARY = createSimple("village/metro/daniel/med/library");
+    public static final DungeonRoomTemplate VILLAGE_METRO_LUMBERYARD = createSimple("village/metro/daniel/med/lumberyard");
+    public static final DungeonRoomTemplate VILLAGE_METRO_SMITHERY = createSimple("village/metro/daniel/med/smithery");
+    public static final DungeonRoomTemplate VILLAGE_METRO_TANNERY = createSimple("village/metro/daniel/med/tannery");
+    public static final DungeonRoomTemplate VILLAGE_METRO_VERTICAL_FARM = createSimple("village/metro/daniel/med/vertical_farm");
+    public static final DungeonRoomTemplate VILLAGE_METRO_COTTAGE = createSimple("village/metro/daniel/med/cottage");
     public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_MED_1 = createSimple("village/metro/awseme/med/1");
     public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_MED_2 = createSimple("village/metro/awseme/med/2");
     public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_MED_3 = createSimple("village/metro/awseme/med/3");
@@ -278,21 +278,35 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_MED_HOLLOW_HILL = createSimple("village/metro/awseme/med/hollow_hill");
     public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_MED_QUARRY = createSimple("village/metro/awseme/med/quarry");
     public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_MED_STONECUTTER = createSimple("village/metro/awseme/med/stonecutter");
+    public static final DungeonRoomTemplate VILLAGE_METRO_AIYQE_MED_BONFIRE = createSimple("village/metro/aiyqe/med/bonfire");
+    public static final DungeonRoomTemplate VILLAGE_METRO_AIYQE_MED_DEEPSLATE_MINE = createSimple("village/metro/aiyqe/med/deepslate_mine");
+    public static final DungeonRoomTemplate VILLAGE_METRO_AIYQE_MED_SALMON_BRIDGE = createSimple("village/metro/aiyqe/med/salmon_bridge");
+    public static final DungeonRoomTemplate VILLAGE_METRO_AIYQE_MED_TRADING_POST = createSimple("village/metro/aiyqe/med/trading_post");
+    public static final DungeonRoomTemplate VILLAGE_METRO_ARCANIST_MED_DEAD_TREE = createSimple("village/metro/arcanist/med/dead_tree");
+    public static final DungeonRoomTemplate VILLAGE_METRO_ARCANIST_MED_FISHING_POND = createSimple("village/metro/arcanist/med/fishing_pond");
+    public static final DungeonRoomTemplate VILLAGE_METRO_ARCANIST_MED_SAFE_HOUSE = createSimple("village/metro/arcanist/med/safe_house");
+    public static final DungeonRoomTemplate VILLAGE_METRO_ARCANIST_MED_WITCH_TOWER = createSimple("village/metro/arcanist/med/witch_tower");
 //    public static final DungeonRoomTemplate VILLAGE_METRO_ = createSimple("village/metro/");
 
-    public static final DungeonRoomTemplate VILLAGE_METRO_CROSS = createSimple("village/metro/sml_cross");
-    public static final DungeonRoomTemplate VILLAGE_METRO_FOUNTAIN = createSimple("village/metro/sml_fountain");
-    public static final DungeonRoomTemplate VILLAGE_METRO_HOME = createSimple("village/metro/sml_home");
-    public static final DungeonRoomTemplate VILLAGE_METRO_TREE = createSimple("village/metro/sml_tree");
-    public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_SML_ARCH = createSimple("village/metro/awseme/small/arch");
-    public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_SML_CART = createSimple("village/metro/awseme/small/cart");
-    public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_SML_CORNER_ARCH = createSimple("village/metro/awseme/small/corner_arch");
-    public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_SML_FOUR_ARCH = createSimple("village/metro/awseme/small/four_arch");
-    public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_SML_TRI_ARCH = createSimple("village/metro/awseme/small/tri_arch");
-    public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_SML_TRI_FOUNTAIN = createSimple("village/metro/awseme/small/tri_fountain");
+    public static final DungeonRoomTemplate VILLAGE_METRO_CROSS = createSimple("village/metro/daniel/sml/cross");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FOUNTAIN = createSimple("village/metro/daniel/sml/fountain");
+    public static final DungeonRoomTemplate VILLAGE_METRO_HOME = createSimple("village/metro/daniel/sml/home");
+    public static final DungeonRoomTemplate VILLAGE_METRO_TREE = createSimple("village/metro/daniel/sml/tree");
+    public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_SML_ARCH = createSimple("village/metro/awseme/sml/arch");
+    public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_SML_CART = createSimple("village/metro/awseme/sml/cart");
+    public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_SML_CORNER_ARCH = createSimple("village/metro/awseme/sml/corner_arch");
+    public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_SML_FOUR_ARCH = createSimple("village/metro/awseme/sml/four_arch");
+    public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_SML_TRI_ARCH = createSimple("village/metro/awseme/sml/tri_arch");
+    public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_SML_TRI_FOUNTAIN = createSimple("village/metro/awseme/sml/tri_fountain");
+    public static final DungeonRoomTemplate VILLAGE_METRO_AIYQE_SML_HALLOW_FARM = createSimple("village/metro/aiyqe/sml/hallow_farm");
+    public static final DungeonRoomTemplate VILLAGE_METRO_AIYQE_SML_HALLOW_TREE = createSimple("village/metro/aiyqe/sml/hallow_tree");
+    public static final DungeonRoomTemplate VILLAGE_METRO_AIYQE_SML_REST_HUT = createSimple("village/metro/aiyqe/sml/rest_hut");
+    public static final DungeonRoomTemplate VILLAGE_METRO_AIYQE_SML_TINYHOME = createSimple("village/metro/aiyqe/sml/tinyhome");
+    public static final DungeonRoomTemplate VILLAGE_METRO_ARCANIST_SML_CARROT = createSimple("village/metro/aiyqe/sml/carrot");
+    public static final DungeonRoomTemplate VILLAGE_METRO_ARCANIST_SML_CRYING_STATUE = createSimple("village/metro/aiyqe/sml/crying_statue");
+    public static final DungeonRoomTemplate VILLAGE_METRO_ARCANIST_SML_TEMPLE = createSimple("village/metro/aiyqe/sml/temple");
+    public static final DungeonRoomTemplate VILLAGE_METRO_ARCANIST_SML_WET_CROSS = createSimple("village/metro/aiyqe/sml/wet_cross");
 
-    public static final DungeonRoomTemplate VILLAGE_METRO_MEDIUM = createSimple("village/metro/medium");//blank
-    public static final DungeonRoomTemplate VILLAGE_METRO_SMALL = createSimple("village/metro/small");//blank
 
     public static final DungeonRoomTemplate VILLAGE_METRO_TOWER_START = createSimple("village/tower/tower_start");
     public static final DungeonRoomTemplate VILLAGE_METRO_TOWER_END = createSimple("village/tower/tower_temp");

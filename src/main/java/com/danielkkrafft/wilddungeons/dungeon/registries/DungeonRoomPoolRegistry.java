@@ -184,6 +184,14 @@ public class DungeonRoomPoolRegistry {
             .add(VILLAGE_METRO_AWSEME_MED_HOLLOW_HILL,1)
             .add(VILLAGE_METRO_AWSEME_MED_QUARRY,1)
             .add(VILLAGE_METRO_AWSEME_MED_STONECUTTER,1)
+            .add(VILLAGE_METRO_AIYQE_MED_BONFIRE,1)
+            .add(VILLAGE_METRO_AIYQE_MED_DEEPSLATE_MINE,1)
+            .add(VILLAGE_METRO_AIYQE_MED_SALMON_BRIDGE,1)
+            .add(VILLAGE_METRO_AIYQE_MED_TRADING_POST,1)
+            .add(VILLAGE_METRO_ARCANIST_MED_DEAD_TREE,1)
+            .add(VILLAGE_METRO_ARCANIST_MED_FISHING_POND,1)
+            .add(VILLAGE_METRO_ARCANIST_MED_SAFE_HOUSE,1)
+            .add(VILLAGE_METRO_ARCANIST_MED_WITCH_TOWER,1)
             ;
 
     public static final WeightedPool<DungeonRoomTemplate> VILLAGE_SMALL_PLOTS = create("VILLAGE_SMALL_PLOTS")
@@ -197,6 +205,14 @@ public class DungeonRoomPoolRegistry {
             .add(VILLAGE_METRO_AWSEME_SML_FOUR_ARCH,1)
             .add(VILLAGE_METRO_AWSEME_SML_TRI_ARCH,1)
             .add(VILLAGE_METRO_AWSEME_SML_TRI_FOUNTAIN,1)
+            .add(VILLAGE_METRO_AIYQE_SML_HALLOW_FARM,1)
+            .add(VILLAGE_METRO_AIYQE_SML_HALLOW_TREE,1)
+            .add(VILLAGE_METRO_AIYQE_SML_REST_HUT,1)
+            .add(VILLAGE_METRO_AIYQE_SML_TINYHOME,1)
+            .add(VILLAGE_METRO_ARCANIST_SML_CARROT,1)
+            .add(VILLAGE_METRO_ARCANIST_SML_CRYING_STATUE,1)
+            .add(VILLAGE_METRO_ARCANIST_SML_TEMPLE,1)
+            .add(VILLAGE_METRO_ARCANIST_SML_WET_CROSS,1)
             ;
 
 

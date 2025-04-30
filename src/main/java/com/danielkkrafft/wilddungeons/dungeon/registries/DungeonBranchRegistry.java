@@ -198,7 +198,7 @@ public class DungeonBranchRegistry {
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .add(VILLAGE_WIDE_PATH_POOL,5)
                     .add(VILLAGE_MEDIUM_PLOTS,5)
-                    .add(VILLAGE_SMALL_PLOTS,50)
+                    .add(VILLAGE_SMALL_PLOTS,30)
             )
             .set(MATERIAL, VILLAGE_MATERIAL_POOL)
             .set(BLOCKING_MATERIAL_INDEX, 2)
