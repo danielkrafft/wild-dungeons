@@ -8,6 +8,8 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTem
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialPoolRegistry.*;
@@ -185,10 +187,11 @@ public class DungeonBranchRegistry {
     public static final DungeonBranchTemplate VILLAGE_METRO_STREETS_BRANCH = create("VILLAGE_METRO_STREETS_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .add(VILLAGE_WIDE_PATH_POOL,10)
-                    .add(VILLAGE_MEDIUM_PLOTS,20)
+                    .add(VILLAGE_MEDIUM_PLOTS,30)
                     .add(VILLAGE_SMALL_PLOTS,30)
                     .add(VILLAGE_WIDE_PATH_POOL,1)//important that the last room is a path so that we can add more in the next branch generation and keep the straight line
             )
+            .setLimitedRooms(new HashMap<>(Map.of(VILLAGE_METRO_WIDE_CROSSROADS, 2)))
             .set(MATERIAL, VILLAGE_MATERIAL_POOL)
             .set(BLOCKING_MATERIAL_INDEX, 2)
             .set(BRANCH_DISTANCE_WEIGHT, 0)
@@ -197,9 +200,10 @@ public class DungeonBranchRegistry {
     public static final DungeonBranchTemplate VILLAGE_METRO_STREETS_2_BRANCH = create("VILLAGE_METRO_STREETS_2_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .add(VILLAGE_WIDE_PATH_POOL,5)
-                    .add(VILLAGE_MEDIUM_PLOTS,5)
-                    .add(VILLAGE_SMALL_PLOTS,30)
+                    .add(VILLAGE_MEDIUM_PLOTS,10)
+                    .add(VILLAGE_SMALL_PLOTS,50)
             )
+            .setLimitedRooms(new HashMap<>(Map.of(VILLAGE_METRO_WIDE_CROSSROADS, 2)))
             .set(MATERIAL, VILLAGE_MATERIAL_POOL)
             .set(BLOCKING_MATERIAL_INDEX, 2)
             .set(BRANCH_DISTANCE_WEIGHT, 0)
