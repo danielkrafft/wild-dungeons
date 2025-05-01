@@ -314,7 +314,28 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate VILLAGE_METRO_ENDER_MED_OASIS = createSimple("village/metro/ender/med/oasis");
     public static final DungeonRoomTemplate VILLAGE_METRO_ENDER_MED_PARKOUR = createSimple("village/metro/ender/med/parkour");
     public static final DungeonRoomTemplate VILLAGE_METRO_ENDER_MED_POND = createSimple("village/metro/ender/med/pond");
-//    public static final DungeonRoomTemplate VILLAGE_METRO_ = createSimple("village/metro/");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_CHURCH = createSimple("village/metro/flyingnokk/med/church");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_CRYSTAL_TOWER = createSimple("village/metro/flyingnokk/med/crystal_tower");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_DUPLEX = createSimple("village/metro/flyingnokk/med/duplex");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_EMERALD_ARCH = createSimple("village/metro/flyingnokk/med/emerald_arch");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_FISHING_POND = createSimple("village/metro/flyingnokk/med/fishing_pond");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_GARDEN = createSimple("village/metro/flyingnokk/med/garden");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_GRAVEYARD = createSimple("village/metro/flyingnokk/med/graveyard");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_HOUSE_1 = createSimple("village/metro/flyingnokk/med/house_1");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_HOUSE_2 = createSimple("village/metro/flyingnokk/med/house_2");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_HOUSE_3 = createSimple("village/metro/flyingnokk/med/house_3");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_HOUSE_4 = createSimple("village/metro/flyingnokk/med/house_4");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_HOUSE_FARM = createSimple("village/metro/flyingnokk/med/house_farm");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_HOUSE_FARM_RUINED = createSimple("village/metro/flyingnokk/med/house_farm_ruined");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_LIBRARY = createSimple("village/metro/flyingnokk/med/library");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_MARKET_STALLS = createSimple("village/metro/flyingnokk/med/market_stalls");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_PLAZA = createSimple("village/metro/flyingnokk/med/plaza");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_REDSTONE_SHOP = createSimple("village/metro/flyingnokk/med/redstone_shop");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_SMITHERY = createSimple("village/metro/flyingnokk/med/smithery");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_STABLES = createSimple("village/metro/flyingnokk/med/stables");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_TOWER = createSimple("village/metro/flyingnokk/med/tower");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_WELL_RUINED = createSimple("village/metro/flyingnokk/med/well_ruined");
+
 
     public static final DungeonRoomTemplate VILLAGE_METRO_CROSS = createSimple("village/metro/daniel/sml/cross");
     public static final DungeonRoomTemplate VILLAGE_METRO_FOUNTAIN = createSimple("village/metro/daniel/sml/fountain");
@@ -359,7 +380,30 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate VILLAGE_METRO_ENDER_SML_HOUSE_RUINED = createSimple("village/metro/ender/sml/house_ruined");
     public static final DungeonRoomTemplate VILLAGE_METRO_ENDER_SML_MARKET_STALL = createSimple("village/metro/ender/sml/market_stall");
     public static final DungeonRoomTemplate VILLAGE_METRO_ENDER_SML_TENT = createSimple("village/metro/ender/sml/tent");
-
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_SML_BEES = createSimple("village/metro/flyingnokk/sml/");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_SML_BELL_TOWER = createSimple("village/metro/flyingnokk/sml/");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_SML_CART = createSimple("village/metro/flyingnokk/sml/");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_SML_FARM_BEETROOT = createSimple("village/metro/flyingnokk/sml/");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_SML_FARM_CARROT = createSimple("village/metro/flyingnokk/sml/");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_SML_FARM_POTATO = createSimple("village/metro/flyingnokk/sml/");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_SML_FOUNTAIN = createSimple("village/metro/flyingnokk/sml/");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_SML_HEDGES = createSimple("village/metro/flyingnokk/sml/");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_SML_HOUSE_1 = createSimple("village/metro/flyingnokk/sml/");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_SML_HOUSE_2 = createSimple("village/metro/flyingnokk/sml/");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_SML_HOUSE_3 = createSimple("village/metro/flyingnokk/sml/");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_SML_PATH_HEDGES = createSimple("village/metro/flyingnokk/sml/");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_SML_RUINS = createSimple("village/metro/flyingnokk/sml/");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_SML_SIDEWALK = createSimple("village/metro/flyingnokk/sml/");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_SML_SIDEWALK_2 = createSimple("village/metro/flyingnokk/sml/");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_SML_SMELTER = createSimple("village/metro/flyingnokk/sml/");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_SML_STATUE = createSimple("village/metro/flyingnokk/sml/");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_SML_TARGETS = createSimple("village/metro/flyingnokk/sml/");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_SML_TREE = createSimple("village/metro/flyingnokk/sml/");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_SML_TREE_2 = createSimple("village/metro/flyingnokk/sml/");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_SML_WALL_CORNER = createSimple("village/metro/flyingnokk/sml/");//todo put these in a different pool because they are wide_path compatible
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_SML_WALL_STAIRS = createSimple("village/metro/flyingnokk/sml/");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_SML_WALL_STRAIGHT = createSimple("village/metro/flyingnokk/sml/");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_SML_WHEAT_PATH = createSimple("village/metro/flyingnokk/sml/");
 
     public static final DungeonRoomTemplate VILLAGE_METRO_TOWER_START = createSimple("village/tower/tower_start");
     public static final DungeonRoomTemplate VILLAGE_METRO_TOWER_END = createSimple("village/tower/tower_temp");
@@ -367,6 +411,11 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_TWR_CUBICLES = createSimple("village/metro/chlter121/twr/cubicles");//todo process these and set up the connection points
     public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_TWR_LIBRARY = createSimple("village/metro/chlter121/twr/library");//todo process these and set up the connection points
     public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_TWR_SEVERANCE = createSimple("village/metro/chlter121/twr/severance");//todo process these and set up the connection points
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_TWR_1 = createSimple("village/metro/flyingnokk/twr/1");//todo process these and set up the connection points
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_TWR_2 = createSimple("village/metro/flyingnokk/twr/2");//todo process these and set up the connection points
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_TWR_3 = createSimple("village/metro/flyingnokk/twr/3");//todo process these and set up the connection points
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_TWR_4 = createSimple("village/metro/flyingnokk/twr/4");//todo process these and set up the connection points
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_TWR_CEO_OFFICE = createSimple("village/metro/flyingnokk/twr/ceo_office");//todo process these and set up the connection points
 
 
 
