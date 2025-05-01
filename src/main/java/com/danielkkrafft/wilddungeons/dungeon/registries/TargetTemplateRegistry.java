@@ -70,6 +70,11 @@ public class TargetTemplateRegistry {
     public static final TargetTemplate MUTANT_BOGGED = createMob("MUTANT_BOGGED", WDEntities.MUTANT_BOGGED.get());
     public static final TargetTemplate BREEZE_GOLEM = createMob("BREEZE_GOLEM", WDEntities.BREEZE_GOLEM.get());
 
+    public static final TargetTemplate BUSINESS_GOLEM = createMob("BUSINESS_GOLEM", WDEntities.BUSINESS_GOLEM.get());
+    public static final TargetTemplate BUSINESS_VINDICATOR = createMob("BUSINESS_VINDICATOR", WDEntities.BUSINESS_VINDICATOR.get()).setMainHandItem(Items.GOLDEN_AXE);
+    public static final TargetTemplate BUSINESS_EVOKER = createMob("BUSINESS_EVOKER", WDEntities.BUSINESS_EVOKER.get());
+    public static final TargetTemplate BUSINESS_CEO = createMob("BUSINESS_CEO", WDEntities.BUSINESS_CEO.get());
+
     public static TargetTemplate createMob(String name, EntityType<?> entityType) {
         TargetTemplate targetTemplate = TargetTemplate.createMob(name, entityType);
         targetTemplates.add(targetTemplate);
