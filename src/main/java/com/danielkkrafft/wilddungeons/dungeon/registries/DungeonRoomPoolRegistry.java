@@ -145,6 +145,7 @@ public class DungeonRoomPoolRegistry {
     
     public static final WeightedPool<DungeonRoomTemplate> VILLAGE_WIDE_PATH_POOL = create("VILLAGE_WIDE_PATH_POOL")
             .add(VILLAGE_METRO_WIDE_CROSSROADS,1)
+//            .add(VILLAGE_METRO_WIDE_STAIRS,1)//todo way to handle vertical gaps
             .add(VILLAGE_METRO_WIDE_PATH, 10);
 
     public static final WeightedPool<DungeonRoomTemplate> VILLAGE_MEDIUM_PLOTS = create("VILLAGE_MEDIUM_PLOTS")
@@ -207,6 +208,19 @@ public class DungeonRoomPoolRegistry {
             .add(VILLAGE_METRO_CHLTER121_MED_PLAZA,1)
             .add(VILLAGE_METRO_CHLTER121_MED_RUINED_HOUSE_1,1)
             .add(VILLAGE_METRO_CHLTER121_MED_RUINED_HOUSE_2,1)
+            .add(VILLAGE_METRO_ENDER_MED_BRICK_TOWER,1)
+            .add(VILLAGE_METRO_ENDER_MED_FARM,1)
+            .add(VILLAGE_METRO_ENDER_MED_FOUNTAIN,1)
+            .add(VILLAGE_METRO_ENDER_MED_HOUSE_1,1)
+            .add(VILLAGE_METRO_ENDER_MED_HOUSE_2,1)
+            .add(VILLAGE_METRO_ENDER_MED_HOUSE_3,1)
+            .add(VILLAGE_METRO_ENDER_MED_HOUSE_4,1)
+            .add(VILLAGE_METRO_ENDER_MED_HOUSE_5,1)
+            .add(VILLAGE_METRO_ENDER_MED_HOUSE_6,1)
+            .add(VILLAGE_METRO_ENDER_MED_MARKET_STALLS,1)
+            .add(VILLAGE_METRO_ENDER_MED_OASIS,1)
+            .add(VILLAGE_METRO_ENDER_MED_PARKOUR,1)
+            .add(VILLAGE_METRO_ENDER_MED_POND,1)
             ;
 
     public static final WeightedPool<DungeonRoomTemplate> VILLAGE_SMALL_PLOTS = create("VILLAGE_SMALL_PLOTS")
@@ -244,6 +258,15 @@ public class DungeonRoomPoolRegistry {
             .add(VILLAGE_METRO_CHLTER121_SML_TOWER_OPEN,1)
             .add(VILLAGE_METRO_CHLTER121_SML_TOWER_OPEN_B,1)
             .add(VILLAGE_METRO_CHLTER121_SML_WELL,1)
+            .add(VILLAGE_METRO_ENDER_SML_DEBRIS,1)
+            .add(VILLAGE_METRO_ENDER_SML_FARM,1)
+            .add(VILLAGE_METRO_ENDER_SML_FOUNTAIN,1)
+            .add(VILLAGE_METRO_ENDER_SML_HOUSE_1,1)
+            .add(VILLAGE_METRO_ENDER_SML_HOUSE_2,1)
+            .add(VILLAGE_METRO_ENDER_SML_HOUSE_3,1)
+            .add(VILLAGE_METRO_ENDER_SML_HOUSE_RUINED,1)
+            .add(VILLAGE_METRO_ENDER_SML_MARKET_STALL,1)
+            .add(VILLAGE_METRO_ENDER_SML_TENT,1)
             ;
 
 
