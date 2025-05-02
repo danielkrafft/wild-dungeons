@@ -1,6 +1,7 @@
 package com.danielkkrafft.wilddungeons.dungeon.components;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.dungeon.components.process.PostProcessingStep;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonBranchTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonFloorTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
@@ -30,8 +31,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
-import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.INTENSITY;
-import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.SOUNDSCAPE;
+import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonFloorRegistry.DUNGEON_FLOOR_REGISTRY;
 import static com.danielkkrafft.wilddungeons.registry.WDDimensions.WILDDUNGEON;
 
@@ -186,8 +186,9 @@ public class DungeonFloor {
             currentBranchCount = this.dungeonBranches.size();
         }
 
-        this.dungeonBranches.forEach(DungeonBranch::processShell);
+        this.onGenerated(); // Currently, post processing is run BEFORE the rooms are actually placed so that rooms can naturally carve into generated blocks. In the future, we should probably separate this into stages.
         this.dungeonBranches.forEach(DungeonBranch::actuallyPlaceInWorld);
+
 
 //        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
 //
@@ -198,6 +199,22 @@ public class DungeonFloor {
 //        });
 //        generationFutures.add(future);
 
+    }
+
+    public void onGenerated() {
+        this.handlePostProcessing();
+    }
+
+    public void handlePostProcessing() {
+        List<PostProcessingStep> steps = this.getTemplate().get(POST_PROCESSING_STEPS);
+        if (steps == null) return;
+        for (PostProcessingStep step : steps) {
+            List<DungeonRoom> rooms = new ArrayList<>();
+            for (DungeonBranch branch : this.getBranches()) {
+                rooms.addAll(branch.getRooms());
+            }
+            step.handle(rooms);
+        }
     }
 
     /**

@@ -2,6 +2,7 @@ package com.danielkkrafft.wilddungeons.dungeon.components.template;
 
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonMaterial;
+import com.danielkkrafft.wilddungeons.dungeon.components.process.PostProcessingStep;
 import com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialPoolRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.registries.OfferingTemplateTableRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.registries.SoundscapeTemplateRegistry;
@@ -10,6 +11,9 @@ import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.util.WeightedTable;
 import com.google.gson.reflect.TypeToken;
 import net.minecraft.world.phys.Vec3;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.danielkkrafft.wilddungeons.dungeon.registries.EnemyTableRegistry.BASIC_ENEMY_TABLE;
 
@@ -45,6 +49,7 @@ public class HierarchicalProperty<T> {
     public static final HierarchicalProperty<Integer> ROOM_TARGET_Y = new HierarchicalProperty<>(new TypeToken<>() {}, 128);
     public static final HierarchicalProperty<Integer> ROOM_GENERATION_RANDOMNESS = new HierarchicalProperty<>(new TypeToken<>() {}, 30);
     public static final HierarchicalProperty<Double> MATERIAL_NOISE = new HierarchicalProperty<>(new TypeToken<>() {}, 0.15);
+    public static final HierarchicalProperty<List<PostProcessingStep>> POST_PROCESSING_STEPS = new HierarchicalProperty<>(new TypeToken<>() {}, new ArrayList<>());
 
 
     private final TypeToken<T> type;

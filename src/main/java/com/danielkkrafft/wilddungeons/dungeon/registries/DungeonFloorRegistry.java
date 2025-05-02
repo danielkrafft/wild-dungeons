@@ -3,6 +3,7 @@ package com.danielkkrafft.wilddungeons.dungeon.registries;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.DungeonLayout;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonMaterial;
+import com.danielkkrafft.wilddungeons.dungeon.components.process.AddBedrockShellStep;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonBranchTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonFloorTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
@@ -10,6 +11,7 @@ import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import net.minecraft.core.BlockPos;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonBranchRegistry.*;
 
@@ -37,6 +39,7 @@ public class DungeonFloorRegistry {
                     .addSimple(OVERWORLD_TRIAL_EXIT_BRANCH))
             .set(HierarchicalProperty.SOUNDSCAPE, SoundscapeTemplateRegistry.MEGA_DUNGEON)
             .set(HierarchicalProperty.INTENSITY, 1)
+            .set(HierarchicalProperty.POST_PROCESSING_STEPS, List.of(new AddBedrockShellStep()))
             .setOrigin(new BlockPos(0, 150, 0));
 
     public static final DungeonFloorTemplate MEGA_DUNGEON_GAUNTLET_FLOOR = create("mega_dungeon_gauntlet_floor")//must be lowercase or the game will crash
@@ -59,6 +62,7 @@ public class DungeonFloorRegistry {
             .set(HierarchicalProperty.SOUNDSCAPE, SoundscapeTemplateRegistry.MEGA_DUNGEON)
             .set(HierarchicalProperty.INTENSITY, 1)
             .set(HierarchicalProperty.DIFFICULTY_MODIFIER, 2.0)
+            .set(HierarchicalProperty.POST_PROCESSING_STEPS, List.of(new AddBedrockShellStep()))
             .setOrigin(new BlockPos(0, 150, 0));
 
 
@@ -81,6 +85,7 @@ public class DungeonFloorRegistry {
             )
             .set(HierarchicalProperty.MATERIAL, new WeightedPool<DungeonMaterial>().add(DungeonMaterialRegistry.PIGLIN_FACTORY_MATERIAL, 1))
             .set(HierarchicalProperty.SOUNDSCAPE, SoundscapeTemplateRegistry.NETHER_CAVES)
+            .set(HierarchicalProperty.POST_PROCESSING_STEPS, List.of(new AddBedrockShellStep()))
             .setOrigin(new BlockPos(0, 0, 0));
 
     public static final DungeonFloorTemplate VILLAGE_FLOOR = create("village")
@@ -98,7 +103,9 @@ public class DungeonFloorRegistry {
                             .addSimple(VILLAGE_METRO_STREETS_2_BRANCH)
                             .addSimple(VILLAGE_METRO_STREETS_BRANCH)
                             .addSimple(VILLAGE_METRO_STREETS_2_BRANCH)
-            ).setOrigin(new BlockPos(0,-50,0));
+            )
+            .set(HierarchicalProperty.POST_PROCESSING_STEPS, List.of(new AddBedrockShellStep()))
+            .setOrigin(new BlockPos(0,-50,0));
 
     public static DungeonFloorTemplate copyOf(DungeonFloorTemplate floor, String name) {
         DungeonFloorTemplate copy = DungeonFloorTemplate.copyOf(floor, name);

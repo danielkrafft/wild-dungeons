@@ -1,6 +1,7 @@
 package com.danielkkrafft.wilddungeons.dungeon.components;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.dungeon.components.process.PostProcessingStep;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.*;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
@@ -90,14 +91,23 @@ public class DungeonBranch {
         return true;
     }
 
-    public void processShell() {
-        this.getRooms().forEach(DungeonRoom::processShell);
-    }
-
     public void actuallyPlaceInWorld() {
         this.getRooms().forEach(DungeonRoom::actuallyPlaceInWorld);
         fullyGenerated = true;
+        this.onGenerated();
         getFloor().onBranchComplete(this);
+    }
+
+    public void onGenerated() {
+        handlePostProcessing();
+    }
+
+    public void handlePostProcessing() {
+        List<PostProcessingStep> steps = this.getTemplate().get(POST_PROCESSING_STEPS);
+        if (steps == null) return;
+        for (PostProcessingStep step : steps) {
+            step.handle(this.getRooms());
+        }
     }
 
     /**
@@ -226,7 +236,7 @@ public class DungeonBranch {
         newEntrancePoint.setConnectedPoint(exitPoint);
         exitPoint.unBlock();
         openConnections += nextRoom.connectionPoints().size() - 2;
-        room.onGenerate();//todo this is no longer where the room is actually generated
+        room.onGenerated();//todo this is no longer where the room is actually generated
     }
 
     /**

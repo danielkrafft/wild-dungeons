@@ -3,6 +3,7 @@ package com.danielkkrafft.wilddungeons.dungeon.components;
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.block.WDBedrockBlock;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
+import com.danielkkrafft.wilddungeons.dungeon.components.process.PostProcessingStep;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.LockableEventRoom;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.TargetPurgeRoom;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
@@ -191,13 +192,6 @@ public class DungeonRoom {
             point.setRoom(this);
             return point;
         }).toList();
-    }
-
-    /**
-     * Handles bedrock shells, and Protected Rooms with custom bedrock shells
-     */
-    public void processShell() {
-        if (this.getProperty(HAS_BEDROCK_SHELL)) this.surroundWith(Blocks.BEDROCK.defaultBlockState());
     }
 
     /**
@@ -538,7 +532,16 @@ public class DungeonRoom {
         return 0xFFFFFFFF;
     }
 
-    public void onGenerate() {
+    public void onGenerated() {
+        handlePostProcessing();
+    }
+
+    public void handlePostProcessing() {
+        List<PostProcessingStep> steps = this.getTemplate().get(POST_PROCESSING_STEPS);
+        if (steps == null) return;
+        for (PostProcessingStep step : steps) {
+            step.handle(List.of(this));
+        }
     }
 
     public void onEnter(WDPlayer player) {
