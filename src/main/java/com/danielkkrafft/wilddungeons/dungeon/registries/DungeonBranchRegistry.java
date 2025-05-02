@@ -3,12 +3,16 @@ package com.danielkkrafft.wilddungeons.dungeon.registries;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.DungeonLayout;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonMaterial;
+import com.danielkkrafft.wilddungeons.dungeon.components.process.CreateBorderStep;
+import com.danielkkrafft.wilddungeons.dungeon.components.process.SurroundingColumnStep;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonBranchTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
+import net.minecraft.world.level.block.Blocks;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.*;
@@ -183,6 +187,7 @@ public class DungeonBranchRegistry {
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .addSimple(VILLAGE_METRO_CENTER)
             )
+            .set(POST_PROCESSING_STEPS, List.of(new CreateBorderStep(), new SurroundingColumnStep(List.of(Blocks.WATER.defaultBlockState(), Blocks.WATER.defaultBlockState(), Blocks.SAND.defaultBlockState(), Blocks.BEDROCK.defaultBlockState()), 350)))
             .set(MATERIAL, VILLAGE_MATERIAL_POOL);
     public static final DungeonBranchTemplate VILLAGE_METRO_STREETS_BRANCH = create("VILLAGE_METRO_STREETS_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
@@ -196,6 +201,7 @@ public class DungeonBranchRegistry {
             .set(BLOCKING_MATERIAL_INDEX, 2)
             .set(BRANCH_DISTANCE_WEIGHT, 0)
             .set(FLOOR_DISTANCE_WEIGHT, 0)
+            .set(POST_PROCESSING_STEPS, List.of(new CreateBorderStep()))
             .setRootOriginBranchIndex(4);
     public static final DungeonBranchTemplate VILLAGE_METRO_STREETS_2_BRANCH = create("VILLAGE_METRO_STREETS_2_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
@@ -207,6 +213,7 @@ public class DungeonBranchRegistry {
             .set(MATERIAL, VILLAGE_MATERIAL_POOL)
             .set(BLOCKING_MATERIAL_INDEX, 2)
             .set(BRANCH_DISTANCE_WEIGHT, 0)
+            .set(POST_PROCESSING_STEPS, List.of(new CreateBorderStep()))
             .set(FLOOR_DISTANCE_WEIGHT, -100);
 
     public static final DungeonBranchTemplate VILLAGE_METRO_ENDING_BRANCH = create("VILLAGE_METRO_ENDING_BRANCH")
@@ -221,6 +228,7 @@ public class DungeonBranchRegistry {
                     .addSimple(VILLAGE_METRO_TOWER_END)
             )
             .set(MATERIAL, VILLAGE_MATERIAL_POOL)
+            .set(POST_PROCESSING_STEPS, List.of(new CreateBorderStep()))
             .setRootOriginBranchIndex(4);
 
     public static DungeonBranchTemplate copyOf(DungeonBranchTemplate branch, String name) {

@@ -186,7 +186,9 @@ public class DungeonFloor {
             currentBranchCount = this.dungeonBranches.size();
         }
 
-        this.onGenerated(); // Currently, post processing is run BEFORE the rooms are actually placed so that rooms can naturally carve into generated blocks. In the future, we should probably separate this into stages.
+        this.handlePostProcessing();
+        this.dungeonBranches.forEach(DungeonBranch::handlePostProcessing);
+        this.dungeonBranches.forEach(b -> b.getRooms().forEach(DungeonRoom::handlePostProcessing));// Currently, post processing is run BEFORE the rooms are actually placed so that rooms can naturally carve into generated blocks. In the future, we should probably separate this into stages.
         this.dungeonBranches.forEach(DungeonBranch::actuallyPlaceInWorld);
 
 
@@ -199,10 +201,6 @@ public class DungeonFloor {
 //        });
 //        generationFutures.add(future);
 
-    }
-
-    public void onGenerated() {
-        this.handlePostProcessing();
     }
 
     public void handlePostProcessing() {

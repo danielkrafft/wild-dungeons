@@ -94,12 +94,7 @@ public class DungeonBranch {
     public void actuallyPlaceInWorld() {
         this.getRooms().forEach(DungeonRoom::actuallyPlaceInWorld);
         fullyGenerated = true;
-        this.onGenerated();
         getFloor().onBranchComplete(this);
-    }
-
-    public void onGenerated() {
-        handlePostProcessing();
     }
 
     public void handlePostProcessing() {

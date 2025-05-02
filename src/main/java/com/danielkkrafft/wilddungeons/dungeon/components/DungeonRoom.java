@@ -532,9 +532,7 @@ public class DungeonRoom {
         return 0xFFFFFFFF;
     }
 
-    public void onGenerated() {
-        handlePostProcessing();
-    }
+    public void onGenerated() {}
 
     public void handlePostProcessing() {
         List<PostProcessingStep> steps = this.getTemplate().get(POST_PROCESSING_STEPS);

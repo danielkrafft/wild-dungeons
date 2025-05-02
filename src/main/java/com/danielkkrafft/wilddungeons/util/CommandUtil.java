@@ -5,8 +5,10 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class CommandUtil {
 
@@ -39,6 +41,13 @@ public class CommandUtil {
 
         command = "execute in "+targetDim+" run tp "+player.getName().getString()+" "+targetX+" "+targetY+" "+targetZ+" "+targetYaw+" "+targetPitch;
         executeCommand(player.level(), command);
+    }
+
+    public static void executeFillCommand(ServerLevel level, int minX, int maxX, int minY, int maxY, int minZ, int maxZ, BlockState blockState) {
+        if (level == null) return;
+
+        String command = "fill "+minX+" "+minY+" "+minZ+" "+maxX+" "+maxY+" "+maxZ+" "+blockState.toString();
+        executeCommand(level, command);
     }
 
 }
