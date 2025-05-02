@@ -239,6 +239,7 @@ public class DungeonRoomPoolRegistry {
             .add(VILLAGE_METRO_FLYINGNOKK_MED_PLAZA,1)
             .add(VILLAGE_METRO_FLYINGNOKK_MED_REDSTONE_SHOP,1)
             .add(VILLAGE_METRO_FLYINGNOKK_MED_SMITHERY,1)
+            .add(VILLAGE_METRO_FLYINGNOKK_MED_STABLES,1)
             .add(VILLAGE_METRO_FLYINGNOKK_MED_TOWER,1)
             .add(VILLAGE_METRO_FLYINGNOKK_MED_WELL_RUINED,1)
             ;
@@ -307,6 +308,7 @@ public class DungeonRoomPoolRegistry {
             .add(VILLAGE_METRO_FLYINGNOKK_SML_TARGETS,1)
             .add(VILLAGE_METRO_FLYINGNOKK_SML_TREE,1)
             .add(VILLAGE_METRO_FLYINGNOKK_SML_TREE_2,1)
+            .add(VILLAGE_METRO_FLYINGNOKK_SML_WHEAT_PATH,1)
             ;
 
 
