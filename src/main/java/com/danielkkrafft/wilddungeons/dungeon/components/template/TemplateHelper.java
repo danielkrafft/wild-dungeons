@@ -18,7 +18,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.DoubleTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.Clearable;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
@@ -385,11 +384,12 @@ public class TemplateHelper {
 
                 blockstate = replaceChest(blockstate, room);//todo this should be moved elsewhere when the NBT is controlling the room properties
 
-                if (structuretemplate$structureblockinfo.nbt() != null) {
-                    BlockEntity blockentity = serverLevel.getBlockEntity(structuretemplate$structureblockinfo.pos());
-                    Clearable.tryClear(blockentity);
-                    serverLevel.setBlock(structuretemplate$structureblockinfo.pos(), Blocks.BARRIER.defaultBlockState(), 2);
-                }
+                //breaks beds
+//                if (structuretemplate$structureblockinfo.nbt() != null) {
+//                    BlockEntity blockentity = serverLevel.getBlockEntity(structuretemplate$structureblockinfo.pos());
+//                    Clearable.tryClear(blockentity);
+//                    serverLevel.setBlock(structuretemplate$structureblockinfo.pos(), Blocks.BARRIER.defaultBlockState(), 2);
+//                }
 
                 if (serverLevel.setBlock(structuretemplate$structureblockinfo.pos(), blockstate, flags)) {
                     if (structuretemplate$structureblockinfo.nbt() != null) {
@@ -482,12 +482,6 @@ public class TemplateHelper {
                         blockstate = material.replace(blockstate.mirror(settings.getMirror()).rotate(settings.getRotation()), 1.0, structureBlockInfo.pos(), wdTemplate);
                     }
 
-                    if (structureBlockInfo.nbt() != null) {
-                        BlockEntity blockentity = serverLevel.getBlockEntity(pos);
-                        Clearable.tryClear(blockentity);
-                        serverLevel.setBlock(pos, Blocks.BARRIER.defaultBlockState(), 2);
-                    }
-
                     if (serverLevel.setBlock(pos, blockstate, 2)) {
                         if (structureBlockInfo.nbt() != null) {
                             BlockEntity blockentity1 = serverLevel.getBlockEntity(pos);
@@ -526,15 +520,20 @@ public class TemplateHelper {
                 listtag.add(DoubleTag.valueOf(vec31.z));
                 compoundtag.put("Pos", listtag);
                 compoundtag.remove("UUID");
-                StructureTemplate.createEntityIgnoreException(serverLevelAccessor, compoundtag).ifPresent((p_275190_) -> {
-                    float f = p_275190_.rotate(placementIn.getRotation());
-                    f += p_275190_.mirror(placementIn.getMirror()) - p_275190_.getYRot();
-                    p_275190_.moveTo(vec31.x, vec31.y, vec31.z, f, p_275190_.getXRot());
-                    if (placementIn.shouldFinalizeEntities() && p_275190_ instanceof Mob) {
-                        ((Mob)p_275190_).finalizeSpawn(serverLevelAccessor, serverLevelAccessor.getCurrentDifficultyAt(BlockPos.containing(vec31)), MobSpawnType.STRUCTURE, null);
+                if (structuretemplate$structureentityinfo.nbt.contains("TileX")){
+                    compoundtag.putInt("TileX", blockpos.getX());
+                    compoundtag.putInt("TileY", blockpos.getY());
+                    compoundtag.putInt("TileZ", blockpos.getZ());
+                }
+                StructureTemplate.createEntityIgnoreException(serverLevelAccessor, compoundtag).ifPresent((entity) -> {
+                    float f = entity.rotate(placementIn.getRotation());
+                    f += entity.mirror(placementIn.getMirror()) - entity.getYRot();
+                    entity.moveTo(vec31.x, vec31.y, vec31.z, f, entity.getXRot());
+                    if (placementIn.shouldFinalizeEntities() && entity instanceof Mob) {
+                        ((Mob)entity).finalizeSpawn(serverLevelAccessor, serverLevelAccessor.getCurrentDifficultyAt(BlockPos.containing(vec31)), MobSpawnType.STRUCTURE, null);
                     }
 
-                    serverLevelAccessor.addFreshEntityWithPassengers(p_275190_);
+                    serverLevelAccessor.addFreshEntityWithPassengers(entity);
                 });
             }
         }
