@@ -199,7 +199,7 @@ public class DungeonBranchRegistry {
             .setLimitedRooms(new HashMap<>(Map.of(VILLAGE_METRO_WIDE_CROSSROADS, 2,VILLAGE_METRO_WIDE_STAIRS,1)))
             .set(MATERIAL, VILLAGE_MATERIAL_POOL)
             .set(BLOCKING_MATERIAL_INDEX, 2)
-            .set(BRANCH_DISTANCE_WEIGHT, 0)
+            .set(BRANCH_DISTANCE_WEIGHT, -50)
             .set(FLOOR_DISTANCE_WEIGHT, 0)
             .set(POST_PROCESSING_STEPS, List.of(new CreateBorderStep()))
             .setRootOriginBranchIndex(4);
@@ -212,9 +212,9 @@ public class DungeonBranchRegistry {
             .setLimitedRooms(new HashMap<>(Map.of(VILLAGE_METRO_WIDE_CROSSROADS, 2)))
             .set(MATERIAL, VILLAGE_MATERIAL_POOL)
             .set(BLOCKING_MATERIAL_INDEX, 2)
-            .set(BRANCH_DISTANCE_WEIGHT, 0)
+            .set(BRANCH_DISTANCE_WEIGHT, -50)
             .set(POST_PROCESSING_STEPS, List.of(new CreateBorderStep()))
-            .set(FLOOR_DISTANCE_WEIGHT, -100);
+            .set(FLOOR_DISTANCE_WEIGHT, 0);
 
     public static final DungeonBranchTemplate VILLAGE_METRO_ENDING_BRANCH = create("VILLAGE_METRO_ENDING_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
@@ -228,7 +228,6 @@ public class DungeonBranchRegistry {
                     .addSimple(VILLAGE_METRO_TOWER_END)
             )
             .set(MATERIAL, VILLAGE_MATERIAL_POOL)
-            .set(POST_PROCESSING_STEPS, List.of(new CreateBorderStep()))
             .setRootOriginBranchIndex(4);
 
     public static DungeonBranchTemplate copyOf(DungeonBranchTemplate branch, String name) {

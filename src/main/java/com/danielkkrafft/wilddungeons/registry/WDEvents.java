@@ -449,6 +449,7 @@ public class WDEvents {
             player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 900, 1));
             player.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 100, 1));
             player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 800, 0));
+            player.getFoodData().setFoodLevel(20);
             player.level().broadcastEntityEvent(player, (byte)35);
             wdPlayer.getCurrentDungeon().offsetLives(-1);
 
