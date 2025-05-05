@@ -4,13 +4,11 @@ import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.DungeonLayout;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonMaterial;
 import com.danielkkrafft.wilddungeons.dungeon.components.process.AddBedrockShellStep;
-import com.danielkkrafft.wilddungeons.dungeon.components.process.SurroundingColumnStep;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonBranchTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonFloorTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.block.Blocks;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -107,6 +105,7 @@ public class DungeonFloorRegistry {
                             .addSimple(VILLAGE_METRO_STREETS_2_BRANCH)
             )
             .set(HierarchicalProperty.POST_PROCESSING_STEPS, List.of(new AddBedrockShellStep()))
+            .set(HierarchicalProperty.ENEMY_TABLE, EnemyTableRegistry.VILLAGE_ENEMY_TABLE)
             .setOrigin(new BlockPos(0,-50,0));
 
     public static DungeonFloorTemplate copyOf(DungeonFloorTemplate floor, String name) {

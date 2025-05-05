@@ -9,6 +9,7 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.InclusiveRange;
 import net.minecraft.util.random.SimpleWeightedRandomList;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.BaseSpawner;
@@ -48,6 +49,11 @@ public final class UtilityMethods
 
         // Update the tag with our new spawn potentials
         spawnerTag.put("SpawnPotentials", spawnPotentialsTag);
+        spawnerTag.putShort("MinSpawnDelay", (short) 100);
+        spawnerTag.putShort("MaxSpawnDelay", (short) 200);
+        spawnerTag.putShort("SpawnCount", (short) 2);
+        spawnerTag.putShort("MaxNearbyEntities", (short) 10);
+        spawnerTag.putShort("RequiredPlayerRange", (short) 32);
 
         // Load the modified data back into the spawner
         AtomicReference<BlockPos> pos = new AtomicReference<>(BlockPos.ZERO);
@@ -70,7 +76,7 @@ public final class UtilityMethods
         for (Pair<DungeonRegistration.TargetTemplate, Integer> entry : pool.getAllWithWeights()) {
             CompoundTag tag = new CompoundTag();
             tag.putString("id", entry.getFirst().getEntityTypeString());
-            SpawnData spawnData = new SpawnData(tag, Optional.empty(), Optional.empty());
+            SpawnData spawnData = new SpawnData(tag, Optional.of(new SpawnData.CustomSpawnRules(new InclusiveRange<>(0, 15),new InclusiveRange<>(0, 15))), Optional.empty());//optional sets the spawn rules to always spawn regardless of light level
             builder.add(spawnData, entry.getSecond());
         }
 

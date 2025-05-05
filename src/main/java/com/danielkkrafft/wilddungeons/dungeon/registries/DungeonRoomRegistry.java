@@ -336,6 +336,23 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_TOWER = createSimple("village/metro/flyingnokk/med/tower");
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_WELL_RUINED = createSimple("village/metro/flyingnokk/med/well_ruined");
 
+    //todo these all have a lot of problems because they are not designed for combat, and have open tops.
+    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_LUMBERYARD = copyOf(VILLAGE_METRO_LUMBERYARD, "combat_lumber_yard").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
+    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_ILLAGER_TOWER = copyOf(VILLAGE_METRO_ILLAGER_TOWER, "combat_illager_tower").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
+    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_AWSEME_MED_STONECUTTER = copyOf(VILLAGE_METRO_AWSEME_MED_STONECUTTER, "combat_awseme_med_stonecutter").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
+    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_AWSEME_MED_5B = copyOf(VILLAGE_METRO_AWSEME_MED_5B, "combat_awseme_med_5b").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
+    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_CHLTER121_MED_GRAVEYARD = copyOf(VILLAGE_METRO_CHLTER121_MED_GRAVEYARD, "combat_chlter121_med_graveyard").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
+    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_CHLTER121_MED_GRAVEYARD_BROKEN = copyOf(VILLAGE_METRO_CHLTER121_MED_GRAVEYARD_BROKEN, "combat_chlter121_med_graveyard_broken").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
+    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_CHLTER121_MED_RUINED_HOUSE_1 = copyOf(VILLAGE_METRO_CHLTER121_MED_RUINED_HOUSE_1, "combat_chlter121_med_ruined_house_1").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
+    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_CHLTER121_MED_RUINED_HOUSE_2 = copyOf(VILLAGE_METRO_CHLTER121_MED_RUINED_HOUSE_2, "combat_chlter121_med_ruined_house_2").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
+    public static final DungeonRoomTemplate VILLAGE_METRO_COMBATs_CHLTER121_MED_FOOD_COURT = copyOf(VILLAGE_METRO_CHLTER121_MED_FOOD_COURT, "combat_chlter121_med_food_court").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
+    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_FLYINGNOKK_MED_EMERALD_ARCH = copyOf(VILLAGE_METRO_FLYINGNOKK_MED_EMERALD_ARCH, "combat_flyingnokk_med_emerald_arch").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
+    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_FLYINGNOKK_MED_PLAZA = copyOf(VILLAGE_METRO_FLYINGNOKK_MED_PLAZA, "combat_flyingnokk_med_plaza").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
+    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_FLYINGNOKK_MED_GARDEN = copyOf(VILLAGE_METRO_FLYINGNOKK_MED_GARDEN, "combat_flyingnokk_med_garden").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
+    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_FLYINGNOKK_MED_GRAVEYARD = copyOf(VILLAGE_METRO_FLYINGNOKK_MED_GRAVEYARD, "combat_flyingnokk_med_graveyard").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
+    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_FLYINGNOKK_MED_MARKET_STALLS = copyOf(VILLAGE_METRO_FLYINGNOKK_MED_MARKET_STALLS, "combat_flyingnokk_med_market_stalls").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
+    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_ENDER_MED_FARM = copyOf(VILLAGE_METRO_ENDER_MED_FARM, "combat_ender_med_farm").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
+    //
 
     public static final DungeonRoomTemplate VILLAGE_METRO_CROSS = createSimple("village/metro/daniel/sml/cross");
     public static final DungeonRoomTemplate VILLAGE_METRO_FOUNTAIN = createSimple("village/metro/daniel/sml/fountain");

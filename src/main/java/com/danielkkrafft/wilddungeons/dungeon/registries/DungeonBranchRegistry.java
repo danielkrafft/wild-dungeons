@@ -7,6 +7,7 @@ import com.danielkkrafft.wilddungeons.dungeon.components.process.CreateBorderSte
 import com.danielkkrafft.wilddungeons.dungeon.components.process.SurroundingColumnStep;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonBranchTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import net.minecraft.world.level.block.Blocks;
 
@@ -173,6 +174,7 @@ public class DungeonBranchRegistry {
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .add(VILLAGE_SEWER_POOL,15))
             .set(MATERIAL, VILLAGE_SEWER_MATERIAL_POOL)
+            .set(HierarchicalProperty.ENEMY_TABLE, EnemyTableRegistry.BASIC_ENEMY_TABLE)
             .set(ROOM_TARGET_Y, -50)
             .set(HAS_BEDROCK_SHELL, true);
     public static final DungeonBranchTemplate VILLAGE_SEWER_ENDING_BRANCH = create("VILLAGE_SEWER_ENDING_BRANCH")

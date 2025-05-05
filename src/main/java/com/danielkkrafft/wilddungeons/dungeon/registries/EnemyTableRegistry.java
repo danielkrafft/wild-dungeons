@@ -27,6 +27,11 @@ public class EnemyTableRegistry {
     public static final WeightedTable<TargetTemplate> BREEZE_GOLEM_ARENA = create("BREEZE_GOLEM_ARENA")
             .add(new WeightedPool<TargetTemplate>().add(BREEZE_GOLEM, 1), 1);
 
+    public static final WeightedTable<TargetTemplate> VILLAGE_ENEMY_TABLE = create("VILLAGE_ENEMY_TABLE")
+            .add(VILLAGE_ENEMY_POOL_EASY, 1)
+            .add(VILLAGE_ENEMY_POOL_MEDIUM, 5)
+            ;
+
     public static WeightedTable<TargetTemplate> create(String name){
         WeightedTable<TargetTemplate> enemyTable = new WeightedTable<TargetTemplate>();
         enemyTables.add(enemyTable);

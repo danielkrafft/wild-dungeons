@@ -56,7 +56,15 @@ public class EnemyPoolRegistry {
             .add(WARDEN, 1)
             .add(MUTANT_BOGGED, 1)
             .add(BREEZE_GOLEM, 1);
-
+    public static final WeightedPool<DungeonRegistration.TargetTemplate> VILLAGE_ENEMY_POOL_EASY = create("VILLAGE_ENEMY_POOL")
+            .add(BUSINESS_VINDICATOR, 3)
+            .add(BUSINESS_GOLEM, 1)
+            ;
+    public static final WeightedPool<DungeonRegistration.TargetTemplate> VILLAGE_ENEMY_POOL_MEDIUM = create("VILLAGE_ENEMY_POOL")
+            .add(BUSINESS_EVOKER, 1)
+            .add(BUSINESS_GOLEM, 1)
+            .add(WITCH, 1)
+            ;
 
 
     public static WeightedPool<DungeonRegistration.TargetTemplate> create(String name) {
