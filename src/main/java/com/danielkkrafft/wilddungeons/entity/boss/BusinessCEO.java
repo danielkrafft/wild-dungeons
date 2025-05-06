@@ -1,6 +1,10 @@
 package com.danielkkrafft.wilddungeons.entity.boss;
 
-import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.entity.BusinessEvoker;
+import com.danielkkrafft.wilddungeons.entity.BusinessGolem;
+import com.danielkkrafft.wilddungeons.entity.BusinessVindicator;
+import com.danielkkrafft.wilddungeons.entity.EmeraldWisp;
+import com.danielkkrafft.wilddungeons.registry.WDEntities;
 import com.danielkkrafft.wilddungeons.util.UtilityMethods;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -24,6 +28,7 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.SmallFireball;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.AABB;
@@ -39,8 +44,6 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.EnumSet;
 import java.util.List;
-
-import static com.danielkkrafft.wilddungeons.entity.boss.BusinessCEO.AttackPhase.*;
 
 public class BusinessCEO extends Monster implements GeoEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
@@ -61,7 +64,6 @@ public class BusinessCEO extends Monster implements GeoEntity {
             pointAnim = RawAnimation.begin().thenPlay(point),
             ascendAnim = RawAnimation.begin().thenPlay(ascend),
             dashAnim = RawAnimation.begin().thenPlay(dash);
-    private static final EntityDataAccessor<Integer> ATTACK_PHASE = SynchedEntityData.defineId(BusinessCEO.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> TICKS_INVULNERABLE = SynchedEntityData.defineId(BusinessCEO.class, EntityDataSerializers.INT);
     private static final int SUMMON_TICKS = 70;
     private static final String
@@ -76,27 +78,46 @@ public class BusinessCEO extends Monster implements GeoEntity {
             .triggerableAnim(ascend, ascendAnim)
             .triggerableAnim(dash, dashAnim);
 
+    // Cooldown constants for each goal type
+    private static final int MELEE_COOLDOWN = 40; // 2 seconds
+    private static final int DASH_COOLDOWN = 120; // 6 seconds
+    private static final int ASCEND_COOLDOWN = 300; // 15 seconds
+    private static final int POINT_COOLDOWN = 800; // 40 seconds
+
+    // Tracking when goals were last used
+    private int lastMeleeGoalTick = -MELEE_COOLDOWN;
+    private int lastDashGoalTick = -DASH_COOLDOWN;
+    private int lastAscendGoalTick = -ASCEND_COOLDOWN;
+    private int lastPointGoalTick = -POINT_COOLDOWN;
+
+    public static Class[] FRIENDLIES = {BusinessVindicator.class, BusinessEvoker.class, BusinessCEO.class, BusinessGolem.class};
+
     public BusinessCEO(EntityType<? extends Monster> entityType, Level level) {
         super(entityType, level);
         this.xpReward = 200;
-        this.setAttackPhase(IDLE);
     }
 
     @Override
     protected void registerGoals() {
         goalSelector.addGoal(0, new SummonGoal(this));
-        goalSelector.addGoal(1, new BusinessCEOMeleeAttackGoal());
-        goalSelector.addGoal(1, new BusinessCEODashGoal());
-        goalSelector.addGoal(2, new BusinessCEOAttackStrategyGoal());
-//        goalSelector.addGoal(2, new BusinessCEOSummonTargetGoal());
-//        goalSelector.addGoal(3, new BusinessCEOAscendGoal());
-//        goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 30));
-//        goalSelector.addGoal(7, new RandomLookAroundGoal(this));
+        goalSelector.addGoal(1, new BusinessCEOPointGoal());
+        goalSelector.addGoal(2, new BusinessCEOAscendGoal());
+        goalSelector.addGoal(3, new BusinessCEODashGoal());
+        goalSelector.addGoal(4, new BusinessCEOMeleeAttackGoal());
 
-        targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 0, false, false, li -> !(li instanceof BusinessCEO)));
+        targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 0, false, false, li -> {
+            for (Class<?> friendly : FRIENDLIES) {
+                if (friendly.isInstance(li)) {
+                    return false;
+                }
+            }
+            if (li instanceof EmeraldWisp) {
+                return false;
+            }
+            return true;
+        }));
         targetSelector.addGoal(1, new BusinessCEOTargetPlayerGoal());
     }
-
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
@@ -109,10 +130,10 @@ public class BusinessCEO extends Monster implements GeoEntity {
     }
 
     public static AttributeSupplier setAttributes() {
-        return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 225)
+        return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 175)
                 .add(Attributes.MOVEMENT_SPEED, 0.5)
                 .add(Attributes.FOLLOW_RANGE, 50)
-                .add(Attributes.ATTACK_DAMAGE, 10)
+                .add(Attributes.ATTACK_DAMAGE, 8)
                 .add(Attributes.ATTACK_KNOCKBACK, 2)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 0.4)
                 .add(Attributes.EXPLOSION_KNOCKBACK_RESISTANCE, 0.2)
@@ -128,16 +149,16 @@ public class BusinessCEO extends Monster implements GeoEntity {
         //get the current goal
         WrappedGoal goal = goalSelector.getAvailableGoals().stream().filter(WrappedGoal::isRunning).findFirst().orElse(null);
         if (goal != null) {
-            bossEvent.setName(Component.literal(getAttackPhase().name() +" "+ goal.getGoal().getClass().getSimpleName()));
+            bossEvent.setName(Component.literal(goal.getGoal().getClass().getSimpleName()));
         } else {
-            bossEvent.setName(Component.literal(getAttackPhase().name()));
+            bossEvent.setName(getDisplayName());
         }
         if (!level.isClientSide && !isDeadOrDying()) {
             //logic
-            if (getTarget() !=null){
+            if (getTarget() != null) {
                 //particle effects to indicate targeting
                 Vec3 pos = getTarget().position();
-                UtilityMethods.sendParticles((ServerLevel) level, ParticleTypes.ELECTRIC_SPARK, true, 25, pos.x, pos.y + 1.5f, pos.z, 1, 1, 1, 0.06f);
+                UtilityMethods.sendParticles((ServerLevel) level, ParticleTypes.ELECTRIC_SPARK, true, 5, pos.x, pos.y + 1.5f, pos.z, .5f, .5f, .5f, 0.06f);
             }
         }
     }
@@ -145,7 +166,6 @@ public class BusinessCEO extends Monster implements GeoEntity {
     @Override
     public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
-        compound.putInt("AP", this.getAttackPhase().ordinal());
         compound.putInt("TI", this.getTicksInvulnerable());
     }
 
@@ -155,12 +175,11 @@ public class BusinessCEO extends Monster implements GeoEntity {
         if (hasCustomName()) {
             bossEvent.setName(getDisplayName());
         }
-        if (compound.contains("AP")) {
-            this.setAttackPhase(AttackPhase.values()[compound.getInt("AP")]);
-        }
+
         if (compound.contains("TI")) {
             this.setTicksInvulnerable(compound.getInt("TI"));
         }
+
     }
 
     @Override
@@ -190,18 +209,10 @@ public class BusinessCEO extends Monster implements GeoEntity {
         bossEvent.removePlayer(serverPlayer);
     }
 
-    public AttackPhase getAttackPhase() {
-        return AttackPhase.values()[this.entityData.get(ATTACK_PHASE)];
-    }
-
-    public void setAttackPhase(AttackPhase phase) {
-        this.entityData.set(ATTACK_PHASE, phase.ordinal());
-    }
 
     @Override
     protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
         super.defineSynchedData(builder);
-        builder.define(ATTACK_PHASE, 0);
         builder.define(TICKS_INVULNERABLE, 0);
     }
 
@@ -217,13 +228,6 @@ public class BusinessCEO extends Monster implements GeoEntity {
         return getTicksInvulnerable() <= SUMMON_TICKS;
     }
 
-    public enum AttackPhase {
-        IDLE,
-        POINT,
-        ASCEND,
-        DASH,
-        MELEE,
-    }
 
     public class SummonGoal extends Goal {
         public SummonGoal(@NotNull Mob mob) {
@@ -252,7 +256,7 @@ public class BusinessCEO extends Monster implements GeoEntity {
 
         @Override
         public void stop() {
-            //psuedo explosion
+            //pseudo explosion
             Vec3 pos = BusinessCEO.this.position();
             List<LivingEntity> list = BusinessCEO.this.level().getEntitiesOfClass(LivingEntity.class, AABB.ofSize(BusinessCEO.this.position(), 10, 10, 10), BusinessCEO.this::hasLineOfSight);
             list.remove(BusinessCEO.this);
@@ -272,57 +276,6 @@ public class BusinessCEO extends Monster implements GeoEntity {
         }
     }
 
-    class BusinessCEOAttackStrategyGoal extends Goal {
-        private int nextSweepTick;
-
-        BusinessCEOAttackStrategyGoal() {
-        }
-
-        public boolean canUse() {
-            if (BusinessCEO.this.getAttackPhase() == IDLE) {
-                LivingEntity livingentity = BusinessCEO.this.getTarget();
-                return livingentity != null && BusinessCEO.this.canAttack(livingentity, TargetingConditions.DEFAULT.range(100));
-            } else {
-                return false;
-            }
-        }
-
-        public boolean canContinueToUse() {
-            if (BusinessCEO.this.getAttackPhase() == IDLE) {
-                LivingEntity livingentity = BusinessCEO.this.getTarget();
-                return livingentity != null && BusinessCEO.this.canAttack(livingentity, TargetingConditions.DEFAULT.range(100));
-            } else {
-                return false;
-            }
-        }
-
-        public void start() {
-            this.nextSweepTick = this.adjustedTickDelay(20);
-        }
-
-        public void stop() {
-        }
-
-        public void tick() {
-            if (!BusinessCEO.this.isInvulnerable()) {
-                --this.nextSweepTick;
-                if (this.nextSweepTick <= 0) {
-                    this.nextSweepTick = this.adjustedTickDelay((8 + BusinessCEO.this.random.nextInt(3)) * 20);
-                    AttackPhase newPhase = AttackPhase.values()[BusinessCEO.this.random.nextInt(0, 3)];
-                    WildDungeons.getLogger().info("BusinessCEO: " + newPhase);
-                    newPhase = IDLE;
-                    BusinessCEO.this.setAttackPhase(newPhase);
-                    BusinessCEO.this.playSound(SoundEvents.ILLUSIONER_CAST_SPELL, 10.0F, 0.95F + BusinessCEO.this.random.nextFloat() * 0.1F);
-                    switch (BusinessCEO.this.getAttackPhase()) {
-                        case POINT -> {
-                        }
-                        case ASCEND -> {
-                        }
-                    }
-                }
-            }
-        }
-    }
 
     class BusinessCEOTargetPlayerGoal extends Goal {
         private final TargetingConditions attackTargeting = TargetingConditions.forCombat().range(64.0F);
@@ -360,31 +313,30 @@ public class BusinessCEO extends Monster implements GeoEntity {
     class BusinessCEOMeleeAttackGoal extends Goal {
         private int ticks;
         private boolean hasAttacked;
+        private boolean stopped = false;
 
         public BusinessCEOMeleeAttackGoal() {
-            this.setFlags(EnumSet.of(Flag.TARGET));
+            this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
         }
 
         public boolean canUse() {
-            if (BusinessCEO.this.getAttackPhase() == IDLE || BusinessCEO.this.getAttackPhase() == MELEE) {
-                LivingEntity livingentity = BusinessCEO.this.getTarget();
-                return livingentity != null && this.canPerformAttack(livingentity);
-            } else {
-                return false;
-            }
+            return BusinessCEO.this.getTarget() != null &&
+                    BusinessCEO.this.distanceToSqr(BusinessCEO.this.getTarget()) < 12 &&
+                    !BusinessCEO.this.isInvulnerable() &&
+                    (BusinessCEO.this.tickCount - BusinessCEO.this.lastMeleeGoalTick >= MELEE_COOLDOWN);
         }
 
         public boolean canContinueToUse() {
-            LivingEntity livingentity = BusinessCEO.this.getTarget();
-            if (livingentity == null) {
-                return false;
-            } else return livingentity.isAlive() && BusinessCEO.this.distanceToSqr(livingentity) < 6;
+            return !stopped && BusinessCEO.this.getTarget() != null &&
+                    BusinessCEO.this.getTarget().isAlive() &&
+                    BusinessCEO.this.distanceToSqr(BusinessCEO.this.getTarget()) < 12 &&
+                    !BusinessCEO.this.isInvulnerable();
         }
 
         public void start() {
-            this.ticks = 10;
+            this.ticks = 20;
+            this.stopped = false;
             this.hasAttacked = false;
-            BusinessCEO.this.setAttackPhase(MELEE);
             BusinessCEO.this.triggerAnim(ceo_controller, BusinessCEO.this.random.nextBoolean() ? punch : kick);
         }
 
@@ -393,8 +345,9 @@ public class BusinessCEO extends Monster implements GeoEntity {
             if (!EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(livingentity)) {
                 BusinessCEO.this.setTarget(null);
             }
-            BusinessCEO.this.setAttackPhase(IDLE);
             BusinessCEO.this.triggerAnim(ceo_controller, idle);
+            stopped = true;
+            BusinessCEO.this.lastMeleeGoalTick = BusinessCEO.this.tickCount;
         }
 
         public boolean requiresUpdateEveryTick() {
@@ -410,8 +363,8 @@ public class BusinessCEO extends Monster implements GeoEntity {
                     BusinessCEO.this.doHurtTarget(livingentity);
                     BusinessCEO.this.playSound(SoundEvents.PLAYER_ATTACK_SWEEP, 1, 0.8f);
                     this.hasAttacked = true;
-                    this.ticks = 40;
-                } else if (this.hasAttacked){
+                    this.ticks = 60;
+                } else if (this.hasAttacked) {
                     this.ticks = Math.max(this.ticks - 1, 0);
                     if (this.ticks <= 0) {
                         this.stop();
@@ -430,29 +383,32 @@ public class BusinessCEO extends Monster implements GeoEntity {
     class BusinessCEODashGoal extends Goal {
         int ticks = 0;
         boolean isDashing = false;
+        boolean stopped = false;
+
         public BusinessCEODashGoal() {
-            this.setFlags(EnumSet.of(Flag.MOVE));
+            this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
         }
 
         public boolean canUse() {
-            if (BusinessCEO.this.getAttackPhase() != IDLE) {
-                return false;
-            }
-            LivingEntity livingentity = BusinessCEO.this.getTarget();
-            return livingentity != null && BusinessCEO.this.distanceToSqr(livingentity) > 36;
+            return BusinessCEO.this.getTarget() != null &&
+                    BusinessCEO.this.distanceToSqr(BusinessCEO.this.getTarget()) > 12 &&
+                    !BusinessCEO.this.isInvulnerable() &&
+                    (BusinessCEO.this.tickCount - BusinessCEO.this.lastDashGoalTick >= DASH_COOLDOWN);
         }
 
         @Override
         public boolean canContinueToUse() {
-            return BusinessCEO.this.getAttackPhase() == DASH && ticks > 0;
+            return !stopped && BusinessCEO.this.getTarget() != null &&
+                    BusinessCEO.this.getTarget().isAlive() &&
+                    BusinessCEO.this.distanceToSqr(BusinessCEO.this.getTarget()) > 12 &&
+                    !BusinessCEO.this.isInvulnerable();
         }
 
         public void start() {
             isDashing = false;
-            BusinessCEO.this.setAttackPhase(DASH);
+            stopped = false;
             this.ticks = 15;
             BusinessCEO.this.triggerAnim(ceo_controller, dash);
-            LivingEntity livingentity = BusinessCEO.this.getTarget();
         }
 
         public void stop() {
@@ -460,6 +416,10 @@ public class BusinessCEO extends Monster implements GeoEntity {
             if (!EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(livingentity)) {
                 BusinessCEO.this.setTarget(null);
             }
+            BusinessCEO.this.triggerAnim(ceo_controller, idle);
+            BusinessCEO.this.setDeltaMovement(0, 0, 0);
+            stopped = true;
+            BusinessCEO.this.lastDashGoalTick = BusinessCEO.this.tickCount;
         }
 
         public boolean requiresUpdateEveryTick() {
@@ -478,7 +438,7 @@ public class BusinessCEO extends Monster implements GeoEntity {
                         BusinessCEO.this.getLookControl().setLookAt(livingentity, 30.0F, 30.0F);
                         BusinessCEO.this.setYRot((float) Math.toDegrees(Math.atan2(-dir.x, dir.z)));
                         BusinessCEO.this.lookAt(livingentity, 30.0F, 30.0F);
-                        Vec3 move = new Vec3(dir.x, 0, dir.z).normalize().scale(3);
+                        Vec3 move = new Vec3(dir.x, 0, dir.z).normalize().scale(5);
                         BusinessCEO.this.setDeltaMovement(move);
                         isDashing = true;
                         ticks = 30;
@@ -486,11 +446,189 @@ public class BusinessCEO extends Monster implements GeoEntity {
                 } else {
                     ticks = Math.max(ticks - 1, 0);
                     if (ticks <= 0) {
-                        BusinessCEO.this.setAttackPhase(IDLE);
-                        BusinessCEO.this.triggerAnim(ceo_controller, idle);
+                        stop();
                     }
                 }
             }
+        }
+    }
+
+    class BusinessCEOAscendGoal extends Goal {
+        private int hoveredTicks = 0;
+        Vec3 hoverPosition = new Vec3(0, 0, 0);
+
+        private final int maxHoverTicks = 80; // Maximum hover time
+
+        public BusinessCEOAscendGoal() {
+            this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK, Flag.JUMP));
+        }
+
+        @Override
+        public boolean canUse() {
+            float healthPercentage = BusinessCEO.this.getHealth() / BusinessCEO.this.getMaxHealth();
+            return healthPercentage < 0.5f &&
+                    BusinessCEO.this.getTarget() != null &&
+                    !BusinessCEO.this.isInvulnerable() &&
+                    (BusinessCEO.this.tickCount - BusinessCEO.this.lastAscendGoalTick >= ASCEND_COOLDOWN);
+        }
+
+        @Override
+        public boolean canContinueToUse() {
+            return BusinessCEO.this.getTarget() != null &&
+                    BusinessCEO.this.getTarget().isAlive() &&
+                    hoveredTicks < maxHoverTicks && // Limit the hover time
+                    !BusinessCEO.this.isInvulnerable();
+        }
+
+        @Override
+        public void start() {
+            hoveredTicks = 0;
+            BusinessCEO.this.triggerAnim(ceo_controller, ascend);
+            BusinessCEO.this.playSound(SoundEvents.PHANTOM_FLAP, 1.0F, 0.8F);
+            BusinessCEO.this.setNoGravity(true);
+            hoverPosition = BusinessCEO.this.position().add(0, 1, 0); // Start hovering above the current position
+        }
+
+        @Override
+        public void tick() {
+            LivingEntity target = BusinessCEO.this.getTarget();
+            if (target == null) return;
+            // Calculate hover position that circles around the target
+            double radius = 5.0; // Distance from target
+            double angle = (Math.PI * 2 * hoveredTicks) / maxHoverTicks; // Complete a circle
+            Vec3 hoverPosition = new Vec3(
+                    this.hoverPosition.x + radius * Math.cos(angle),
+                    this.hoverPosition.y,
+                    this.hoverPosition.z + radius * Math.sin(angle)
+            );
+
+            BusinessCEO.this.getLookControl().setLookAt(target, 30.0F, 30.0F);
+            hoveredTicks++;
+
+            Vec3 currentPos = BusinessCEO.this.position();
+            Vec3 targetPos = hoverPosition.subtract(currentPos);
+            BusinessCEO.this.setDeltaMovement(targetPos.scale(0.25));
+            Vec3 dir = target.position().subtract(BusinessCEO.this.position()).normalize();
+            BusinessCEO.this.setYRot((float) Math.toDegrees(Math.atan2(-dir.x, dir.z)));
+
+            // Every 20 ticks, shoot projectiles
+            if (hoveredTicks % 20 == 0) {
+                // Calculate targeting vectors
+                double distanceSquared = BusinessCEO.this.distanceToSqr(target);
+
+                // Get direction components to target
+                double xDiff = target.getX() - BusinessCEO.this.getX();
+                double yDiff = target.getY(0.5) - BusinessCEO.this.getY(0.5);
+                double zDiff = target.getZ() - BusinessCEO.this.getZ();
+
+                // Calculate spread factor based on distance
+                double spreadFactor = Math.sqrt(Math.sqrt(distanceSquared)) * 0.5;
+
+                // Create trajectory with randomized spread
+                Vec3 trajectory = new Vec3(
+                        BusinessCEO.this.getRandom().triangle(xDiff, 2.297 * spreadFactor),
+                        yDiff,
+                        BusinessCEO.this.getRandom().triangle(zDiff, 2.297 * spreadFactor)
+                );
+
+                // Create and position fireball
+                SmallFireball fireball = new SmallFireball(
+                        BusinessCEO.this.level(),
+                        BusinessCEO.this,
+                        trajectory.normalize()
+                );
+                fireball.setPos(fireball.getX(), BusinessCEO.this.getY(0.5) + 1.5, fireball.getZ());
+
+                // Add to world and play sound
+                BusinessCEO.this.level().addFreshEntity(fireball);
+                BusinessCEO.this.playSound(SoundEvents.FIRECHARGE_USE, 1.0F, 1.0F);
+            }
+        }
+
+        @Override
+        public void stop() {
+            BusinessCEO.this.setNoGravity(false);
+            BusinessCEO.this.setDeltaMovement(0, 0, 0);
+            BusinessCEO.this.triggerAnim(ceo_controller, idle);
+            BusinessCEO.this.lastAscendGoalTick = BusinessCEO.this.tickCount;
+        }
+    }
+
+    class BusinessCEOPointGoal extends Goal {
+        private int pointTicks = 0;
+        private int summonsCreated = 0;
+        private static final int MAX_SUMMONS = 3;
+
+        public BusinessCEOPointGoal() {
+            this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
+        }
+
+        @Override
+        public boolean canUse() {
+            float healthPercentage = BusinessCEO.this.getHealth() / BusinessCEO.this.getMaxHealth();
+            return healthPercentage < 0.5f &&
+                    BusinessCEO.this.getTarget() != null &&
+                    BusinessCEO.this.distanceToSqr(BusinessCEO.this.getTarget()) > 12 &&
+                    !BusinessCEO.this.isInvulnerable() &&
+                    (BusinessCEO.this.tickCount - BusinessCEO.this.lastPointGoalTick >= POINT_COOLDOWN);
+        }
+
+        @Override
+        public boolean canContinueToUse() {
+            return BusinessCEO.this.getTarget() != null &&
+                    BusinessCEO.this.getTarget().isAlive() &&
+                    pointTicks < 60 &&
+                    summonsCreated < MAX_SUMMONS;
+        }
+
+        @Override
+        public void start() {
+            pointTicks = 0;
+            summonsCreated = 0;
+            BusinessCEO.this.triggerAnim(ceo_controller, point);
+            BusinessCEO.this.playSound(SoundEvents.EVOKER_CAST_SPELL, 1.0F, 1.0F);
+        }
+
+        @Override
+        public void tick() {
+            BusinessCEO.this.triggerAnim(ceo_controller, point);
+            LivingEntity target = BusinessCEO.this.getTarget();
+            if (target == null) return;
+
+            pointTicks++;
+            BusinessCEO.this.getLookControl().setLookAt(target, 30.0F, 30.0F);
+
+            // Every 20 ticks, create a summon
+            if (pointTicks % 20 == 0 && summonsCreated < MAX_SUMMONS) {
+                Level level = BusinessCEO.this.level();
+
+                // Calculate position near the target
+                double offsetX = BusinessCEO.this.random.nextDouble() * 4 - 2;
+                double offsetZ = BusinessCEO.this.random.nextDouble() * 4 - 2;
+
+                if (level instanceof ServerLevel serverLevel) {
+                    // Create summon particle effect
+                    Vec3 summonPos = new Vec3(target.getX() + offsetX, target.getY(), target.getZ() + offsetZ);
+                    UtilityMethods.sendParticles(serverLevel, ParticleTypes.PORTAL, true, 50,
+                            summonPos.x, summonPos.y, summonPos.z, 1, 1, 1, 0.05f);
+
+                    LivingEntity summon = WDEntities.BUSINESS_VINDICATOR.get().create(serverLevel);
+                    if (summon != null) {
+                        summon.moveTo(summonPos);
+                        summon.setPos(summonPos.x, summonPos.y, summonPos.z);
+                        serverLevel.addFreshEntity(summon);
+                    }
+
+                    BusinessCEO.this.playSound(SoundEvents.EVOKER_PREPARE_SUMMON, 1.0F, 1.0F);
+                    summonsCreated++;
+                }
+            }
+        }
+
+        @Override
+        public void stop() {
+            BusinessCEO.this.triggerAnim(ceo_controller, idle);
+            BusinessCEO.this.lastPointGoalTick = BusinessCEO.this.tickCount;
         }
     }
 }

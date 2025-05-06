@@ -15,10 +15,13 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.raid.Raider;
 import net.minecraft.world.level.Level;
 
+import static com.danielkkrafft.wilddungeons.entity.boss.BusinessCEO.FRIENDLIES;
+
 public class BusinessVindicator extends Vindicator {
     public BusinessVindicator(EntityType<? extends Vindicator> entityType, Level level) {
         super(entityType, level);
     }
+
 
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new FloatGoal(this));
@@ -26,7 +29,7 @@ public class BusinessVindicator extends Vindicator {
         this.goalSelector.addGoal(2, new AbstractIllager.RaiderOpenDoorGoal(this));
         this.goalSelector.addGoal(3, new Raider.HoldGroundAttackGoal(this,  10.0F));
         this.goalSelector.addGoal(4, new MeleeAttackGoal(this, (double)1.0F, false));
-        this.targetSelector.addGoal(1, (new HurtByTargetGoal(this, new Class[]{Raider.class})).setAlertOthers(new Class[0]));
+        this.targetSelector.addGoal(1, (new HurtByTargetGoal(this,FRIENDLIES)).setAlertOthers(FRIENDLIES));
         this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, AbstractVillager.class, true));
         this.goalSelector.addGoal(8, new RandomStrollGoal(this, 0.6));
