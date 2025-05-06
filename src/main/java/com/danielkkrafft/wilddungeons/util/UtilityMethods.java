@@ -76,7 +76,7 @@ public final class UtilityMethods
         for (Pair<DungeonRegistration.TargetTemplate, Integer> entry : pool.getAllWithWeights()) {
             CompoundTag tag = new CompoundTag();
             tag.putString("id", entry.getFirst().getEntityTypeString());
-            SpawnData spawnData = new SpawnData(tag, Optional.of(new SpawnData.CustomSpawnRules(new InclusiveRange<>(0, 15),new InclusiveRange<>(0, 15))), Optional.empty());//optional sets the spawn rules to always spawn regardless of light level
+            SpawnData spawnData = new SpawnData(tag, Optional.of(new SpawnData.CustomSpawnRules(new InclusiveRange<>(0, 15),new InclusiveRange<>(0, 15))), Optional.empty());
             builder.add(spawnData, entry.getSecond());
         }
 
