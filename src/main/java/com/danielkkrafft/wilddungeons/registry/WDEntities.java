@@ -109,4 +109,10 @@ public class WDEntities {
             .of(BusinessCEO::new, MobCategory.MONSTER)
             .sized(1.1f, 2.8f)
             .build(WildDungeons.rl("business_ceo").toString()));
+    public static final DeferredHolder<EntityType<?>, EntityType<EmeraldProjectileEntity>> EMERALD_PROJECTILE = ENTITIES.register("emerald_projectile", () -> EntityType.Builder
+            .<EmeraldProjectileEntity>of(EmeraldProjectileEntity::new, MobCategory.MISC)
+            .sized(0.3125F, 0.3125F)
+            .clientTrackingRange(4)
+            .updateInterval(10)
+            .build(WildDungeons.rl("emerald_projectile").toString()));;
 }

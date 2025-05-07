@@ -1,14 +1,10 @@
 package com.danielkkrafft.wilddungeons.entity.boss;
 
-import com.danielkkrafft.wilddungeons.entity.BusinessEvoker;
-import com.danielkkrafft.wilddungeons.entity.BusinessGolem;
-import com.danielkkrafft.wilddungeons.entity.BusinessVindicator;
-import com.danielkkrafft.wilddungeons.entity.EmeraldWisp;
+import com.danielkkrafft.wilddungeons.entity.*;
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
 import com.danielkkrafft.wilddungeons.util.UtilityMethods;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -23,12 +19,10 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.ai.goal.WrappedGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.SmallFireball;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.AABB;
@@ -147,19 +141,19 @@ public class BusinessCEO extends Monster implements GeoEntity {
         float hp = getHealth() / getMaxHealth();
         bossEvent.setProgress(hp);
         //get the current goal
-        WrappedGoal goal = goalSelector.getAvailableGoals().stream().filter(WrappedGoal::isRunning).findFirst().orElse(null);
-        if (goal != null) {
-            bossEvent.setName(Component.literal(goal.getGoal().getClass().getSimpleName()));
-        } else {
-            bossEvent.setName(getDisplayName());
-        }
+//        WrappedGoal goal = goalSelector.getAvailableGoals().stream().filter(WrappedGoal::isRunning).findFirst().orElse(null);
+//        if (goal != null) {
+//            bossEvent.setName(Component.literal(goal.getGoal().getClass().getSimpleName()));
+//        } else {
+//            bossEvent.setName(getDisplayName());
+//        }
         if (!level.isClientSide && !isDeadOrDying()) {
             //logic
-            if (getTarget() != null) {
-                //particle effects to indicate targeting
-                Vec3 pos = getTarget().position();
-                UtilityMethods.sendParticles((ServerLevel) level, ParticleTypes.ELECTRIC_SPARK, true, 5, pos.x, pos.y + 1.5f, pos.z, .5f, .5f, .5f, 0.06f);
-            }
+//            if (getTarget() != null) {
+//                //particle effects to indicate targeting
+//                Vec3 pos = getTarget().position();
+//                UtilityMethods.sendParticles((ServerLevel) level, ParticleTypes.ELECTRIC_SPARK, true, 5, pos.x, pos.y + 1.5f, pos.z, .5f, .5f, .5f, 0.06f);
+//            }
         }
     }
 
@@ -239,13 +233,13 @@ public class BusinessCEO extends Monster implements GeoEntity {
             int ticks = BusinessCEO.this.getTicksInvulnerable();
             BusinessCEO.this.setTicksInvulnerable(BusinessCEO.this.getTicksInvulnerable() + 1);
             if (ticks % 20 == 0)
-                BusinessCEO.this.playSound(SoundEvents.NOTE_BLOCK_PLING.value(), 1, 2f);
+                BusinessCEO.this.playSound(SoundEvents.NOTE_BLOCK_PLING.value(), 2, 2f);
         }
 
         @Override
         public void start() {
             BusinessCEO.this.triggerAnim(ceo_controller, stand_up);
-            BusinessCEO.this.playSound(SoundEvents.GENERIC_EXTINGUISH_FIRE, 1, 0.7f);
+            BusinessCEO.this.playSound(SoundEvents.GENERIC_EXTINGUISH_FIRE, 2, 0.7f);
             BusinessCEO.this.setInvulnerable(true);
         }
 
@@ -361,7 +355,7 @@ public class BusinessCEO extends Monster implements GeoEntity {
                 this.ticks = Math.max(this.ticks - 1, 0);
                 if (!this.hasAttacked && this.ticks <= 0 && this.canPerformAttack(livingentity)) {
                     BusinessCEO.this.doHurtTarget(livingentity);
-                    BusinessCEO.this.playSound(SoundEvents.PLAYER_ATTACK_SWEEP, 1, 0.8f);
+                    BusinessCEO.this.playSound(SoundEvents.PLAYER_ATTACK_SWEEP, 2, 0.8f);
                     this.hasAttacked = true;
                     this.ticks = 60;
                 } else if (this.hasAttacked) {
@@ -429,6 +423,15 @@ public class BusinessCEO extends Monster implements GeoEntity {
         public void tick() {
             LivingEntity livingentity = BusinessCEO.this.getTarget();
             if (livingentity != null) {
+                UtilityMethods.sendParticles(
+                        (ServerLevel) BusinessCEO.this.level(),
+                        ParticleTypes.COMPOSTER,
+                        true,
+                        5,
+                        BusinessCEO.this.getX(), BusinessCEO.this.getY() + 1.5f, BusinessCEO.this.getZ(),
+                        0.5f, 0.5f, 0.5f,
+                        0.06f
+                );
                 Vec3 dir = livingentity.position().subtract(BusinessCEO.this.position()).normalize();
                 BusinessCEO.this.setYRot((float) Math.toDegrees(Math.atan2(-dir.x, dir.z)));
                 BusinessCEO.this.lookAt(livingentity, 30.0F, 30.0F);
@@ -484,7 +487,7 @@ public class BusinessCEO extends Monster implements GeoEntity {
         public void start() {
             hoveredTicks = 0;
             BusinessCEO.this.triggerAnim(ceo_controller, ascend);
-            BusinessCEO.this.playSound(SoundEvents.PHANTOM_FLAP, 1.0F, 0.8F);
+            BusinessCEO.this.playSound(SoundEvents.PHANTOM_FLAP, 2, 0.8F);
             BusinessCEO.this.setNoGravity(true);
             hoverPosition = BusinessCEO.this.position().add(0, 1, 0); // Start hovering above the current position
         }
@@ -493,6 +496,15 @@ public class BusinessCEO extends Monster implements GeoEntity {
         public void tick() {
             LivingEntity target = BusinessCEO.this.getTarget();
             if (target == null) return;
+            UtilityMethods.sendParticles(
+                    (ServerLevel) BusinessCEO.this.level(),
+                    ParticleTypes.COMPOSTER,
+                    true,
+                    5,
+                    BusinessCEO.this.getX(), BusinessCEO.this.getY() + 1.5f, BusinessCEO.this.getZ(),
+                    0.5f, 0.5f, 0.5f,
+                    0.06f
+            );
             // Calculate hover position that circles around the target
             double radius = 5.0; // Distance from target
             double angle = (Math.PI * 2 * hoveredTicks) / maxHoverTicks; // Complete a circle
@@ -532,7 +544,7 @@ public class BusinessCEO extends Monster implements GeoEntity {
                 );
 
                 // Create and position fireball
-                SmallFireball fireball = new SmallFireball(
+                EmeraldProjectileEntity fireball = new EmeraldProjectileEntity(
                         BusinessCEO.this.level(),
                         BusinessCEO.this,
                         trajectory.normalize()
@@ -541,7 +553,7 @@ public class BusinessCEO extends Monster implements GeoEntity {
 
                 // Add to world and play sound
                 BusinessCEO.this.level().addFreshEntity(fireball);
-                BusinessCEO.this.playSound(SoundEvents.FIRECHARGE_USE, 1.0F, 1.0F);
+                BusinessCEO.this.playSound(SoundEvents.BREEZE_SHOOT, 2, 1.0F);
             }
         }
 
@@ -586,7 +598,7 @@ public class BusinessCEO extends Monster implements GeoEntity {
             pointTicks = 0;
             summonsCreated = 0;
             BusinessCEO.this.triggerAnim(ceo_controller, point);
-            BusinessCEO.this.playSound(SoundEvents.EVOKER_CAST_SPELL, 1.0F, 1.0F);
+            BusinessCEO.this.playSound(SoundEvents.EVOKER_CAST_SPELL, 2, 1.0F);
         }
 
         @Override
@@ -597,7 +609,15 @@ public class BusinessCEO extends Monster implements GeoEntity {
 
             pointTicks++;
             BusinessCEO.this.getLookControl().setLookAt(target, 30.0F, 30.0F);
-
+            UtilityMethods.sendParticles(
+                    (ServerLevel) BusinessCEO.this.level(),
+                    ParticleTypes.COMPOSTER,
+                    true,
+                    5,
+                    BusinessCEO.this.getX(), BusinessCEO.this.getY() + 1.5f, BusinessCEO.this.getZ(),
+                    0.5f, 0.5f, 0.5f,
+                    0.06f
+            );
             // Every 20 ticks, create a summon
             if (pointTicks % 20 == 0 && summonsCreated < MAX_SUMMONS) {
                 Level level = BusinessCEO.this.level();
@@ -607,6 +627,7 @@ public class BusinessCEO extends Monster implements GeoEntity {
                 double offsetZ = BusinessCEO.this.random.nextDouble() * 4 - 2;
 
                 if (level instanceof ServerLevel serverLevel) {
+
                     // Create summon particle effect
                     Vec3 summonPos = new Vec3(target.getX() + offsetX, target.getY(), target.getZ() + offsetZ);
                     UtilityMethods.sendParticles(serverLevel, ParticleTypes.PORTAL, true, 50,
@@ -619,7 +640,7 @@ public class BusinessCEO extends Monster implements GeoEntity {
                         serverLevel.addFreshEntity(summon);
                     }
 
-                    BusinessCEO.this.playSound(SoundEvents.EVOKER_PREPARE_SUMMON, 1.0F, 1.0F);
+                    BusinessCEO.this.playSound(SoundEvents.EVOKER_PREPARE_SUMMON, 2f, 1.0F);
                     summonsCreated++;
                 }
             }
