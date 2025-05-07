@@ -23,6 +23,7 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.AABB;
@@ -73,10 +74,10 @@ public class BusinessCEO extends Monster implements GeoEntity {
             .triggerableAnim(dash, dashAnim);
 
     // Cooldown constants for each goal type
-    private static final int MELEE_COOLDOWN = 40; // 2 seconds
-    private static final int DASH_COOLDOWN = 120; // 6 seconds
-    private static final int ASCEND_COOLDOWN = 300; // 15 seconds
-    private static final int POINT_COOLDOWN = 800; // 40 seconds
+    private static final int MELEE_COOLDOWN = 20; // 1 second
+    private static final int DASH_COOLDOWN = 80; // 4 seconds
+    private static final int ASCEND_COOLDOWN = 200; // 10 seconds
+    private static final int POINT_COOLDOWN = 600; // 30 seconds
 
     // Tracking when goals were last used
     private int lastMeleeGoalTick = -MELEE_COOLDOWN;
@@ -632,11 +633,14 @@ public class BusinessCEO extends Monster implements GeoEntity {
                     Vec3 summonPos = new Vec3(target.getX() + offsetX, target.getY(), target.getZ() + offsetZ);
                     UtilityMethods.sendParticles(serverLevel, ParticleTypes.PORTAL, true, 50,
                             summonPos.x, summonPos.y, summonPos.z, 1, 1, 1, 0.05f);
-
-                    LivingEntity summon = WDEntities.BUSINESS_VINDICATOR.get().create(serverLevel);
+                    EntityType<?> summonType = BusinessCEO.this.random.nextFloat() > 0.7f ? WDEntities.BUSINESS_VINDICATOR.get() : WDEntities.BUSINESS_EVOKER.get();
+                    LivingEntity summon = (LivingEntity) summonType.create(serverLevel);
                     if (summon != null) {
                         summon.moveTo(summonPos);
                         summon.setPos(summonPos.x, summonPos.y, summonPos.z);
+                        if (summon instanceof BusinessVindicator){
+                            ((BusinessVindicator) summon).equipItemIfPossible(Items.IRON_AXE.getDefaultInstance());
+                        }
                         serverLevel.addFreshEntity(summon);
                     }
 
