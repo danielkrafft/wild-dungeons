@@ -45,7 +45,7 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
                     of("stone/medium_4_comp_1", EMPTY_BLOCK_POS),
                     of("stone/medium_4_comp_2", new BlockPos(4, 0, -17))
             ));
-    public static final DungeonRoomTemplate LARGE_1 = createSimple("stone/large_1").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
+    public static final DungeonRoomTemplate LARGE_1 = createCombat("stone/large_1");
     public static final DungeonRoomTemplate START = createSimple("stone/start");
     public static final DungeonRoomTemplate BOSS = create(
             "stone/boss",
@@ -83,10 +83,10 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate OVERWORLD_PARKOUR = createSimple("overworld/sprawl/parkour");
     public static final DungeonRoomTemplate OVERWORLD_SECRET = createSimple("overworld/sprawl/secret").set(SHOP_TABLE, OfferingTemplateTableRegistry.FREE_CUSTOM_WEAPON_TABLE).setClazz(SecretRoom.class);
     public static final DungeonRoomTemplate OVERWORLD_SMELTER_ROOM = createSimple("overworld/sprawl/smelter");
-    public static final DungeonRoomTemplate OVERWORLD_COMBAT_1 = copyOf(OVERWORLD_BASIC_3, "overworld_combat_1").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
-    public static final DungeonRoomTemplate OVERWORLD_COMBAT_2 = copyOf(OVERWORLD_BASIC_4, "overworld_combat_2").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR).set(WAVE_SIZE, 5).set(DIFFICULTY_MODIFIER, 0.5);
-    public static final DungeonRoomTemplate OVERWORLD_COMBAT_3 = copyOf(OVERWORLD_BASIC_5, "overworld_combat_3").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR).set(WAVE_SIZE, 7).set(DIFFICULTY_MODIFIER, 0.75);
-    public static final DungeonRoomTemplate OVERWORLD_COMBAT_4 = copyOf(OVERWORLD_BASIC_7, "overworld_combat_4").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR).set(WAVE_SIZE, 7);
+    public static final DungeonRoomTemplate OVERWORLD_COMBAT_1 = copyCombatOf(OVERWORLD_BASIC_3, "overworld_combat_1");
+    public static final DungeonRoomTemplate OVERWORLD_COMBAT_2 = copyCombatOf(OVERWORLD_BASIC_4, "overworld_combat_2").set(WAVE_SIZE, 5).set(DIFFICULTY_MODIFIER, 0.5);
+    public static final DungeonRoomTemplate OVERWORLD_COMBAT_3 = copyCombatOf(OVERWORLD_BASIC_5, "overworld_combat_3").set(WAVE_SIZE, 7).set(DIFFICULTY_MODIFIER, 0.75);
+    public static final DungeonRoomTemplate OVERWORLD_COMBAT_4 = copyCombatOf(OVERWORLD_BASIC_7, "overworld_combat_4").set(WAVE_SIZE, 7);
     public static final DungeonRoomTemplate OVERWORLD_CHEST_ROOM = createSimple("overworld/sprawl/chest_room");
     public static final DungeonRoomTemplate OVERWORLD_STAIRCASE = createSimple("overworld/sprawl/stair_room");
     public static final DungeonRoomTemplate OVERWORLD_STAIRWAY_1 = createSimple("overworld/sprawl/stairway_1");
@@ -115,7 +115,7 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate TRIAL_TRANSITION = createSimple("overworld/trial/transition");
     public static final DungeonRoomTemplate TRIAL_HALL = createSimple("overworld/trial/hall");
     public static final DungeonRoomTemplate TRIAL_BOSS_ENTRY = createSimple("overworld/trial/boss_entry");
-    public static final DungeonRoomTemplate TRIAL_BOSS = createSimple("overworld/trial/boss").setClazz(BossRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR).set(BOSS_SPAWN_POS, new Vec3(15, 10, 15))
+    public static final DungeonRoomTemplate TRIAL_BOSS = createBoss("overworld/trial/boss", new Vec3(15, 10, 15))
             .set(ENEMY_TABLE, EnemyTableRegistry.BREEZE_GOLEM_ARENA)
             .set(SOUNDSCAPE, SoundscapeTemplateRegistry.MOONLIGHT_SONATA_3RD)
             .set(INTENSITY, 0);
@@ -133,13 +133,13 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate NETHER_CAVE_ENTRANCE_ROOM = createSimple("nether/cave/entrance");
     public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_1 = createSimple("nether/cave/sprawl_1");
     public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_2 = createSimple("nether/cave/sprawl_2");
-    public static final DungeonRoomTemplate NETHER_CAVE_COMBAT_2 = copyOf(NETHER_CAVE_SPRAWL_2, "nether_cave_combat_2").set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR).setClazz(CombatRoom.class).set(DIFFICULTY_MODIFIER, 0.5).set(WAVE_SIZE, 5);
+    public static final DungeonRoomTemplate NETHER_CAVE_COMBAT_2 = copyCombatOf(NETHER_CAVE_SPRAWL_2, "nether_cave_combat_2").set(DIFFICULTY_MODIFIER, 0.5).set(WAVE_SIZE, 5);
     public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_3 = createSimple("nether/cave/sprawl_3");
     public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_4 = createSimple("nether/cave/sprawl_4");
     public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_5 = createSimple("nether/cave/sprawl_5");
     public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_6 = createSimple("nether/cave/sprawl_6");
     public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_7 = createSimple("nether/cave/sprawl_7");
-    public static final DungeonRoomTemplate NETHER_CAVE_COMBAT_1 = copyOf(NETHER_CAVE_SPRAWL_7, "nether_cave_combat_1").set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR).setClazz(CombatRoom.class);
+    public static final DungeonRoomTemplate NETHER_CAVE_COMBAT_1 = copyCombatOf(NETHER_CAVE_SPRAWL_7, "nether_cave_combat_1");
 
     public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_8 = createSimple("nether/cave/sprawl_8");
     public static final DungeonRoomTemplate NETHER_CAVE_SPRAWL_9 = createSimple("nether/cave/sprawl_9");
@@ -176,8 +176,8 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate NETHER_FACTORY_RAIL_1 = createSimple("nether/factory/rail_1").set(BLOCKING_MATERIAL_INDEX, 1);
     public static final DungeonRoomTemplate NETHER_FACTORY_RAIL_TRANSITION = createSimple("nether/factory/rail_transition").set(BLOCKING_MATERIAL_INDEX, 1);
     public static final DungeonRoomTemplate NETHER_FACTORY_TRAP_1 = createSimple("nether/factory/trap1").set(BLOCKING_MATERIAL_INDEX, 1);
-    public static final DungeonRoomTemplate NETHER_FACTORY_COMBAT_1 = copyOf(NETHER_FACTORY_SPRAWL_3, "nether_factory_combat_1").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
-    public static final DungeonRoomTemplate NETHER_FACTORY_COMBAT_2 = copyOf(NETHER_FACTORY_SPRAWL_2, "nether_factory_combat_2").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
+    public static final DungeonRoomTemplate NETHER_FACTORY_COMBAT_1 = copyCombatOf(NETHER_FACTORY_SPRAWL_3, "nether_factory_combat_1");
+    public static final DungeonRoomTemplate NETHER_FACTORY_COMBAT_2 = copyCombatOf(NETHER_FACTORY_SPRAWL_2, "nether_factory_combat_2");
     public static final DungeonRoomTemplate NETHER_FACTORY_KEY_COMBAT = copyOf(NETHER_FACTORY_COMBAT_1, "nether_factory_key_combat").set(ROOM_CLEAR_REWARD_POOL, WeightedPool.of(OfferingTemplateRegistry.DUNGEON_KEY));
     public static final DungeonRoomTemplate NETHER_FACTORY_TRI_BRANCH = create("nether_factory_tri_branch",
             List.of(
@@ -337,21 +337,21 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_WELL_RUINED = createSimple("village/metro/flyingnokk/med/well_ruined");
 
     //todo these all have a lot of problems because they are not designed for combat, and have open tops.
-    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_LUMBERYARD = copyOf(VILLAGE_METRO_LUMBERYARD, "combat_lumber_yard").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
-    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_ILLAGER_TOWER = copyOf(VILLAGE_METRO_ILLAGER_TOWER, "combat_illager_tower").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
-    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_AWSEME_MED_STONECUTTER = copyOf(VILLAGE_METRO_AWSEME_MED_STONECUTTER, "combat_awseme_med_stonecutter").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
-    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_AWSEME_MED_5B = copyOf(VILLAGE_METRO_AWSEME_MED_5B, "combat_awseme_med_5b").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
-    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_CHLTER121_MED_GRAVEYARD = copyOf(VILLAGE_METRO_CHLTER121_MED_GRAVEYARD, "combat_chlter121_med_graveyard").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
-    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_CHLTER121_MED_GRAVEYARD_BROKEN = copyOf(VILLAGE_METRO_CHLTER121_MED_GRAVEYARD_BROKEN, "combat_chlter121_med_graveyard_broken").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
-    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_CHLTER121_MED_RUINED_HOUSE_1 = copyOf(VILLAGE_METRO_CHLTER121_MED_RUINED_HOUSE_1, "combat_chlter121_med_ruined_house_1").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
-    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_CHLTER121_MED_RUINED_HOUSE_2 = copyOf(VILLAGE_METRO_CHLTER121_MED_RUINED_HOUSE_2, "combat_chlter121_med_ruined_house_2").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
-    public static final DungeonRoomTemplate VILLAGE_METRO_COMBATs_CHLTER121_MED_FOOD_COURT = copyOf(VILLAGE_METRO_CHLTER121_MED_FOOD_COURT, "combat_chlter121_med_food_court").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
-    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_FLYINGNOKK_MED_EMERALD_ARCH = copyOf(VILLAGE_METRO_FLYINGNOKK_MED_EMERALD_ARCH, "combat_flyingnokk_med_emerald_arch").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
-    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_FLYINGNOKK_MED_PLAZA = copyOf(VILLAGE_METRO_FLYINGNOKK_MED_PLAZA, "combat_flyingnokk_med_plaza").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
-    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_FLYINGNOKK_MED_GARDEN = copyOf(VILLAGE_METRO_FLYINGNOKK_MED_GARDEN, "combat_flyingnokk_med_garden").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
-    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_FLYINGNOKK_MED_GRAVEYARD = copyOf(VILLAGE_METRO_FLYINGNOKK_MED_GRAVEYARD, "combat_flyingnokk_med_graveyard").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
-    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_FLYINGNOKK_MED_MARKET_STALLS = copyOf(VILLAGE_METRO_FLYINGNOKK_MED_MARKET_STALLS, "combat_flyingnokk_med_market_stalls").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
-    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_ENDER_MED_FARM = copyOf(VILLAGE_METRO_ENDER_MED_FARM, "combat_ender_med_farm").setClazz(CombatRoom.class).set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
+    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_LUMBERYARD = copyCombatOf(VILLAGE_METRO_LUMBERYARD, "combat_lumber_yard");
+    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_ILLAGER_TOWER = copyCombatOf(VILLAGE_METRO_ILLAGER_TOWER, "combat_illager_tower");
+    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_AWSEME_MED_STONECUTTER = copyCombatOf(VILLAGE_METRO_AWSEME_MED_STONECUTTER, "combat_awseme_med_stonecutter");
+    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_AWSEME_MED_5B = copyCombatOf(VILLAGE_METRO_AWSEME_MED_5B, "combat_awseme_med_5b");
+    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_CHLTER121_MED_GRAVEYARD = copyCombatOf(VILLAGE_METRO_CHLTER121_MED_GRAVEYARD, "combat_chlter121_med_graveyard");
+    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_CHLTER121_MED_GRAVEYARD_BROKEN = copyCombatOf(VILLAGE_METRO_CHLTER121_MED_GRAVEYARD_BROKEN, "combat_chlter121_med_graveyard_broken");
+    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_CHLTER121_MED_RUINED_HOUSE_1 = copyCombatOf(VILLAGE_METRO_CHLTER121_MED_RUINED_HOUSE_1, "combat_chlter121_med_ruined_house_1");
+    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_CHLTER121_MED_RUINED_HOUSE_2 = copyCombatOf(VILLAGE_METRO_CHLTER121_MED_RUINED_HOUSE_2, "combat_chlter121_med_ruined_house_2");
+    public static final DungeonRoomTemplate VILLAGE_METRO_COMBATs_CHLTER121_MED_FOOD_COURT = copyCombatOf(VILLAGE_METRO_CHLTER121_MED_FOOD_COURT, "combat_chlter121_med_food_court");
+    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_FLYINGNOKK_MED_EMERALD_ARCH = copyCombatOf(VILLAGE_METRO_FLYINGNOKK_MED_EMERALD_ARCH, "combat_flyingnokk_med_emerald_arch");
+    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_FLYINGNOKK_MED_PLAZA = copyCombatOf(VILLAGE_METRO_FLYINGNOKK_MED_PLAZA, "combat_flyingnokk_med_plaza");
+    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_FLYINGNOKK_MED_GARDEN = copyCombatOf(VILLAGE_METRO_FLYINGNOKK_MED_GARDEN, "combat_flyingnokk_med_garden");
+    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_FLYINGNOKK_MED_GRAVEYARD = copyCombatOf(VILLAGE_METRO_FLYINGNOKK_MED_GRAVEYARD, "combat_flyingnokk_med_graveyard");
+    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_FLYINGNOKK_MED_MARKET_STALLS = copyCombatOf(VILLAGE_METRO_FLYINGNOKK_MED_MARKET_STALLS, "combat_flyingnokk_med_market_stalls");
+    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_ENDER_MED_FARM = copyCombatOf(VILLAGE_METRO_ENDER_MED_FARM, "combat_ender_med_farm");
     //
 
     public static final DungeonRoomTemplate VILLAGE_METRO_CROSS = createSimple("village/metro/daniel/sml/cross");
@@ -422,23 +422,31 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_SML_WALL_STAIRS = createSimple("village/metro/flyingnokk/sml/wall_stairs");
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_SML_WALL_STRAIGHT = createSimple("village/metro/flyingnokk/sml/wall_straight");
 
-    public static final DungeonRoomTemplate VILLAGE_METRO_TOWER_START = createSimple("village/tower/tower_start");
-    public static final DungeonRoomTemplate VILLAGE_METRO_TOWER_END = createSimple("village/tower/tower_temp");
-    public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_TWR_CEO_OFFICE = createSimple("village/metro/chlter121/twr/ceo_office");//todo process these and set up the connection points
-    public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_TWR_CUBICLES = createSimple("village/metro/chlter121/twr/cubicles");//todo process these and set up the connection points
-    public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_TWR_LIBRARY = createSimple("village/metro/chlter121/twr/library");//todo process these and set up the connection points
-    public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_TWR_SEVERANCE = createSimple("village/metro/chlter121/twr/severance");//todo process these and set up the connection points
-    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_TWR_1 = createSimple("village/metro/flyingnokk/twr/1");//todo process these and set up the connection points
-    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_TWR_2 = createSimple("village/metro/flyingnokk/twr/2");//todo process these and set up the connection points
-    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_TWR_3 = createSimple("village/metro/flyingnokk/twr/3");//todo process these and set up the connection points
-    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_TWR_4 = createSimple("village/metro/flyingnokk/twr/4");//todo process these and set up the connection points
-    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_TWR_CEO_OFFICE = createSimple("village/metro/flyingnokk/twr/ceo_office");//todo process these and set up the connection points
+    public static final DungeonRoomTemplate VILLAGE_METRO_TOWER_START = createSimple("village/tower/tower_start").setClazz(KeyRequiredRoom.class);
+    public static final DungeonRoomTemplate VILLAGE_METRO_TOWER_STAIRS = createSimple("village/tower/tower_connection");
+    public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_TWR_CUBICLES = createCombat("village/metro/chlter121/twr/cubicles");
+    public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_TWR_LIBRARY = createCombat("village/metro/chlter121/twr/library");
+    public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_TWR_SEVERANCE = createCombat("village/metro/chlter121/twr/severance");
+    public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_TWR_CEO_OFFICE = createBoss("village/metro/chlter121/twr/ceo_office", new Vec3(13, 3, 13));
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_TWR_SEVERANCE_HALLS = createCombat("village/metro/flyingnokk/twr/severance_halls");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_TWR_JAIL = createCombat("village/metro/flyingnokk/twr/jail");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_TWR_LOBBY = createCombat("village/metro/flyingnokk/twr/lobby");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_TWR_VAULT = createCombat("village/metro/flyingnokk/twr/vault");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_TWR_CEO_OFFICE = createBoss("village/metro/flyingnokk/twr/ceo_office", new Vec3(13,3,13));
 
 
 
 
     public static DungeonRoomTemplate copyOf(DungeonRoomTemplate template, String name) {
         DungeonRoomTemplate room = DungeonRoomTemplate.copyOf(template, name);
+        dungeonRooms.add(room);
+        return room;
+    }
+
+    public static DungeonRoomTemplate copyCombatOf(DungeonRoomTemplate template, String name) {
+        DungeonRoomTemplate room = DungeonRoomTemplate.copyOf(template, name);
+        room.setClazz(CombatRoom.class);
+        room.set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
         dungeonRooms.add(room);
         return room;
     }
@@ -451,6 +459,23 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
 
     public static DungeonRoomTemplate createSimple(String name) {
         DungeonRoomTemplate room = DungeonRoomTemplate.create(name, List.of(Pair.of(name, EMPTY_BLOCK_POS)));
+        dungeonRooms.add(room);
+        return room;
+    }
+
+    public static DungeonRoomTemplate createCombat(String name) {
+        DungeonRoomTemplate room = DungeonRoomTemplate.create(name, List.of(Pair.of(name, EMPTY_BLOCK_POS)));
+        room.setClazz(CombatRoom.class);
+        room.set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
+        dungeonRooms.add(room);
+        return room;
+    }
+
+    public static DungeonRoomTemplate createBoss(String name, Vec3 bossSpawnPos) {
+        DungeonRoomTemplate room = DungeonRoomTemplate.create(name, List.of(Pair.of(name, EMPTY_BLOCK_POS)));
+        room.setClazz(BossRoom.class);
+        room.set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
+        room.set(BOSS_SPAWN_POS, bossSpawnPos);
         dungeonRooms.add(room);
         return room;
     }

@@ -198,7 +198,7 @@ public class DungeonBranchRegistry {
                     .add(VILLAGE_SMALL_PLOTS,50)
                     .add(VILLAGE_WIDE_PATH_POOL,1)//important that the last room is a path so that we can add more in the next branch generation and keep the straight line
             )
-            .setLimitedRooms(new HashMap<>(Map.of(VILLAGE_METRO_WIDE_CROSSROADS, 2,VILLAGE_METRO_WIDE_STAIRS,1)))
+            .setLimitedRooms(new HashMap<>(Map.of(VILLAGE_METRO_WIDE_CROSSROADS, 2)))
             .set(MATERIAL, VILLAGE_MATERIAL_POOL)
             .set(BLOCKING_MATERIAL_INDEX, 2)
             .set(BRANCH_DISTANCE_WEIGHT, -50)
@@ -221,15 +221,34 @@ public class DungeonBranchRegistry {
     public static final DungeonBranchTemplate VILLAGE_METRO_ENDING_BRANCH = create("VILLAGE_METRO_ENDING_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .addSimple(VILLAGE_METRO_TOWER_START)
-                    .addSimple(VILLAGE_METRO_TOWER_END)//todo replace
-                    .addSimple(VILLAGE_METRO_TOWER_END)
-                    .addSimple(VILLAGE_METRO_TOWER_END)
-                    .addSimple(VILLAGE_METRO_TOWER_END)
-                    .addSimple(VILLAGE_METRO_TOWER_END)
-                    .addSimple(VILLAGE_METRO_TOWER_END)
-                    .addSimple(VILLAGE_METRO_TOWER_END)
+                    .addSimple(VILLAGE_METRO_TOWER_STAIRS)
+                    .add(VILLAGE_TOWER_FLOORS, 1)
+                    .addSimple(VILLAGE_METRO_TOWER_STAIRS)
+                    .add(VILLAGE_TOWER_FLOORS, 1)
+                    .addSimple(VILLAGE_METRO_TOWER_STAIRS)
+                    .add(VILLAGE_TOWER_FLOORS, 1)
+                    .addSimple(VILLAGE_METRO_TOWER_STAIRS)
+                    .add(VILLAGE_TOWER_FLOORS, 1)
+                    .addSimple(VILLAGE_METRO_TOWER_STAIRS)
+                    .add(VILLAGE_TOWER_FLOORS, 1)
+                    .addSimple(VILLAGE_METRO_TOWER_STAIRS)
+                    .add(VILLAGE_TOWER_FLOORS, 1)
+                    .addSimple(VILLAGE_METRO_TOWER_STAIRS)
+                    .add(VILLAGE_TOWER_FLOORS, 1)
+                    .addSimple(VILLAGE_METRO_TOWER_STAIRS)
+                    .add(VILLAGE_TOWER_FLOORS, 1)
+                    .addSimple(VILLAGE_METRO_TOWER_STAIRS)
+                    .add(VILLAGE_TOWER_CEO_OFFICES,1)
             )
             .set(MATERIAL, VILLAGE_MATERIAL_POOL)
+            .setLimitedRooms(new HashMap<>(Map.of(
+                    VILLAGE_METRO_CHLTER121_TWR_CUBICLES,2,
+                    VILLAGE_METRO_CHLTER121_TWR_LIBRARY,2,
+                    VILLAGE_METRO_CHLTER121_TWR_SEVERANCE,2,
+                    VILLAGE_METRO_FLYINGNOKK_TWR_SEVERANCE_HALLS,2,
+                    VILLAGE_METRO_FLYINGNOKK_TWR_JAIL,2,
+                    VILLAGE_METRO_FLYINGNOKK_TWR_LOBBY,2,
+                    VILLAGE_METRO_FLYINGNOKK_TWR_VAULT,2)))
             .setRootOriginBranchIndex(4);
 
     public static DungeonBranchTemplate copyOf(DungeonBranchTemplate branch, String name) {

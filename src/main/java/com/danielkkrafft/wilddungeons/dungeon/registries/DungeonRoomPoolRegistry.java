@@ -311,7 +311,20 @@ public class DungeonRoomPoolRegistry {
             .add(VILLAGE_METRO_FLYINGNOKK_SML_WHEAT_PATH,1)
             ;
 
+    public static final WeightedPool<DungeonRoomTemplate> VILLAGE_TOWER_FLOORS = create("VILLAGE_TOWER_FLOORS")
+            .add(VILLAGE_METRO_CHLTER121_TWR_CUBICLES,1)
+            .add(VILLAGE_METRO_CHLTER121_TWR_LIBRARY,1)
+            .add(VILLAGE_METRO_CHLTER121_TWR_SEVERANCE,1)
+            .add(VILLAGE_METRO_FLYINGNOKK_TWR_SEVERANCE_HALLS,1)
+            .add(VILLAGE_METRO_FLYINGNOKK_TWR_JAIL,1)
+            .add(VILLAGE_METRO_FLYINGNOKK_TWR_LOBBY,1)
+            .add(VILLAGE_METRO_FLYINGNOKK_TWR_VAULT,1)
+            ;
 
+    public static final WeightedPool<DungeonRoomTemplate> VILLAGE_TOWER_CEO_OFFICES = create("VILLAGE_TOWER_CEO_OFFICES")
+            .add(VILLAGE_METRO_CHLTER121_TWR_CEO_OFFICE,1)
+            .add(VILLAGE_METRO_FLYINGNOKK_TWR_CEO_OFFICE,1)
+            ;
 
     public static WeightedPool<DungeonRoomTemplate> create(String name) {
         WeightedPool<DungeonRoomTemplate> pool = new WeightedPool<DungeonRoomTemplate>()

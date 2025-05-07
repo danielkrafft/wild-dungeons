@@ -367,7 +367,7 @@ public class TemplateHelper {
                 //if (blockstate.equals(Blocks.AIR.defaultBlockState())) continue;
 
                 if (room.getProperty(DESTRUCTION_RULE) == DungeonRoomTemplate.DestructionRule.SHELL || room.getProperty(DESTRUCTION_RULE) == DungeonRoomTemplate.DestructionRule.SHELL_CLEAR) {
-                    if (!innerBox.isInside(structuretemplate$structureblockinfo.pos()) && !room.isPosInsideShell(structuretemplate$structureblockinfo.pos())) {
+                    if (!blockstate.is(WDBlocks.CONNECTION_BLOCK.get()) && !innerBox.isInside(structuretemplate$structureblockinfo.pos()) && !room.isPosInsideShell(structuretemplate$structureblockinfo.pos())) {
                         blockstate = material.replace(structuretemplate$structureblockinfo.state().mirror(settings.getMirror()).rotate(settings.getRotation()), noiseScale, structuretemplate$structureblockinfo.pos(), room.getTemplate().wdStructureTemplate());
                         serverLevel.setBlock(structuretemplate$structureblockinfo.pos(), WDBedrockBlock.of(blockstate.getBlock()), 2);
                         continue;
