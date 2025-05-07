@@ -60,6 +60,7 @@ public class BusinessCEO extends Monster implements GeoEntity {
             ascendAnim = RawAnimation.begin().thenPlay(ascend),
             dashAnim = RawAnimation.begin().thenPlay(dash);
     private static final EntityDataAccessor<Integer> TICKS_INVULNERABLE = SynchedEntityData.defineId(BusinessCEO.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Boolean> SECOND_PHASE_TRIGGERED = SynchedEntityData.defineId(BusinessCEO.class, EntityDataSerializers.BOOLEAN);
     private static final int SUMMON_TICKS = 70;
     private static final String
             ceo_controller = "ceo_controller";
@@ -74,8 +75,8 @@ public class BusinessCEO extends Monster implements GeoEntity {
             .triggerableAnim(dash, dashAnim);
 
     // Cooldown constants for each goal type
-    private static final int MELEE_COOLDOWN = 20; // 1 second
-    private static final int DASH_COOLDOWN = 80; // 4 seconds
+    private static final int MELEE_COOLDOWN = 5;
+    private static final int DASH_COOLDOWN = 20;
     private static final int ASCEND_COOLDOWN = 200; // 10 seconds
     private static final int POINT_COOLDOWN = 600; // 30 seconds
 
@@ -140,6 +141,9 @@ public class BusinessCEO extends Monster implements GeoEntity {
         super.tick();
         Level level = getCommandSenderWorld();
         float hp = getHealth() / getMaxHealth();
+        if (hp < 0.5f && !isSecondPhaseTriggered()) {
+            setSecondPhaseTriggered(true);
+        }
         bossEvent.setProgress(hp);
         //get the current goal
 //        WrappedGoal goal = goalSelector.getAvailableGoals().stream().filter(WrappedGoal::isRunning).findFirst().orElse(null);
@@ -149,6 +153,10 @@ public class BusinessCEO extends Monster implements GeoEntity {
 //            bossEvent.setName(getDisplayName());
 //        }
         if (!level.isClientSide && !isDeadOrDying()) {
+            if (isSecondPhaseTriggered() && tickCount % 10 == 0){
+                //particle effects to indicate second phase
+                UtilityMethods.sendParticles((ServerLevel) level, ParticleTypes.ANGRY_VILLAGER, true, 1, getX(), getY() + 1.5f, getZ(), 0.5f, 0.5f, 0.5f, 0.05f);
+            }
             //logic
 //            if (getTarget() != null) {
 //                //particle effects to indicate targeting
@@ -162,6 +170,7 @@ public class BusinessCEO extends Monster implements GeoEntity {
     public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putInt("TI", this.getTicksInvulnerable());
+        compound.putBoolean("SP", this.isSecondPhaseTriggered());
     }
 
     @Override
@@ -175,6 +184,9 @@ public class BusinessCEO extends Monster implements GeoEntity {
             this.setTicksInvulnerable(compound.getInt("TI"));
         }
 
+        if (compound.contains("SP")) {
+            this.setSecondPhaseTriggered(compound.getBoolean("SP"));
+        }
     }
 
     @Override
@@ -209,6 +221,7 @@ public class BusinessCEO extends Monster implements GeoEntity {
     protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
         super.defineSynchedData(builder);
         builder.define(TICKS_INVULNERABLE, 0);
+        builder.define(SECOND_PHASE_TRIGGERED, false);
     }
 
     public void setTicksInvulnerable(int ticks) {
@@ -217,6 +230,19 @@ public class BusinessCEO extends Monster implements GeoEntity {
 
     public int getTicksInvulnerable() {
         return this.entityData.get(TICKS_INVULNERABLE);
+    }
+
+    public void setSecondPhaseTriggered(boolean triggered) {
+        this.entityData.set(SECOND_PHASE_TRIGGERED, triggered);
+        if (triggered){
+            bossEvent.setColor(BossEvent.BossBarColor.RED);
+        } else {
+            bossEvent.setColor(BossEvent.BossBarColor.GREEN);
+        }
+    }
+
+    public boolean isSecondPhaseTriggered() {
+        return this.entityData.get(SECOND_PHASE_TRIGGERED);
     }
 
     public boolean isInvulnerable() {
@@ -469,8 +495,7 @@ public class BusinessCEO extends Monster implements GeoEntity {
 
         @Override
         public boolean canUse() {
-            float healthPercentage = BusinessCEO.this.getHealth() / BusinessCEO.this.getMaxHealth();
-            return healthPercentage < 0.5f &&
+            return isSecondPhaseTriggered() &&
                     BusinessCEO.this.getTarget() != null &&
                     !BusinessCEO.this.isInvulnerable() &&
                     (BusinessCEO.this.tickCount - BusinessCEO.this.lastAscendGoalTick >= ASCEND_COOLDOWN);
@@ -506,6 +531,20 @@ public class BusinessCEO extends Monster implements GeoEntity {
                     0.5f, 0.5f, 0.5f,
                     0.06f
             );
+            // Health regeneration effect
+            if (hoveredTicks % 10 == 0) {
+                BusinessCEO.this.heal(5);
+                UtilityMethods.sendParticles(
+                        (ServerLevel) BusinessCEO.this.level(),
+                        ParticleTypes.HEART,
+                        true,
+                        5,
+                        BusinessCEO.this.getX(), BusinessCEO.this.getY() + 1.5f, BusinessCEO.this.getZ(),
+                        0.5f, 0.5f, 0.5f,
+                        0.06f
+                );
+            }
+
             // Calculate hover position that circles around the target
             double radius = 5.0; // Distance from target
             double angle = (Math.PI * 2 * hoveredTicks) / maxHoverTicks; // Complete a circle
@@ -578,8 +617,7 @@ public class BusinessCEO extends Monster implements GeoEntity {
 
         @Override
         public boolean canUse() {
-            float healthPercentage = BusinessCEO.this.getHealth() / BusinessCEO.this.getMaxHealth();
-            return healthPercentage < 0.5f &&
+            return isSecondPhaseTriggered() &&
                     BusinessCEO.this.getTarget() != null &&
                     BusinessCEO.this.distanceToSqr(BusinessCEO.this.getTarget()) > 12 &&
                     !BusinessCEO.this.isInvulnerable() &&
