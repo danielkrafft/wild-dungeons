@@ -9,11 +9,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.Potions;
 
-import java.util.ArrayList;
-
 public class ItemTemplateRegistry {
     public static final DungeonRegistration.DungeonComponentRegistry<ItemTemplate> LOOT_ENTRY_REGISTRY = new DungeonRegistration.DungeonComponentRegistry<>();
-    public static ArrayList<ItemTemplate> lootEntries = new ArrayList<>();
 
     public static ItemTemplate ARROWS = create("arrows_8", Items.ARROW, 8).setDeviance(1.5f);
     public static ItemTemplate COOKED_BEEF = create("beef_8", Items.COOKED_BEEF, 8).setDeviance(1.5f);
@@ -93,26 +90,13 @@ public class ItemTemplateRegistry {
 
     public static ItemTemplate create(String name, Item item, int count) {
         ItemTemplate itemTemplate = new ItemTemplate(name, item, count);
-        lootEntries.add(itemTemplate);
+        LOOT_ENTRY_REGISTRY.add(itemTemplate);
         return itemTemplate;
     }
 
     public static ItemTemplate create(String name, Holder<Potion> potion) {
         ItemTemplate itemTemplate = new ItemTemplate(name, potion);
-        lootEntries.add(itemTemplate);
+        LOOT_ENTRY_REGISTRY.add(itemTemplate);
         return itemTemplate;
-    }
-
-    public static void setupLootEntries() {
-        lootEntries.forEach(ItemTemplateRegistry::add);
-    }
-
-    public static void add(ItemTemplate ItemTemplate) {
-        LOOT_ENTRY_REGISTRY.add(ItemTemplate);
-    }
-
-    //probably never needed, because now we declare the loot entries as static fields
-    public static ItemTemplate get(String name) {
-        return LOOT_ENTRY_REGISTRY.get(name);
     }
 }

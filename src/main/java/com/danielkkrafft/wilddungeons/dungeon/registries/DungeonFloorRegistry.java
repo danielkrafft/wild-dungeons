@@ -10,14 +10,12 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalPr
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import net.minecraft.core.BlockPos;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonBranchRegistry.*;
 
 public class DungeonFloorRegistry {
     public static final DungeonRegistration.DungeonComponentRegistry<DungeonFloorTemplate> DUNGEON_FLOOR_REGISTRY = new DungeonRegistration.DungeonComponentRegistry<>();
-    public static ArrayList<DungeonFloorTemplate> dungeonFloors = new ArrayList<>();
 
     public static final DungeonFloorTemplate TEST_FLOOR = create("test_floor")//must be lowercase or the game will crash
             .setBranchTemplates(new DungeonLayout<DungeonBranchTemplate>()
@@ -110,18 +108,13 @@ public class DungeonFloorRegistry {
 
     public static DungeonFloorTemplate copyOf(DungeonFloorTemplate floor, String name) {
         DungeonFloorTemplate copy = DungeonFloorTemplate.copyOf(floor, name);
-        dungeonFloors.add(copy);
+        DUNGEON_FLOOR_REGISTRY.add(copy);
         return copy;
     }
 
     public static DungeonFloorTemplate create(String name) {
         DungeonFloorTemplate floor = DungeonFloorTemplate.create(name);
-        dungeonFloors.add(floor);
+        DUNGEON_FLOOR_REGISTRY.add(floor);
         return floor;
     }
-
-    public static void setupFloors() {
-        dungeonFloors.forEach(DUNGEON_FLOOR_REGISTRY::add);
-    }
-
 }

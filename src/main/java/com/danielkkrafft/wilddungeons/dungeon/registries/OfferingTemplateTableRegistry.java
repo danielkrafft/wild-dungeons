@@ -10,18 +10,24 @@ import static com.danielkkrafft.wilddungeons.dungeon.registries.OfferingTemplate
 public class OfferingTemplateTableRegistry {
     public static final DungeonRegistration.DungeonComponentRegistry<WeightedTable<OfferingTemplate>> OFFERING_TEMPLATE_TABLE_REGISTRY = new DungeonRegistration.DungeonComponentRegistry<>();
 
-    public static final WeightedTable<OfferingTemplate> FREE_PERK_OFFERING_TABLE = new WeightedTable<OfferingTemplate>().setName("FREE_PERK_OFFERING_TABLE");
-    public static final WeightedTable<OfferingTemplate> BASIC_SHOP_TABLE = new WeightedTable<OfferingTemplate>().setName("BASIC_SHOP_TABLE");
-    public static final WeightedTable<OfferingTemplate> FREE_CUSTOM_WEAPON_TABLE = new WeightedTable<OfferingTemplate>().setName("FREE_CUSTOM_WEAPON_TABLE");
+    public static final WeightedTable<OfferingTemplate> FREE_PERK_OFFERING_TABLE = create("FREE_PERK_OFFERING_TABLE")
+            .add(FREE_PERK_POOL,1);
+    public static final WeightedTable<OfferingTemplate> BASIC_SHOP_TABLE = create("BASIC_SHOP_TABLE")
+            .add(CHEAP_BASIC_POOL,1)
+            .add(MEDIUM_BASIC_POOL,5)
+            .add(EXPENSIVE_BASIC_POOL,10);
+    public static final WeightedTable<OfferingTemplate> FREE_CUSTOM_WEAPON_TABLE = create("FREE_CUSTOM_WEAPON_TABLE")
+            .add(new WeightedPool<OfferingTemplate>()
+                    .add(OfferingTemplateRegistry.FREE_AMOGUS_STAFF, 1)
+                    .add(OfferingTemplateRegistry.FREE_LASER_SWORD, 1)
+                    .add(OfferingTemplateRegistry.FREE_FIREWORK_GUN, 1)
+                    .add(OfferingTemplateRegistry.FREE_MEATHOOK, 1)
+                    , 1);
 
-    public static void setupOfferingTables(){
-        FREE_PERK_OFFERING_TABLE.add(FREE_PERK_POOL,1);
-        OFFERING_TEMPLATE_TABLE_REGISTRY.add(FREE_PERK_OFFERING_TABLE);
-
-        BASIC_SHOP_TABLE.add(CHEAP_BASIC_POOL,1).add(MEDIUM_BASIC_POOL,5).add(EXPENSIVE_BASIC_POOL,10);
-        OFFERING_TEMPLATE_TABLE_REGISTRY.add(BASIC_SHOP_TABLE);
-
-        FREE_CUSTOM_WEAPON_TABLE.add(new WeightedPool<OfferingTemplate>().add(OfferingTemplateRegistry.FREE_AMOGUS_STAFF, 1).add(OfferingTemplateRegistry.FREE_LASER_SWORD, 1).add(OfferingTemplateRegistry.FREE_FIREWORK_GUN, 1).add(OfferingTemplateRegistry.FREE_MEATHOOK, 1), 1);
-        OFFERING_TEMPLATE_TABLE_REGISTRY.add(FREE_CUSTOM_WEAPON_TABLE);
+    public static WeightedTable<OfferingTemplate> create(String name){
+        WeightedTable<OfferingTemplate> offeringTable = new WeightedTable<OfferingTemplate>();
+        offeringTable.setName(name);
+        OFFERING_TEMPLATE_TABLE_REGISTRY.add(offeringTable);
+        return offeringTable;
     }
 }

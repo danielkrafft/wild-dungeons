@@ -1,7 +1,5 @@
 package com.danielkkrafft.wilddungeons;
 
-import com.danielkkrafft.wilddungeons.dungeon.registries.PerkRegistry;
-import com.danielkkrafft.wilddungeons.dungeon.registries.SoundscapeTemplateRegistry;
 import com.danielkkrafft.wilddungeons.entity.*;
 import com.danielkkrafft.wilddungeons.entity.boss.BreezeGolem;
 import com.danielkkrafft.wilddungeons.entity.boss.BusinessCEO;
@@ -67,9 +65,6 @@ public class WildDungeons {
         WDStructurePieceTypes.STRUCTURE_PIECE_TYPES.register(modEventBus);
         WDSoundEvents.SOUND_EVENTS.register(modEventBus);
         WDDataComponents.DATA_COMPONENT_TYPES.register(modEventBus);
-
-        PerkRegistry.setupPerks();
-        SoundscapeTemplateRegistry.setupSoundscapes();
 
         modEventBus.register(WildDungeons.class);
         NeoForge.EVENT_BUS.register(WDEvents.class);

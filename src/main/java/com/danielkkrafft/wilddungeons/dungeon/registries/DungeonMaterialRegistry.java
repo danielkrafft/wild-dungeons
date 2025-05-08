@@ -444,10 +444,7 @@ public class DungeonMaterialRegistry {
     public static DungeonMaterial create(String name, WeightedPool<BlockState> defaultBasicBlocks, WeightedPool<BlockState> defaultStairBlocks, WeightedPool<BlockState> defaultSlabBlocks, WeightedPool<BlockState> defaultWallBlocks, WeightedPool<BlockState> defaultLightBlocks, WeightedPool<BlockState> defaultHangingLights, WeightedPool<BlockState> defaultHiddenBlocks) {
         DungeonMaterial material = new DungeonMaterial(name, defaultBasicBlocks, defaultStairBlocks, defaultSlabBlocks, defaultWallBlocks, defaultLightBlocks, defaultHangingLights, defaultHiddenBlocks);
         dungeonMaterials.add(material);
+        DUNGEON_MATERIAL_REGISTRY.add(material);
         return material;
-    }
-
-    public static void setupDungeonMaterials() {
-        dungeonMaterials.forEach(DUNGEON_MATERIAL_REGISTRY::add);
     }
 }

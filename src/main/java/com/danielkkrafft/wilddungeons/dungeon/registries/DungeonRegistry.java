@@ -7,13 +7,12 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonFloorTe
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonTemplate;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 
-import java.util.ArrayList;
-
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonFloorPoolRegistry.OVERWORLD_FLOOR_POOL;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonFloorPoolRegistry.VILLAGE_FLOOR_POOL;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonFloorRegistry.*;
-import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialPoolRegistry.*;
+import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialPoolRegistry.OVERWORLD_MATERIAL_POOL_0;
+import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialPoolRegistry.VILLAGE_SEWER_MATERIAL_POOL;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialRegistry.PIGLIN_FACTORY_MATERIAL;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.OfferingTemplateRegistry.MEGA_DUNGEON_GAUNTLET_RIFT;
 import static com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession.DungeonExitBehavior.DESTROY;
@@ -21,7 +20,6 @@ import static com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession.Dung
 
 public class DungeonRegistry {
     public static final DungeonRegistration.DungeonComponentRegistry<DungeonTemplate> DUNGEON_REGISTRY = new DungeonRegistration.DungeonComponentRegistry<>();
-    public static ArrayList<DungeonTemplate> dungeons = new ArrayList<>();
 
     public static DungeonTemplate TEST_DUNGEON = create("test_dungeon");
 
@@ -103,11 +101,7 @@ public class DungeonRegistry {
 
     public static DungeonTemplate create(String name){
         DungeonTemplate dungeon = DungeonTemplate.create(name);
-        dungeons.add(dungeon);
+        DUNGEON_REGISTRY.add(dungeon);
         return dungeon;
-    }
-
-    public static void setupDungeons() {
-        dungeons.forEach(DUNGEON_REGISTRY::add);
     }
 }

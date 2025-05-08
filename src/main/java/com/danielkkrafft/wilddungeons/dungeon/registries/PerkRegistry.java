@@ -5,11 +5,8 @@ import com.danielkkrafft.wilddungeons.dungeon.components.perk.*;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonPerkTemplate;
 import org.joml.Vector2i;
 
-import java.util.ArrayList;
-
 public class PerkRegistry {
     public static final DungeonRegistration.DungeonComponentRegistry<DungeonPerkTemplate> DUNGEON_PERK_REGISTRY = new DungeonRegistration.DungeonComponentRegistry<>();
-    public static ArrayList<DungeonPerkTemplate> perks = new ArrayList<>();
 
     public static final DungeonPerkTemplate SWORD_DAMAGE = create(SwordDamagePerk.class, new Vector2i(0,0));
     public static final DungeonPerkTemplate AXE_DAMAGE = create(AxeDamagePerk.class, new Vector2i(1,0));
@@ -94,11 +91,8 @@ public class PerkRegistry {
 
     public static DungeonPerkTemplate create(Class<? extends DungeonPerk> clazz, Vector2i position){
         DungeonPerkTemplate perk = new DungeonPerkTemplate(clazz, position);
-        perks.add(perk);
+        DUNGEON_PERK_REGISTRY.add(perk);
         return perk;
     }
 
-    public static void setupPerks(){
-        perks.forEach(DUNGEON_PERK_REGISTRY::add);
-    }
 }

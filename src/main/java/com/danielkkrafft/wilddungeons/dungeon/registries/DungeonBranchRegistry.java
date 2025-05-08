@@ -11,7 +11,6 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalPr
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import net.minecraft.world.level.block.Blocks;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +24,6 @@ import static com.mojang.datafixers.util.Pair.of;
 
 public class DungeonBranchRegistry {
     public static final DungeonRegistration.DungeonComponentRegistry<DungeonBranchTemplate> DUNGEON_BRANCH_REGISTRY = new DungeonRegistration.DungeonComponentRegistry<>();
-    public static ArrayList<DungeonBranchTemplate> dungeonBranches = new ArrayList<>();
 
     public static final DungeonBranchTemplate STARTER_BRANCH = create("STARTER_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
@@ -253,18 +251,14 @@ public class DungeonBranchRegistry {
 
     public static DungeonBranchTemplate copyOf(DungeonBranchTemplate branch, String name) {
         DungeonBranchTemplate copy = DungeonBranchTemplate.copyOf(branch, name);
-        dungeonBranches.add(copy);
+        DUNGEON_BRANCH_REGISTRY.add(copy);
         return copy;
     }
 
     public static DungeonBranchTemplate create(String name) {
         DungeonBranchTemplate branch = DungeonBranchTemplate.create(name);
-        dungeonBranches.add(branch);
+        DUNGEON_BRANCH_REGISTRY.add(branch);
         return branch;
-    }
-
-    public static void setupBranches() {
-        dungeonBranches.forEach(DUNGEON_BRANCH_REGISTRY::add);
     }
 
 }

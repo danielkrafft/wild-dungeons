@@ -3,7 +3,7 @@ package com.danielkkrafft.wilddungeons.dungeon;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonTarget;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
-import com.danielkkrafft.wilddungeons.dungeon.registries.*;
+import com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRegistry;
 import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
@@ -26,35 +26,6 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class DungeonRegistration {
-    public static void setupRegistries() {
-        ItemTemplateRegistry.setupLootEntries();
-        LootPoolRegistry.setupLootPools();
-        LootTableRegistry.setupLootTables();
-
-        EnemyTableRegistry.setupEnemyTables();
-
-        DungeonMaterialRegistry.setupDungeonMaterials();
-
-        DungeonRoomRegistry.setupDungeonRooms();
-
-        DungeonBranchRegistry.setupBranches();
-
-        DungeonFloorRegistry.setupFloors();
-        DungeonFloorPoolRegistry.setupFloorPools();
-
-        DungeonRegistry.setupDungeons();
-        DungeonPoolRegistry.setupDungeonPools();
-
-        PerkRegistry.setupPerks();
-
-        OfferingTemplateRegistry.setupOfferings();
-        OfferingTemplatePoolRegistry.setupOfferingPools();
-        OfferingTemplateTableRegistry.setupOfferingTables();
-
-        RiftPoolRegistry.setupRiftPools();
-        TargetTemplateRegistry.setupTargetTemplateRegistry();
-        SoundscapeTemplateRegistry.setupSoundscapes();
-    }
 
     public static class DungeonComponentRegistry<T extends DungeonComponent> {
         private final HashMap<String, T> registry;

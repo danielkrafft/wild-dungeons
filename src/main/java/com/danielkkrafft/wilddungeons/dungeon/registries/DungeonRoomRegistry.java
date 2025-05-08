@@ -8,7 +8,6 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate.DestructionRule;
@@ -19,7 +18,6 @@ import static com.mojang.datafixers.util.Pair.of;
 
 public class DungeonRoomRegistry { //TODO this should probably be a json/nbt based data oriented approach, with a built-in editor item. This is already getting extremely difficult to maintain
     public static final DungeonRegistration.DungeonComponentRegistry<DungeonRoomTemplate> DUNGEON_ROOM_REGISTRY = new DungeonRegistration.DungeonComponentRegistry<>();
-    public static ArrayList<DungeonRoomTemplate> dungeonRooms = new ArrayList<>();
 
     /**
      *  INITIAL TEST ROOMS
@@ -422,24 +420,26 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_SML_WALL_STAIRS = createSimple("village/metro/flyingnokk/sml/wall_stairs");
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_SML_WALL_STRAIGHT = createSimple("village/metro/flyingnokk/sml/wall_straight");
 
-    public static final DungeonRoomTemplate VILLAGE_METRO_TOWER_START = createSimple("village/tower/tower_start").setClazz(KeyRequiredRoom.class);
+    public static final DungeonRoomTemplate VILLAGE_METRO_TOWER_START = createSimple("village/tower/tower_start").setClazz(KeyRequiredRoom.class).set(DESTRUCTION_RULE,DestructionRule.PROTECT_ALL_CLEAR);//so they can't tunnel through the wall and cheat the keys
     public static final DungeonRoomTemplate VILLAGE_METRO_TOWER_STAIRS = createSimple("village/tower/tower_connection");
     public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_TWR_CUBICLES = createCombat("village/metro/chlter121/twr/cubicles");
     public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_TWR_LIBRARY = createCombat("village/metro/chlter121/twr/library");
     public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_TWR_SEVERANCE = createCombat("village/metro/chlter121/twr/severance");
-    public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_TWR_CEO_OFFICE = createBoss("village/metro/chlter121/twr/ceo_office", new Vec3(13, 3, 13));
+    public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_TWR_CEO_OFFICE = createBoss("village/metro/chlter121/twr/ceo_office", new Vec3(13, 3, 13))
+            .set(ENEMY_TABLE, EnemyTableRegistry.VILLAGER_CEO_ARENA);
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_TWR_SEVERANCE_HALLS = createCombat("village/metro/flyingnokk/twr/severance_halls");
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_TWR_JAIL = createCombat("village/metro/flyingnokk/twr/jail");
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_TWR_LOBBY = createCombat("village/metro/flyingnokk/twr/lobby");
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_TWR_VAULT = createCombat("village/metro/flyingnokk/twr/vault");
-    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_TWR_CEO_OFFICE = createBoss("village/metro/flyingnokk/twr/ceo_office", new Vec3(13,3,13));
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_TWR_CEO_OFFICE = createBoss("village/metro/flyingnokk/twr/ceo_office", new Vec3(13,3,13))
+            .set(ENEMY_TABLE, EnemyTableRegistry.VILLAGER_CEO_ARENA);
 
 
 
 
     public static DungeonRoomTemplate copyOf(DungeonRoomTemplate template, String name) {
         DungeonRoomTemplate room = DungeonRoomTemplate.copyOf(template, name);
-        dungeonRooms.add(room);
+        DUNGEON_ROOM_REGISTRY.add(room);
         return room;
     }
 
@@ -447,19 +447,19 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
         DungeonRoomTemplate room = DungeonRoomTemplate.copyOf(template, name);
         room.setClazz(CombatRoom.class);
         room.set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
-        dungeonRooms.add(room);
+        DUNGEON_ROOM_REGISTRY.add(room);
         return room;
     }
 
     public static DungeonRoomTemplate create(String name, List<Pair<String, BlockPos>> roomTemplates) {
         DungeonRoomTemplate room = DungeonRoomTemplate.create(name, roomTemplates);
-        dungeonRooms.add(room);
+        DUNGEON_ROOM_REGISTRY.add(room);
         return room;
     }
 
     public static DungeonRoomTemplate createSimple(String name) {
         DungeonRoomTemplate room = DungeonRoomTemplate.create(name, List.of(Pair.of(name, EMPTY_BLOCK_POS)));
-        dungeonRooms.add(room);
+        DUNGEON_ROOM_REGISTRY.add(room);
         return room;
     }
 
@@ -467,7 +467,7 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
         DungeonRoomTemplate room = DungeonRoomTemplate.create(name, List.of(Pair.of(name, EMPTY_BLOCK_POS)));
         room.setClazz(CombatRoom.class);
         room.set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
-        dungeonRooms.add(room);
+        DUNGEON_ROOM_REGISTRY.add(room);
         return room;
     }
 
@@ -476,9 +476,7 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
         room.setClazz(BossRoom.class);
         room.set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
         room.set(BOSS_SPAWN_POS, bossSpawnPos);
-        dungeonRooms.add(room);
+        DUNGEON_ROOM_REGISTRY.add(room);
         return room;
     }
-
-    public static void setupDungeonRooms() {dungeonRooms.forEach(DUNGEON_ROOM_REGISTRY::add);}
 }

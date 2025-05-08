@@ -8,11 +8,8 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.monster.Slime;
 import net.minecraft.world.item.Items;
 
-import java.util.ArrayList;
-
 public class TargetTemplateRegistry {
     public static final DungeonComponentRegistry<TargetTemplate> TARGET_TEMPLATE_REGISTRY = new DungeonComponentRegistry<>();
-    public static final ArrayList<TargetTemplate> targetTemplates = new ArrayList<>();
 
     public static final TargetTemplate ZOMBIE_NORMAL = createMob("ZOMBIE_NORMAL", EntityType.ZOMBIE);
     public static final TargetTemplate ZOMBIE_LEATHER = createMob("ZOMBIE_LEATHER", EntityType.ZOMBIE).setHelmet(Items.LEATHER_HELMET).setChestplate(Items.LEATHER_CHESTPLATE).setLeggings(Items.LEATHER_LEGGINGS).setBoots(Items.LEATHER_BOOTS);
@@ -77,11 +74,7 @@ public class TargetTemplateRegistry {
 
     public static TargetTemplate createMob(String name, EntityType<?> entityType) {
         TargetTemplate targetTemplate = TargetTemplate.createMob(name, entityType);
-        targetTemplates.add(targetTemplate);
+        TARGET_TEMPLATE_REGISTRY.add(targetTemplate);
         return targetTemplate;
-    }
-
-    public static void setupTargetTemplateRegistry() {
-        targetTemplates.forEach(TARGET_TEMPLATE_REGISTRY::add);
     }
 }

@@ -7,13 +7,11 @@ import static com.danielkkrafft.wilddungeons.dungeon.registries.OfferingTemplate
 
 public class RiftPoolRegistry {
 
-    public static WeightedPool<DungeonRegistration.OfferingTemplate> OVERWORLD_RIFT_POOL = new WeightedPool<>();
-    public static WeightedPool<DungeonRegistration.OfferingTemplate> NETHER_RIFT_POOL = new WeightedPool<>();
-    public static WeightedPool<DungeonRegistration.OfferingTemplate> END_RIFT_POOL = new WeightedPool<>();
+    public static WeightedPool<DungeonRegistration.OfferingTemplate> OVERWORLD_RIFT_POOL = new WeightedPool<DungeonRegistration.OfferingTemplate>()
+            .add(OVERWORLD_TEST_RIFT, 1);;
+    public static WeightedPool<DungeonRegistration.OfferingTemplate> NETHER_RIFT_POOL = new WeightedPool<DungeonRegistration.OfferingTemplate>()
+            .add(NETHER_TEST_RIFT, 1);
+    public static WeightedPool<DungeonRegistration.OfferingTemplate> END_RIFT_POOL = new WeightedPool<DungeonRegistration.OfferingTemplate>()
+            .add(END_TEST_RIFT, 1);
 
-    public static void setupRiftPools(){
-        OVERWORLD_RIFT_POOL.add(OVERWORLD_TEST_RIFT, 1);
-        NETHER_RIFT_POOL.add(NETHER_TEST_RIFT, 1);
-        END_RIFT_POOL.add(END_TEST_RIFT, 1);
-    }
 }

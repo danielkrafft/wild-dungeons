@@ -8,15 +8,12 @@ import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
 import net.minecraft.world.item.Items;
 
-import java.util.ArrayList;
-
 import static com.danielkkrafft.wilddungeons.entity.Offering.CostType.*;
 import static com.danielkkrafft.wilddungeons.entity.Offering.Type.PERK;
 import static com.danielkkrafft.wilddungeons.entity.Offering.Type.RIFT;
 
 public class OfferingTemplateRegistry {
     public static final DungeonComponentRegistry<OfferingTemplate> OFFERING_TEMPLATE_REGISTRY = new DungeonComponentRegistry<>();
-    public static ArrayList<OfferingTemplate> offerings = new ArrayList<>();
 
     public static final OfferingTemplate ARROWS = createItem("ARROWS", ItemTemplateRegistry.ARROWS, OVERWORLD, 4, 1.5f);
     public static final OfferingTemplate STEAKS = createItem("STEAKS", ItemTemplateRegistry.COOKED_BEEF, OVERWORLD, 4, 1.5f).setCostItem(Items.BEEF, 99);
@@ -51,6 +48,7 @@ public class OfferingTemplateRegistry {
     public static final OfferingTemplate FREE_FIREWORK_GUN = createItem("FREE_FIREWORK_GUN", ItemTemplateRegistry.FIREWORK_GUN, OVERWORLD, 0, 1.0f).setRenderScale(2.0f);
     public static final OfferingTemplate FREE_MEATHOOK = createItem("FREE_MEATHOOK", ItemTemplateRegistry.MEATHOOK, OVERWORLD, 0, 1.0f).setRenderScale(2.0f);
     public static final OfferingTemplate DUNGEON_KEY = createItem("DUNGEON_KEY", ItemTemplateRegistry.DUNGEON_KEY, OVERWORLD, 0, 1.0f).setRenderScale(2.0f).setShowRing(true).setSoundLoop(WDSoundEvents.SHIMMER.value());
+    public static final OfferingTemplate DUNGEON_KEY_EMERALD = createItem("DUNGEON_KEY", ItemTemplateRegistry.DUNGEON_KEY, OVERWORLD, 0, 1.0f).setShowRing(true).setCostItem(Items.EMERALD,64);
 
     public static final OfferingTemplate FREE_SWORD_DAMAGE = createPerk("FREE_SWORD_DAMAGE", PerkRegistry.SWORD_DAMAGE, OVERWORLD, 0, 1);
     public static final OfferingTemplate FREE_AXE_DAMAGE = createPerk("FREE_AXE_DAMAGE", PerkRegistry.AXE_DAMAGE, OVERWORLD, 0, 1);
@@ -105,32 +103,28 @@ public class OfferingTemplateRegistry {
 
     public static OfferingTemplate create(String name, Offering.Type type, int amount, String offeringID, Offering.CostType costType, int xpLevel, float rarity){
         OfferingTemplate offering = new OfferingTemplate(name, type, amount, offeringID, costType, xpLevel, rarity);
-        offerings.add(offering);
+        OFFERING_TEMPLATE_REGISTRY.add(offering);
         return offering;
     }
 
     public static OfferingTemplate createRift(String name, String riftID, Offering.CostType costType, int xpLevel, float deviance){
         OfferingTemplate offering = new OfferingTemplate(name, RIFT, 1, riftID, costType, xpLevel, deviance);
-        offerings.add(offering);
+        OFFERING_TEMPLATE_REGISTRY.add(offering);
         return offering;
     }
 
     public static OfferingTemplate createPerk(String name, DungeonPerkTemplate perkTemplate, Offering.CostType costType, int xpLevel, float deviance){
         OfferingTemplate offering = new OfferingTemplate(name, PERK, 1, perkTemplate.name(), costType, xpLevel, deviance);
-        offerings.add(offering);
+        OFFERING_TEMPLATE_REGISTRY.add(offering);
         return offering;
     }
 
     public static OfferingTemplate createItem(String name, DungeonRegistration.ItemTemplate itemTemplate, Offering.CostType costType, int costAmount, float costDeviance) {
         OfferingTemplate offering = new OfferingTemplate(name, itemTemplate, costType, costAmount, costDeviance);
-        offerings.add(offering);
+        OFFERING_TEMPLATE_REGISTRY.add(offering);
         return offering;
     }
 
-    //it turns out we *never* use this registry. But it's a good idea to have it, just in case we decide to use it later.
-    public static void setupOfferings(){
-        offerings.forEach(OFFERING_TEMPLATE_REGISTRY::add);
-    }
 }
 
 
