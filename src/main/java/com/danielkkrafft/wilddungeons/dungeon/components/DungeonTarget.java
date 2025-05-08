@@ -155,4 +155,11 @@ public class DungeonTarget {
 
     }
 
+    public Entity getEntity(DungeonRoom room) {
+        if (type.equals(Type.ENTITY.toString()))
+        {
+            return room.getBranch().getFloor().getLevel().getEntity(UUID.fromString(this.uuid));
+        }
+        return null;
+    }
 }

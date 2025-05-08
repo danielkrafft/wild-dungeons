@@ -4,6 +4,7 @@ import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.*;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
+import com.danielkkrafft.wilddungeons.util.WeightedTable;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
@@ -420,7 +421,9 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_SML_WALL_STAIRS = createSimple("village/metro/flyingnokk/sml/wall_stairs");
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_SML_WALL_STRAIGHT = createSimple("village/metro/flyingnokk/sml/wall_straight");
 
-    public static final DungeonRoomTemplate VILLAGE_METRO_TOWER_START = createSimple("village/tower/tower_start").setClazz(KeyRequiredRoom.class).set(DESTRUCTION_RULE,DestructionRule.PROTECT_ALL_CLEAR);//so they can't tunnel through the wall and cheat the keys
+    public static final DungeonRoomTemplate VILLAGE_METRO_TOWER_START = createSimple("village/tower/tower_start").setClazz(KeyRequiredRoom.class)
+            .set(SHOP_TABLE, new WeightedTable<DungeonRegistration.OfferingTemplate>().add(OfferingTemplatePoolRegistry.VILLAGE_STORE_POOL,1))
+            .set(DESTRUCTION_RULE,DestructionRule.PROTECT_ALL_CLEAR);//so they can't tunnel through the wall and cheat the keys
     public static final DungeonRoomTemplate VILLAGE_METRO_TOWER_STAIRS = createSimple("village/tower/tower_connection");
     public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_TWR_CUBICLES = createCombat("village/metro/chlter121/twr/cubicles");
     public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_TWR_LIBRARY = createCombat("village/metro/chlter121/twr/library");

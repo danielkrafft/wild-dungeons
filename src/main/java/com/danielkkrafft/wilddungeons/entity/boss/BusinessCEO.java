@@ -22,6 +22,7 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.monster.Witch;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -86,7 +87,7 @@ public class BusinessCEO extends Monster implements GeoEntity {
     private int lastAscendGoalTick = -ASCEND_COOLDOWN;
     private int lastPointGoalTick = -POINT_COOLDOWN;
 
-    public static Class[] FRIENDLIES = {BusinessVindicator.class, BusinessEvoker.class, BusinessCEO.class, BusinessGolem.class};
+    public static Class[] FRIENDLIES = {Witch.class, BusinessVindicator.class, BusinessEvoker.class, BusinessCEO.class, BusinessGolem.class};
 
     public BusinessCEO(EntityType<? extends Monster> entityType, Level level) {
         super(entityType, level);

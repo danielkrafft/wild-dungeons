@@ -1,7 +1,6 @@
 package com.danielkkrafft.wilddungeons.dungeon.components.template;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.block.WDBedrockBlock;
 import com.danielkkrafft.wilddungeons.dungeon.components.ConnectionPoint;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonMaterial;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
@@ -40,7 +39,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.DESTRUCTION_RULE;
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.*;
 
 public class TemplateHelper {
@@ -366,13 +364,14 @@ public class TemplateHelper {
                 BlockState blockstate = structuretemplate$structureblockinfo.state();
                 //if (blockstate.equals(Blocks.AIR.defaultBlockState())) continue;
 
-                if (room.getProperty(DESTRUCTION_RULE) == DungeonRoomTemplate.DestructionRule.SHELL || room.getProperty(DESTRUCTION_RULE) == DungeonRoomTemplate.DestructionRule.SHELL_CLEAR) {
+                //WDBedrock is obsolete, kept for reference just in case
+                /*if (room.getProperty(DESTRUCTION_RULE) == DungeonRoomTemplate.DestructionRule.SHELL || room.getProperty(DESTRUCTION_RULE) == DungeonRoomTemplate.DestructionRule.SHELL_CLEAR) {
                     if (!blockstate.is(WDBlocks.CONNECTION_BLOCK.get()) && !innerBox.isInside(structuretemplate$structureblockinfo.pos()) && !room.isPosInsideShell(structuretemplate$structureblockinfo.pos())) {
                         blockstate = material.replace(structuretemplate$structureblockinfo.state().mirror(settings.getMirror()).rotate(settings.getRotation()), noiseScale, structuretemplate$structureblockinfo.pos(), room.getTemplate().wdStructureTemplate());
                         serverLevel.setBlock(structuretemplate$structureblockinfo.pos(), WDBedrockBlock.of(blockstate.getBlock()), 2);
                         continue;
                     }
-                }
+                }*/
 
                 if (blockstate.hasProperty(STAIRS_SHAPE) || blockstate.hasProperty(RAIL_SHAPE) || blockstate.hasProperty(RAIL_SHAPE_STRAIGHT)) {
                     blockstate = TemplateHelper.fixBlockStateProperties(material.replace(structuretemplate$structureblockinfo.state(), noiseScale, structuretemplate$structureblockinfo.pos(), room.getTemplate().wdStructureTemplate()), settings);

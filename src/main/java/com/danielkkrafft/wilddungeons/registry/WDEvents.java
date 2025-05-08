@@ -1,7 +1,6 @@
 package com.danielkkrafft.wilddungeons.registry;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
@@ -48,7 +47,8 @@ import net.minecraft.world.entity.monster.*;
 import net.minecraft.world.entity.monster.hoglin.Hoglin;
 import net.minecraft.world.entity.monster.piglin.Piglin;
 import net.minecraft.world.entity.monster.piglin.PiglinBrute;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -107,7 +107,6 @@ public class WDEvents {
         WDStructureTemplateManager.init(resourceManager, storageAccess, dataFixer, blockGetter);
         FileUtil.setWorldPath(event.getServer().getWorldPath(LevelResource.ROOT));
         DungeonSessionManager.getInstance().server = event.getServer();
-        DungeonRegistration.setupRegistries();
         if (SaveSystem.isLoading()) return;
         WildDungeons.getLogger().info("STARTING DUNGEON FILE LOADING...");
         asyncLoad = CompletableFuture.runAsync(SaveSystem::Load);
@@ -362,7 +361,7 @@ public class WDEvents {
 
             DungeonRoomTemplate.DestructionRule rule = room.getProperty(HierarchicalProperty.DESTRUCTION_RULE);
             switch (rule) {
-                case PROTECT_ALL_CLEAR -> {
+                case PROTECT_ALL_CLEAR, SHELL_CLEAR -> {
                     if (room.isClear()) return;
                     event.getAffectedBlocks().removeIf(blockPos -> !room.canBreakBlock(blockPos, level.getBlockState(blockPos)));
                 }

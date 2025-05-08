@@ -24,7 +24,8 @@ public class OfferingTemplatePoolRegistry {
             .add(FREE_ATTACK_SPEED, 1)
             .add(FREE_POISON_IMMUNITY, 1)
             .add(FREE_STEP_HEIGHT, 1);
-    public static final WeightedPool<OfferingTemplate> CHEAP_BASIC_POOL = create("CHEAP_BASIC_POOL").add(ARROWS,1)
+    public static final WeightedPool<OfferingTemplate> CHEAP_BASIC_POOL = create("CHEAP_BASIC_POOL")
+            .add(ARROWS,1)
             .add(STEAKS,1)
             .add(BAKED_POTATOES,1)
             .add(IRON_INGOTS,1)
@@ -73,7 +74,8 @@ public class OfferingTemplatePoolRegistry {
             .add(MOVEMENT_SPEED_END, 1);
     public static final WeightedPool<OfferingTemplate> PRICELESS_BASIC_POOL = create("PRICELESS_BASIC_POOL");
 
-    public static final WeightedPool<OfferingTemplate> VILLAGE_STORE_POOL =
+    public static final WeightedPool<OfferingTemplate> VILLAGE_STORE_POOL = copyOf(CHEAP_BASIC_POOL,"VILLAGE_STORE_POOL")
+            .add(DUNGEON_KEY_EMERALD,5);
 
     public static WeightedPool<OfferingTemplate> create(String name){
         WeightedPool<OfferingTemplate> offeringPool = new WeightedPool<OfferingTemplate>().setName(name);

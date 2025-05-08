@@ -50,7 +50,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import static com.danielkkrafft.wilddungeons.block.WDBedrockBlock.MIMIC;
-import static com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate.DestructionRule.SHELL_CLEAR;
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialRegistry.DUNGEON_MATERIAL_REGISTRY;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomRegistry.DUNGEON_ROOM_REGISTRY;
@@ -647,8 +646,9 @@ public class DungeonRoom {
 
     public void onClear() {
         this.clear = true;
-        if (this.getProperty(DESTRUCTION_RULE) == SHELL_CLEAR)
-            CompletableFuture.runAsync(this::removeProtection);
+        //removed because WDBedrock is obsolete, but kept because I don't feel comfortable removing it yet
+//        if (this.getProperty(DESTRUCTION_RULE) == SHELL_CLEAR)
+//            CompletableFuture.runAsync(this::removeProtection);
     }
 
     public void reset() {
@@ -671,7 +671,7 @@ public class DungeonRoom {
         DungeonRoomTemplate.DestructionRule rule = this.getProperty(DESTRUCTION_RULE);
         return switch (rule) {
             case PROTECT_ALL, PROTECT_BREAK -> false;
-            case SHELL -> !isPosInsideShell(pos);
+            case SHELL, SHELL_CLEAR -> isPosInsideShell(pos);
             case PROTECT_ALL_CLEAR -> isClear();
             case null, default -> true;
         };
@@ -681,7 +681,7 @@ public class DungeonRoom {
         DungeonRoomTemplate.DestructionRule rule = this.getProperty(DESTRUCTION_RULE);
         return switch (rule) {
             case PROTECT_ALL, PROTECT_PLACE -> false;
-            case SHELL -> !isPosInsideShell(pos);
+            case SHELL, SHELL_CLEAR -> isPosInsideShell(pos);
             case PROTECT_ALL_CLEAR -> isClear();
             case null, default -> true;
         };

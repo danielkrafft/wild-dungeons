@@ -15,6 +15,11 @@ public class WeightedPool<T> implements DungeonRegistration.DungeonComponent {
     private final SimplexNoise noise = new SimplexNoise(RandomSource.create());
     private final List<Integer> cumulativeWeights = new ArrayList<>();
     public WeightedPool() { pool = new ArrayList<>(); }
+    public WeightedPool(WeightedPool<T> pool) {
+        this.pool = new ArrayList<>(pool.pool);
+        this.totalWeight = pool.totalWeight;
+        this.name = pool.name;
+    }
     public static <T> WeightedPool<T> of(T item) {return new WeightedPool<T>().add(item, 1);}
     public WeightedPool<T> add(T item, int weight) { pool.add(Pair.of(item, weight)); this.totalWeight = -1; return this; }
     public int size() {return this.pool.size();}
