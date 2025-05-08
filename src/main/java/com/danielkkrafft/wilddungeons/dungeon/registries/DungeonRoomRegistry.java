@@ -210,19 +210,19 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
             .set(ENEMY_TABLE, EnemyTableRegistry.NETHER_DRAGON_ARENA)
             .set(BOSS_SPAWN_POS, new Vec3(3.0, 40.0, 3.0));
 
-    public static final DungeonRoomTemplate VILLAGE_SEWER_1 = createSimple("village/sewer/1");
-    public static final DungeonRoomTemplate VILLAGE_SEWER_2 = createSimple("village/sewer/2");
-    public static final DungeonRoomTemplate VILLAGE_SEWER_3 = createSimple("village/sewer/3");
-    public static final DungeonRoomTemplate VILLAGE_SEWER_4 = createSimple("village/sewer/4");
-    public static final DungeonRoomTemplate VILLAGE_SEWER_5 = createSimple("village/sewer/5");
-    public static final DungeonRoomTemplate VILLAGE_SEWER_6 = createSimple("village/sewer/6");
-    public static final DungeonRoomTemplate VILLAGE_SEWER_7 = createSimple("village/sewer/7");
-    public static final DungeonRoomTemplate VILLAGE_SEWER_8 = createSimple("village/sewer/8");
-    public static final DungeonRoomTemplate VILLAGE_SEWER_9 = createSimple("village/sewer/9");
-    public static final DungeonRoomTemplate VILLAGE_SEWER_10 = createSimple("village/sewer/10");
-    public static final DungeonRoomTemplate VILLAGE_SEWER_11 = createSimple("village/sewer/11");
-    public static final DungeonRoomTemplate VILLAGE_SEWER_12 = createSimple("village/sewer/12");
-    public static final DungeonRoomTemplate VILLAGE_SEWER_13 = createSimple("village/sewer/13");
+    public static final DungeonRoomTemplate VILLAGE_SEWER_1 = createSimple("village/sewer/1");//four way room with spawners
+    public static final DungeonRoomTemplate VILLAGE_SEWER_2 = createSimple("village/sewer/2");//vertical three floor room with open center
+    public static final DungeonRoomTemplate VILLAGE_SEWER_3 = createSimple("village/sewer/3");//crossbar with spawners outside of it
+    public static final DungeonRoomTemplate VILLAGE_SEWER_4 = createSimple("village/sewer/4");//broken pipe with 6 inlet pipes
+    public static final DungeonRoomTemplate VILLAGE_SEWER_5 = createSimple("village/sewer/5");//barrel room
+    public static final DungeonRoomTemplate VILLAGE_SEWER_6 = createSimple("village/sewer/6");//copper pipe
+    public static final DungeonRoomTemplate VILLAGE_SEWER_7 = createSimple("village/sewer/7");//horizontal pipe with many connections
+    public static final DungeonRoomTemplate VILLAGE_SEWER_8 = createSimple("village/sewer/8");//vertical pipe with many connections
+    public static final DungeonRoomTemplate VILLAGE_SEWER_9 = createSimple("village/sewer/9");//double spawners with chests
+    public static final DungeonRoomTemplate VILLAGE_SEWER_10 = createSimple("village/sewer/10");//salmon gate
+    public static final DungeonRoomTemplate VILLAGE_SEWER_11 = createSimple("village/sewer/11");//pillars with canal
+    public static final DungeonRoomTemplate VILLAGE_SEWER_12 = createSimple("village/sewer/12");//big open cube
+    public static final DungeonRoomTemplate VILLAGE_SEWER_13 = createSimple("village/sewer/13");//small open cube
     public static final DungeonRoomTemplate VILLAGE_SEWER_CHESTCAP = createSimple("village/sewer/chestcap").setClazz(SecretRoom.class);
     public static final DungeonRoomTemplate VILLAGE_SEWER_ELEVATOR = createSimple("village/sewer/elevator");
     public static final DungeonRoomTemplate VILLAGE_SEWER_DEELEVATOR = createSimple("village/sewer/deelevator");
@@ -410,7 +410,8 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate VILLAGE_METRO_TOWER_START = createSimple("village/tower/tower_start").setClazz(KeyRequiredRoom.class)
             .set(SHOP_TABLE, new WeightedTable<DungeonRegistration.OfferingTemplate>().add(OfferingTemplatePoolRegistry.VILLAGE_STORE_POOL,1))
             .set(DESTRUCTION_RULE,DestructionRule.PROTECT_ALL_CLEAR);//so they can't tunnel through the wall and cheat the keys
-    public static final DungeonRoomTemplate VILLAGE_METRO_TOWER_STAIRS = createSimple("village/tower/tower_connection");
+    public static final DungeonRoomTemplate VILLAGE_METRO_TOWER_STAIRS = createSimple("village/tower/tower_connection")
+            .set(DESTRUCTION_RULE,DestructionRule.PROTECT_BREAK);//so they can't tunnel through the wall and skip levels
     public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_TWR_CUBICLES = createCombat("village/metro/chlter121/twr/cubicles");
     public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_TWR_LIBRARY = createCombat("village/metro/chlter121/twr/library");
     public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_TWR_SEVERANCE = createCombat("village/metro/chlter121/twr/severance");

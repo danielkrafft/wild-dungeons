@@ -29,6 +29,7 @@ import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Blocks;
@@ -469,6 +470,26 @@ public class DungeonRoom {
 
     public BlockPos getSpawnPoint(ServerLevel level) {
         return this.spawnPoint == null ? this.sampleSpawnablePositions(level, 1, 1).getFirst() : this.spawnPoint;
+    }
+
+    public List<BlockPos> sampleSpawnablePositions(ServerLevel serverLevel, int count, EntityType<?> mobType) {
+        List<BlockPos> result = new ArrayList<>();
+        int tries = count * 4;
+        BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
+        while (result.size() < count && tries > 0) {
+            BoundingBox innerShell = this.boundingBoxes.get(RandomUtil.randIntBetween(0, this.boundingBoxes.size() - 1));
+            int randX = RandomUtil.randIntBetween(innerShell.minX(), innerShell.maxX());
+            int randZ = RandomUtil.randIntBetween(innerShell.minZ(), innerShell.maxZ());
+            for (int y = innerShell.minY(); y < innerShell.maxY(); y++) {
+                if (serverLevel.noCollision(mobType.getSpawnAABB(randX, y, randZ))) {
+                    BlockPos blockpos = BlockPos.containing(randX, y, randZ);
+                    result.add(blockpos);
+                    break;
+                }
+            }
+            tries--;
+        }
+        return result.isEmpty() ? spawnPoint == null ? Collections.singletonList(this.boundingBoxes.getFirst().getCenter()) : Collections.singletonList(spawnPoint) : result;
     }
 
     public List<BlockPos> sampleSpawnablePositions(ServerLevel level, int count, int deflation) {
