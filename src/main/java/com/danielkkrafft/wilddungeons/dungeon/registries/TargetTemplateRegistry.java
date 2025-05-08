@@ -12,16 +12,17 @@ public class TargetTemplateRegistry {
     public static final DungeonComponentRegistry<TargetTemplate> TARGET_TEMPLATE_REGISTRY = new DungeonComponentRegistry<>();
 
     public static final TargetTemplate ZOMBIE_NORMAL = createMob("ZOMBIE_NORMAL", EntityType.ZOMBIE);
+    public static final TargetTemplate ZOMBIE_HAT = createMob("ZOMBIE_HAT", EntityType.ZOMBIE).setHelmet(Items.LEATHER_HELMET,true);
     public static final TargetTemplate ZOMBIE_LEATHER = createMob("ZOMBIE_LEATHER", EntityType.ZOMBIE).setHelmet(Items.LEATHER_HELMET).setChestplate(Items.LEATHER_CHESTPLATE).setLeggings(Items.LEATHER_LEGGINGS).setBoots(Items.LEATHER_BOOTS);
     public static final TargetTemplate ZOMBIE_IRON = createMob("ZOMBIE_IRON", EntityType.ZOMBIE).setHelmet(Items.IRON_HELMET).setChestplate(Items.IRON_CHESTPLATE).setLeggings(Items.IRON_LEGGINGS).setBoots(Items.IRON_BOOTS).setMainHandItem(Items.IRON_SWORD);
     public static final TargetTemplate ZOMBIE_DIAMOND = createMob("ZOMBIE_DIAMOND", EntityType.ZOMBIE).setHelmet(Items.DIAMOND_HELMET).setChestplate(Items.DIAMOND_CHESTPLATE).setLeggings(Items.DIAMOND_LEGGINGS).setBoots(Items.DIAMOND_BOOTS).setMainHandItem(Items.DIAMOND_AXE);
     public static final TargetTemplate SKELETON_NORMAL = createMob("SKELETON_NORMAL", EntityType.SKELETON).setMainHandItem(Items.BOW,true);
+    public static final TargetTemplate SKELETON_HAT = createMob("SKELETON_NORMAL", EntityType.SKELETON).setMainHandItem(Items.BOW,true).setHelmet(Items.LEATHER_HELMET,true);
     public static final TargetTemplate SKELETON_CHAIN = createMob("SKELETON_CHAIN", EntityType.SKELETON).setMainHandItem(Items.BOW,true).setHelmet(Items.CHAINMAIL_HELMET).setChestplate(Items.CHAINMAIL_CHESTPLATE,true).setLeggings(Items.CHAINMAIL_LEGGINGS).setBoots(Items.CHAINMAIL_BOOTS).setRandomChance(0.2f);
     public static final TargetTemplate SKELETON_GOLD = createMob("SKELETON_GOLD", EntityType.SKELETON).setMainHandItem(Items.GOLDEN_SWORD,true).setHelmet(Items.GOLDEN_HELMET).setChestplate(Items.GOLDEN_CHESTPLATE,true).setLeggings(Items.GOLDEN_LEGGINGS).setBoots(Items.GOLDEN_BOOTS).setRandomChance(0.2f);
     public static final TargetTemplate SPIDER = createMob("SPIDER", EntityType.SPIDER);
     public static final TargetTemplate CREEPER = createMob("CREEPER", EntityType.CREEPER);
     public static final TargetTemplate FAST_CREEPER = createMob("FAST_CREEPER", EntityType.CREEPER).addMobEffect(MobEffects.MOVEMENT_SPEED, 2);
-    public static final TargetTemplate PILLAGER = createMob("PILLAGER", EntityType.PILLAGER).setMainHandItem(Items.CROSSBOW, true);
     public static final TargetTemplate BLAZE = createMob("BLAZE", EntityType.BLAZE);
     public static final TargetTemplate BEEFY_BLAZE = createMob("BEEFY_BLAZE", EntityType.BLAZE).addMobEffect(MobEffects.HEALTH_BOOST, 3);
     public static final TargetTemplate CAVE_SPIDER = createMob("CAVE_SPIDER", EntityType.CAVE_SPIDER);
@@ -29,8 +30,10 @@ public class TargetTemplateRegistry {
     public static final TargetTemplate ENDERMAN = createMob("ENDERMAN", EntityType.ENDERMAN);
     public static final TargetTemplate HUSK = createMob("HUSK", EntityType.HUSK);
     public static final TargetTemplate STRAY = createMob("STRAY", EntityType.STRAY);
+    public static final TargetTemplate PILLAGER = createMob("PILLAGER", EntityType.PILLAGER).setMainHandItem(Items.CROSSBOW, true);
     public static final TargetTemplate VINDICATOR = createMob("VINDICATOR", EntityType.VINDICATOR).setMainHandItem(Items.IRON_AXE, true);
     public static final TargetTemplate EVOKER = createMob("EVOKER", EntityType.EVOKER);
+    public static final TargetTemplate ILLUSIONER = createMob("ILLUSIONER", EntityType.ILLUSIONER);
     public static final TargetTemplate WITHER_SKELETON = createMob("WITHER_SKELETON", EntityType.WITHER_SKELETON).setMainHandItem(Items.STONE_SWORD,true);
     public static final TargetTemplate PIGLIN = createMob("PIGLIN", EntityType.PIGLIN);
     public static final TargetTemplate PIGLIN_BRUTE = createMob("PIGLIN_BRUTE", EntityType.PIGLIN_BRUTE).setMainHandItem(Items.GOLDEN_AXE);
@@ -71,6 +74,8 @@ public class TargetTemplateRegistry {
     public static final TargetTemplate BUSINESS_VINDICATOR = createMob("BUSINESS_VINDICATOR", WDEntities.BUSINESS_VINDICATOR.get()).setMainHandItem(Items.GOLDEN_AXE);
     public static final TargetTemplate BUSINESS_EVOKER = createMob("BUSINESS_EVOKER", WDEntities.BUSINESS_EVOKER.get());
     public static final TargetTemplate BUSINESS_CEO = createMob("BUSINESS_CEO", WDEntities.BUSINESS_CEO.get());
+    public static final TargetTemplate EMERALD_WISP = createMob("EMERALD_WISP", WDEntities.SMALL_EMERALD_WISP.get());
+    public static final TargetTemplate LARGE_EMERALD_WISP = createMob("EMERALD_WISP", WDEntities.LARGE_EMERALD_WISP.get());
 
     public static TargetTemplate createMob(String name, EntityType<?> entityType) {
         TargetTemplate targetTemplate = TargetTemplate.createMob(name, entityType);

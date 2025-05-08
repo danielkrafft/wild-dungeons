@@ -1,6 +1,9 @@
 package com.danielkkrafft.wilddungeons.entity.boss;
 
-import com.danielkkrafft.wilddungeons.entity.*;
+import com.danielkkrafft.wilddungeons.entity.BusinessGolem;
+import com.danielkkrafft.wilddungeons.entity.BusinessVindicator;
+import com.danielkkrafft.wilddungeons.entity.EmeraldProjectileEntity;
+import com.danielkkrafft.wilddungeons.entity.EmeraldWisp;
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
 import com.danielkkrafft.wilddungeons.util.UtilityMethods;
 import net.minecraft.core.particles.ParticleTypes;
@@ -21,6 +24,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+import net.minecraft.world.entity.monster.AbstractIllager;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.monster.Witch;
 import net.minecraft.world.entity.player.Player;
@@ -87,7 +91,7 @@ public class BusinessCEO extends Monster implements GeoEntity {
     private int lastAscendGoalTick = -ASCEND_COOLDOWN;
     private int lastPointGoalTick = -POINT_COOLDOWN;
 
-    public static Class[] FRIENDLIES = {Witch.class, BusinessVindicator.class, BusinessEvoker.class, BusinessCEO.class, BusinessGolem.class};
+    public static Class[] FRIENDLIES = {Witch.class, BusinessCEO.class, BusinessGolem.class, AbstractIllager.class};
 
     public BusinessCEO(EntityType<? extends Monster> entityType, Level level) {
         super(entityType, level);
@@ -534,7 +538,7 @@ public class BusinessCEO extends Monster implements GeoEntity {
             );
             // Health regeneration effect
             if (hoveredTicks % 10 == 0) {
-                BusinessCEO.this.heal(5);
+                BusinessCEO.this.heal(2);
                 UtilityMethods.sendParticles(
                         (ServerLevel) BusinessCEO.this.level(),
                         ParticleTypes.HEART,

@@ -288,8 +288,10 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_MED_BEEKEEPERS = createSimple("village/metro/chlter121/med/beekeepers");
     public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_MED_FOOD_COURT = createSimple("village/metro/chlter121/med/food_court");
     public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_MED_FOUR_PARKOUR = createSimple("village/metro/chlter121/med/four_parkour");
-    public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_MED_GRAVEYARD = createSimple("village/metro/chlter121/med/graveyard");
-    public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_MED_GRAVEYARD_BROKEN = createSimple("village/metro/chlter121/med/graveyard_broken");
+    public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_MED_GRAVEYARD = createSimple("village/metro/chlter121/med/graveyard")
+            .set(ENEMY_TABLE, EnemyTableRegistry.VILLAGE_GRAVEYARD);
+    public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_MED_GRAVEYARD_BROKEN = createSimple("village/metro/chlter121/med/graveyard_broken")
+            .set(ENEMY_TABLE, EnemyTableRegistry.VILLAGE_GRAVEYARD);
     public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_MED_HEDGE_MAZE = createSimple("village/metro/chlter121/med/hedge_maze");
     public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_MED_HOUSE = createSimple("village/metro/chlter121/med/house");
     public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_MED_HOUSE_ARCHERY = createSimple("village/metro/chlter121/med/house_archery");
@@ -319,7 +321,9 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_EMERALD_ARCH = createSimple("village/metro/flyingnokk/med/emerald_arch");
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_FISHING_POND = createSimple("village/metro/flyingnokk/med/fishing_pond");
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_GARDEN = createSimple("village/metro/flyingnokk/med/garden");
-    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_GRAVEYARD = createSimple("village/metro/flyingnokk/med/graveyard");
+    public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_GRAVEYARD = createSimple("village/metro/flyingnokk/med/graveyard")
+            .set(ENEMY_TABLE, EnemyTableRegistry.VILLAGE_GRAVEYARD)
+            ;
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_HOUSE_1 = createSimple("village/metro/flyingnokk/med/house_1");
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_HOUSE_2 = createSimple("village/metro/flyingnokk/med/house_2");
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_HOUSE_3 = createSimple("village/metro/flyingnokk/med/house_3");
@@ -334,24 +338,6 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_STABLES = createSimple("village/metro/flyingnokk/med/stables");
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_TOWER = createSimple("village/metro/flyingnokk/med/tower");
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_WELL_RUINED = createSimple("village/metro/flyingnokk/med/well_ruined");
-
-    //todo these all have a lot of problems because they are not designed for combat, and have open tops.
-    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_LUMBERYARD = copyCombatOf(VILLAGE_METRO_LUMBERYARD, "combat_lumber_yard");
-    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_ILLAGER_TOWER = copyCombatOf(VILLAGE_METRO_ILLAGER_TOWER, "combat_illager_tower");
-    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_AWSEME_MED_STONECUTTER = copyCombatOf(VILLAGE_METRO_AWSEME_MED_STONECUTTER, "combat_awseme_med_stonecutter");
-    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_AWSEME_MED_5B = copyCombatOf(VILLAGE_METRO_AWSEME_MED_5B, "combat_awseme_med_5b");
-    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_CHLTER121_MED_GRAVEYARD = copyCombatOf(VILLAGE_METRO_CHLTER121_MED_GRAVEYARD, "combat_chlter121_med_graveyard");
-    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_CHLTER121_MED_GRAVEYARD_BROKEN = copyCombatOf(VILLAGE_METRO_CHLTER121_MED_GRAVEYARD_BROKEN, "combat_chlter121_med_graveyard_broken");
-    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_CHLTER121_MED_RUINED_HOUSE_1 = copyCombatOf(VILLAGE_METRO_CHLTER121_MED_RUINED_HOUSE_1, "combat_chlter121_med_ruined_house_1");
-    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_CHLTER121_MED_RUINED_HOUSE_2 = copyCombatOf(VILLAGE_METRO_CHLTER121_MED_RUINED_HOUSE_2, "combat_chlter121_med_ruined_house_2");
-    public static final DungeonRoomTemplate VILLAGE_METRO_COMBATs_CHLTER121_MED_FOOD_COURT = copyCombatOf(VILLAGE_METRO_CHLTER121_MED_FOOD_COURT, "combat_chlter121_med_food_court");
-    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_FLYINGNOKK_MED_EMERALD_ARCH = copyCombatOf(VILLAGE_METRO_FLYINGNOKK_MED_EMERALD_ARCH, "combat_flyingnokk_med_emerald_arch");
-    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_FLYINGNOKK_MED_PLAZA = copyCombatOf(VILLAGE_METRO_FLYINGNOKK_MED_PLAZA, "combat_flyingnokk_med_plaza");
-    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_FLYINGNOKK_MED_GARDEN = copyCombatOf(VILLAGE_METRO_FLYINGNOKK_MED_GARDEN, "combat_flyingnokk_med_garden");
-    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_FLYINGNOKK_MED_GRAVEYARD = copyCombatOf(VILLAGE_METRO_FLYINGNOKK_MED_GRAVEYARD, "combat_flyingnokk_med_graveyard");
-    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_FLYINGNOKK_MED_MARKET_STALLS = copyCombatOf(VILLAGE_METRO_FLYINGNOKK_MED_MARKET_STALLS, "combat_flyingnokk_med_market_stalls");
-    public static final DungeonRoomTemplate VILLAGE_METRO_COMBAT_ENDER_MED_FARM = copyCombatOf(VILLAGE_METRO_ENDER_MED_FARM, "combat_ender_med_farm");
-    //
 
     public static final DungeonRoomTemplate VILLAGE_METRO_CROSS = createSimple("village/metro/daniel/sml/cross");
     public static final DungeonRoomTemplate VILLAGE_METRO_FOUNTAIN = createSimple("village/metro/daniel/sml/fountain");
@@ -429,13 +415,17 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_TWR_LIBRARY = createCombat("village/metro/chlter121/twr/library");
     public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_TWR_SEVERANCE = createCombat("village/metro/chlter121/twr/severance");
     public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_TWR_CEO_OFFICE = createBoss("village/metro/chlter121/twr/ceo_office", new Vec3(13, 3, 13))
-            .set(ENEMY_TABLE, EnemyTableRegistry.VILLAGER_CEO_ARENA);
+            .set(ENEMY_TABLE, EnemyTableRegistry.VILLAGER_CEO_ARENA)
+            .set(ROOM_CLEAR_REWARD_POOL, WeightedPool.of(OfferingTemplateRegistry.EXIT_RIFT))
+            ;
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_TWR_SEVERANCE_HALLS = createCombat("village/metro/flyingnokk/twr/severance_halls");
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_TWR_JAIL = createCombat("village/metro/flyingnokk/twr/jail");
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_TWR_LOBBY = createCombat("village/metro/flyingnokk/twr/lobby");
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_TWR_VAULT = createCombat("village/metro/flyingnokk/twr/vault");
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_TWR_CEO_OFFICE = createBoss("village/metro/flyingnokk/twr/ceo_office", new Vec3(13,3,13))
-            .set(ENEMY_TABLE, EnemyTableRegistry.VILLAGER_CEO_ARENA);
+            .set(ENEMY_TABLE, EnemyTableRegistry.VILLAGER_CEO_ARENA)
+            .set(ROOM_CLEAR_REWARD_POOL, WeightedPool.of(OfferingTemplateRegistry.EXIT_RIFT))
+            ;
 
 
 

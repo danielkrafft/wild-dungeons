@@ -201,6 +201,7 @@ public class DungeonBranchRegistry {
             .set(BLOCKING_MATERIAL_INDEX, 2)
             .set(BRANCH_DISTANCE_WEIGHT, -50)
             .set(FLOOR_DISTANCE_WEIGHT, 0)
+            .set(CHEST_SPAWN_CHANCE, 1.0)
             .set(POST_PROCESSING_STEPS, List.of(new CreateBorderStep()))
             .setRootOriginBranchIndex(4);
     public static final DungeonBranchTemplate VILLAGE_METRO_STREETS_2_BRANCH = create("VILLAGE_METRO_STREETS_2_BRANCH")
@@ -213,6 +214,7 @@ public class DungeonBranchRegistry {
             .set(MATERIAL, VILLAGE_MATERIAL_POOL)
             .set(BLOCKING_MATERIAL_INDEX, 2)
             .set(BRANCH_DISTANCE_WEIGHT, -50)
+            .set(CHEST_SPAWN_CHANCE, 1.0)
             .set(POST_PROCESSING_STEPS, List.of(new CreateBorderStep()))
             .set(FLOOR_DISTANCE_WEIGHT, 0);
 
