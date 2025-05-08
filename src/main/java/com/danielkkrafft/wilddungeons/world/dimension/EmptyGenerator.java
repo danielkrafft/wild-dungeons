@@ -24,8 +24,8 @@ import java.util.concurrent.CompletableFuture;
 
 public class EmptyGenerator extends ChunkGenerator {
 
-    public static final int MIN_Y = -64;
-    public static final int GEN_DEPTH = 320;
+    public static final int MIN_Y = 0;
+    public static final int GEN_DEPTH = 640;
 
     private final BiomeSource biomeSource;
     public static final MapCodec<EmptyGenerator> CODEC = RecordCodecBuilder.mapCodec((instance) ->
@@ -118,7 +118,7 @@ public class EmptyGenerator extends ChunkGenerator {
         BlockState[] blockStates = new BlockState[level.getHeight()];
         Arrays.fill(blockStates, Blocks.AIR.defaultBlockState());
 
-        return new NoiseColumn(-64, blockStates);
+        return new NoiseColumn(MIN_Y, blockStates);
 
     }
 

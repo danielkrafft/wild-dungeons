@@ -1,6 +1,7 @@
 package com.danielkkrafft.wilddungeons.util;
 
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
@@ -36,7 +37,7 @@ public final class UtilityMethods
      * @param spawner The BaseSpawner to modify
      * @param weightedSpawnData List of spawn data entries with weights
      */
-    public static void setSpawnPotentials(BaseSpawner spawner, SimpleWeightedRandomList<SpawnData> weightedSpawnData) {
+    public static void setSpawnPotentials(DungeonRoom room, BaseSpawner spawner, SimpleWeightedRandomList<SpawnData> weightedSpawnData) {
         // Create NBT compound to hold spawner data
         CompoundTag spawnerTag = new CompoundTag();
 
@@ -49,11 +50,11 @@ public final class UtilityMethods
 
         // Update the tag with our new spawn potentials
         spawnerTag.put("SpawnPotentials", spawnPotentialsTag);
-        spawnerTag.putShort("MinSpawnDelay", (short) 100);
-        spawnerTag.putShort("MaxSpawnDelay", (short) 200);
-        spawnerTag.putShort("SpawnCount", (short) 2);
-        spawnerTag.putShort("MaxNearbyEntities", (short) 10);
-        spawnerTag.putShort("RequiredPlayerRange", (short) 32);
+        spawnerTag.putShort("MinSpawnDelay", (short) (200 / room.getDifficulty()));
+        spawnerTag.putShort("MaxSpawnDelay", (short) (800 / room.getDifficulty()));
+        spawnerTag.putShort("SpawnCount", (short) 1);
+        spawnerTag.putShort("MaxNearbyEntities", (short) 6);
+        spawnerTag.putShort("RequiredPlayerRange", (short) 16);
 
         // Load the modified data back into the spawner
         AtomicReference<BlockPos> pos = new AtomicReference<>(BlockPos.ZERO);

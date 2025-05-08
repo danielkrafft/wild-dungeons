@@ -14,9 +14,8 @@ public class PostProcessingStep {
 
     public void setBlockFast(ServerLevel level, BlockPos pos, BlockState state) {
         ChunkAccess chunk = level.getChunk(pos);
-        int i = pos.getY();
-        LevelChunkSection levelchunksection = chunk.getSection(chunk.getSectionIndex(i));
-        levelchunksection.setBlockState(pos.getX() & 15, i & 15, pos.getZ() & 15, state);
+        LevelChunkSection levelchunksection = chunk.getSection(chunk.getSectionIndex(pos.getY()));
+        levelchunksection.setBlockState(pos.getX() & 15, pos.getY() & 15, pos.getZ() & 15, state);
         level.getChunkSource().getLightEngine().updateSectionStatus(pos, false);
     }
 }

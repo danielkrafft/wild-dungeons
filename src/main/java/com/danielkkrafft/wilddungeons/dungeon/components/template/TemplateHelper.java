@@ -394,7 +394,7 @@ public class TemplateHelper {
                         if (blockentity1 != null) {
                             blockentity1.loadWithComponents(structuretemplate$structureblockinfo.nbt(), serverLevel.registryAccess());
                             if (blockentity1 instanceof SpawnerBlockEntity spawnerBlockEntity) {//todo replace this with the special spawner block entity that has more control over the spawn data
-                                UtilityMethods.setSpawnPotentials(spawnerBlockEntity.getSpawner(), UtilityMethods.createSpawnDataWeightedList(room.getProperty(HierarchicalProperty.ENEMY_TABLE).getLowestWeightedPool()));//todo consider grabbing higher pools?
+                                UtilityMethods.setSpawnPotentials(room, spawnerBlockEntity.getSpawner(), UtilityMethods.createSpawnDataWeightedList(room.getProperty(HierarchicalProperty.ENEMY_TABLE).getLowestWeightedPool()));//todo consider grabbing higher pools?
                             }
                         }
                     }

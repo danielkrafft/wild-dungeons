@@ -18,7 +18,6 @@ public class EnemyPoolRegistry {
             .add(ENDERMITE, 1)
             .add(SILVERFISH, 1)
             .add(SLIME, 1)
-            .add(VEX, 1)
             .add(CREEPER, 2);
     public static final WeightedPool<DungeonRegistration.TargetTemplate> MEDIUM_ENEMY_POOL = create("MEDIUM_ENEMY_POOL")
             .add(BLAZE, 1)
@@ -29,6 +28,7 @@ public class EnemyPoolRegistry {
             .add(MAGMA_CUBE, 1)
             .add(CAVE_SPIDER, 1)
             .add(PILLAGER, 1)
+            .add(VEX, 1)
             .add(ENDERMAN, 1)
             .add(HUSK, 1)
             .add(BIG_SLIME, 1)
