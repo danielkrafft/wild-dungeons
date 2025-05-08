@@ -16,8 +16,8 @@ public class OfferingTemplateRegistry {
     public static final DungeonComponentRegistry<OfferingTemplate> OFFERING_TEMPLATE_REGISTRY = new DungeonComponentRegistry<>();
 
     public static final OfferingTemplate ARROWS = createItem("ARROWS", ItemTemplateRegistry.ARROWS, OVERWORLD, 4, 1.5f);
-    public static final OfferingTemplate STEAKS = createItem("STEAKS", ItemTemplateRegistry.COOKED_BEEF, OVERWORLD, 4, 1.5f).setCostItem(Items.BEEF, 99);
-    public static final OfferingTemplate BAKED_POTATOES = createItem("BAKED_POTATOES", ItemTemplateRegistry.BAKED_POTATOES, OVERWORLD, 4, 1.5f).setCostItem(Items.POTATO, 32);
+    public static final OfferingTemplate STEAKS = createItem("STEAKS", ItemTemplateRegistry.COOKED_BEEF, OVERWORLD, 4, 1.5f);
+    public static final OfferingTemplate BAKED_POTATOES = createItem("BAKED_POTATOES", ItemTemplateRegistry.BAKED_POTATOES, OVERWORLD, 4, 1.5f);
     public static final OfferingTemplate IRON_INGOTS = createItem("IRON_INGOTS", ItemTemplateRegistry.IRON_INGOTS, OVERWORLD, 6, 1.5f);
     public static final OfferingTemplate LEATHER = createItem("LEATHER", ItemTemplateRegistry.LEATHER, OVERWORLD, 4, 1.5f);
     //potion effects do not transfer into offerings as neither OfferingTemplates nor Offerings have a way to store potion effects.
@@ -48,7 +48,49 @@ public class OfferingTemplateRegistry {
     public static final OfferingTemplate FREE_FIREWORK_GUN = createItem("FREE_FIREWORK_GUN", ItemTemplateRegistry.FIREWORK_GUN, OVERWORLD, 0, 1.0f).setRenderScale(2.0f);
     public static final OfferingTemplate FREE_MEATHOOK = createItem("FREE_MEATHOOK", ItemTemplateRegistry.MEATHOOK, OVERWORLD, 0, 1.0f).setRenderScale(2.0f);
     public static final OfferingTemplate DUNGEON_KEY = createItem("DUNGEON_KEY", ItemTemplateRegistry.DUNGEON_KEY, OVERWORLD, 0, 1.0f).setRenderScale(2.0f).setShowRing(true).setSoundLoop(WDSoundEvents.SHIMMER.value());
-    public static final OfferingTemplate DUNGEON_KEY_EMERALD = createItem("DUNGEON_KEY", ItemTemplateRegistry.DUNGEON_KEY, OVERWORLD, 0, 1.0f).setShowRing(true).setCostItem(Items.EMERALD,64);
+
+    //region Village
+    public static final OfferingTemplate VILLAGE_DUNGEON_KEY = createItem("VILLAGE_DUNGEON_KEY", ItemTemplateRegistry.DUNGEON_KEY, OVERWORLD, 0, 1.0f).setShowRing(true).setCostItem(Items.EMERALD,888);
+    public static final OfferingTemplate VILLAGE_BLAZE_RODS = createItem("VILLAGE_BLAZE_RODS", ItemTemplateRegistry.BLAZE_ROD, NETHER, 4, 1.5f).setCostItem(Items.EMERALD,8);
+    public static final OfferingTemplate VILLAGE_ENDER_PEARLS = createItem("VILLAGE_ENDER_PEARLS", ItemTemplateRegistry.ENDER_PEARL, END, 4, 1.5f).setCostItem(Items.EMERALD,8);
+    public static final OfferingTemplate VILLAGE_COAL = createItem("VILLAGE_COAL",ItemTemplateRegistry.COAL, OVERWORLD, 2, 1.5f).setCostItem(Items.EMERALD,4);
+    public static final OfferingTemplate VILLAGE_CHARCOAL = createItem("VILLAGE_CHARCOAL", ItemTemplateRegistry.CHARCOAL, OVERWORLD, 2, 1.5f).setCostItem(Items.EMERALD,8);
+    public static final OfferingTemplate VILLAGE_OAK_LOGS = createItem("VILLAGE_OAK_LOGS", ItemTemplateRegistry.OAK_LOGS, OVERWORLD, 2, 1.5f).setCostItem(Items.EMERALD,8);
+    public static final OfferingTemplate VILLAGE_STONE_PICKAXE = createItem("VILLAGE_STONE_PICKAXE", ItemTemplateRegistry.STONE_PICKAXE, OVERWORLD, 1, 1.0f).setCostItem(Items.EMERALD,4);
+    public static final OfferingTemplate VILLAGE_IRON_PICKAXE = createItem("VILLAGE_IRON_PICKAXE", ItemTemplateRegistry.IRON_PICKAXE, OVERWORLD, 6, 1.5f).setCostItem(Items.EMERALD,8);
+    public static final OfferingTemplate VILLAGE_STONE_SHOVEL = createItem("VILLAGE_STONE_SHOVEL", ItemTemplateRegistry.STONE_SHOVEL, OVERWORLD, 1, 1.0f).setCostItem(Items.EMERALD,2);
+    public static final OfferingTemplate VILLAGE_GOLD_INGOTS = createItem("VILLAGE_GOLD_INGOTS", ItemTemplateRegistry.GOLD_INGOTS, OVERWORLD, 5, 1.5f).setCostItem(Items.EMERALD,8);
+    public static final OfferingTemplate VILLAGE_DIAMOND = createItem("VILLAGE_DIAMOND", ItemTemplateRegistry.DIAMOND, OVERWORLD, 8, 1.5f).setCostItem(Items.EMERALD,8);
+    public static final OfferingTemplate VILLAGE_REDSTONE = createItem("VILLAGE_REDSTONE", ItemTemplateRegistry.REDSTONE, OVERWORLD, 3, 1.5f).setCostItem(Items.EMERALD,8);
+    public static final OfferingTemplate VILLAGE_ELYTRA = createItem("VILLAGE_ELYTRA", ItemTemplateRegistry.ELYTRA, END, 16, 1.5f).setCostItem(Items.EMERALD,24);
+    public static final OfferingTemplate VILLAGE_DIAMOND_AXE = createItem("VILLAGE_DIAMOND_AXE", ItemTemplateRegistry.DIAMOND_AXE, OVERWORLD, 16, 1.5f).setCostItem(Items.EMERALD,16);
+    public static final OfferingTemplate VILLAGE_RAW_IRON = createItem("VILLAGE_RAW_IRON", ItemTemplateRegistry.IRON_RAW, OVERWORLD, 5, 1.5f).setCostItem(Items.EMERALD,5);
+    public static final OfferingTemplate VILLAGE_ARROWS = createItem("VILLAGE_ARROWS", ItemTemplateRegistry.ARROWS, OVERWORLD, 4, 1.5f).setCostItem(Items.EMERALD,4);
+    public static final OfferingTemplate VILLAGE_STEAKS = createItem("VILLAGE_STEAKS", ItemTemplateRegistry.COOKED_BEEF, OVERWORLD, 4, 1.5f).setCostItem(Items.EMERALD,4);
+    public static final OfferingTemplate VILLAGE_BAKED_POTATOES = createItem("VILLAGE_BAKED_POTATOES", ItemTemplateRegistry.BAKED_POTATOES, OVERWORLD, 4, 1.5f).setCostItem(Items.EMERALD,4);
+    public static final OfferingTemplate VILLAGE_IRON_INGOTS = createItem("VILLAGE_IRON_INGOTS", ItemTemplateRegistry.IRON_INGOTS, OVERWORLD, 6, 1.5f).setCostItem(Items.EMERALD,6);
+    public static final OfferingTemplate VILLAGE_LEATHER = createItem("VILLAGE_LEATHER", ItemTemplateRegistry.LEATHER, OVERWORLD, 4, 1.5f).setCostItem(Items.EMERALD,4);
+    public static final OfferingTemplate VILLAGE_SWORD_DAMAGE = createPerk("VILLAGE_SWORD_DAMAGE", PerkRegistry.SWORD_DAMAGE, OVERWORLD, 20, 1.5f).setCostItem(Items.EMERALD,20);
+    public static final OfferingTemplate VILLAGE_AXE_DAMAGE = createPerk("VILLAGE_AXE_DAMAGE", PerkRegistry.AXE_DAMAGE, OVERWORLD, 20, 1.5f).setCostItem(Items.EMERALD,20);
+    public static final OfferingTemplate VILLAGE_BOW_DAMAGE = createPerk("VILLAGE_BOW_DAMAGE", PerkRegistry.BOW_DAMAGE, OVERWORLD, 20, 1.5f).setCostItem(Items.EMERALD,20);
+    public static final OfferingTemplate VILLAGE_EXTRA_LIFE = createPerk("VILLAGE_EXTRA_LIFE", PerkRegistry.EXTRA_LIFE, OVERWORLD, 20, 1.5f).setCostItem(Items.EMERALD,20);
+    public static final OfferingTemplate VILLAGE_FIRE_RESIST = createPerk("VILLAGE_FIRE_RESIST", PerkRegistry.FIRE_RESIST, OVERWORLD, 20, 1.5f).setCostItem(Items.EMERALD,20);
+    public static final OfferingTemplate VILLAGE_STRENGTH = createPerk("VILLAGE_STRENGTH", PerkRegistry.STRENGTH, OVERWORLD, 20, 1.5f).setCostItem(Items.EMERALD,20);
+    public static final OfferingTemplate VILLAGE_NIGHT_VISION = createPerk("VILLAGE_NIGHT_VISION", PerkRegistry.NIGHT_VISION, OVERWORLD, 20, 1.5f).setCostItem(Items.EMERALD,20);
+    public static final OfferingTemplate VILLAGE_HEALTH_BOOST = createPerk("VILLAGE_HEALTH_BOOST", PerkRegistry.HEALTH_BOOST, OVERWORLD, 20, 1.5f).setCostItem(Items.EMERALD,20);
+    public static final OfferingTemplate VILLAGE_MOVEMENT_SPEED = createPerk("VILLAGE_MOVEMENT_SPEED", PerkRegistry.MOVEMENT_SPEED, OVERWORLD, 20, 1.5f).setCostItem(Items.EMERALD,20);
+    public static final OfferingTemplate VILLAGE_DIG_SPEED = createPerk("VILLAGE_DIG_SPEED", PerkRegistry.DIG_SPEED, OVERWORLD, 20, 1.5f).setCostItem(Items.EMERALD,20);
+    public static final OfferingTemplate VILLAGE_BIG_ABSORPTION = createPerk("VILLAGE_BIG_ABSORPTION", PerkRegistry.BIG_ABSORPTION, OVERWORLD, 20, 1.5f).setCostItem(Items.EMERALD,20);
+    public static final OfferingTemplate VILLAGE_ATTACK_SPEED = createPerk("VILLAGE_ATTACK_SPEED", PerkRegistry.ATTACK_SPEED, OVERWORLD, 20, 1.5f).setCostItem(Items.EMERALD,20);
+    public static final OfferingTemplate VILLAGE_POISON_IMMUNITY = createPerk("VILLAGE_POISON_IMMUNITY", PerkRegistry.POISON_IMMUNITY, OVERWORLD, 20, 1.5f).setCostItem(Items.EMERALD,20);
+    public static final OfferingTemplate VILLAGE_STEP_HEIGHT = createPerk("VILLAGE_STEP_HEIGHT", PerkRegistry.STEP_HEIGHT, OVERWORLD, 20, 1.5f).setCostItem(Items.EMERALD,20);
+    public static final OfferingTemplate VILLAGE_DODGE = createPerk("VILLAGE_DODGE", PerkRegistry.DODGE, OVERWORLD, 20, 1.5f).setCostItem(Items.EMERALD,20);
+    public static final OfferingTemplate VILLAGE_ONE_PUNCH_MAN = createPerk("VILLAGE_ONE_PUNCH_MAN", PerkRegistry.ONE_PUNCH_MAN, OVERWORLD, 20, 1.5f).setCostItem(Items.EMERALD,20);
+    public static final OfferingTemplate VILLAGE_EXPLOSION_IMMUNITY = createPerk("VILLAGE_EXPLOSION_IMMUNITY", PerkRegistry.EXPLOSION_IMMUNITY, OVERWORLD, 20, 1.5f).setCostItem(Items.EMERALD,20);
+    public static final OfferingTemplate VILLAGE_BIG_RED_BUTTON = createPerk("VILLAGE_BIG_RED_BUTTON", PerkRegistry.BIG_RED_BUTTON, OVERWORLD, 20, 1.5f).setCostItem(Items.EMERALD,20);
+    public static final OfferingTemplate VILLAGE_CRITICAL_HIT = createPerk("VILLAGE_CRITICAL_HIT", PerkRegistry.CRITICAL_HIT, OVERWORLD, 20, 1.5f).setCostItem(Items.EMERALD,20);
+    //endregion
+
 
     public static final OfferingTemplate FREE_SWORD_DAMAGE = createPerk("FREE_SWORD_DAMAGE", PerkRegistry.SWORD_DAMAGE, OVERWORLD, 0, 1);
     public static final OfferingTemplate FREE_AXE_DAMAGE = createPerk("FREE_AXE_DAMAGE", PerkRegistry.AXE_DAMAGE, OVERWORLD, 0, 1);

@@ -74,8 +74,46 @@ public class OfferingTemplatePoolRegistry {
             .add(MOVEMENT_SPEED_END, 1);
     public static final WeightedPool<OfferingTemplate> PRICELESS_BASIC_POOL = create("PRICELESS_BASIC_POOL");
 
-    public static final WeightedPool<OfferingTemplate> VILLAGE_STORE_POOL = copyOf(CHEAP_BASIC_POOL,"VILLAGE_STORE_POOL")
-            .add(DUNGEON_KEY_EMERALD,5);
+    public static final WeightedPool<OfferingTemplate> VILLAGE_STORE_POOL = create("VILLAGE_STORE_POOL")
+            .add(VILLAGE_BLAZE_RODS,1)
+            .add(VILLAGE_ENDER_PEARLS,1)
+            .add(VILLAGE_COAL,1)
+            .add(VILLAGE_CHARCOAL,1)
+            .add(VILLAGE_OAK_LOGS,1)
+            .add(VILLAGE_STONE_PICKAXE,1)
+            .add(VILLAGE_IRON_PICKAXE,1)
+            .add(VILLAGE_STONE_SHOVEL,1)
+            .add(VILLAGE_GOLD_INGOTS,1)
+            .add(VILLAGE_DIAMOND,1)
+            .add(VILLAGE_REDSTONE,1)
+            .add(VILLAGE_ELYTRA,1)
+            .add(VILLAGE_DIAMOND_AXE,1)
+            .add(VILLAGE_RAW_IRON,1)
+            .add(VILLAGE_ARROWS,1)
+            .add(VILLAGE_STEAKS,1)
+            .add(VILLAGE_BAKED_POTATOES,1)
+            .add(VILLAGE_IRON_INGOTS,1)
+            .add(VILLAGE_LEATHER,1)
+            .add(VILLAGE_SWORD_DAMAGE,1)
+            .add(VILLAGE_AXE_DAMAGE,1)
+            .add(VILLAGE_BOW_DAMAGE,1)
+            .add(VILLAGE_EXTRA_LIFE,1)
+            .add(VILLAGE_FIRE_RESIST,1)
+            .add(VILLAGE_STRENGTH,1)
+            .add(VILLAGE_NIGHT_VISION,1)
+            .add(VILLAGE_HEALTH_BOOST,1)
+            .add(VILLAGE_MOVEMENT_SPEED,1)
+            .add(VILLAGE_DIG_SPEED,1)
+            .add(VILLAGE_BIG_ABSORPTION,1)
+            .add(VILLAGE_ATTACK_SPEED,1)
+            .add(VILLAGE_POISON_IMMUNITY,1)
+            .add(VILLAGE_STEP_HEIGHT,1)
+            .add(VILLAGE_DODGE,1)
+            .add(VILLAGE_ONE_PUNCH_MAN,1)
+            .add(VILLAGE_EXPLOSION_IMMUNITY,1)
+            .add(VILLAGE_BIG_RED_BUTTON,1)
+            .add(VILLAGE_CRITICAL_HIT,1)
+            ;
 
     public static WeightedPool<OfferingTemplate> create(String name){
         WeightedPool<OfferingTemplate> offeringPool = new WeightedPool<OfferingTemplate>().setName(name);
@@ -88,4 +126,5 @@ public class OfferingTemplatePoolRegistry {
         OFFERING_TEMPLATE_POOL_REGISTRY.add(offeringPool);
         return offeringPool;
     }
+
 }
