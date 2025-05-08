@@ -11,6 +11,7 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalPr
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateOrientation;
 import com.danielkkrafft.wilddungeons.dungeon.registries.LootTableRegistry;
+import com.danielkkrafft.wilddungeons.dungeon.registries.OfferingTemplateRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.entity.Offering;
@@ -453,6 +454,17 @@ public class DungeonRoom {
     }
 
     public void processDataMarker(BlockPos pos, String metadata) {
+        String[] split = metadata.split(":");
+        if (split.length > 1) {
+            if (split[0].equals("offering")) {
+                if (this.clear) return;
+                this.getBranch().getFloor().getLevel().setBlock(pos, Blocks.AIR.defaultBlockState(), 130);
+                Offering offering = OfferingTemplateRegistry.OFFERING_TEMPLATE_REGISTRY.get(split[1]).asOffering(this.getBranch().getFloor().getLevel());
+                offering.setPos(pos.getBottomCenter());
+                this.getBranch().getFloor().getLevel().addFreshEntity(offering);
+                this.offeringUUIDs.add(offering.getStringUUID());
+            }
+        }
     }
 
     public BlockPos getSpawnPoint(ServerLevel level) {
