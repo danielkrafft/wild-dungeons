@@ -3,13 +3,11 @@ package com.danielkkrafft.wilddungeons.entity.model;
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.entity.BusinessGolem;
 import net.minecraft.client.model.HierarchicalModel;
-import net.minecraft.client.model.IronGolemModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.animal.IronGolem;
 
 public class BusinessGolemModel<T extends BusinessGolem> extends HierarchicalModel<T> {
     public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(WildDungeons.rl("business_golem"), "main");

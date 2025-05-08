@@ -15,8 +15,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-import static net.minecraft.world.level.block.Blocks.COBBLESTONE;
-
 public class DungeonMaterial implements DungeonRegistration.DungeonComponent {
     public String name;
     public Map<BlockSetting.BlockType, ArrayList<WeightedPool<BlockState>>> blockStates = new HashMap<>();
