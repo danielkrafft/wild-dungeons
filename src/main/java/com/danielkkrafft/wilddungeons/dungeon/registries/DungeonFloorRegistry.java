@@ -104,7 +104,7 @@ public class DungeonFloorRegistry {
             )
             .set(HierarchicalProperty.PRE_GEN_PROCESSING_STEPS, List.of(new AddBedrockShellStep()))
             .set(HierarchicalProperty.ENEMY_TABLE, EnemyTableRegistry.VILLAGE_ENEMY_TABLE)
-            .setOrigin(new BlockPos(0,100,0));
+            .setOrigin(new BlockPos(0,30,0));
 
     public static DungeonFloorTemplate copyOf(DungeonFloorTemplate floor, String name) {
         DungeonFloorTemplate copy = DungeonFloorTemplate.copyOf(floor, name);
