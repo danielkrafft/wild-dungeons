@@ -3,7 +3,6 @@ package com.danielkkrafft.wilddungeons.dungeon.registries;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.DungeonLayout;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonMaterial;
-import com.danielkkrafft.wilddungeons.dungeon.components.process.AddEmeraldPiles;
 import com.danielkkrafft.wilddungeons.dungeon.components.process.CreateBorderStep;
 import com.danielkkrafft.wilddungeons.dungeon.components.process.SurroundingColumnStep;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonBranchTemplate;
@@ -204,7 +203,6 @@ public class DungeonBranchRegistry {
             .set(FLOOR_DISTANCE_WEIGHT, 0)
             .set(CHEST_SPAWN_CHANCE, 1.0)
             .set(PRE_GEN_PROCESSING_STEPS, List.of(new CreateBorderStep()))
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)))
             .setRootOriginBranchIndex(4);
     public static final DungeonBranchTemplate VILLAGE_METRO_STREETS_2_BRANCH = create("VILLAGE_METRO_STREETS_2_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
@@ -218,7 +216,6 @@ public class DungeonBranchRegistry {
             .set(BRANCH_DISTANCE_WEIGHT, -50)
             .set(CHEST_SPAWN_CHANCE, 1.0)
             .set(PRE_GEN_PROCESSING_STEPS, List.of(new CreateBorderStep()))
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)))
             .set(FLOOR_DISTANCE_WEIGHT, 0);
 
     public static final DungeonBranchTemplate VILLAGE_METRO_ENDING_BRANCH = create("VILLAGE_METRO_ENDING_BRANCH")
@@ -241,14 +238,14 @@ public class DungeonBranchRegistry {
                     .addSimple(VILLAGE_METRO_TOWER_STAIRS)
                     .add(VILLAGE_TOWER_FLOORS, 1)
                     .addSimple(VILLAGE_METRO_TOWER_STAIRS)
-                    .add(VILLAGE_TOWER_CEO_OFFICES,1)
+                    .addSimple(VILLAGE_METRO_MOBFIA_TWR_CEO_OFFICE)
             )
             .set(MATERIAL, VILLAGE_MATERIAL_POOL)
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(5)))
             .setLimitedRooms(new HashMap<>(Map.of(
                     VILLAGE_METRO_CHLTER121_TWR_CUBICLES,2,
                     VILLAGE_METRO_CHLTER121_TWR_LIBRARY,2,
                     VILLAGE_METRO_CHLTER121_TWR_SEVERANCE,2,
+                    VILLAGE_METRO_MOBFIA_TWR_OFFICE,2,
                     VILLAGE_METRO_FLYINGNOKK_TWR_SEVERANCE_HALLS,2,
                     VILLAGE_METRO_FLYINGNOKK_TWR_JAIL,2,
                     VILLAGE_METRO_FLYINGNOKK_TWR_LOBBY,2,

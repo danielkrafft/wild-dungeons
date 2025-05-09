@@ -12,11 +12,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Explosion;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -64,19 +62,23 @@ public class EmeraldPileBlock extends Block {
         BlockState blockstate = context.getLevel().getBlockState(context.getClickedPos());
         if (blockstate.is(this)) {
             int count = blockstate.getValue(EMERALD_COUNT)+1;
-            int model = switch (count) {
-                case 1 -> 1;
-                case 2 -> 2;
-                case 3, 4 -> 3;
-                case 5, 6, 7, 8, 9 -> 4;
-                case 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 -> 5;
-                case 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39 -> 6;
-                default -> 7;
-            };
+            int model = getModel(count);
             return blockstate.setValue(MODEL, model).setValue(EMERALD_COUNT, Math.min(MAX_EMERALD_COUNT, count));
         } else {
             return super.getStateForPlacement(context).setValue(FACING, context.getHorizontalDirection());
         }
+    }
+
+    private static int getModel(int count){
+        return switch (count) {
+            case 1 -> 1;
+            case 2 -> 2;
+            case 3, 4 -> 3;
+            case 5, 6, 7, 8, 9 -> 4;
+            case 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 -> 5;
+            case 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39 -> 6;
+            default -> 7;
+        };
     }
 
     protected boolean canBeReplaced(@NotNull BlockState state, BlockPlaceContext useContext) {
@@ -162,17 +164,27 @@ public class EmeraldPileBlock extends Block {
         }
     }
 
+    @Override
+    protected BlockState rotate(BlockState state, Rotation rotation) {
+        Direction direction = state.getValue(FACING);
+        switch (rotation) {
+            case CLOCKWISE_90 -> direction = direction.getClockWise();
+            case COUNTERCLOCKWISE_90 -> direction = direction.getCounterClockWise();
+            case CLOCKWISE_180 -> direction = direction.getOpposite();
+            default -> {
+            }
+        }
+        return state.setValue(FACING, direction);
+    }
+
+    @Override
+    public BlockState rotate(BlockState state, LevelAccessor level, BlockPos pos, Rotation direction) {
+        return state.setValue(FACING, direction.rotate(state.getValue(FACING)));
+    }
+
     public static BlockState getRandomPile(){
         int count = (int) (Math.random() * MAX_EMERALD_COUNT);
-        int model = switch (count) {
-            case 1 -> 1;
-            case 2 -> 2;
-            case 3, 4 -> 3;
-            case 5, 6, 7, 8, 9 -> 4;
-            case 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 -> 5;
-            case 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39 -> 6;
-            default -> 7;
-        };
+        int model = getModel(count);
         return WDBlocks.EMERALD_PILE.get().defaultBlockState().setValue(EMERALD_COUNT,count).setValue(MODEL,model);
     }
 }
