@@ -50,7 +50,7 @@ public class OfferingTemplateRegistry {
     public static final OfferingTemplate DUNGEON_KEY = createItem("DUNGEON_KEY", ItemTemplateRegistry.DUNGEON_KEY, OVERWORLD, 0, 1.0f).setRenderScale(2.0f).setShowRing(true).setSoundLoop(WDSoundEvents.SHIMMER.value());
 
     //region Village
-    public static final OfferingTemplate VILLAGE_DUNGEON_KEY = createItem("VILLAGE_DUNGEON_KEY", ItemTemplateRegistry.DUNGEON_KEY, OVERWORLD, 0, 1.0f).setShowRing(true).setCostItem(Items.EMERALD,888);
+    public static final OfferingTemplate VILLAGE_DUNGEON_KEY = createItem("VILLAGE_DUNGEON_KEY", ItemTemplateRegistry.DUNGEON_KEY, OVERWORLD, 0, 1.0f).setShowRing(true).setCostItem(Items.EMERALD,777);
     public static final OfferingTemplate VILLAGE_BLAZE_RODS = createItem("VILLAGE_BLAZE_RODS", ItemTemplateRegistry.BLAZE_ROD, NETHER, 4, 1.5f).setCostItem(Items.EMERALD,8);
     public static final OfferingTemplate VILLAGE_ENDER_PEARLS = createItem("VILLAGE_ENDER_PEARLS", ItemTemplateRegistry.ENDER_PEARL, END, 4, 1.5f).setCostItem(Items.EMERALD,8);
     public static final OfferingTemplate VILLAGE_COAL = createItem("VILLAGE_COAL",ItemTemplateRegistry.COAL, OVERWORLD, 2, 1.5f).setCostItem(Items.EMERALD,4);

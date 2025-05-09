@@ -26,7 +26,7 @@ public class EnemyTableRegistry {
     public static final WeightedTable<TargetTemplate> VILLAGE_ENEMY_TABLE = create("VILLAGE_ENEMY_TABLE")
             .add(VILLAGE_ENEMY_POOL_EASY, 1)
             .add(VILLAGE_ENEMY_POOL_MEDIUM, 5)
-            ;
+            .add(VILLAGE_ENEMY_POOL_HARD, 15);
 
     public static final WeightedTable<TargetTemplate> VILLAGER_CEO_ARENA = create("VILLAGE_BOSS_TABLE")
             .add(new WeightedPool<TargetTemplate>().add(BUSINESS_CEO, 1), 1);

@@ -57,23 +57,30 @@ public class EnemyPoolRegistry {
             .add(MUTANT_BOGGED, 1)
             .add(BREEZE_GOLEM, 1);
 
-    public static final WeightedPool<DungeonRegistration.TargetTemplate> VILLAGE_ENEMY_POOL_EASY = create("VILLAGE_ENEMY_POOL")
-            .add(BUSINESS_VINDICATOR, 3)
-            .add(VINDICATOR, 2)
-            .add(PILLAGER, 2)
-            .add(EMERALD_WISP, 1)
-            .add(BUSINESS_GOLEM, 1)
-            ;
-    public static final WeightedPool<DungeonRegistration.TargetTemplate> VILLAGE_ENEMY_POOL_MEDIUM = create("VILLAGE_ENEMY_POOL")
+    public static final WeightedPool<DungeonRegistration.TargetTemplate> VILLAGE_ENEMY_POOL_EASY = create("VILLAGE_ENEMY_POOL_EASY")
             .add(BUSINESS_VINDICATOR, 2)
-            .add(BUSINESS_EVOKER, 2)
+            .add(VINDICATOR, 2)
+            .add(PILLAGER, 3)
+            .add(EMERALD_WISP, 3);
+
+    public static final WeightedPool<DungeonRegistration.TargetTemplate> VILLAGE_ENEMY_POOL_MEDIUM = create("VILLAGE_ENEMY_POOL_MEDIUM")
+            .add(BUSINESS_VINDICATOR, 2)
+            .add(VINDICATOR, 2)
+            .add(BUSINESS_GOLEM, 2)
+            .add(EMERALD_WISP, 2)
+            .add(LARGE_EMERALD_WISP, 1)
+            .add(WITCH, 2);
+
+    public static final WeightedPool<DungeonRegistration.TargetTemplate> VILLAGE_ENEMY_POOL_HARD = create("VILLAGE_ENEMY_POOL_HARD")
+            .add(BUSINESS_VINDICATOR, 1)
+            .add(BUSINESS_EVOKER, 1)
             .add(EVOKER, 1)
             .add(ILLUSIONER, 1)
             .add(BUSINESS_GOLEM, 2)
             .add(EMERALD_WISP, 1)
             .add(LARGE_EMERALD_WISP, 2)
-            .add(WITCH, 1)
-            ;
+            .add(RAVAGER, 1)
+            .add(WITCH, 1);
 
 
     public static WeightedPool<DungeonRegistration.TargetTemplate> create(String name) {
