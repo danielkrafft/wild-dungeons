@@ -2,6 +2,8 @@ package com.danielkkrafft.wilddungeons.dungeon.registries;
 
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.components.process.AddEmeraldPiles;
+import com.danielkkrafft.wilddungeons.dungeon.components.process.AddRandomVillagers;
+import com.danielkkrafft.wilddungeons.dungeon.components.process.AddVillagersOfProfession;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.*;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
@@ -16,6 +18,7 @@ import static com.danielkkrafft.wilddungeons.dungeon.components.template.Dungeon
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.*;
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper.EMPTY_BLOCK_POS;
 import static com.mojang.datafixers.util.Pair.of;
+import static net.minecraft.world.entity.npc.VillagerProfession.*;
 
 
 public class DungeonRoomRegistry { //TODO this should probably be a json/nbt based data oriented approach, with a built-in editor item. This is already getting extremely difficult to maintain
@@ -243,95 +246,95 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
             .set(BLOCKING_MATERIAL_INDEX, 2);
 
     public static final DungeonRoomTemplate VILLAGE_METRO_CHURCH = createSimple("village/metro/daniel/med/church")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddVillagersOfProfession(CLERIC,1,2)));
     public static final DungeonRoomTemplate VILLAGE_METRO_DORM_TOWER = createSimple("village/metro/daniel/med/dorm_tower")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_ILLAGER_TOWER = createSimple("village/metro/daniel/med/illager_tower")
             .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_LIBRARY = createSimple("village/metro/daniel/med/library")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddVillagersOfProfession(LIBRARIAN,1,2)));
     public static final DungeonRoomTemplate VILLAGE_METRO_LUMBERYARD = createSimple("village/metro/daniel/med/lumber_yard")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_SMITHERY = createSimple("village/metro/daniel/med/smithery")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddVillagersOfProfession(TOOLSMITH,1,2), new AddVillagersOfProfession(WEAPONSMITH,1,2), new AddVillagersOfProfession(ARMORER,1,2)));
     public static final DungeonRoomTemplate VILLAGE_METRO_TANNERY = createSimple("village/metro/daniel/med/tannery")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddVillagersOfProfession(LEATHERWORKER,1,2)));
     public static final DungeonRoomTemplate VILLAGE_METRO_VERTICAL_FARM = createSimple("village/metro/daniel/med/vertical_farm")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddVillagersOfProfession(FARMER,1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_COTTAGE = createSimple("village/metro/daniel/med/cottage")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_MED_1 = createSimple("village/metro/awseme/med/1")//todo these could all be named, but they are all just... houses
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_MED_2 = createSimple("village/metro/awseme/med/2")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_MED_3 = createSimple("village/metro/awseme/med/3")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_MED_4 = createSimple("village/metro/awseme/med/4")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_MED_5 = createSimple("village/metro/awseme/med/5")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_MED_5B = createSimple("village/metro/awseme/med/5b")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_MED_6 = createSimple("village/metro/awseme/med/6")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_MED_7 = createSimple("village/metro/awseme/med/7")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_MED_8 = createSimple("village/metro/awseme/med/8")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_MED_9 = createSimple("village/metro/awseme/med/9")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_MED_10 = createSimple("village/metro/awseme/med/10")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_MED_11 = createSimple("village/metro/awseme/med/11")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_MED_12 = createSimple("village/metro/awseme/med/12")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_MED_13 = createSimple("village/metro/awseme/med/13")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_MED_14 = createSimple("village/metro/awseme/med/14")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_MED_15 = createSimple("village/metro/awseme/med/15")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_MED_16 = createSimple("village/metro/awseme/med/16")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_MED_17 = createSimple("village/metro/awseme/med/17")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_MED_18 = createSimple("village/metro/awseme/med/18")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_MED_19 = createSimple("village/metro/awseme/med/19")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_MED_20 = createSimple("village/metro/awseme/med/20")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_MED_CAVE = createSimple("village/metro/awseme/med/cave")
             .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_MED_FOUNTAIN = createSimple("village/metro/awseme/med/fountain")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_MED_HOLLOW_HILL = createSimple("village/metro/awseme/med/hollow_hill")
             .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_MED_QUARRY = createSimple("village/metro/awseme/med/quarry")
             .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_AWSEME_MED_STONECUTTER = createSimple("village/metro/awseme/med/stonecutter")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddVillagersOfProfession(MASON,1,2)));
     public static final DungeonRoomTemplate VILLAGE_METRO_AIYQE_MED_BONFIRE = createSimple("village/metro/aiyqe/med/bonfire")
             .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_AIYQE_MED_DEEPSLATE_MINE = createSimple("village/metro/aiyqe/med/deepslate_mine")
             .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_AIYQE_MED_SALMON_BRIDGE = createSimple("village/metro/aiyqe/med/salmon_bridge")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_AIYQE_MED_TRADING_POST = createSimple("village/metro/aiyqe/med/trading_post")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(2,4)));
     public static final DungeonRoomTemplate VILLAGE_METRO_ARCANIST_MED_DEAD_TREE = createSimple("village/metro/arcanist/med/dead_tree")
             .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_ARCANIST_MED_FISHING_POND = createSimple("village/metro/arcanist/med/fishing_pond")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddVillagersOfProfession(FISHERMAN,1,2)));
     public static final DungeonRoomTemplate VILLAGE_METRO_ARCANIST_MED_SAFE_HOUSE = createSimple("village/metro/arcanist/med/safe_house")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_ARCANIST_MED_WITCH_TOWER = createSimple("village/metro/arcanist/med/witch_tower")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_MED_BEEKEEPERS = createSimple("village/metro/chlter121/med/beekeepers")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddVillagersOfProfession(FARMER,1,2)));
     public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_MED_FOOD_COURT = createSimple("village/metro/chlter121/med/food_court")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_MED_FOUR_PARKOUR = createSimple("village/metro/chlter121/med/four_parkour")
             .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_MED_GRAVEYARD = createSimple("village/metro/chlter121/med/graveyard")
@@ -341,19 +344,19 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_MED_HEDGE_MAZE = createSimple("village/metro/chlter121/med/hedge_maze")
             .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_MED_HOUSE = createSimple("village/metro/chlter121/med/house")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_MED_HOUSE_ARCHERY = createSimple("village/metro/chlter121/med/house_archery")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddVillagersOfProfession(FLETCHER,1,2)));
     public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_MED_HOUSE_CHERRY = createSimple("village/metro/chlter121/med/house_cherry")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_MED_HOUSE_CONSTRUCTION = createSimple("village/metro/chlter121/med/house_construction")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddVillagersOfProfession(MASON,1,2)));
     public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_MED_HOUSE_REEDS = createSimple("village/metro/chlter121/med/house_reeds")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_MED_MARKET_STALLS = createSimple("village/metro/chlter121/med/market_stalls")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_MED_PLAZA = createSimple("village/metro/chlter121/med/plaza")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_MED_RUINED_HOUSE_1 = createSimple("village/metro/chlter121/med/ruined_house_1")
             .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_MED_RUINED_HOUSE_2 = createSimple("village/metro/chlter121/med/ruined_house_2")
@@ -361,67 +364,67 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate VILLAGE_METRO_ENDER_MED_BRICK_TOWER = createSimple("village/metro/ender/med/brick_tower")
             .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_ENDER_MED_FARM = createSimple("village/metro/ender/med/farm")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddVillagersOfProfession(FARMER,1,2)));
     public static final DungeonRoomTemplate VILLAGE_METRO_ENDER_MED_FOUNTAIN = createSimple("village/metro/ender/med/fountain")
             .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_ENDER_MED_HOUSE_1 = createSimple("village/metro/ender/med/house_1")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_ENDER_MED_HOUSE_2 = createSimple("village/metro/ender/med/house_2")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_ENDER_MED_HOUSE_3 = createSimple("village/metro/ender/med/house_3")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_ENDER_MED_HOUSE_4 = createSimple("village/metro/ender/med/house_4")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_ENDER_MED_HOUSE_5 = createSimple("village/metro/ender/med/house_5")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_ENDER_MED_HOUSE_6 = createSimple("village/metro/ender/med/house_6")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_ENDER_MED_MARKET_STALLS = createSimple("village/metro/ender/med/market_stalls")
             .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_ENDER_MED_OASIS = createSimple("village/metro/ender/med/oasis")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_ENDER_MED_PARKOUR = createSimple("village/metro/ender/med/parkour")
             .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_ENDER_MED_POND = createSimple("village/metro/ender/med/pond")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_CHURCH = createSimple("village/metro/flyingnokk/med/church")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddVillagersOfProfession(CLERIC,1,2)));
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_CRYSTAL_TOWER = createSimple("village/metro/flyingnokk/med/crystal_tower")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddVillagersOfProfession(CLERIC,1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_DUPLEX = createSimple("village/metro/flyingnokk/med/duplex")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_EMERALD_ARCH = createSimple("village/metro/flyingnokk/med/emerald_arch")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_FISHING_POND = createSimple("village/metro/flyingnokk/med/fishing_pond")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddVillagersOfProfession(FISHERMAN,1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_GARDEN = createSimple("village/metro/flyingnokk/med/garden")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_GRAVEYARD = createSimple("village/metro/flyingnokk/med/graveyard")
             .set(ENEMY_TABLE, EnemyTableRegistry.VILLAGE_GRAVEYARD);
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_HOUSE_1 = createSimple("village/metro/flyingnokk/med/house_1")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_HOUSE_2 = createSimple("village/metro/flyingnokk/med/house_2")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_HOUSE_3 = createSimple("village/metro/flyingnokk/med/house_3")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_HOUSE_4 = createSimple("village/metro/flyingnokk/med/house_4")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_HOUSE_FARM = createSimple("village/metro/flyingnokk/med/house_farm")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddVillagersOfProfession(FARMER,1,2)));
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_HOUSE_FARM_RUINED = createSimple("village/metro/flyingnokk/med/house_farm_ruined")
             .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_LIBRARY = createSimple("village/metro/flyingnokk/med/library")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddVillagersOfProfession(LIBRARIAN,1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_MARKET_STALLS = createSimple("village/metro/flyingnokk/med/market_stalls")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_PLAZA = createSimple("village/metro/flyingnokk/med/plaza")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddRandomVillagers(1,3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_REDSTONE_SHOP = createSimple("village/metro/flyingnokk/med/redstone_shop")
             .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_SMITHERY = createSimple("village/metro/flyingnokk/med/smithery")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddVillagersOfProfession(WEAPONSMITH,1,2), new AddVillagersOfProfession(TOOLSMITH,1,2), new AddVillagersOfProfession(ARMORER,1,2)));
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_STABLES = createSimple("village/metro/flyingnokk/med/stables")
-            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3), new AddVillagersOfProfession(BUTCHER,1,2)));
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_TOWER = createSimple("village/metro/flyingnokk/med/tower")
             .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(3)));
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_MED_WELL_RUINED = createSimple("village/metro/flyingnokk/med/well_ruined")
