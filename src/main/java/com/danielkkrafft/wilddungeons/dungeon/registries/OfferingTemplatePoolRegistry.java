@@ -108,11 +108,11 @@ public class OfferingTemplatePoolRegistry {
             .add(VILLAGE_ATTACK_SPEED,1)
             .add(VILLAGE_POISON_IMMUNITY,1)
             .add(VILLAGE_STEP_HEIGHT,1)
-            .add(VILLAGE_DODGE,1)
-            .add(VILLAGE_ONE_PUNCH_MAN,1)
-            .add(VILLAGE_EXPLOSION_IMMUNITY,1)
-            .add(VILLAGE_BIG_RED_BUTTON,1)
-            .add(VILLAGE_CRITICAL_HIT,1)
+//            .add(VILLAGE_DODGE,1)//todo not implemented
+//            .add(VILLAGE_ONE_PUNCH_MAN,1)
+//            .add(VILLAGE_EXPLOSION_IMMUNITY,1)
+//            .add(VILLAGE_BIG_RED_BUTTON,1)
+//            .add(VILLAGE_CRITICAL_HIT,1)
             ;
 
     public static WeightedPool<OfferingTemplate> create(String name){

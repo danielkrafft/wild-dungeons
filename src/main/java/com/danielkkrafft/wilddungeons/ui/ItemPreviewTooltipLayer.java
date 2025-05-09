@@ -31,7 +31,7 @@ import java.util.List;
 @EventBusSubscriber(modid = WildDungeons.MODID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
 public class ItemPreviewTooltipLayer implements LayeredDraw.Layer {
     public static final ItemPreviewTooltipLayer INSTANCE = new ItemPreviewTooltipLayer();
-    private static final AnimatedTexture RIGHT_CLICK_ANIMATION_TEST = AnimatedTexture.auto("textures/gui/sprites/right_click", 2, 10);
+    private static final AnimatedTexture RIGHT_CLICK_ANIMATION = AnimatedTexture.auto("textures/gui/sprites/right_click", 2, 10);
     private static final float LERP_FACTOR = 0.1f;
 
     private Entity previewEntity;
@@ -63,8 +63,8 @@ public class ItemPreviewTooltipLayer implements LayeredDraw.Layer {
             }
             case PERK -> {
                 List<Component> list = List.of(
-                        Component.translatable("wilddungeons.perk." + offering.getPerk().name()).withStyle(ChatFormatting.BOLD).withStyle(ChatFormatting.GOLD),
-                        Component.translatable("wilddungeons.perk." + offering.getPerk().name() + ".desc")
+                        Component.translatable("dungeon.perk." + offering.getPerk().name()).withStyle(ChatFormatting.BOLD).withStyle(ChatFormatting.GOLD),
+                        Component.translatable("dungeon.perk." + offering.getPerk().name() + ".desc")
                 );
                 guiGraphics.renderComponentTooltip(Minecraft.getInstance().font, list, pos.x, pos.y);
             }
@@ -80,7 +80,7 @@ public class ItemPreviewTooltipLayer implements LayeredDraw.Layer {
         if (!(hitResult instanceof EntityHitResult entityHitResult) || entityHitResult.getEntity() != offering) return;
 
         int x = guiGraphics.guiWidth() / 2, y = guiGraphics.guiHeight() / 2, size = 16;
-        ResourceLocation frameTexture = RIGHT_CLICK_ANIMATION_TEST.getCurrentFrame();
+        ResourceLocation frameTexture = RIGHT_CLICK_ANIMATION.getCurrentFrame();
 
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);

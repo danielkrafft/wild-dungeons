@@ -21,7 +21,9 @@ public class DungeonPerk {
 
     public void onCollect(boolean silent) {
         List<WDPlayer> players = getSession().getPlayers();
-        if (!silent) players.forEach(player -> player.getServerPlayer().sendSystemMessage(Component.translatable("dungeon.perk." + this.getTemplate().name()), true));
+        if (!silent) players.forEach(player -> {
+            player.getServerPlayer().sendSystemMessage(Component.translatable("dungeon.perk." + this.getTemplate().name() + ".desc"), true);
+        });
     }
 
     public void onDungeonEnter(WDPlayer wdPlayer) {}
