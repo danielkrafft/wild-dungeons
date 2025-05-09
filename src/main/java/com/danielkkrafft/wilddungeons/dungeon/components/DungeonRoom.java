@@ -566,8 +566,8 @@ public class DungeonRoom {
 
     public void onGenerated() {}
 
-    public void handlePostProcessing() {
-        List<PostProcessingStep> steps = this.getTemplate().get(POST_PROCESSING_STEPS);
+    public void handlePostProcessing(HierarchicalProperty<List<PostProcessingStep>> stepsProperty) {
+        List<PostProcessingStep> steps = this.getTemplate().get(stepsProperty);
         if (steps == null) return;
         for (PostProcessingStep step : steps) {
             step.handle(List.of(this));

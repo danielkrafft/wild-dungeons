@@ -9,8 +9,8 @@ import net.minecraft.world.level.chunk.LevelChunkSection;
 
 import java.util.List;
 
-public class PostProcessingStep {
-    public void handle(List<DungeonRoom> rooms) {}
+public abstract class PostProcessingStep {
+    public abstract void handle(List<DungeonRoom> rooms);
 
     public void setBlockFast(ServerLevel level, BlockPos pos, BlockState state) {
         ChunkAccess chunk = level.getChunk(pos);

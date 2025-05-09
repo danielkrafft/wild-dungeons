@@ -49,7 +49,8 @@ public class HierarchicalProperty<T> {
     public static final HierarchicalProperty<Integer> ROOM_TARGET_Y = new HierarchicalProperty<>(new TypeToken<>() {}, 128);
     public static final HierarchicalProperty<Integer> ROOM_GENERATION_RANDOMNESS = new HierarchicalProperty<>(new TypeToken<>() {}, 30);
     public static final HierarchicalProperty<Double> MATERIAL_NOISE = new HierarchicalProperty<>(new TypeToken<>() {}, 0.15);
-    public static final HierarchicalProperty<List<PostProcessingStep>> POST_PROCESSING_STEPS = new HierarchicalProperty<>(new TypeToken<>() {}, new ArrayList<>());
+    public static final HierarchicalProperty<List<PostProcessingStep>> PRE_GEN_PROCESSING_STEPS = new HierarchicalProperty<>(new TypeToken<>() {}, new ArrayList<>());
+    public static final HierarchicalProperty<List<PostProcessingStep>> POST_GEN_PROCESSING_STEPS = new HierarchicalProperty<>(new TypeToken<>() {}, new ArrayList<>());
 
 
     private final TypeToken<T> type;

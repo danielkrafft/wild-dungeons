@@ -37,7 +37,7 @@ public class DungeonFloorRegistry {
                     .addSimple(OVERWORLD_TRIAL_EXIT_BRANCH))
             .set(HierarchicalProperty.SOUNDSCAPE, SoundscapeTemplateRegistry.MEGA_DUNGEON)
             .set(HierarchicalProperty.INTENSITY, 1)
-            .set(HierarchicalProperty.POST_PROCESSING_STEPS, List.of(new AddBedrockShellStep()))
+            .set(HierarchicalProperty.PRE_GEN_PROCESSING_STEPS, List.of(new AddBedrockShellStep()))
             .setOrigin(new BlockPos(0, 150, 0));
 
     public static final DungeonFloorTemplate MEGA_DUNGEON_GAUNTLET_FLOOR = create("mega_dungeon_gauntlet_floor")//must be lowercase or the game will crash
@@ -60,7 +60,7 @@ public class DungeonFloorRegistry {
             .set(HierarchicalProperty.SOUNDSCAPE, SoundscapeTemplateRegistry.MEGA_DUNGEON)
             .set(HierarchicalProperty.INTENSITY, 1)
             .set(HierarchicalProperty.DIFFICULTY_MODIFIER, 2.0)
-            .set(HierarchicalProperty.POST_PROCESSING_STEPS, List.of(new AddBedrockShellStep()))
+            .set(HierarchicalProperty.PRE_GEN_PROCESSING_STEPS, List.of(new AddBedrockShellStep()))
             .setOrigin(new BlockPos(0, 150, 0));
 
 
@@ -83,7 +83,7 @@ public class DungeonFloorRegistry {
             )
             .set(HierarchicalProperty.MATERIAL, new WeightedPool<DungeonMaterial>().add(DungeonMaterialRegistry.PIGLIN_FACTORY_MATERIAL, 1))
             .set(HierarchicalProperty.SOUNDSCAPE, SoundscapeTemplateRegistry.NETHER_CAVES)
-            .set(HierarchicalProperty.POST_PROCESSING_STEPS, List.of(new AddBedrockShellStep()))
+            .set(HierarchicalProperty.PRE_GEN_PROCESSING_STEPS, List.of(new AddBedrockShellStep()))
             .setOrigin(new BlockPos(0, 0, 0));
 
     public static final DungeonFloorTemplate VILLAGE_FLOOR = create("village")
@@ -102,7 +102,7 @@ public class DungeonFloorRegistry {
                             .addSimple(VILLAGE_METRO_STREETS_BRANCH)
                             .addSimple(VILLAGE_METRO_STREETS_2_BRANCH)
             )
-            .set(HierarchicalProperty.POST_PROCESSING_STEPS, List.of(new AddBedrockShellStep()))
+            .set(HierarchicalProperty.PRE_GEN_PROCESSING_STEPS, List.of(new AddBedrockShellStep()))
             .set(HierarchicalProperty.ENEMY_TABLE, EnemyTableRegistry.VILLAGE_ENEMY_TABLE)
             .setOrigin(new BlockPos(0,100,0));
 

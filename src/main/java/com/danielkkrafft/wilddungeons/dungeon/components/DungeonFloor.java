@@ -66,7 +66,7 @@ public class DungeonFloor {
     @Serializer.IgnoreSerialization public List<CompletableFuture<Void>> generationFutures = new ArrayList<>();
     private final List<WDPlayer> playersWaitingToEnter = new ArrayList<>();
     public static ResourceKey<Level> buildFloorLevelKey(DungeonFloor floor) { return ResourceKey.create(Registries.DIMENSION, WildDungeons.rl(DungeonSessionManager.buildDungeonSessionKey(floor.getSession().getEntranceUUID()) + "___" + floor.getTemplate().name() + "___" + floor.index)); }
-
+    @Serializer.IgnoreSerialization public int failureCount = 0;
     public DungeonFloor(String templateKey, String sessionKey, BlockPos origin) {
         this.sessionKey = sessionKey;
         this.index = this.getSession().getFloors().size();
@@ -176,20 +176,29 @@ public class DungeonFloor {
 
         int totalBranchCount = getTemplate().branchTemplates().size();
         int currentBranchCount = this.dungeonBranches.size();
-
+        failureCount = 0;
         while (currentBranchCount < totalBranchCount && this.getLevel() != null) {
             WildDungeons.getLogger().info("Generating branch {} of {}", currentBranchCount, totalBranchCount-1);
-
+            if (failureCount> 25) {
+                WildDungeons.getLogger().error("Failed to generate dungeon. Deleting all branches and starting over.");
+                dungeonBranches.forEach(DungeonBranch::destroyRooms);
+                failureCount = 0;
+                this.dungeonBranches.clear();
+                currentBranchCount = 0;
+            }
             try { tryGenerateBranch(currentBranchCount);
             } catch (Exception e) { e.printStackTrace(); }
 
             currentBranchCount = this.dungeonBranches.size();
         }
 
-        this.handlePostProcessing();
-        this.dungeonBranches.forEach(DungeonBranch::handlePostProcessing);
-        this.dungeonBranches.forEach(b -> b.getRooms().forEach(DungeonRoom::handlePostProcessing));// Currently, post processing is run BEFORE the rooms are actually placed so that rooms can naturally carve into generated blocks. In the future, we should probably separate this into stages.
+        this.handlePostProcessing(PRE_GEN_PROCESSING_STEPS);
+        this.dungeonBranches.forEach(dungeonBranch -> dungeonBranch.handlePostProcessing(PRE_GEN_PROCESSING_STEPS));
+        this.dungeonBranches.forEach(b -> b.getRooms().forEach(dungeonRoom -> dungeonRoom.handlePostProcessing(PRE_GEN_PROCESSING_STEPS)));
         this.dungeonBranches.forEach(DungeonBranch::actuallyPlaceInWorld);
+        this.handlePostProcessing(POST_GEN_PROCESSING_STEPS);
+        this.dungeonBranches.forEach(dungeonBranch -> dungeonBranch.handlePostProcessing(POST_GEN_PROCESSING_STEPS));
+        this.dungeonBranches.forEach(b -> b.getRooms().forEach(dungeonRoom -> dungeonRoom.handlePostProcessing(POST_GEN_PROCESSING_STEPS)));
 
 
 //        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
@@ -203,8 +212,8 @@ public class DungeonFloor {
 
     }
 
-    public void handlePostProcessing() {
-        List<PostProcessingStep> steps = this.getTemplate().get(POST_PROCESSING_STEPS);
+    public void handlePostProcessing(HierarchicalProperty<List<PostProcessingStep>> stepsProperty) {
+        List<PostProcessingStep> steps = this.getTemplate().get(stepsProperty);
         if (steps == null) return;
         for (PostProcessingStep step : steps) {
             List<DungeonRoom> rooms = new ArrayList<>();
@@ -228,6 +237,7 @@ public class DungeonFloor {
             if (branchIndex <= 0) {
                 return;
             }
+            failureCount++;
             int index = nextBranch.rootOriginBranchIndex() == -1 ? 1 : branchIndex - nextBranch.rootOriginBranchIndex();
 
             for (int i = 1; i <= index; i++) {
