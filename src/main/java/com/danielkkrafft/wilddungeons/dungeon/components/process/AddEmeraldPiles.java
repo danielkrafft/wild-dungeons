@@ -5,6 +5,7 @@ import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 
 import java.util.List;
@@ -34,7 +35,7 @@ public class AddEmeraldPiles extends PostProcessingStep{
                 for (int y = innerShell.minY(); y < innerShell.maxY(); y++) {
                     mutableBlockPos.set(randX, y, randZ);
                     if (level.getBlockState(mutableBlockPos).isAir() && level.getBlockState(mutableBlockPos.below()).isFaceSturdy(level, mutableBlockPos.below(), net.minecraft.core.Direction.UP)) {
-                        setBlockFast(level, mutableBlockPos, EmeraldPileBlock.getRandomPile());
+                        setBlockFast(level, mutableBlockPos, EmeraldPileBlock.getRandomPile().rotate(Rotation.getRandom(level.random)));
                         placed++;
                         break;
                     }
