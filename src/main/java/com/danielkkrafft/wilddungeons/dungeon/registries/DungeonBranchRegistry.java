@@ -170,9 +170,13 @@ public class DungeonBranchRegistry {
             .set(HAS_BEDROCK_SHELL, true);
     public static final DungeonBranchTemplate VILLAGE_SEWER_ALL = create("VILLAGE_SEWER_ALL")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
-                    .add(VILLAGE_SEWER_POOL,15))
+                    .add(VILLAGE_SEWER_POOL,5)
+                    .addSimple(VILLAGE_SEWER_PERK)
+                    .add(VILLAGE_SEWER_POOL,5)
+                    .addSimple(VILLAGE_SEWER_PERK)
+                    .add(VILLAGE_SEWER_POOL,5))
             .set(MATERIAL, VILLAGE_SEWER_MATERIAL_POOL)
-            .set(HierarchicalProperty.ENEMY_TABLE, EnemyTableRegistry.BASIC_ENEMY_TABLE)
+            .set(HierarchicalProperty.ENEMY_TABLE, EnemyTableRegistry.VILLAGE_SEWER_ENEMY_TABLE)
             .set(ROOM_TARGET_Y, 100)
             .set(HAS_BEDROCK_SHELL, true);
     public static final DungeonBranchTemplate VILLAGE_SEWER_ENDING_BRANCH = create("VILLAGE_SEWER_ENDING_BRANCH")
