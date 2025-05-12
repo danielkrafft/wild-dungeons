@@ -194,7 +194,11 @@ public class DungeonBranch {
         if (getTemplate().limitedRooms().containsKey(nextRoom)) {
             final DungeonRoomTemplate limitedTemplate = nextRoom;
             int placedRooms = getRooms().stream().filter(room -> room.getTemplate().equals(limitedTemplate)).toList().size();
-            if (placedRooms > getTemplate().limitedRooms().get(nextRoom)) nextRoom = getTemplate().roomTemplates().get(getRooms().size()).getRandom();
+            if (placedRooms >= getTemplate().limitedRooms().get(nextRoom)) {
+                while (nextRoom == limitedTemplate) {
+                    nextRoom = getTemplate().roomTemplates().get(getRooms().size()).getRandom();
+                }
+            }
         }
 
         return nextRoom;
