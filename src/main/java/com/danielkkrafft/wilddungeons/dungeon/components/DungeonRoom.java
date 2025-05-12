@@ -10,7 +10,6 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTem
 import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateOrientation;
-import com.danielkkrafft.wilddungeons.dungeon.registries.LootTableRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.registries.OfferingTemplateRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
@@ -408,7 +407,7 @@ public class DungeonRoom {
         //determine the amount of items, between 3 and 7 times the number of counted chests
         int maxItems = RandomUtil.randIntBetween(3 * countedChests, 7 * countedChests);
         //get loot entries from the loot table registry
-        List<DungeonRegistration.ItemTemplate> entries = LootTableRegistry.BASIC_LOOT_TABLE.randomResults(maxItems, (int) (5 * this.getDifficulty()), 2f);
+        List<DungeonRegistration.ItemTemplate> entries = getProperty(LOOT_TABLE).randomResults(maxItems, (int) (5 * this.getDifficulty()), 2f);
         //for each entry, place it in a random chest
 
         entries.forEach(entry -> {
@@ -704,7 +703,8 @@ public class DungeonRoom {
         DungeonRoomTemplate.DestructionRule rule = this.getProperty(DESTRUCTION_RULE);
         return switch (rule) {
             case PROTECT_ALL, PROTECT_BREAK -> false;
-            case SHELL, SHELL_CLEAR -> isPosInsideShell(pos);
+            case SHELL -> isPosInsideShell(pos);
+            case SHELL_CLEAR -> isClear() && isPosInsideShell(pos);
             case PROTECT_ALL_CLEAR -> isClear();
             case null, default -> true;
         };
@@ -714,7 +714,8 @@ public class DungeonRoom {
         DungeonRoomTemplate.DestructionRule rule = this.getProperty(DESTRUCTION_RULE);
         return switch (rule) {
             case PROTECT_ALL, PROTECT_PLACE -> false;
-            case SHELL, SHELL_CLEAR -> isPosInsideShell(pos);
+            case SHELL -> isPosInsideShell(pos);
+            case SHELL_CLEAR -> isClear() && isPosInsideShell(pos);
             case PROTECT_ALL_CLEAR -> isClear();
             case null, default -> true;
         };
