@@ -30,11 +30,23 @@ public class EnemyTableRegistry {
 
     public static final WeightedTable<TargetTemplate> VILLAGER_CEO_ARENA = create("VILLAGE_BOSS_TABLE")
             .add(new WeightedPool<TargetTemplate>().add(BUSINESS_CEO, 1), 1);
+
     public static final WeightedTable<TargetTemplate> VILLAGE_GRAVEYARD = create("VILLAGE_GRAVEYARD")
             .add(new WeightedPool<TargetTemplate>()
                     .add(ZOMBIE_HAT, 1)
                     .add(SKELETON_HAT, 1)
                     , 1);
+
+    public static final WeightedTable<TargetTemplate> VILLAGE_SEWER_ENEMY_TABLE = create("VILLAGE_SEWER_ENEMY_TABLE")
+            .add(new WeightedPool<TargetTemplate>()
+                            .add(GUARDIAN, 1)
+                            .add(DROWNED, 10)
+                    , 1)
+            .add(new WeightedPool<TargetTemplate>()
+                            .add(GUARDIAN, 5)
+                            .add(ELDER_GUARDIAN, 1)
+                    ,10)
+            ;
 
 
     public static WeightedTable<TargetTemplate> create(String name){
