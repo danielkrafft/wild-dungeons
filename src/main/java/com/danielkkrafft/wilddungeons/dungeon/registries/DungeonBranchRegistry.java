@@ -191,7 +191,7 @@ public class DungeonBranchRegistry {
             .set(MATERIAL, VILLAGE_MATERIAL_POOL);
     public static final DungeonBranchTemplate VILLAGE_METRO_STREETS_BRANCH = create("VILLAGE_METRO_STREETS_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
-                    .add(VILLAGE_WIDE_PATH_POOL,25)
+                    .add(VILLAGE_WIDE_PATH_POOL,20)
                     .add(VILLAGE_MEDIUM_PLOTS,75)
                     .add(VILLAGE_SMALL_PLOTS,50)
                     .add(VILLAGE_WIDE_PATH_POOL,1)//important that the last room is a path so that we can add more in the next branch generation and keep the straight line
@@ -206,7 +206,7 @@ public class DungeonBranchRegistry {
             .setRootOriginBranchIndex(4);
     public static final DungeonBranchTemplate VILLAGE_METRO_STREETS_2_BRANCH = create("VILLAGE_METRO_STREETS_2_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
-                    .add(VILLAGE_WIDE_PATH_POOL,15)
+                    .add(VILLAGE_WIDE_PATH_POOL,5)
                     .add(VILLAGE_MEDIUM_PLOTS,25)
                     .add(VILLAGE_SMALL_PLOTS,100)
             )

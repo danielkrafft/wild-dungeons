@@ -89,7 +89,7 @@ public class DungeonRegistry {
             )
             .set(MATERIAL, VILLAGE_SEWER_MATERIAL_POOL)
             .set(HAS_BEDROCK_SHELL, false)
-            .set(DISPLAY_NAME, "VILLAGE DUNGEON")
+            .set(DISPLAY_NAME, "VILLAGER HEADQUARTERS")
             .set(ICON, "1-2")
             .set(PRIMARY_COLOR, 0xFF44cc00)
             .set(SECONDARY_COLOR, 0xFFdde63e)
