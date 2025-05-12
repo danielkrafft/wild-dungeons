@@ -355,7 +355,6 @@ public class TemplateHelper {
     public static boolean placeInWorld(DungeonRoom room, StructureTemplate template, DungeonMaterial material, ServerLevelAccessor serverLevel, BlockPos offset, BlockPos pos, StructurePlaceSettings settings, int flags) {
         if (template.palettes.isEmpty()) return false;
         double noiseScale = room.getProperty(HierarchicalProperty.MATERIAL_NOISE);
-        BoundingBox innerBox = template.getBoundingBox(settings, pos).inflatedBy(-1);
 
         List<StructureTemplate.StructureBlockInfo> list = settings.getRandomPalette(template.palettes, offset).blocks();
         if ((!list.isEmpty() || !settings.isIgnoreEntities() && !template.entityInfoList.isEmpty()) && template.size.getX() >= 1 && template.size.getY() >= 1 && template.size.getZ() >= 1) {
@@ -363,15 +362,6 @@ public class TemplateHelper {
             for (StructureTemplate.StructureBlockInfo structuretemplate$structureblockinfo : StructureTemplate.processBlockInfos(serverLevel, offset, pos, settings, list, template)) {
                 BlockState blockstate = structuretemplate$structureblockinfo.state();
                 //if (blockstate.equals(Blocks.AIR.defaultBlockState())) continue;
-
-                //WDBedrock is obsolete, kept for reference just in case
-                /*if (room.getProperty(DESTRUCTION_RULE) == DungeonRoomTemplate.DestructionRule.SHELL || room.getProperty(DESTRUCTION_RULE) == DungeonRoomTemplate.DestructionRule.SHELL_CLEAR) {
-                    if (!blockstate.is(WDBlocks.CONNECTION_BLOCK.get()) && !innerBox.isInside(structuretemplate$structureblockinfo.pos()) && !room.isPosInsideShell(structuretemplate$structureblockinfo.pos())) {
-                        blockstate = material.replace(structuretemplate$structureblockinfo.state().mirror(settings.getMirror()).rotate(settings.getRotation()), noiseScale, structuretemplate$structureblockinfo.pos(), room.getTemplate().wdStructureTemplate());
-                        serverLevel.setBlock(structuretemplate$structureblockinfo.pos(), WDBedrockBlock.of(blockstate.getBlock()), 2);
-                        continue;
-                    }
-                }*/
 
                 if (blockstate.hasProperty(STAIRS_SHAPE) || blockstate.hasProperty(RAIL_SHAPE) || blockstate.hasProperty(RAIL_SHAPE_STRAIGHT)) {
                     blockstate = TemplateHelper.fixBlockStateProperties(material.replace(structuretemplate$structureblockinfo.state(), noiseScale, structuretemplate$structureblockinfo.pos(), room.getTemplate().wdStructureTemplate()), settings);
