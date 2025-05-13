@@ -5,6 +5,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.sounds.SoundEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import org.apache.commons.compress.harmony.unpack200.bytecode.BCIRenumberedAttribute;
 
 public class WDSoundEvents {
 
@@ -63,6 +64,19 @@ public class WDSoundEvents {
 
     public static final Holder<SoundEvent> UI_BEEP = SOUND_EVENTS.register("ui.misc.beep", SoundEvent::createVariableRangeEvent);
 
+    //------- VILLAGE DUNGEON -------//
+    public static final Holder<SoundEvent> ANGEL_INVESTOR_SAFE = SOUND_EVENTS.register("soundscape.music.angel_investor_safe", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> ANGEL_INVESTOR = SOUND_EVENTS.register("soundscape.music.angel_investor", SoundEvent::createVariableRangeEvent);
+
+    public static final Holder<SoundEvent> OVERFLOW = SOUND_EVENTS.register("soundscape.music.overflow", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> OVERFLOW_SAFE = SOUND_EVENTS.register("soundscape.music.overflow_safe", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> OVERFLOW_UNDERWATER = SOUND_EVENTS.register("soundscape.music.overflow_underwater", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> OVERFLOW_UNDERWATER_SAFE = SOUND_EVENTS.register("soundscape.music.overflow_underwater_safe", SoundEvent::createVariableRangeEvent);
+
+    public static final Holder<SoundEvent> THE_CAPITAL = SOUND_EVENTS.register("soundscape.music.the_capital", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> THE_CAPITAL_SAFE = SOUND_EVENTS.register("soundscape.music.the_capital_safe", SoundEvent::createVariableRangeEvent);
+
+    //------- MEATHOOK -------//
     public static final Holder<SoundEvent> MEATHOOK_HIT = SOUND_EVENTS.register("entity.meathook.hit", SoundEvent::createVariableRangeEvent);
     public static final Holder<SoundEvent> MEATHOOK_REEL = SOUND_EVENTS.register("entity.meathook.reel", SoundEvent::createVariableRangeEvent);
     public static final Holder<SoundEvent> MEATHOOK_CHARGE_1 = SOUND_EVENTS.register("item.meathook.charge1", SoundEvent::createVariableRangeEvent);

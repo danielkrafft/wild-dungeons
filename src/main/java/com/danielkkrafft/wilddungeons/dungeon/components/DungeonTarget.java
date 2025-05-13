@@ -1,6 +1,8 @@
 package com.danielkkrafft.wilddungeons.dungeon.components;
 
+import com.danielkkrafft.wilddungeons.util.MathUtil;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
@@ -17,6 +19,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.Vec3;
+import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +43,8 @@ public class DungeonTarget {
     public Consumer<Object> behavior;
     public List<Pair<Integer, Integer>> mobEffects = new ArrayList<>();
 
+    private static final Logger LOGGER = LogUtils.getLogger();
+
     public DungeonTarget(Type type, String entityTypeKey) {
         this.type = type.toString();
         this.entityTypeKey = entityTypeKey;
@@ -60,7 +65,7 @@ public class DungeonTarget {
         this.entityTypeKey = "";
     }
 
-    public void spawn(DungeonRoom room) {
+    public void spawn(DungeonRoom room, final boolean bfacePlayerOnSpawn) {
 
         if (type.equals(Type.ENTITY.toString()))
         {
@@ -89,6 +94,11 @@ public class DungeonTarget {
             this.uuid = entity.getStringUUID();
             this.startPos = finalPos;
             this.spawned = true;
+
+            if (bfacePlayerOnSpawn) {
+                SetYRotation(entity, room);
+            }
+
             room.getBranch().getFloor().getLevel().addWithUUID(entity);
         }
 
@@ -107,6 +117,20 @@ public class DungeonTarget {
             this.startPos = finalPos;
             this.spawned = true;
         }
+
+        //SetYRotation(room);
+    }
+
+    public void SetYRotation(final Entity entity, final DungeonRoom room) {
+
+        Vec3 pos = room.getActivePlayers().getFirst().getServerPlayer().position();
+        Vec3 target = entity.position();
+        final float yRot = MathUtil.entitylookAtEntity(target, pos)[0];
+
+        entity.setYRot(yRot);
+        entity.setYRot(yRot);
+        entity.setYBodyRot(yRot);
+        entity.setYHeadRot(yRot);
     }
 
     public boolean isAlive(DungeonRoom room) {

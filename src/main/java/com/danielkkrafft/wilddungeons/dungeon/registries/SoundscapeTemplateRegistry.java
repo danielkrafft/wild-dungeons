@@ -3,6 +3,8 @@ package com.danielkkrafft.wilddungeons.dungeon.registries;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.SoundscapeTemplate;
 import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
+import net.minecraft.client.renderer.RenderStateShard;
+import net.minecraft.client.resources.sounds.Sound;
 
 public class SoundscapeTemplateRegistry {
     public static final DungeonRegistration.DungeonComponentRegistry<SoundscapeTemplate> SOUNDSCAPE_TEMPLATE_REGISTRY = new DungeonRegistration.DungeonComponentRegistry<>();
@@ -50,4 +52,23 @@ public class SoundscapeTemplateRegistry {
         SOUNDSCAPE_TEMPLATE_REGISTRY.add(soundscape);
         return soundscape;
     }
+
+    //------- VILLAGE DUNGEON -------//
+    public static final SoundscapeTemplate VD_ANGEL_INVESTOR = create("VD_ANGEL_INVESTOR")
+            .addSound(WDSoundEvents.ANGEL_INVESTOR, 0)
+            .addSound(WDSoundEvents.ANGEL_INVESTOR_SAFE, 1);
+
+    public static final SoundscapeTemplate VD_OVERFLOW = create("VD_OVERFLOW")
+            .addSound(WDSoundEvents.OVERFLOW, 0)
+            .addSound(WDSoundEvents.OVERFLOW_SAFE, 1)
+            .addSound(WDSoundEvents.OVERFLOW_UNDERWATER, 0)
+            .addSound(WDSoundEvents.OVERFLOW_UNDERWATER_SAFE, 0);
+
+    public static final SoundscapeTemplate VD_OVERFLOW_SAFE = create("VD_OVERFLOW_SAFE")
+            .addSound(WDSoundEvents.OVERFLOW_UNDERWATER_SAFE, 0)
+            .addSound(WDSoundEvents.OVERFLOW_SAFE, 1);
+
+    public static final SoundscapeTemplate VD_THE_CAPITAL = create("VD_THE_CAPITAL")
+            .addSound(WDSoundEvents.THE_CAPITAL, 0)
+            .addSound(WDSoundEvents.THE_CAPITAL_SAFE, 1);
 }

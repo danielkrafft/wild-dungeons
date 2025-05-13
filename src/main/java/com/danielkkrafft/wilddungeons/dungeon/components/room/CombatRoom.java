@@ -8,6 +8,7 @@ import com.danielkkrafft.wilddungeons.dungeon.components.DungeonTarget;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateOrientation;
 import com.danielkkrafft.wilddungeons.entity.Offering;
+import com.danielkkrafft.wilddungeons.util.MathUtil;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import net.minecraft.core.BlockPos;
@@ -37,6 +38,8 @@ public class CombatRoom extends TargetPurgeRoom {
 
     public int totalSpawns = 0;
     public boolean helpingGlow = false;
+
+    protected boolean bfacePlayerOnSpawn = false;
 
     public CombatRoom(DungeonBranch branch, String templateKey, BlockPos position, TemplateOrientation orientation) {
         super(branch, templateKey, position, orientation);
@@ -72,11 +75,14 @@ public class CombatRoom extends TargetPurgeRoom {
 
     public void spawnNext() {
         WildDungeons.getLogger().info("SPAWNING A GROUP OF {}", Math.floor(groupSize * this.getDifficulty()));
+
+        Vec3 pos = this.getActivePlayers().getFirst().getServerPlayer().position();
+
         for (int i = 0; i < Math.floor(groupSize * this.getDifficulty()); i++) {
             if (totalSpawns <= 0) return;
             Optional<DungeonTarget> target = targets.stream().filter(t -> !t.spawned).findFirst();
             if (target.isPresent()) {
-                target.get().spawn(this);
+                target.get().spawn(this, bfacePlayerOnSpawn);
                 totalSpawns--;
             } else {
                 totalSpawns = 0;

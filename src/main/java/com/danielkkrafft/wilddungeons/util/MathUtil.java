@@ -70,16 +70,19 @@ public class MathUtil {
     {
         return entitylookAtEntity(e1.position(),e2.position());
     }
-    public static float[] entitylookAtEntity(Vec3 l1,Vec3 l2)
+    public static float[] entitylookAtEntity(Vec3 from,Vec3 to)
     {
-        double xdisp = l2.x()-l1.x();
-        double ydisp = l2.y()-l1.y();
-        double zdisp = l2.z()-l1.z();
-        double xzdist = Math.sqrt(Math.pow(xdisp,2)+Math.pow(zdisp,2));
-        float yaw = (float) -Math.toDegrees(Math.atan2(xdisp,zdisp));
-        float pitch = (float) -Math.toDegrees(Math.atan2(ydisp,xzdist));
-        if(yaw<0) {yaw+=360;}if(yaw>360) {yaw-=360;}
-        return new float[]{yaw,pitch};
+        double dx = to.x()-from.x();
+        double dy = to.y()-from.y();
+        double dz = to.z()-from.z();
+
+        double xzDist = Math.sqrt(dx * dx + dz * dz);
+        float yaw = (float) Math.toDegrees(Math.atan2(-dx, dz)); //Minecraft has its YAW turn clockwise from z-
+        float pitch = (float) -Math.toDegrees(Math.atan2(dy, xzDist));
+
+        // Normalize the YAW tp {0, 360}
+        if (yaw < 0) yaw += 360;
+        return new float[] {yaw, pitch};
     }
 
     public static double distance(Vec3 b1,Vec3 b2)
