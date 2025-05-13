@@ -141,10 +141,13 @@ public class DungeonRoomPoolRegistry {
             .add(VILLAGE_SEWER_13, 1)
             .add(VILLAGE_SEWER_CHESTCAP, 1)
             .add(VILLAGE_SEWER_ELEVATOR, 1)
-            .add(VILLAGE_SEWER_DEELEVATOR, 1);
+            .add(VILLAGE_SEWER_DEELEVATOR, 1)
+            .add(VILLAGE_SEWER_12_COMBAT, 3)
+            .add(VILLAGE_SEWER_4_COMBAT, 3)
+            ;
     
     public static final WeightedPool<DungeonRoomTemplate> VILLAGE_WIDE_PATH_POOL = create("VILLAGE_WIDE_PATH_POOL")
-            .add(VILLAGE_METRO_WIDE_CROSSROADS,0)
+//            .add(VILLAGE_METRO_WIDE_CROSSROADS,1)
 //            .add(VILLAGE_METRO_WIDE_STAIRS,1)//todo way to handle vertical gaps
             .add(VILLAGE_METRO_WIDE_PATH, 10);
 
@@ -319,7 +322,6 @@ public class DungeonRoomPoolRegistry {
             .add(VILLAGE_METRO_FLYINGNOKK_TWR_JAIL,1)
             .add(VILLAGE_METRO_FLYINGNOKK_TWR_LOBBY,1)
             .add(VILLAGE_METRO_FLYINGNOKK_TWR_VAULT,1)
-            .add(VILLAGE_METRO_MOBFIA_TWR_OFFICE,1)
             ;
 
     public static WeightedPool<DungeonRoomTemplate> create(String name) {

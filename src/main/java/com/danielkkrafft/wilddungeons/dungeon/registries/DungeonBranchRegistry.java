@@ -170,9 +170,13 @@ public class DungeonBranchRegistry {
             .set(HAS_BEDROCK_SHELL, true);
     public static final DungeonBranchTemplate VILLAGE_SEWER_ALL = create("VILLAGE_SEWER_ALL")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
-                    .add(VILLAGE_SEWER_POOL,15))
+                    .add(VILLAGE_SEWER_POOL,5)
+                    .addSimple(VILLAGE_SEWER_PERK)
+                    .add(VILLAGE_SEWER_POOL,5)
+                    .addSimple(VILLAGE_SEWER_PERK)
+                    .add(VILLAGE_SEWER_POOL,5))
             .set(MATERIAL, VILLAGE_SEWER_MATERIAL_POOL)
-            .set(HierarchicalProperty.ENEMY_TABLE, EnemyTableRegistry.BASIC_ENEMY_TABLE)
+            .set(HierarchicalProperty.ENEMY_TABLE, EnemyTableRegistry.VILLAGE_SEWER_ENEMY_TABLE)
             .set(ROOM_TARGET_Y, 100)
             .set(HAS_BEDROCK_SHELL, true);
     public static final DungeonBranchTemplate VILLAGE_SEWER_ENDING_BRANCH = create("VILLAGE_SEWER_ENDING_BRANCH")
@@ -228,7 +232,7 @@ public class DungeonBranchRegistry {
                     .addSimple(VILLAGE_METRO_TOWER_STAIRS)
                     .add(VILLAGE_TOWER_FLOORS, 1)
                     .addSimple(VILLAGE_METRO_TOWER_STAIRS)
-                    .add(VILLAGE_TOWER_FLOORS, 1)
+                    .addSimple(VILLAGE_METRO_MOBFIA_TWR_OFFICE)
                     .addSimple(VILLAGE_METRO_TOWER_STAIRS)
                     .add(VILLAGE_TOWER_FLOORS, 1)
                     .addSimple(VILLAGE_METRO_TOWER_STAIRS)
@@ -236,7 +240,7 @@ public class DungeonBranchRegistry {
                     .addSimple(VILLAGE_METRO_TOWER_STAIRS)
                     .add(VILLAGE_TOWER_FLOORS, 1)
                     .addSimple(VILLAGE_METRO_TOWER_STAIRS)
-                    .add(VILLAGE_TOWER_FLOORS, 1)
+                    .addSimple(VILLAGE_METRO_MOBFIA_TWR_OFFICE)
                     .addSimple(VILLAGE_METRO_TOWER_STAIRS)
                     .addSimple(VILLAGE_METRO_MOBFIA_TWR_CEO_OFFICE)
             )
@@ -245,7 +249,6 @@ public class DungeonBranchRegistry {
                     VILLAGE_METRO_CHLTER121_TWR_CUBICLES,2,
                     VILLAGE_METRO_CHLTER121_TWR_LIBRARY,2,
                     VILLAGE_METRO_CHLTER121_TWR_SEVERANCE,2,
-                    VILLAGE_METRO_MOBFIA_TWR_OFFICE,2,
                     VILLAGE_METRO_FLYINGNOKK_TWR_SEVERANCE_HALLS,2,
                     VILLAGE_METRO_FLYINGNOKK_TWR_JAIL,2,
                     VILLAGE_METRO_FLYINGNOKK_TWR_LOBBY,2,

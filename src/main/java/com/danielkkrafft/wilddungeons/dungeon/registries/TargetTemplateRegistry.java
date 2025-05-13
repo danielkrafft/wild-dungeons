@@ -40,6 +40,9 @@ public class TargetTemplateRegistry {
     public static final TargetTemplate PIGLIN_BRUTE_GOLD = createMob("PIGLIN_BRUTE_GOLD", EntityType.PIGLIN_BRUTE).setMainHandItem(Items.GOLDEN_AXE).setHelmet(Items.GOLDEN_HELMET).setChestplate(Items.GOLDEN_CHESTPLATE).setLeggings(Items.GOLDEN_LEGGINGS).setBoots(Items.GOLDEN_BOOTS);
     public static final TargetTemplate GHAST = createMob("GHAST", EntityType.GHAST);
     public static final TargetTemplate HOGLIN = createMob("HOGLIN", EntityType.HOGLIN);
+    public static final TargetTemplate GUARDIAN = createMob("GUARDIAN", EntityType.GUARDIAN);
+    public static final TargetTemplate ELDER_GUARDIAN = createMob("ELDER_GUARDIAN", EntityType.ELDER_GUARDIAN);
+    public static final TargetTemplate DROWNED = createMob("DROWNED", EntityType.DROWNED);
 
     public static final TargetTemplate BREEZE = createMob("BREEZE", EntityType.BREEZE);
     public static final TargetTemplate ENDERMITE = createMob("ENDERMITE", EntityType.ENDERMITE);

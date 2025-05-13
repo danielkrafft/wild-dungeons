@@ -4,6 +4,7 @@ import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonMaterial;
 import com.danielkkrafft.wilddungeons.dungeon.components.process.PostProcessingStep;
 import com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialPoolRegistry;
+import com.danielkkrafft.wilddungeons.dungeon.registries.LootTableRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.registries.OfferingTemplateTableRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.registries.SoundscapeTemplateRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
@@ -51,6 +52,8 @@ public class HierarchicalProperty<T> {
     public static final HierarchicalProperty<Double> MATERIAL_NOISE = new HierarchicalProperty<>(new TypeToken<>() {}, 0.15);
     public static final HierarchicalProperty<List<PostProcessingStep>> PRE_GEN_PROCESSING_STEPS = new HierarchicalProperty<>(new TypeToken<>() {}, new ArrayList<>());
     public static final HierarchicalProperty<List<PostProcessingStep>> POST_GEN_PROCESSING_STEPS = new HierarchicalProperty<>(new TypeToken<>() {}, new ArrayList<>());
+    public static final HierarchicalProperty<WeightedTable<DungeonRegistration.ItemTemplate>> LOOT_TABLE = new HierarchicalProperty<>(new TypeToken<>() {}, LootTableRegistry.BASIC_LOOT_TABLE);
+    public static final HierarchicalProperty<Boolean> DO_PLACEMENT_MIRROR = new HierarchicalProperty<>(new TypeToken<>() {}, true);
 
 
     private final TypeToken<T> type;
