@@ -131,7 +131,7 @@ public class TemplateHelper {
         };
     }
 
-    public static TemplateOrientation handleRoomTransformation(ConnectionPoint entrancePoint, ConnectionPoint exitPoint) {
+    public static TemplateOrientation handleRoomTransformation(ConnectionPoint entrancePoint, ConnectionPoint exitPoint , DungeonRoomTemplate template) {
         TemplateOrientation orientation = new TemplateOrientation();
         Direction enDirection = entrancePoint.getDirection(orientation);
 
@@ -143,7 +143,10 @@ public class TemplateHelper {
 
         Direction exDirection = exitPoint.getDirection(exitPoint.getRoom().getOrientation());
 
-        orientation.setMirror(RandomUtil.randomFromList(Arrays.stream(Mirror.values()).toList()));
+        boolean doMirror = template.get(HierarchicalProperty.DO_PLACEMENT_MIRROR) == null || template.get(HierarchicalProperty.DO_PLACEMENT_MIRROR);
+        if (doMirror) {
+            orientation.setMirror(RandomUtil.randomFromList(Arrays.stream(Mirror.values()).toList()));
+        }
         if (exDirection == enDirection) {
             orientation.setRotation(Rotation.CLOCKWISE_180);
         } else if (exDirection == enDirection.getClockWise()) {

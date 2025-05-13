@@ -322,7 +322,6 @@ public class DungeonRoomPoolRegistry {
             .add(VILLAGE_METRO_FLYINGNOKK_TWR_JAIL,1)
             .add(VILLAGE_METRO_FLYINGNOKK_TWR_LOBBY,1)
             .add(VILLAGE_METRO_FLYINGNOKK_TWR_VAULT,1)
-            .add(VILLAGE_METRO_MOBFIA_TWR_OFFICE,1)
             ;
 
     public static WeightedPool<DungeonRoomTemplate> create(String name) {

@@ -566,27 +566,39 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_SML_WALL_STRAIGHT = createSimple("village/metro/flyingnokk/sml/wall_straight");
 
     public static final DungeonRoomTemplate VILLAGE_METRO_TOWER_START = createSimple("village/tower/tower_start").setClazz(KeyRequiredRoom.class)
+            .set(DO_PLACEMENT_MIRROR, false)
             .set(SHOP_TABLE, new WeightedTable<DungeonRegistration.OfferingTemplate>().add(OfferingTemplatePoolRegistry.VILLAGE_STORE_POOL, 1))
             .set(DESTRUCTION_RULE, DestructionRule.PROTECT_ALL_CLEAR);//so they can't tunnel through the wall and cheat the keys
     public static final DungeonRoomTemplate VILLAGE_METRO_TOWER_STAIRS = createSimple("village/tower/tower_connection")
+            .set(DO_PLACEMENT_MIRROR, false)
             .set(DESTRUCTION_RULE, DestructionRule.PROTECT_BREAK);//so they can't tunnel through the wall and skip levels
     public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_TWR_CUBICLES = createCombat("village/metro/chlter121/twr/cubicles")
+            .set(DO_PLACEMENT_MIRROR, false)
             .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(1)));
     public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_TWR_LIBRARY = createCombat("village/metro/chlter121/twr/library")
+            .set(DO_PLACEMENT_MIRROR, false)
             .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(1)));
     public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_TWR_SEVERANCE = createCombat("village/metro/chlter121/twr/severance")
+            .set(DO_PLACEMENT_MIRROR, false)
             .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(1)));
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_TWR_SEVERANCE_HALLS = createCombat("village/metro/flyingnokk/twr/severance_halls")
+            .set(DO_PLACEMENT_MIRROR, false)
             .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(1)));
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_TWR_JAIL = createCombat("village/metro/flyingnokk/twr/jail")
+            .set(DO_PLACEMENT_MIRROR, false)
             .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(1)));
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_TWR_LOBBY = createCombat("village/metro/flyingnokk/twr/lobby")
+            .set(DO_PLACEMENT_MIRROR, false)
             .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(1)));
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_TWR_VAULT = createCombat("village/metro/flyingnokk/twr/vault")
+            .set(DO_PLACEMENT_MIRROR, false)
             .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(1)));
-    public static final DungeonRoomTemplate VILLAGE_METRO_MOBFIA_TWR_OFFICE = createCombat("village/metro/mobfia/twr/office")
+    public static final DungeonRoomTemplate VILLAGE_METRO_MOBFIA_TWR_OFFICE = createSimple("village/metro/mobfia/twr/office")
+            .set(DO_PLACEMENT_MIRROR, false)
+            .setClazz(LootRoom.class)
             .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(1)));
     public static final DungeonRoomTemplate VILLAGE_METRO_MOBFIA_TWR_CEO_OFFICE = createBoss("village/metro/mobfia/twr/ceo_office", new Vec3(13, 3, 13))
+            .set(DO_PLACEMENT_MIRROR, false)
             .set(ENEMY_TABLE, EnemyTableRegistry.VILLAGER_CEO_ARENA)
             .set(ROOM_CLEAR_REWARD_POOL, WeightedPool.of(OfferingTemplateRegistry.EXIT_RIFT));
 

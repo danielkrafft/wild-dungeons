@@ -156,7 +156,7 @@ public class DungeonBranch {
             BlockPos.MutableBlockPos position = new BlockPos.MutableBlockPos();
             while (!exitPoints.isEmpty()){
                 ConnectionPoint exitPoint = exitPoints.removeLast();
-                TemplateOrientation orientation = TemplateHelper.handleRoomTransformation(entrancePoint, exitPoint);
+                TemplateOrientation orientation = TemplateHelper.handleRoomTransformation(entrancePoint, exitPoint, nextRoom);
                 ConnectionPoint proposedPoint = ConnectionPoint.copy(entrancePoint);
                 position.set(ConnectionPoint.getOffset(orientation, TemplateHelper.EMPTY_BLOCK_POS, proposedPoint, exitPoint).offset(exitPoint.getDirection(exitPoint.getRoom().getOrientation()).getNormal()));
                 if (exitPoint.isInner() || getFloor().areBoundingBoxesValid(nextRoom.getBoundingBoxes(orientation, position))) {
