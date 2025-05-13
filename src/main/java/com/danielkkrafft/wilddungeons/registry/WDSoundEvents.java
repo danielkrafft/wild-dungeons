@@ -5,7 +5,6 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.sounds.SoundEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import org.apache.commons.compress.harmony.unpack200.bytecode.BCIRenumberedAttribute;
 
 public class WDSoundEvents {
 

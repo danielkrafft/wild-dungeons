@@ -5,11 +5,9 @@ import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateOrientation;
-import com.danielkkrafft.wilddungeons.util.MathUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 

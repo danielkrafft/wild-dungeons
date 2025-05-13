@@ -3,8 +3,6 @@ package com.danielkkrafft.wilddungeons.dungeon.registries;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.SoundscapeTemplate;
 import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
-import net.minecraft.client.renderer.RenderStateShard;
-import net.minecraft.client.resources.sounds.Sound;
 
 public class SoundscapeTemplateRegistry {
     public static final DungeonRegistration.DungeonComponentRegistry<SoundscapeTemplate> SOUNDSCAPE_TEMPLATE_REGISTRY = new DungeonRegistration.DungeonComponentRegistry<>();

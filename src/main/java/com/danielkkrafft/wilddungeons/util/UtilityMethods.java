@@ -2,8 +2,6 @@ package com.danielkkrafft.wilddungeons.util;
 
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
-import com.danielkkrafft.wilddungeons.player.WDPlayer;
-import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
@@ -20,8 +18,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.SpawnData;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
