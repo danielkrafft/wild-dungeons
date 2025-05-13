@@ -136,6 +136,7 @@ public class OfferingTemplateRegistry {
     public static final OfferingTemplate BOW_DAMAGE_END = createPerk("BOW_DAMAGE_END", PerkRegistry.BOW_DAMAGE, END, 8, 1.5f);
 
     public static final OfferingTemplate OVERWORLD_TEST_RIFT = createRift("OVERWORLD_TEST_RIFT", "wd-mega_dungeon", OVERWORLD, 30, 1.5f).setSoundLoop(WDSoundEvents.RIFT_AURA.value());
+    public static final OfferingTemplate VILLAGE_HEADQUARTERS_RIFT = createRift("VILLAGE_HEADQUARTERS_RIFT", "wd-village_dungeon", OVERWORLD, 30, 1.5f).setSoundLoop(WDSoundEvents.RIFT_AURA.value());
     public static final OfferingTemplate MEGA_DUNGEON_GAUNTLET_RIFT = createRift("MEGA_DUNGEON_GAUNTLET_RIFT", "wd-mega_dungeon_gauntlet", OVERWORLD, 0, 1.0f).setSoundLoop(WDSoundEvents.WHISPERS.value());
     public static final OfferingTemplate NETHER_TEST_RIFT = createRift("NETHER_TEST_RIFT", "wd-piglin_factory", NETHER, 30, 1.5f).setSoundLoop(WDSoundEvents.WHISPERS.value());
     public static final OfferingTemplate REACTION_TEST_RIFT = createRift("REACTION_TEST_RIFT", "wd-village_dungeon", OVERWORLD, 30, 1.5f).setSoundLoop(WDSoundEvents.WHISPERS.value());

@@ -36,7 +36,7 @@ public class DecalRenderer {
     @SubscribeEvent
     public static void onRenderWorldLast(RenderLevelStageEvent event) {
 
-        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) return;
+        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_ENTITIES) return;
 
         ClientLevel level = Minecraft.getInstance().level;
         LocalPlayer player = Minecraft.getInstance().player;
