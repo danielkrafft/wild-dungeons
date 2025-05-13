@@ -8,7 +8,6 @@ import com.danielkkrafft.wilddungeons.dungeon.components.DungeonTarget;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateOrientation;
 import com.danielkkrafft.wilddungeons.entity.Offering;
-import com.danielkkrafft.wilddungeons.util.MathUtil;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import net.minecraft.core.BlockPos;
@@ -24,8 +23,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.INTENSITY;
-import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.SOUNDSCAPE;
+import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.*;
 
 public class CombatRoom extends TargetPurgeRoom {
 
@@ -38,8 +36,6 @@ public class CombatRoom extends TargetPurgeRoom {
 
     public int totalSpawns = 0;
     public boolean helpingGlow = false;
-
-    protected boolean bfacePlayerOnSpawn = false;
 
     public CombatRoom(DungeonBranch branch, String templateKey, BlockPos position, TemplateOrientation orientation) {
         super(branch, templateKey, position, orientation);
@@ -82,7 +78,7 @@ public class CombatRoom extends TargetPurgeRoom {
             if (totalSpawns <= 0) return;
             Optional<DungeonTarget> target = targets.stream().filter(t -> !t.spawned).findFirst();
             if (target.isPresent()) {
-                target.get().spawn(this, bfacePlayerOnSpawn);
+                target.get().spawn(this, this.getProperty(MOBS_FACE_PLAYER_ON_SPAWN));
                 totalSpawns--;
             } else {
                 totalSpawns = 0;

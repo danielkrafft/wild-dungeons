@@ -10,10 +10,8 @@ import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.util.WeightedTable;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate.DestructionRule;
@@ -643,6 +641,7 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
         DungeonRoomTemplate room = DungeonRoomTemplate.create(name, List.of(Pair.of(name, EMPTY_BLOCK_POS)));
         room.setClazz(BossRoom.class);
         room.set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
+        room.set(MOBS_FACE_PLAYER_ON_SPAWN, true);
         room.set(BOSS_SPAWN_POS, bossSpawnPos);
         DUNGEON_ROOM_REGISTRY.add(room);
         return room;

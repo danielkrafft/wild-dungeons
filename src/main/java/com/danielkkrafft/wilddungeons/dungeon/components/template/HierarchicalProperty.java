@@ -11,7 +11,6 @@ import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.util.WeightedTable;
 import com.google.gson.reflect.TypeToken;
-import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
@@ -55,6 +54,7 @@ public class HierarchicalProperty<T> {
     public static final HierarchicalProperty<List<PostProcessingStep>> POST_GEN_PROCESSING_STEPS = new HierarchicalProperty<>(new TypeToken<>() {}, new ArrayList<>());
     public static final HierarchicalProperty<WeightedTable<DungeonRegistration.ItemTemplate>> LOOT_TABLE = new HierarchicalProperty<>(new TypeToken<>() {}, LootTableRegistry.BASIC_LOOT_TABLE);
     public static final HierarchicalProperty<Boolean> DO_PLACEMENT_MIRROR = new HierarchicalProperty<>(new TypeToken<>() {}, true);
+    public static final HierarchicalProperty<Boolean> MOBS_FACE_PLAYER_ON_SPAWN = new HierarchicalProperty<>(new TypeToken<>() {}, false);
 
 
     private final TypeToken<T> type;

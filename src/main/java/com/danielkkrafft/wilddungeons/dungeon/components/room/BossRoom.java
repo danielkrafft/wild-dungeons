@@ -11,13 +11,10 @@ import net.minecraft.world.entity.EntityType;
 
 import java.util.List;
 
-import static com.danielkkrafft.wilddungeons.util.MathUtil.entitylookAtEntity;
-
 public class BossRoom extends CombatRoom {
 
     public BossRoom(DungeonBranch branch, String templateKey, BlockPos position, TemplateOrientation orientation) {
         super(branch, templateKey, position, orientation);
-        this.bfacePlayerOnSpawn = true;
     }
 
     @Override
