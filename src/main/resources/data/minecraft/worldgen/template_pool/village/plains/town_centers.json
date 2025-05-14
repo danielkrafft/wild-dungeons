@@ -16,7 +16,7 @@
         "processors": "minecraft:mossify_20_percent",
         "projection": "rigid"
       },
-      "weight": 150
+      "weight": 50
     },
     {
       "element": {
@@ -32,11 +32,22 @@
     {
       "element": {
         "element_type": "minecraft:legacy_single_pool_element",
+        "location": "wilddungeons:village/well_top",
+        "processors": {
+          "processors": []
+        },
+        "projection": "rigid"
+      },
+      "weight": 50
+    },
+    {
+      "element": {
+        "element_type": "minecraft:legacy_single_pool_element",
         "location": "minecraft:village/plains/town_centers/plains_meeting_point_3",
         "processors": "minecraft:mossify_70_percent",
         "projection": "rigid"
       },
-      "weight": 50
+      "weight": 1
     },
     {
       "element": {
@@ -54,7 +65,7 @@
         "processors": "minecraft:zombie_plains",
         "projection": "rigid"
       },
-      "weight": 10
+      "weight": 1
     },
     {
       "element": {
@@ -73,6 +84,15 @@
         "projection": "rigid"
       },
       "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:legacy_single_pool_element",
+        "location": "wilddungeons:village/well_top",
+        "processors": "minecraft:zombie_plains",
+        "projection": "rigid"
+      },
+      "weight": 10
     }
   ],
   "fallback": "minecraft:empty"
