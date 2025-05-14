@@ -117,15 +117,13 @@ public class DungeonTarget {
             this.startPos = finalPos;
             this.spawned = true;
         }
-
-        //SetYRotation(room);
     }
 
     public void SetYRotation(final Entity entity, final DungeonRoom room) {
 
         Vec3 pos = room.getActivePlayers().getFirst().getServerPlayer().position();
         Vec3 target = entity.position();
-        final float yRot = MathUtil.entitylookAtEntity(target, pos)[0];
+        final float yRot = MathUtil.entitylookAtEntityWith90DegLock(target, pos)[0];
 
         entity.setYRot(yRot);
         entity.setYRot(yRot);
