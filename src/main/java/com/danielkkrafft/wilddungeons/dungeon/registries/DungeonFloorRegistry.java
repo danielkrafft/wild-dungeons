@@ -101,6 +101,7 @@ public class DungeonFloorRegistry {
             )
             .set(HierarchicalProperty.PRE_ROOM_GEN_PROCESSING_STEPS, List.of(new AddBedrockShellStep()))
             .set(HierarchicalProperty.ENEMY_TABLE, EnemyTableRegistry.VILLAGE_ENEMY_TABLE)
+            .set(HierarchicalProperty.SOUNDSCAPE, SoundscapeTemplateRegistry.VD_OVERFLOW)
             .setOrigin(new BlockPos(0,30,0));
 
     public static final DungeonFloorTemplate VILLAGE_DUNGEON_GAUNTLET_FLOOR = create("village_gauntlet")
@@ -123,6 +124,7 @@ public class DungeonFloorRegistry {
             )
             .set(HierarchicalProperty.PRE_ROOM_GEN_PROCESSING_STEPS, List.of(new AddBedrockShellStep()))
             .set(HierarchicalProperty.ENEMY_TABLE, EnemyTableRegistry.VILLAGE_ENEMY_TABLE)
+            .set(HierarchicalProperty.SOUNDSCAPE, SoundscapeTemplateRegistry.VD_OVERFLOW)
             .setOrigin(new BlockPos(0,30,0));
 
     public static DungeonFloorTemplate copyOf(DungeonFloorTemplate floor, String name) {

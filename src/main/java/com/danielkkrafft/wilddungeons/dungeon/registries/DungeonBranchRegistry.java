@@ -10,10 +10,9 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTem
 import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialPoolRegistry.*;
@@ -167,7 +166,9 @@ public class DungeonBranchRegistry {
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .addSimple(VILLAGE_SEWER_START))
             .set(MATERIAL, VILLAGE_SEWER_MATERIAL_POOL)
-            .set(HAS_BEDROCK_SHELL, true);
+            .set(HAS_BEDROCK_SHELL, true)
+            .set(SOUNDSCAPE, SoundscapeTemplateRegistry.VD_OVERFLOW);
+
     public static final DungeonBranchTemplate VILLAGE_SEWER_ALL = create("VILLAGE_SEWER_ALL")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .add(VILLAGE_SEWER_POOL,10)
@@ -177,7 +178,8 @@ public class DungeonBranchRegistry {
             .set(ROOM_TARGET_Y, 50)
             .set(MAX_Y, 100)
             .set(FLOOR_DISTANCE_WEIGHT, 400)
-            .set(HAS_BEDROCK_SHELL, true);
+            .set(HAS_BEDROCK_SHELL, true)
+            .set(SOUNDSCAPE, SoundscapeTemplateRegistry.VD_OVERFLOW);
 
     public static final DungeonBranchTemplate VILLAGE_SEWER_ENDING_BRANCH = create("VILLAGE_SEWER_ENDING_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
@@ -186,16 +188,39 @@ public class DungeonBranchRegistry {
                     .addSimple(VILLAGE_PIPE_TO_METRO))
             .set(MATERIAL, VILLAGE_SEWER_MATERIAL_POOL)
             .set(FLOOR_DISTANCE_WEIGHT, 400)
-            .set(HAS_BEDROCK_SHELL, true);
+            .set(HAS_BEDROCK_SHELL, true)
+            .set(SOUNDSCAPE, SoundscapeTemplateRegistry.VD_OVERFLOW);
+
+    private static List<BlockState> CreateLayeredColumn() {
+        List<BlockState> column = new ArrayList<>();
+
+        // Adds the 5 layers of water
+        column.addAll(Collections.nCopies(5, Blocks.WATER.defaultBlockState()));
+
+        // Adds the 4 layers of sand
+        column.addAll(Collections.nCopies(4, Blocks.SAND.defaultBlockState()));
+
+        // Adds the 3 layers of sandstone
+        column.addAll(Collections.nCopies(3, Blocks.SANDSTONE.defaultBlockState()));
+
+        // Adds the 6 layers of stone
+        column.addAll(Collections.nCopies(6, Blocks.STONE.defaultBlockState()));
+
+        // Adds the 8 layers of bedrock
+        column.addAll(Collections.nCopies(8, Blocks.BEDROCK.defaultBlockState()));
+
+        return column;
+    }
 
     public static final DungeonBranchTemplate VILLAGE_METRO_START_BRANCH = create("VILLAGE_METRO_START_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .addSimple(VILLAGE_METRO_CENTER)
             )
-            .set(PRE_WORLD_GEN_PROCESSING_STEPS, List.of(new BaseColumnHereStep(List.of(Blocks.WATER.defaultBlockState(), Blocks.WATER.defaultBlockState(), Blocks.WATER.defaultBlockState(), Blocks.WATER.defaultBlockState(), Blocks.WATER.defaultBlockState(), Blocks.SAND.defaultBlockState(), Blocks.SAND.defaultBlockState(), Blocks.SAND.defaultBlockState(), Blocks.SAND.defaultBlockState(), Blocks.SANDSTONE.defaultBlockState(), Blocks.SANDSTONE.defaultBlockState(), Blocks.SANDSTONE.defaultBlockState(), Blocks.STONE.defaultBlockState(), Blocks.STONE.defaultBlockState(), Blocks.STONE.defaultBlockState(), Blocks.STONE.defaultBlockState(), Blocks.STONE.defaultBlockState(), Blocks.STONE.defaultBlockState(), Blocks.BEDROCK.defaultBlockState(), Blocks.BEDROCK.defaultBlockState(), Blocks.BEDROCK.defaultBlockState(), Blocks.BEDROCK.defaultBlockState(), Blocks.BEDROCK.defaultBlockState(), Blocks.BEDROCK.defaultBlockState(), Blocks.BEDROCK.defaultBlockState(), Blocks.BEDROCK.defaultBlockState()))))
+            .set(PRE_WORLD_GEN_PROCESSING_STEPS, List.of(new BaseColumnHereStep(CreateLayeredColumn())))
             .set(PRE_ROOM_GEN_PROCESSING_STEPS, List.of(new CreateBorderStep(3)))
             .set(MATERIAL, VILLAGE_MATERIAL_POOL)
-            .set(BLOCKING_MATERIAL_INDEX, 2);
+            .set(BLOCKING_MATERIAL_INDEX, 2)
+            .set(SOUNDSCAPE, SoundscapeTemplateRegistry.VD_THE_CAPITAL);
 
     public static final DungeonBranchTemplate VILLAGE_METRO_STREETS_BRANCH = create("VILLAGE_METRO_STREETS_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
@@ -209,6 +234,7 @@ public class DungeonBranchRegistry {
             .set(CHEST_SPAWN_CHANCE, 1.0)
             .set(PRE_ROOM_GEN_PROCESSING_STEPS, List.of(new CreateBorderStep(0)))
             .set(PLACE_ANYWHERE, true)
+            .set(SOUNDSCAPE, SoundscapeTemplateRegistry.VD_THE_CAPITAL)
             .setRootOriginBranchIndex(4);
 
     public static final DungeonBranchTemplate VILLAGE_MEDIUM_BRANCH = create("VILLAGE_MEDIUM_BRANCH")
@@ -223,6 +249,7 @@ public class DungeonBranchRegistry {
             .set(CHEST_SPAWN_CHANCE, 1.0)
             .set(PRE_ROOM_GEN_PROCESSING_STEPS, List.of(new CreateBorderStep(0)))
             .set(PLACE_ANYWHERE, true)
+            .set(SOUNDSCAPE, SoundscapeTemplateRegistry.VD_THE_CAPITAL)
             .setRootOriginBranchIndex(4);
 
     public static final DungeonBranchTemplate VILLAGE_SMALL_BRANCH = create("VILLAGE_SMALL_BRANCH")
@@ -237,6 +264,7 @@ public class DungeonBranchRegistry {
             .set(CHEST_SPAWN_CHANCE, 1.0)
             .set(PRE_ROOM_GEN_PROCESSING_STEPS, List.of(new CreateBorderStep(0)))
             .set(PLACE_ANYWHERE, true)
+            .set(SOUNDSCAPE, SoundscapeTemplateRegistry.VD_THE_CAPITAL)
             .setRootOriginBranchIndex(4);
 
     public static final DungeonBranchTemplate VILLAGE_METRO_ENDING_BRANCH = create("VILLAGE_METRO_ENDING_BRANCH")
@@ -262,6 +290,7 @@ public class DungeonBranchRegistry {
                     VILLAGE_METRO_FLYINGNOKK_TWR_JAIL,2,
                     VILLAGE_METRO_FLYINGNOKK_TWR_LOBBY,2,
                     VILLAGE_METRO_FLYINGNOKK_TWR_VAULT,2)))
+            .set(SOUNDSCAPE, SoundscapeTemplateRegistry.VD_ANGEL_INVESTOR_SAFE)
             .setRootOriginBranchIndex(4);
 
     public static final DungeonBranchTemplate VILLAGE_METRO_ENDING_GAUNTLET_BRANCH = create("VILLAGE_METRO_ENDING_GAUNTLET_BRANCH")
@@ -295,6 +324,7 @@ public class DungeonBranchRegistry {
                     VILLAGE_METRO_FLYINGNOKK_TWR_JAIL,2,
                     VILLAGE_METRO_FLYINGNOKK_TWR_LOBBY,2,
                     VILLAGE_METRO_FLYINGNOKK_TWR_VAULT,2)))
+            .set(SOUNDSCAPE, SoundscapeTemplateRegistry.VD_ANGEL_INVESTOR_SAFE)
             .setRootOriginBranchIndex(6);
 
     public static DungeonBranchTemplate copyOf(DungeonBranchTemplate branch, String name) {
