@@ -186,6 +186,8 @@ public class WildDungeons {
         }
     }
 
+
+
     public static ResourceLocation rl(String path) {
         return ResourceLocation.fromNamespaceAndPath(MODID, path);
     }

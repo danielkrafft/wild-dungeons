@@ -594,13 +594,17 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
             .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(1)));
     public static final DungeonRoomTemplate VILLAGE_METRO_MOBFIA_TWR_OFFICE = createSimple("village/metro/mobfia/twr/office")
             .set(DO_PLACEMENT_MIRROR, false)
-            .setClazz(LootRoom.class)
+            .set(CHEST_SPAWN_CHANCE, 1.0)
             .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(1)));
     public static final DungeonRoomTemplate VILLAGE_METRO_MOBFIA_TWR_CEO_OFFICE = createBoss("village/metro/mobfia/twr/ceo_office", new Vec3(13, 3, 13))
             .set(DO_PLACEMENT_MIRROR, false)
             .set(ENEMY_TABLE, EnemyTableRegistry.VILLAGER_CEO_ARENA)
             .set(ROOM_CLEAR_REWARD_POOL, WeightedPool.of(OfferingTemplateRegistry.EXIT_RIFT))
             .set(SOUNDSCAPE, SoundscapeTemplateRegistry.VD_ANGEL_INVESTOR);
+    public static final DungeonRoomTemplate VILLAGE_METRO_TOWER_PERK = createSimple("village/tower/tower_perk")
+            .set(DO_PLACEMENT_MIRROR, false)
+            .setClazz(LootChoiceRoom.class)
+            .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(1)));
 
 
     public static DungeonRoomTemplate copyOf(DungeonRoomTemplate template, String name) {

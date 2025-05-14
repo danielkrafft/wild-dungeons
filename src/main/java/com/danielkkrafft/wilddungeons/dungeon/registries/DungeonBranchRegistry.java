@@ -3,8 +3,8 @@ package com.danielkkrafft.wilddungeons.dungeon.registries;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.DungeonLayout;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonMaterial;
-import com.danielkkrafft.wilddungeons.dungeon.components.process.CreateBorderStep;
 import com.danielkkrafft.wilddungeons.dungeon.components.process.BaseColumnHereStep;
+import com.danielkkrafft.wilddungeons.dungeon.components.process.CreateBorderStep;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonBranchTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
@@ -277,7 +277,7 @@ public class DungeonBranchRegistry {
                     .addSimple(VILLAGE_METRO_TOWER_STAIRS)
                     .add(VILLAGE_TOWER_FLOORS, 1)
                     .addSimple(VILLAGE_METRO_TOWER_STAIRS)
-                    .addSimple(VILLAGE_METRO_MOBFIA_TWR_OFFICE)
+                    .addSimple(VILLAGE_METRO_TOWER_PERK)
                     .addSimple(VILLAGE_METRO_TOWER_STAIRS)
                     .addSimple(VILLAGE_METRO_MOBFIA_TWR_CEO_OFFICE)
             )
@@ -303,7 +303,7 @@ public class DungeonBranchRegistry {
                     .addSimple(VILLAGE_METRO_TOWER_STAIRS)
                     .add(VILLAGE_TOWER_FLOORS, 1)
                     .addSimple(VILLAGE_METRO_TOWER_STAIRS)
-                    .addSimple(VILLAGE_METRO_MOBFIA_TWR_OFFICE)
+                    .addSimple(VILLAGE_METRO_TOWER_PERK)
                     .addSimple(VILLAGE_METRO_TOWER_STAIRS)
                     .add(VILLAGE_TOWER_FLOORS, 1)
                     .addSimple(VILLAGE_METRO_TOWER_STAIRS)
@@ -311,7 +311,7 @@ public class DungeonBranchRegistry {
                     .addSimple(VILLAGE_METRO_TOWER_STAIRS)
                     .add(VILLAGE_TOWER_FLOORS, 1)
                     .addSimple(VILLAGE_METRO_TOWER_STAIRS)
-                    .addSimple(VILLAGE_METRO_MOBFIA_TWR_OFFICE)
+                    .addSimple(VILLAGE_METRO_TOWER_PERK)
                     .addSimple(VILLAGE_METRO_TOWER_STAIRS)
                     .addSimple(VILLAGE_METRO_MOBFIA_TWR_CEO_OFFICE)
             )
