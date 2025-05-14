@@ -86,7 +86,7 @@ public class DungeonFloorRegistry {
             .set(HierarchicalProperty.PRE_GEN_PROCESSING_STEPS, List.of(new AddBedrockShellStep()))
             .setOrigin(new BlockPos(0, 0, 0));
 
-    public static final DungeonFloorTemplate VILLAGE_FLOOR = create("village")
+    public static final DungeonFloorTemplate VILLAGE_DUNGEON_FLOOR = create("village")
             .setBranchTemplates(
                     new DungeonLayout<DungeonBranchTemplate>()
                             .addSimple(VILLAGE_SEWER_START_BRANCH)
@@ -96,11 +96,30 @@ public class DungeonFloorRegistry {
                             .addSimple(VILLAGE_METRO_START_BRANCH)
                             .addSimple(VILLAGE_METRO_ENDING_BRANCH)//todo this is first so that we don't block it with other branches, but that can cause the difficulty to be off
                             .addSimple(VILLAGE_METRO_STREETS_BRANCH)
-                            .addSimple(VILLAGE_METRO_STREETS_2_BRANCH)
+                            .addSimple(VILLAGE_MEDIUM_BRANCH)
+                            .addSimple(VILLAGE_SMALL_BRANCH)
+            )
+            .set(HierarchicalProperty.PRE_GEN_PROCESSING_STEPS, List.of(new AddBedrockShellStep()))
+            .set(HierarchicalProperty.ENEMY_TABLE, EnemyTableRegistry.VILLAGE_ENEMY_TABLE)
+            .setOrigin(new BlockPos(0,30,0));
+
+    public static final DungeonFloorTemplate VILLAGE_DUNGEON_GAUNTLET_FLOOR = create("village_gauntlet")
+            .setBranchTemplates(
+                    new DungeonLayout<DungeonBranchTemplate>()
+                            .addSimple(VILLAGE_SEWER_START_BRANCH)
+                            .addSimple(VILLAGE_SEWER_ALL)
+                            .addSimple(VILLAGE_SEWER_ALL)
+                            .addSimple(VILLAGE_SEWER_ALL)
+                            .addSimple(VILLAGE_SEWER_ALL)
+                            .addSimple(VILLAGE_SEWER_ENDING_BRANCH)
+                            .addSimple(VILLAGE_METRO_START_BRANCH)
+                            .addSimple(VILLAGE_METRO_ENDING_GAUNTLET_BRANCH)
                             .addSimple(VILLAGE_METRO_STREETS_BRANCH)
-                            .addSimple(VILLAGE_METRO_STREETS_2_BRANCH)
                             .addSimple(VILLAGE_METRO_STREETS_BRANCH)
-                            .addSimple(VILLAGE_METRO_STREETS_2_BRANCH)
+                            .addSimple(VILLAGE_MEDIUM_BRANCH)
+                            .addSimple(VILLAGE_MEDIUM_BRANCH)
+                            .addSimple(VILLAGE_SMALL_BRANCH)
+                            .addSimple(VILLAGE_SMALL_BRANCH)
             )
             .set(HierarchicalProperty.PRE_GEN_PROCESSING_STEPS, List.of(new AddBedrockShellStep()))
             .set(HierarchicalProperty.ENEMY_TABLE, EnemyTableRegistry.VILLAGE_ENEMY_TABLE)

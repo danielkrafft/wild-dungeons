@@ -198,7 +198,7 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
             poseStack.translate(0.0f, 0.5f, 0.0f);
             poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
             if (Minecraft.getInstance().player == null) return;
-            float extraScaleFactor = (float) (2.5f - Math.min(entity.position().distanceTo(Minecraft.getInstance().player.position()) / 15.0f, 2.5f)) * 2;
+            float extraScaleFactor = (float) (2.5f - Math.min(entity.position().distanceTo(Minecraft.getInstance().player.position()) / 15.0f, 2.5f));
             poseStack.scale(0.1F+extraScaleFactor, 0.1F+extraScaleFactor, 0.1F+extraScaleFactor);
 
             //Custom Shader Version
@@ -222,7 +222,7 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
             vertex(vertexconsumer, posestack$pose, 1.0f, 1.0f, 1.0f, 0.0f, 0xF000F0, 1.0f, entity.getSecondaryColor());
             vertex(vertexconsumer, posestack$pose, -1.0f, 1.0f, 0.0f, 0.0f, 0xF000F0, 1.0f, entity.getSecondaryColor());
 
-            poseStack.translate(0.0f, 0.0f, 0.01f);
+            poseStack.translate(0.0f, 0.0f, 0.001f);
 
             vertexconsumer = buffer.getBuffer(RenderType.itemEntityTranslucentCull(RIFT_2_ANIMATION.getCurrentFrame()));
 

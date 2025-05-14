@@ -170,35 +170,48 @@ public class DungeonBranchRegistry {
             .set(HAS_BEDROCK_SHELL, true);
     public static final DungeonBranchTemplate VILLAGE_SEWER_ALL = create("VILLAGE_SEWER_ALL")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
-                    .add(VILLAGE_SEWER_POOL,5)
-                    .addSimple(VILLAGE_SEWER_PERK)
-                    .add(VILLAGE_SEWER_POOL,5)
-                    .addSimple(VILLAGE_SEWER_PERK)
-                    .add(VILLAGE_SEWER_POOL,5))
+                    .add(VILLAGE_SEWER_POOL,10)
+                    .addSimple(VILLAGE_SEWER_PERK))
             .set(MATERIAL, VILLAGE_SEWER_MATERIAL_POOL)
             .set(HierarchicalProperty.ENEMY_TABLE, EnemyTableRegistry.VILLAGE_SEWER_ENEMY_TABLE)
-            .set(ROOM_TARGET_Y, 100)
+            .set(ROOM_TARGET_Y, 50)
+            .set(FLOOR_DISTANCE_WEIGHT, 400)
             .set(HAS_BEDROCK_SHELL, true);
+
     public static final DungeonBranchTemplate VILLAGE_SEWER_ENDING_BRANCH = create("VILLAGE_SEWER_ENDING_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .addSimple(VILLAGE_SEWER_13)
                     .addSimple(VILLAGE_PIPE_TO_METRO)
                     .addSimple(VILLAGE_PIPE_TO_METRO))
             .set(MATERIAL, VILLAGE_SEWER_MATERIAL_POOL)
+            .set(FLOOR_DISTANCE_WEIGHT, 400)
             .set(HAS_BEDROCK_SHELL, true);
 
     public static final DungeonBranchTemplate VILLAGE_METRO_START_BRANCH = create("VILLAGE_METRO_START_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .addSimple(VILLAGE_METRO_CENTER)
             )
-            .set(PRE_GEN_PROCESSING_STEPS, List.of(new CreateBorderStep(), new SurroundingColumnStep(List.of(Blocks.WATER.defaultBlockState(), Blocks.WATER.defaultBlockState(), Blocks.SAND.defaultBlockState(), Blocks.BEDROCK.defaultBlockState()), 400)))
-            .set(MATERIAL, VILLAGE_MATERIAL_POOL);
+            .set(PRE_GEN_PROCESSING_STEPS, List.of(new CreateBorderStep(3), new SurroundingColumnStep(List.of(Blocks.WATER.defaultBlockState(), Blocks.WATER.defaultBlockState(), Blocks.SAND.defaultBlockState(), Blocks.BEDROCK.defaultBlockState()), 400)))
+            .set(MATERIAL, VILLAGE_MATERIAL_POOL)
+            .set(BLOCKING_MATERIAL_INDEX, 2);
+
     public static final DungeonBranchTemplate VILLAGE_METRO_STREETS_BRANCH = create("VILLAGE_METRO_STREETS_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
-                    .add(VILLAGE_WIDE_PATH_POOL,20)
-                    .add(VILLAGE_MEDIUM_PLOTS,75)
-                    .add(VILLAGE_SMALL_PLOTS,50)
-                    .add(VILLAGE_WIDE_PATH_POOL,1)//important that the last room is a path so that we can add more in the next branch generation and keep the straight line
+                    .add(VILLAGE_WIDE_PATH_POOL,7)
+            )
+            .setLimitedRooms(new HashMap<>(Map.of(VILLAGE_METRO_WIDE_CROSSROADS, 2)))
+            .set(MATERIAL, VILLAGE_MATERIAL_POOL)
+            .set(BLOCKING_MATERIAL_INDEX, 2)
+            .set(FLOOR_DISTANCE_WEIGHT, 0)
+            .set(BRANCH_DISTANCE_WEIGHT, -1000)
+            .set(CHEST_SPAWN_CHANCE, 1.0)
+            .set(PRE_GEN_PROCESSING_STEPS, List.of(new CreateBorderStep(0)))
+            .set(PLACE_ANYWHERE, true)
+            .setRootOriginBranchIndex(4);
+
+    public static final DungeonBranchTemplate VILLAGE_MEDIUM_BRANCH = create("VILLAGE_MEDIUM_BRANCH")
+            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
+                    .add(VILLAGE_MEDIUM_PLOTS,20)
             )
             .setLimitedRooms(new HashMap<>(Map.of(VILLAGE_METRO_WIDE_CROSSROADS, 2)))
             .set(MATERIAL, VILLAGE_MATERIAL_POOL)
@@ -206,23 +219,50 @@ public class DungeonBranchRegistry {
             .set(BRANCH_DISTANCE_WEIGHT, -50)
             .set(FLOOR_DISTANCE_WEIGHT, 0)
             .set(CHEST_SPAWN_CHANCE, 1.0)
-            .set(PRE_GEN_PROCESSING_STEPS, List.of(new CreateBorderStep()))
+            .set(PRE_GEN_PROCESSING_STEPS, List.of(new CreateBorderStep(0)))
+            .set(PLACE_ANYWHERE, true)
             .setRootOriginBranchIndex(4);
-    public static final DungeonBranchTemplate VILLAGE_METRO_STREETS_2_BRANCH = create("VILLAGE_METRO_STREETS_2_BRANCH")
+
+    public static final DungeonBranchTemplate VILLAGE_SMALL_BRANCH = create("VILLAGE_SMALL_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
-                    .add(VILLAGE_WIDE_PATH_POOL,5)
-                    .add(VILLAGE_MEDIUM_PLOTS,25)
-                    .add(VILLAGE_SMALL_PLOTS,100)
+                    .add(VILLAGE_SMALL_PLOTS,40)
             )
             .setLimitedRooms(new HashMap<>(Map.of(VILLAGE_METRO_WIDE_CROSSROADS, 2)))
             .set(MATERIAL, VILLAGE_MATERIAL_POOL)
             .set(BLOCKING_MATERIAL_INDEX, 2)
             .set(BRANCH_DISTANCE_WEIGHT, -50)
+            .set(FLOOR_DISTANCE_WEIGHT, 0)
             .set(CHEST_SPAWN_CHANCE, 1.0)
-            .set(PRE_GEN_PROCESSING_STEPS, List.of(new CreateBorderStep()))
-            .set(FLOOR_DISTANCE_WEIGHT, 0);
+            .set(PRE_GEN_PROCESSING_STEPS, List.of(new CreateBorderStep(0)))
+            .set(PLACE_ANYWHERE, true)
+            .setRootOriginBranchIndex(4);
 
     public static final DungeonBranchTemplate VILLAGE_METRO_ENDING_BRANCH = create("VILLAGE_METRO_ENDING_BRANCH")
+            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
+                    .addSimple(VILLAGE_METRO_TOWER_START)
+                    .addSimple(VILLAGE_METRO_TOWER_STAIRS)
+                    .add(VILLAGE_TOWER_FLOORS, 1)
+                    .addSimple(VILLAGE_METRO_TOWER_STAIRS)
+                    .add(VILLAGE_TOWER_FLOORS, 1)
+                    .addSimple(VILLAGE_METRO_TOWER_STAIRS)
+                    .add(VILLAGE_TOWER_FLOORS, 1)
+                    .addSimple(VILLAGE_METRO_TOWER_STAIRS)
+                    .addSimple(VILLAGE_METRO_MOBFIA_TWR_OFFICE)
+                    .addSimple(VILLAGE_METRO_TOWER_STAIRS)
+                    .addSimple(VILLAGE_METRO_MOBFIA_TWR_CEO_OFFICE)
+            )
+            .set(MATERIAL, VILLAGE_MATERIAL_POOL)
+            .setLimitedRooms(new HashMap<>(Map.of(
+                    VILLAGE_METRO_CHLTER121_TWR_CUBICLES,2,
+                    VILLAGE_METRO_CHLTER121_TWR_LIBRARY,2,
+                    VILLAGE_METRO_CHLTER121_TWR_SEVERANCE,2,
+                    VILLAGE_METRO_FLYINGNOKK_TWR_SEVERANCE_HALLS,2,
+                    VILLAGE_METRO_FLYINGNOKK_TWR_JAIL,2,
+                    VILLAGE_METRO_FLYINGNOKK_TWR_LOBBY,2,
+                    VILLAGE_METRO_FLYINGNOKK_TWR_VAULT,2)))
+            .setRootOriginBranchIndex(4);
+
+    public static final DungeonBranchTemplate VILLAGE_METRO_ENDING_GAUNTLET_BRANCH = create("VILLAGE_METRO_ENDING_GAUNTLET_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .addSimple(VILLAGE_METRO_TOWER_START)
                     .addSimple(VILLAGE_METRO_TOWER_STAIRS)
@@ -253,7 +293,7 @@ public class DungeonBranchRegistry {
                     VILLAGE_METRO_FLYINGNOKK_TWR_JAIL,2,
                     VILLAGE_METRO_FLYINGNOKK_TWR_LOBBY,2,
                     VILLAGE_METRO_FLYINGNOKK_TWR_VAULT,2)))
-            .setRootOriginBranchIndex(4);
+            .setRootOriginBranchIndex(6);
 
     public static DungeonBranchTemplate copyOf(DungeonBranchTemplate branch, String name) {
         DungeonBranchTemplate copy = DungeonBranchTemplate.copyOf(branch, name);

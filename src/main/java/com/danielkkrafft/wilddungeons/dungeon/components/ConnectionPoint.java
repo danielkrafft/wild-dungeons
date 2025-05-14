@@ -173,13 +173,14 @@ public class ConnectionPoint {
     }
 
     public static ConnectionPoint selectBestPoint(List<ConnectionPoint> pointPool, DungeonBranch branch, int yTarget, double branchWeight, double floorWeight, double heightWeight, double randomWeight) {
-        int totalBranchDistance = pointPool.stream().mapToInt(point -> branch.getRooms().isEmpty() ? 0 : point.getOrigin(point.getRoom().getOrientation(), point.getRoom().getPosition()).distManhattan(branch.getRooms().getFirst().getPosition())).sum();
-        int totalFloorDistance = pointPool.stream().mapToInt(point -> point.getOrigin(point.getRoom().getOrientation(), point.getRoom().getPosition()).distManhattan(branch.getFloor().getOrigin())).sum();
+        DungeonBranch branchForCalculation = branch.getFloor().getBranches().get(branch.getRootOrActualIndex());
+        int totalBranchDistance = pointPool.stream().mapToInt(point -> branchForCalculation.getRooms().isEmpty() ? 0 : point.getOrigin(point.getRoom().getOrientation(), point.getRoom().getPosition()).distManhattan(branchForCalculation.getRooms().getFirst().getPosition())).sum();
+        int totalFloorDistance = pointPool.stream().mapToInt(point -> point.getOrigin(point.getRoom().getOrientation(), point.getRoom().getPosition()).distManhattan(branchForCalculation.getFloor().getOrigin())).sum();
         int totalHeightDistance = pointPool.stream().mapToInt(point -> Math.abs(point.getOrigin(point.getRoom().getOrientation(), point.getRoom().getPosition()).getY() - yTarget)).sum();
 
         return pointPool.stream().map(point -> {
-            int distanceToBranchOrigin = branch.getRooms().isEmpty() ? 0 : point.getOrigin(point.getRoom().getOrientation(), point.getRoom().getPosition()).distManhattan(branch.getRooms().getFirst().getPosition());
-            int distanceToFloorOrigin = point.getOrigin(point.getRoom().getOrientation(), point.getRoom().getPosition()).distManhattan(branch.getFloor().getOrigin());
+            int distanceToBranchOrigin = branchForCalculation.getRooms().isEmpty() ? 0 : point.getOrigin(point.getRoom().getOrientation(), point.getRoom().getPosition()).distManhattan(branchForCalculation.getRooms().getFirst().getPosition());
+            int distanceToFloorOrigin = point.getOrigin(point.getRoom().getOrientation(), point.getRoom().getPosition()).distManhattan(branchForCalculation.getFloor().getOrigin());
             int distanceToYTarget = Math.abs(point.getOrigin(point.getRoom().getOrientation(), point.getRoom().getPosition()).getY() - yTarget);
 
             int score = 0;

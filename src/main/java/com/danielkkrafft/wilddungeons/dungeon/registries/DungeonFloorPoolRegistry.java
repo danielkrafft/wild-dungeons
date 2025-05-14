@@ -11,6 +11,6 @@ public class DungeonFloorPoolRegistry {
     public static final WeightedPool<DungeonFloorTemplate> OVERWORLD_FLOOR_POOL = new WeightedPool<DungeonFloorTemplate>()
             .add(MEGA_DUNGEON_FLOOR, 15);
     public static final WeightedPool<DungeonFloorTemplate> VILLAGE_FLOOR_POOL = new WeightedPool<DungeonFloorTemplate>()
-            .add(VILLAGE_FLOOR, 1);
+            .add(VILLAGE_DUNGEON_FLOOR, 1);
 
 }

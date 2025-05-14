@@ -10,6 +10,11 @@ import java.util.List;
 
 public class CreateBorderStep extends PostProcessingStep {
     int stoneDepth = 3;
+    int offset = 0;
+
+    public CreateBorderStep(int offset) {
+        this.offset = offset;
+    }
 
     @Override
     public void handle(List<DungeonRoom> rooms) {
@@ -29,7 +34,7 @@ public class CreateBorderStep extends PostProcessingStep {
                 }
                 for (int x = box.minX()-1; x <= box.maxX()+1; x++) {
                     for (int z = box.minZ()-1; z <= box.maxZ()+1; z++) {
-                        int y0 = room.getConnectionPoints().getFirst().getRealBoundingBox().minY(); // TODO this is super lazy and wouldn't work if rooms didn't have even connection points
+                        int y0 = room.getConnectionPoints().getFirst().getRealBoundingBox().minY() + offset; // TODO this is super lazy and wouldn't work if rooms didn't have even connection points
                         for (int y = y0; y >= y0-5; y--) {
                             if (z == box.minZ()-1 || z == box.maxZ()+1 || x == box.minX()-1 || x == box.maxX()+1) {
                                 blockPos.set(x, y, z);

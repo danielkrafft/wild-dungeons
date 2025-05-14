@@ -147,7 +147,7 @@ public class DungeonRoomPoolRegistry {
             ;
     
     public static final WeightedPool<DungeonRoomTemplate> VILLAGE_WIDE_PATH_POOL = create("VILLAGE_WIDE_PATH_POOL")
-//            .add(VILLAGE_METRO_WIDE_CROSSROADS,1)
+            .add(VILLAGE_METRO_WIDE_CROSSROADS,2)
 //            .add(VILLAGE_METRO_WIDE_STAIRS,1)//todo way to handle vertical gaps
             .add(VILLAGE_METRO_WIDE_PATH, 10);
 

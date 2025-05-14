@@ -176,15 +176,21 @@ public class DungeonFloor {
 
         int totalBranchCount = getTemplate().branchTemplates().size();
         int currentBranchCount = this.dungeonBranches.size();
+        int restartCount = 0;
         failureCount = 0;
         while (currentBranchCount < totalBranchCount && this.getLevel() != null) {
             WildDungeons.getLogger().info("Generating branch {} of {}", currentBranchCount, totalBranchCount-1);
             if (failureCount> 25) {
                 WildDungeons.getLogger().error("Failed to generate dungeon. Deleting all branches and starting over.");
+                restartCount+= 1;
+                if (failureCount > 3) {
+                    break;
+                }
                 dungeonBranches.forEach(DungeonBranch::destroyRooms);
                 failureCount = 0;
                 this.dungeonBranches.clear();
                 currentBranchCount = 0;
+
             }
             try { tryGenerateBranch(currentBranchCount);
             } catch (Exception e) { e.printStackTrace(); }

@@ -15,6 +15,7 @@ import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialP
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialPoolRegistry.VILLAGE_SEWER_MATERIAL_POOL;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialRegistry.PIGLIN_FACTORY_MATERIAL;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.OfferingTemplateRegistry.MEGA_DUNGEON_GAUNTLET_RIFT;
+import static com.danielkkrafft.wilddungeons.dungeon.registries.OfferingTemplateRegistry.VILLAGE_HEADQUARTERS_GAUNTLET_RIFT;
 import static com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession.DungeonExitBehavior.DESTROY;
 import static com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession.DungeonExitBehavior.NEXT;
 
@@ -85,14 +86,30 @@ public class DungeonRegistry {
 
     public static DungeonTemplate VILLAGE_DUNGEON = create("village_dungeon")
             .setFloorTemplates(new DungeonLayout<DungeonFloorTemplate>()
-                    .add(VILLAGE_FLOOR_POOL, 1)
+                    .add(WeightedPool.of(VILLAGE_DUNGEON_FLOOR), 1)
             )
             .set(MATERIAL, VILLAGE_SEWER_MATERIAL_POOL)
             .set(HAS_BEDROCK_SHELL, false)
             .set(DISPLAY_NAME, "VILLAGER HEADQUARTERS")
             .set(ICON, "1-2")
             .set(PRIMARY_COLOR, 0xFF44cc00)
-            .set(SECONDARY_COLOR, 0xFFdde63e)
+            .set(SECONDARY_COLOR, 0xFF3ee67e)
+            .set(TARGET_TIME, 12000)
+            .set(TARGET_DEATHS, 0)
+            .set(TARGET_SCORE, 15000)
+            .set(EXIT_BEHAVIOR, NEXT)
+            .set(NEXT_DUNGEON_OFFERING, WeightedPool.of(VILLAGE_HEADQUARTERS_GAUNTLET_RIFT));
+
+    public static DungeonTemplate VILLAGE_DUNGEON_GAUNTLET = create("village_dungeon_gauntlet")
+            .setFloorTemplates(new DungeonLayout<DungeonFloorTemplate>()
+                    .add(WeightedPool.of(VILLAGE_DUNGEON_GAUNTLET_FLOOR), 1)
+            )
+            .set(MATERIAL, VILLAGE_SEWER_MATERIAL_POOL)
+            .set(HAS_BEDROCK_SHELL, false)
+            .set(DISPLAY_NAME, "VILLAGER HEADQUARTERS - G")
+            .set(ICON, "G-2")
+            .set(PRIMARY_COLOR, 0xFF44cc00)
+            .set(SECONDARY_COLOR, 0xFF3ee67e)
             .set(TARGET_TIME, 12000)
             .set(TARGET_DEATHS, 0)
             .set(TARGET_SCORE, 15000)
