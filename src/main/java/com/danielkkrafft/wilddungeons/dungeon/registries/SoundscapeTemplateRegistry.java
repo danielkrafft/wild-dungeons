@@ -3,6 +3,7 @@ package com.danielkkrafft.wilddungeons.dungeon.registries;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.SoundscapeTemplate;
 import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
+import net.minecraft.client.resources.sounds.Sound;
 
 public class SoundscapeTemplateRegistry {
     public static final DungeonRegistration.DungeonComponentRegistry<SoundscapeTemplate> SOUNDSCAPE_TEMPLATE_REGISTRY = new DungeonRegistration.DungeonComponentRegistry<>();
@@ -45,24 +46,24 @@ public class SoundscapeTemplateRegistry {
             .addSound(WDSoundEvents.CAVE_02, 0)
             .addSound(WDSoundEvents.MOONLIGHT_SONATA_3RD, 1);
 
+    //------- VILLAGE DUNGEON -------//
+    public static final SoundscapeTemplate VD_ANGEL_INVESTOR = create("VD_ANGEL_INVESTOR")
+            .addSound(WDSoundEvents.VD_ANGEL_INVESTOR, 0);
+
+    public static final SoundscapeTemplate VD_ANGEL_INVESTOR_SAFE = create("VD_ANGEL_INVESTOR_SAFE")
+            .addSound(WDSoundEvents.VD_ANGEL_INVESTOR_SAFE, 0);
+
+    public static final SoundscapeTemplate VD_OVERFLOW = create("VD_OVERFLOW")
+            .addSound(WDSoundEvents.VD_OVERFLOW, 1)
+            .addSound(WDSoundEvents.VD_OVERFLOW_SAFE, 0);
+
+    public static final SoundscapeTemplate VD_THE_CAPITAL = create("VD_THE_CAPITAL")
+            .addSound(WDSoundEvents.VD_THE_CAPITAL, 1)
+            .addSound(WDSoundEvents.VD_THE_CAPITAL_SAFE, 0);
+
     public static SoundscapeTemplate create(String name){
         SoundscapeTemplate soundscape = new SoundscapeTemplate(name);
         SOUNDSCAPE_TEMPLATE_REGISTRY.add(soundscape);
         return soundscape;
     }
-
-    //------- VILLAGE DUNGEON -------//
-    public static final SoundscapeTemplate VD_ANGEL_INVESTOR = create("VD_ANGEL_INVESTOR")
-            .addSound(WDSoundEvents.ANGEL_INVESTOR, 1)
-            .addSound(WDSoundEvents.ANGEL_INVESTOR_SAFE, 0);
-
-    public static final SoundscapeTemplate VD_OVERFLOW = create("VD_OVERFLOW")
-            .addSound(WDSoundEvents.OVERFLOW, 1)
-            .addSound(WDSoundEvents.OVERFLOW_SAFE, 0)
-            .addSound(WDSoundEvents.OVERFLOW_UNDERWATER, 1)
-            .addSound(WDSoundEvents.OVERFLOW_UNDERWATER_SAFE, 1);
-
-    public static final SoundscapeTemplate VD_THE_CAPITAL = create("VD_THE_CAPITAL")
-            .addSound(WDSoundEvents.THE_CAPITAL, 1)
-            .addSound(WDSoundEvents.THE_CAPITAL_SAFE, 0);
 }

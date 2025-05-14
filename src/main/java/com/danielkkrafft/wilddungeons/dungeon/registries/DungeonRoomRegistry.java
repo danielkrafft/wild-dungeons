@@ -599,7 +599,8 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate VILLAGE_METRO_MOBFIA_TWR_CEO_OFFICE = createBoss("village/metro/mobfia/twr/ceo_office", new Vec3(13, 3, 13))
             .set(DO_PLACEMENT_MIRROR, false)
             .set(ENEMY_TABLE, EnemyTableRegistry.VILLAGER_CEO_ARENA)
-            .set(ROOM_CLEAR_REWARD_POOL, WeightedPool.of(OfferingTemplateRegistry.EXIT_RIFT));
+            .set(ROOM_CLEAR_REWARD_POOL, WeightedPool.of(OfferingTemplateRegistry.EXIT_RIFT))
+            .set(SOUNDSCAPE, SoundscapeTemplateRegistry.VD_ANGEL_INVESTOR);
 
 
     public static DungeonRoomTemplate copyOf(DungeonRoomTemplate template, String name) {

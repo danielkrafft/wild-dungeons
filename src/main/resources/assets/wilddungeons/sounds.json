@@ -290,5 +290,69 @@
         "stream": true
       }
     ]
+  },
+  "soundscape.music.overflow": {
+    "sounds": [
+      {
+        "name": "wilddungeons:soundscape/music/overflow",
+        "stream": true
+      }
+    ]
+  },
+  "soundscape.music.overflow_safe": {
+    "sounds": [
+      {
+        "name": "wilddungeons:soundscape/music/overflow_safe",
+        "stream": true
+      }
+    ]
+  },
+  "soundscape.music.overflow_underwater": {
+    "sounds": [
+      {
+        "name": "wilddungeons:soundscape/music/overflow_underwater",
+        "stream": true
+      }
+    ]
+  },
+  "soundscape.music.overflow_underwater_safe": {
+    "sounds": [
+      {
+        "name": "wilddungeons:soundscape/music/overflow_underwater_safe",
+        "stream": true
+      }
+    ]
+  },
+  "soundscape.music.the_capital": {
+    "sounds": [
+      {
+        "name": "wilddungeons:soundscape/music/the_capital",
+        "stream": true
+      }
+    ]
+  },
+  "soundscape.music.the_capital_safe": {
+    "sounds": [
+      {
+        "name": "wilddungeons:soundscape/music/the_capital_safe",
+        "stream": true
+      }
+    ]
+  },
+  "soundscape.music.angel_investor": {
+    "sounds": [
+      {
+        "name": "wilddungeons:soundscape/music/angel_investor",
+        "stream": true
+      }
+    ]
+  },
+  "soundscape.music.angel_investor_safe": {
+    "sounds": [
+      {
+        "name": "wilddungeons:soundscape/music/angel_investor_safe",
+        "stream": true
+      }
+    ]
   }
 }
