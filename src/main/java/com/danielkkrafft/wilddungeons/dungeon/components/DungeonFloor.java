@@ -21,6 +21,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.joml.Vector2i;
@@ -46,6 +47,7 @@ public class DungeonFloor {
     private final int index;
     private final HashMap<ChunkPos, ArrayList<Vector2i>> chunkMap = new HashMap<>();
     private final HashMap<String, Boolean> playersInside = new HashMap<>();
+    public BlockState[] baseColumn = null;
 
     public DungeonFloorTemplate getTemplate() {return DUNGEON_FLOOR_REGISTRY.get(this.templateKey);}
     public DungeonSession getSession() {return DungeonSessionManager.getInstance().getDungeonSession(this.sessionKey);}
@@ -72,11 +74,8 @@ public class DungeonFloor {
         this.index = this.getSession().getFloors().size();
         this.getSession().getFloors().add(this);
         this.templateKey = templateKey;
-
         this.LEVEL_KEY = buildFloorLevelKey(this);
-        InfiniverseAPI.get().getOrCreateLevel(DungeonSessionManager.getInstance().server, LEVEL_KEY, () -> WDDimensions.createLevel(WILDDUNGEON));
         this.origin = this.getTemplate().origin() == null ? origin : this.getTemplate().origin();
-        //this.calculateBranchLayout();
     }
 
     /**
@@ -178,12 +177,12 @@ public class DungeonFloor {
         int currentBranchCount = this.dungeonBranches.size();
         int restartCount = 0;
         failureCount = 0;
-        while (currentBranchCount < totalBranchCount && this.getLevel() != null) {
+        while (currentBranchCount < totalBranchCount) {
             WildDungeons.getLogger().info("Generating branch {} of {}", currentBranchCount, totalBranchCount-1);
             if (failureCount> 25) {
                 WildDungeons.getLogger().error("Failed to generate dungeon. Deleting all branches and starting over.");
                 restartCount+= 1;
-                if (failureCount > 3) {
+                if (restartCount > 3) {
                     break;
                 }
                 dungeonBranches.forEach(DungeonBranch::destroyRooms);
@@ -198,15 +197,19 @@ public class DungeonFloor {
             currentBranchCount = this.dungeonBranches.size();
         }
 
-        this.handlePostProcessing(PRE_GEN_PROCESSING_STEPS);
-        this.dungeonBranches.forEach(dungeonBranch -> dungeonBranch.handlePostProcessing(PRE_GEN_PROCESSING_STEPS));
-        this.dungeonBranches.forEach(b -> b.getRooms().forEach(dungeonRoom -> dungeonRoom.handlePostProcessing(PRE_GEN_PROCESSING_STEPS)));
+        this.handlePostProcessing(PRE_WORLD_GEN_PROCESSING_STEPS);
+        this.dungeonBranches.forEach(dungeonBranch -> dungeonBranch.handlePostProcessing(PRE_WORLD_GEN_PROCESSING_STEPS));
+        this.dungeonBranches.forEach(b -> b.getRooms().forEach(dungeonRoom -> dungeonRoom.handlePostProcessing(PRE_ROOM_GEN_PROCESSING_STEPS)));
+
+        InfiniverseAPI.get().getOrCreateLevel(DungeonSessionManager.getInstance().server, LEVEL_KEY, () -> WDDimensions.createLevel(WILDDUNGEON, this));
+        this.handlePostProcessing(PRE_ROOM_GEN_PROCESSING_STEPS);
+        this.dungeonBranches.forEach(dungeonBranch -> dungeonBranch.handlePostProcessing(PRE_ROOM_GEN_PROCESSING_STEPS));
+        this.dungeonBranches.forEach(b -> b.getRooms().forEach(dungeonRoom -> dungeonRoom.handlePostProcessing(PRE_ROOM_GEN_PROCESSING_STEPS)));
         this.dungeonBranches.forEach(DungeonBranch::actuallyPlaceInWorld);
         this.handlePostProcessing(POST_GEN_PROCESSING_STEPS);
         this.dungeonBranches.forEach(dungeonBranch -> dungeonBranch.handlePostProcessing(POST_GEN_PROCESSING_STEPS));
         this.dungeonBranches.forEach(b -> b.getRooms().forEach(dungeonRoom -> dungeonRoom.handlePostProcessing(POST_GEN_PROCESSING_STEPS)));
-
-
+        this.spawnPoint = this.dungeonBranches.getFirst().getSpawnPoint();
 //        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
 //
 //        }).handle((result, throwable) -> {
@@ -254,8 +257,6 @@ public class DungeonFloor {
             }
             return;
         }
-
-        if (branchIndex == 0) this.spawnPoint = this.dungeonBranches.getFirst().getSpawnPoint();
     }
 
     /**

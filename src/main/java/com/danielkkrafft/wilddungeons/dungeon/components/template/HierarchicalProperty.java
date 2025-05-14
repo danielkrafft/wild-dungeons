@@ -11,6 +11,7 @@ import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.util.WeightedTable;
 import com.google.gson.reflect.TypeToken;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
@@ -50,13 +51,14 @@ public class HierarchicalProperty<T> {
     public static final HierarchicalProperty<Integer> ROOM_TARGET_Y = new HierarchicalProperty<>(new TypeToken<>() {}, 128);
     public static final HierarchicalProperty<Integer> ROOM_GENERATION_RANDOMNESS = new HierarchicalProperty<>(new TypeToken<>() {}, 30);
     public static final HierarchicalProperty<Double> MATERIAL_NOISE = new HierarchicalProperty<>(new TypeToken<>() {}, 0.15);
-    public static final HierarchicalProperty<List<PostProcessingStep>> PRE_GEN_PROCESSING_STEPS = new HierarchicalProperty<>(new TypeToken<>() {}, new ArrayList<>());
+    public static final HierarchicalProperty<List<PostProcessingStep>> PRE_WORLD_GEN_PROCESSING_STEPS = new HierarchicalProperty<>(new TypeToken<>() {}, new ArrayList<>());
+    public static final HierarchicalProperty<List<PostProcessingStep>> PRE_ROOM_GEN_PROCESSING_STEPS = new HierarchicalProperty<>(new TypeToken<>() {}, new ArrayList<>());
     public static final HierarchicalProperty<List<PostProcessingStep>> POST_GEN_PROCESSING_STEPS = new HierarchicalProperty<>(new TypeToken<>() {}, new ArrayList<>());
     public static final HierarchicalProperty<WeightedTable<DungeonRegistration.ItemTemplate>> LOOT_TABLE = new HierarchicalProperty<>(new TypeToken<>() {}, LootTableRegistry.BASIC_LOOT_TABLE);
     public static final HierarchicalProperty<Boolean> DO_PLACEMENT_MIRROR = new HierarchicalProperty<>(new TypeToken<>() {}, true);
     public static final HierarchicalProperty<Boolean> MOBS_FACE_PLAYER_ON_SPAWN = new HierarchicalProperty<>(new TypeToken<>() {}, false);
     public static final HierarchicalProperty<Boolean> PLACE_ANYWHERE = new HierarchicalProperty<>(new TypeToken<>() {}, false);
-
+    public static final HierarchicalProperty<BlockState[]> BASE_COLUMN = new HierarchicalProperty<>(new TypeToken<>() {}, null);
 
     private final TypeToken<T> type;
     private final T defaultValue;

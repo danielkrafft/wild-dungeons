@@ -59,7 +59,7 @@ import static com.danielkkrafft.wilddungeons.dungeon.registries.OfferingTemplate
 public class DungeonRoom {
     private final String templateKey;
     private final BlockPos position;
-    private final BlockPos spawnPoint;
+    private BlockPos spawnPoint;
     private final TemplateOrientation orientation;
     private final List<ConnectionPoint> connectionPoints = new ArrayList<>();
     private final List<String> riftUUIDs = new ArrayList<>();
@@ -99,7 +99,6 @@ public class DungeonRoom {
     public BlockPos getPosition() {return this.position;}
 
     public DungeonRoom(DungeonBranch branch, String templateKey, BlockPos position, TemplateOrientation orientation) {
-        ServerLevel level = branch.getFloor().getLevel();
         this.branch = branch;
         this.setIndex(this.getBranch().getRooms().size());
         this.branch.getRooms().add(this);
@@ -121,15 +120,6 @@ public class DungeonRoom {
         this.floorIndex = branch.getFloor().getIndex();
         this.boundingBoxes = this.getTemplate().getBoundingBoxes(orientation, position);
 
-        if (getTemplate().spawnPoint() != null) {
-            this.spawnPoint = TemplateHelper.transform(getTemplate().spawnPoint(), this);
-            getTemplate().spawnPoints().forEach(spawnPoint -> {
-                level.setBlock(TemplateHelper.transform(spawnPoint, this), Blocks.AIR.defaultBlockState(), 130);
-            });
-        } else {
-            this.spawnPoint = null;
-        }
-
         getChunkPosSet(this.boundingBoxes, 0).forEach(pos -> {
             getBranch().getFloor().getChunkMap().putIfAbsent(pos, new ArrayList<>());
             getBranch().getFloor().getChunkMap().get(pos).add(new Vector2i(getBranch().getIndex(), this.getIndex()));
@@ -138,6 +128,15 @@ public class DungeonRoom {
     }
 
     public void actuallyPlaceInWorld() {
+        if (getTemplate().spawnPoint() != null) {
+            this.spawnPoint = TemplateHelper.transform(getTemplate().spawnPoint(), this);
+            getTemplate().spawnPoints().forEach(spawnPoint -> {
+                this.getBranch().getFloor().getLevel().setBlock(TemplateHelper.transform(spawnPoint, this), Blocks.AIR.defaultBlockState(), 130);
+            });
+        } else {
+            this.spawnPoint = null;
+        }
+
         WildDungeons.getLogger().info("PLACING ROOM IN WORLD: {} AT INDEX {}, {}", getTemplate().name(), this.getBranch().getIndex(), this.getIndex());
         LevelLightEngine lightEngine = this.getBranch().getFloor().getLevel().getChunkSource().getLightEngine();
         getTemplate().templates().forEach(template -> {

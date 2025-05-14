@@ -4,7 +4,7 @@ import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.DungeonLayout;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonMaterial;
 import com.danielkkrafft.wilddungeons.dungeon.components.process.CreateBorderStep;
-import com.danielkkrafft.wilddungeons.dungeon.components.process.SurroundingColumnStep;
+import com.danielkkrafft.wilddungeons.dungeon.components.process.BaseColumnHereStep;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonBranchTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
@@ -191,7 +191,8 @@ public class DungeonBranchRegistry {
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .addSimple(VILLAGE_METRO_CENTER)
             )
-            .set(PRE_GEN_PROCESSING_STEPS, List.of(new CreateBorderStep(3), new SurroundingColumnStep(List.of(Blocks.WATER.defaultBlockState(), Blocks.WATER.defaultBlockState(), Blocks.SAND.defaultBlockState(), Blocks.BEDROCK.defaultBlockState()), 400)))
+            .set(PRE_WORLD_GEN_PROCESSING_STEPS, List.of(new BaseColumnHereStep(List.of(Blocks.WATER.defaultBlockState(), Blocks.WATER.defaultBlockState(), Blocks.WATER.defaultBlockState(), Blocks.SAND.defaultBlockState(), Blocks.BEDROCK.defaultBlockState()))))
+            .set(PRE_ROOM_GEN_PROCESSING_STEPS, List.of(new CreateBorderStep(3)))
             .set(MATERIAL, VILLAGE_MATERIAL_POOL)
             .set(BLOCKING_MATERIAL_INDEX, 2);
 
@@ -205,7 +206,7 @@ public class DungeonBranchRegistry {
             .set(FLOOR_DISTANCE_WEIGHT, 0)
             .set(BRANCH_DISTANCE_WEIGHT, -1000)
             .set(CHEST_SPAWN_CHANCE, 1.0)
-            .set(PRE_GEN_PROCESSING_STEPS, List.of(new CreateBorderStep(0)))
+            .set(PRE_ROOM_GEN_PROCESSING_STEPS, List.of(new CreateBorderStep(0)))
             .set(PLACE_ANYWHERE, true)
             .setRootOriginBranchIndex(4);
 
@@ -219,7 +220,7 @@ public class DungeonBranchRegistry {
             .set(BRANCH_DISTANCE_WEIGHT, -50)
             .set(FLOOR_DISTANCE_WEIGHT, 0)
             .set(CHEST_SPAWN_CHANCE, 1.0)
-            .set(PRE_GEN_PROCESSING_STEPS, List.of(new CreateBorderStep(0)))
+            .set(PRE_ROOM_GEN_PROCESSING_STEPS, List.of(new CreateBorderStep(0)))
             .set(PLACE_ANYWHERE, true)
             .setRootOriginBranchIndex(4);
 
@@ -233,7 +234,7 @@ public class DungeonBranchRegistry {
             .set(BRANCH_DISTANCE_WEIGHT, -50)
             .set(FLOOR_DISTANCE_WEIGHT, 0)
             .set(CHEST_SPAWN_CHANCE, 1.0)
-            .set(PRE_GEN_PROCESSING_STEPS, List.of(new CreateBorderStep(0)))
+            .set(PRE_ROOM_GEN_PROCESSING_STEPS, List.of(new CreateBorderStep(0)))
             .set(PLACE_ANYWHERE, true)
             .setRootOriginBranchIndex(4);
 

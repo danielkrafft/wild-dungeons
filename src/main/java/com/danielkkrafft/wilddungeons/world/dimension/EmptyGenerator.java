@@ -1,5 +1,8 @@
 package com.danielkkrafft.wilddungeons.world.dimension;
 
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
@@ -28,15 +31,26 @@ public class EmptyGenerator extends ChunkGenerator {
     public static final int GEN_DEPTH = 640;
 
     private final BiomeSource biomeSource;
+    private final BlockState[] blockStates;
+    public static final Codec<BlockState[]> BLOCKSTATE_ARRAY_CODEC = Codec.list(BlockState.CODEC)
+            .xmap(list -> list.toArray(new BlockState[0]), Arrays::asList);
     public static final MapCodec<EmptyGenerator> CODEC = RecordCodecBuilder.mapCodec((instance) ->
             instance.group(
-                    BiomeSource.CODEC.fieldOf("biome_source").forGetter(EmptyGenerator::getBiomeSource)).apply(instance, EmptyGenerator::new)
+                    BiomeSource.CODEC.fieldOf("biome_source").forGetter(EmptyGenerator::getBiomeSource),
+                    BLOCKSTATE_ARRAY_CODEC.fieldOf("blockstates").forGetter(EmptyGenerator::getBlockStates)
+                    ).apply(instance, EmptyGenerator::new)
     );
 
-    public EmptyGenerator(BiomeSource biome_source) {
-
-        super(biome_source);
-        this.biomeSource = biome_source;
+    public EmptyGenerator(BiomeSource biomeSource, BlockState[] blockStates) { // could we pass a session id to get the dungeonFloor?
+        super(biomeSource);
+        this.biomeSource = biomeSource;
+        if (blockStates != null) {
+            this.blockStates = blockStates;
+        } else {
+            BlockState[] defaultBlockStates = new BlockState[EmptyGenerator.GEN_DEPTH];
+            Arrays.fill(defaultBlockStates, Blocks.AIR.defaultBlockState());
+            this.blockStates = defaultBlockStates;
+        }
 
     }
 
@@ -45,11 +59,8 @@ public class EmptyGenerator extends ChunkGenerator {
         return CODEC;
     }
 
-    public BiomeSource getBiomeSource() {
-
-        return this.biomeSource;
-
-    }
+    public BiomeSource getBiomeSource() {return this.biomeSource;}
+    public BlockState[] getBlockStates() {return this.blockStates;}
 
     @Override
     public void applyCarvers(WorldGenRegion p_223043_, long p_223044_, RandomState p_223045_, BiomeManager p_223046_, StructureManager p_223047_, ChunkAccess p_223048_, GenerationStep.Carving p_223049_) {
@@ -78,13 +89,12 @@ public class EmptyGenerator extends ChunkGenerator {
     public CompletableFuture<ChunkAccess> fillFromNoise(Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess chunk) {
 
         BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
-        BlockState blockstate = Blocks.AIR.defaultBlockState();
 
         for (int i = 0; i < chunk.getHeight(); i++) {
             int j = chunk.getMinBuildHeight() + i;
             for (int k = 0; k < 16; k++) {
                 for (int l = 0; l < 16; l++) {
-                    chunk.setBlockState(blockpos$mutableblockpos.set(k, j, l), blockstate, false);
+                    chunk.setBlockState(blockpos$mutableblockpos.set(k, j, l), this.blockStates[i], false);
                 }
             }
         }
@@ -114,12 +124,7 @@ public class EmptyGenerator extends ChunkGenerator {
 
     @Override
     public NoiseColumn getBaseColumn(int p_223028_, int p_223029_, LevelHeightAccessor level, RandomState p_223031_) {
-
-        BlockState[] blockStates = new BlockState[level.getHeight()];
-        Arrays.fill(blockStates, Blocks.AIR.defaultBlockState());
-
-        return new NoiseColumn(MIN_Y, blockStates);
-
+        return new NoiseColumn(MIN_Y, this.blockStates);
     }
 
     @Override

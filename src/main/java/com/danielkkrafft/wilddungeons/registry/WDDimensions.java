@@ -1,6 +1,8 @@
 package com.danielkkrafft.wilddungeons.registry;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.util.FileUtil;
 import com.danielkkrafft.wilddungeons.world.dimension.EmptyGenerator;
@@ -28,9 +30,9 @@ public class WDDimensions {
         return ResourceKey.create(Registries.DIMENSION_TYPE, ResourceLocation.fromNamespaceAndPath(WildDungeons.MODID, name));
     }
 
-    public static LevelStem createLevel(ResourceKey<DimensionType> dimensionType) {
+    public static LevelStem createLevel(ResourceKey<DimensionType> dimensionType, DungeonFloor floor) {
         MinecraftServer server = DungeonSessionManager.getInstance().server;
         Holder<DimensionType> typeHolder = server.registryAccess().registryOrThrow(Registries.DIMENSION_TYPE).getHolderOrThrow(dimensionType);
-        return new LevelStem(typeHolder, new EmptyGenerator(new FixedBiomeSource(server.overworld().registryAccess().registryOrThrow(Registries.BIOME).getHolderOrThrow(Biomes.THE_VOID))));
+        return new LevelStem(typeHolder, new EmptyGenerator(new FixedBiomeSource(server.overworld().registryAccess().registryOrThrow(Registries.BIOME).getHolderOrThrow(Biomes.THE_VOID)), floor.baseColumn));
     }
 }

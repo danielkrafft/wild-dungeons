@@ -86,13 +86,12 @@ public class DungeonBranch {
             destroyRooms();
             return false;
         }
-
-        this.spawnPoint = floor.getBranches().size() == 1 ? this.getRooms().getFirst().getSpawnPoint(floor.getLevel()) : getFloor().getBranches().getLast().getRooms().getLast().getSpawnPoint(floor.getLevel());
         return true;
     }
 
     public void actuallyPlaceInWorld() {
         this.getRooms().forEach(DungeonRoom::actuallyPlaceInWorld);
+        this.spawnPoint = this.getIndex() == 0 ? this.getRooms().getFirst().getSpawnPoint(floor.getLevel()) : getFloor().getBranches().get(this.getIndex()-1).getRooms().getLast().getSpawnPoint(floor.getLevel());
         fullyGenerated = true;
         getFloor().onBranchComplete(this);
     }
