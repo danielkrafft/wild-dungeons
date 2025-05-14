@@ -1,8 +1,8 @@
-// 1.21.1	2025-05-14T16:09:39.4766325	Item Models: wilddungeons
+// 1.21.1	2025-05-14T16:38:51.9578846	Item Models: wilddungeons
 3f20b661ba5c12dfe4f8b9e83f3ab5205fa317c3 assets/wilddungeons/models/item/angel_investor_music_disc.json
 2aeb337d05b250262ddb902582e29fe673ab36c2 assets/wilddungeons/models/item/angel_investor_safe_music_disc.json
 21bab4b19c5d285864fa5938cdeb8f4503b4af18 assets/wilddungeons/models/item/overflow_music_disc.json
-6b55ea15680a03872b5ac3d5a448222cabd4aa45 assets/wilddungeons/models/item/overflow_music_safe_disc.json
+6b55ea15680a03872b5ac3d5a448222cabd4aa45 assets/wilddungeons/models/item/overflow_safe_music_disc.json
 59dd3a294dab65f84986d55dad5686cdb793146e assets/wilddungeons/models/item/overflow_underwater_music_disc.json
 69f09f8bb35d8d0e47692431474241244b173d99 assets/wilddungeons/models/item/overflow_underwater_safe_music_disc.json
 6782b24147ee8c451f5fe37d0081f613d271d007 assets/wilddungeons/models/item/the_capital_music_disc.json
