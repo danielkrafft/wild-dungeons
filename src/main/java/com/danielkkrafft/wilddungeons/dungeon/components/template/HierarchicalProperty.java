@@ -10,6 +10,7 @@ import com.danielkkrafft.wilddungeons.dungeon.registries.SoundscapeTemplateRegis
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.util.WeightedTable;
+import com.danielkkrafft.wilddungeons.world.dimension.EmptyGenerator;
 import com.google.gson.reflect.TypeToken;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
@@ -58,7 +59,8 @@ public class HierarchicalProperty<T> {
     public static final HierarchicalProperty<Boolean> DO_PLACEMENT_MIRROR = new HierarchicalProperty<>(new TypeToken<>() {}, true);
     public static final HierarchicalProperty<Boolean> MOBS_FACE_PLAYER_ON_SPAWN = new HierarchicalProperty<>(new TypeToken<>() {}, false);
     public static final HierarchicalProperty<Boolean> PLACE_ANYWHERE = new HierarchicalProperty<>(new TypeToken<>() {}, false);
-    public static final HierarchicalProperty<BlockState[]> BASE_COLUMN = new HierarchicalProperty<>(new TypeToken<>() {}, null);
+    public static final HierarchicalProperty<Integer> MIN_Y = new HierarchicalProperty<>(new TypeToken<>() {}, EmptyGenerator.MIN_Y + 1);
+    public static final HierarchicalProperty<Integer> MAX_Y = new HierarchicalProperty<>(new TypeToken<>() {}, EmptyGenerator.GEN_DEPTH - 1);
 
     private final TypeToken<T> type;
     private final T defaultValue;

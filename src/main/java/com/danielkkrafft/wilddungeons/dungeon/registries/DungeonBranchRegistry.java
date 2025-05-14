@@ -175,6 +175,7 @@ public class DungeonBranchRegistry {
             .set(MATERIAL, VILLAGE_SEWER_MATERIAL_POOL)
             .set(HierarchicalProperty.ENEMY_TABLE, EnemyTableRegistry.VILLAGE_SEWER_ENEMY_TABLE)
             .set(ROOM_TARGET_Y, 50)
+            .set(MAX_Y, 100)
             .set(FLOOR_DISTANCE_WEIGHT, 400)
             .set(HAS_BEDROCK_SHELL, true);
 

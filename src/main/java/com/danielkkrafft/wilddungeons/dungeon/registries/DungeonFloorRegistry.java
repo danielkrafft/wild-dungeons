@@ -94,7 +94,7 @@ public class DungeonFloorRegistry {
                             .addSimple(VILLAGE_SEWER_ALL)
                             .addSimple(VILLAGE_SEWER_ENDING_BRANCH)
                             .addSimple(VILLAGE_METRO_START_BRANCH)
-                            .addSimple(VILLAGE_METRO_ENDING_BRANCH)//todo this is first so that we don't block it with other branches, but that can cause the difficulty to be off
+                            .addSimple(VILLAGE_METRO_ENDING_BRANCH) //todo this is first so that we don't block it with other branches, but that can cause the difficulty to be off
                             .addSimple(VILLAGE_METRO_STREETS_BRANCH)
                             .addSimple(VILLAGE_MEDIUM_BRANCH)
                             .addSimple(VILLAGE_SMALL_BRANCH)

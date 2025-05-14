@@ -142,7 +142,7 @@ public class DungeonRoom {
         getTemplate().templates().forEach(template -> {
             BlockPos newOffset = StructureTemplate.transform(template.getSecond(), getSettings().getMirror(), getSettings().getRotation(), TemplateHelper.EMPTY_BLOCK_POS);
             BlockPos newPosition = position.offset(newOffset);
-            TemplateHelper.placeInWorld(this, template.getFirst(), this.getMaterial(), getBranch().getFloor().getLevel(), newPosition, template.getSecond(), getSettings(), 2);
+            TemplateHelper.placeInWorld(this, template.getFirst(), this.getMaterial(), getBranch().getFloor().getLevel(), newPosition, template.getSecond(), getSettings(), 0);
             lightEngine.checkBlock(newPosition);
         });
         this.processRifts();

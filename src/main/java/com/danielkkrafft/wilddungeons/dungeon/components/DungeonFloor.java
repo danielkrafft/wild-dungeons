@@ -5,6 +5,7 @@ import com.danielkkrafft.wilddungeons.dungeon.components.process.PostProcessingS
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonBranchTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonFloorTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateOrientation;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.network.ClientPacketHandler;
@@ -131,11 +132,11 @@ public class DungeonFloor {
      *
      * @param proposedBoxes The list of BoundingBoxes to check. If any are found to overlap with existing boxes, we return false.
      */
-    protected boolean areBoundingBoxesValid(List<BoundingBox> proposedBoxes) {
+    protected boolean areBoundingBoxesValid(DungeonBranch branch, List<BoundingBox> proposedBoxes) {
         HashMap<ChunkPos, ArrayList<Vector2i>> chunkMap = getChunkMap();
         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
         for (BoundingBox proposedBox : proposedBoxes) {
-            if (proposedBox.minY() < EmptyGenerator.MIN_Y || proposedBox.maxY() > EmptyGenerator.MIN_Y + EmptyGenerator.GEN_DEPTH) {
+            if (proposedBox.minY() < branch.getProperty(MIN_Y) || proposedBox.maxY() > branch.getProperty(MAX_Y)) {
                 WildDungeons.getLogger().info("OUT OF BOUNDS!");
                 return false;
             }
