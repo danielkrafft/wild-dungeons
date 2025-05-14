@@ -53,20 +53,16 @@ public class SoundscapeTemplateRegistry {
 
     //------- VILLAGE DUNGEON -------//
     public static final SoundscapeTemplate VD_ANGEL_INVESTOR = create("VD_ANGEL_INVESTOR")
-            .addSound(WDSoundEvents.ANGEL_INVESTOR, 0)
-            .addSound(WDSoundEvents.ANGEL_INVESTOR_SAFE, 1);
+            .addSound(WDSoundEvents.ANGEL_INVESTOR, 1)
+            .addSound(WDSoundEvents.ANGEL_INVESTOR_SAFE, 0);
 
     public static final SoundscapeTemplate VD_OVERFLOW = create("VD_OVERFLOW")
-            .addSound(WDSoundEvents.OVERFLOW, 0)
-            .addSound(WDSoundEvents.OVERFLOW_SAFE, 1)
-            .addSound(WDSoundEvents.OVERFLOW_UNDERWATER, 0)
-            .addSound(WDSoundEvents.OVERFLOW_UNDERWATER_SAFE, 0);
-
-    public static final SoundscapeTemplate VD_OVERFLOW_SAFE = create("VD_OVERFLOW_SAFE")
-            .addSound(WDSoundEvents.OVERFLOW_UNDERWATER_SAFE, 0)
-            .addSound(WDSoundEvents.OVERFLOW_SAFE, 1);
+            .addSound(WDSoundEvents.OVERFLOW, 1)
+            .addSound(WDSoundEvents.OVERFLOW_SAFE, 0)
+            .addSound(WDSoundEvents.OVERFLOW_UNDERWATER, 1)
+            .addSound(WDSoundEvents.OVERFLOW_UNDERWATER_SAFE, 1);
 
     public static final SoundscapeTemplate VD_THE_CAPITAL = create("VD_THE_CAPITAL")
-            .addSound(WDSoundEvents.THE_CAPITAL, 0)
-            .addSound(WDSoundEvents.THE_CAPITAL_SAFE, 1);
+            .addSound(WDSoundEvents.THE_CAPITAL, 1)
+            .addSound(WDSoundEvents.THE_CAPITAL_SAFE, 0);
 }
