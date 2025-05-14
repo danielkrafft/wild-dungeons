@@ -10,10 +10,9 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTem
 import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialPoolRegistry.*;
@@ -188,11 +187,32 @@ public class DungeonBranchRegistry {
             .set(FLOOR_DISTANCE_WEIGHT, 400)
             .set(HAS_BEDROCK_SHELL, true);
 
+    private static List<BlockState> CreateLayeredColumn() {
+        List<BlockState> column = new ArrayList<>();
+
+        // Adds the 5 layers of water
+        column.addAll(Collections.nCopies(5, Blocks.WATER.defaultBlockState()));
+
+        // Adds the 4 layers of sand
+        column.addAll(Collections.nCopies(4, Blocks.SAND.defaultBlockState()));
+
+        // Adds the 3 layers of sandstone
+        column.addAll(Collections.nCopies(3, Blocks.SANDSTONE.defaultBlockState()));
+
+        // Adds the 6 layers of stone
+        column.addAll(Collections.nCopies(6, Blocks.STONE.defaultBlockState()));
+
+        // Adds the 8 layers of bedrock
+        column.addAll(Collections.nCopies(8, Blocks.BEDROCK.defaultBlockState()));
+
+        return column;
+    }
+
     public static final DungeonBranchTemplate VILLAGE_METRO_START_BRANCH = create("VILLAGE_METRO_START_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .addSimple(VILLAGE_METRO_CENTER)
             )
-            .set(PRE_WORLD_GEN_PROCESSING_STEPS, List.of(new BaseColumnHereStep(List.of(Blocks.WATER.defaultBlockState(), Blocks.WATER.defaultBlockState(), Blocks.WATER.defaultBlockState(), Blocks.WATER.defaultBlockState(), Blocks.WATER.defaultBlockState(), Blocks.SAND.defaultBlockState(), Blocks.SAND.defaultBlockState(), Blocks.SAND.defaultBlockState(), Blocks.SAND.defaultBlockState(), Blocks.SANDSTONE.defaultBlockState(), Blocks.SANDSTONE.defaultBlockState(), Blocks.SANDSTONE.defaultBlockState(), Blocks.STONE.defaultBlockState(), Blocks.STONE.defaultBlockState(), Blocks.STONE.defaultBlockState(), Blocks.STONE.defaultBlockState(), Blocks.STONE.defaultBlockState(), Blocks.STONE.defaultBlockState(), Blocks.BEDROCK.defaultBlockState(), Blocks.BEDROCK.defaultBlockState(), Blocks.BEDROCK.defaultBlockState(), Blocks.BEDROCK.defaultBlockState(), Blocks.BEDROCK.defaultBlockState(), Blocks.BEDROCK.defaultBlockState(), Blocks.BEDROCK.defaultBlockState(), Blocks.BEDROCK.defaultBlockState()))))
+            .set(PRE_WORLD_GEN_PROCESSING_STEPS, List.of(new BaseColumnHereStep(CreateLayeredColumn())))
             .set(PRE_ROOM_GEN_PROCESSING_STEPS, List.of(new CreateBorderStep(3)))
             .set(MATERIAL, VILLAGE_MATERIAL_POOL)
             .set(BLOCKING_MATERIAL_INDEX, 2);
