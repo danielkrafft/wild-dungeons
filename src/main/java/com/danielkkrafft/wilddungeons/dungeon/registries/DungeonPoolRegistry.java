@@ -11,8 +11,8 @@ public class DungeonPoolRegistry {
     public static final WeightedPool<DungeonTemplate> OVERWORLD_DUNGEON_POOL = new WeightedPool<DungeonTemplate>()
             .add(MEGA_DUNGEON, 1);
     public static final WeightedPool<DungeonTemplate> VILLAGE_DUNGEON_POOL = new WeightedPool<DungeonTemplate>()
-            .add(PIGLIN_FACTORY_DUNGEON, 1);
-    public static final WeightedPool<DungeonTemplate> NETHER_DUNGEON_POOL = new WeightedPool<DungeonTemplate>()
             .add(VILLAGE_DUNGEON, 1);
+    public static final WeightedPool<DungeonTemplate> NETHER_DUNGEON_POOL = new WeightedPool<DungeonTemplate>()
+            .add(PIGLIN_FACTORY_DUNGEON, 1);
 
 }
