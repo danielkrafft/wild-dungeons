@@ -321,30 +321,30 @@ public class WDEvents {
 
         }
     }
-
-    @SubscribeEvent
-    public static void onExplosionStart(ExplosionEvent.Start event){
-        Level level = event.getLevel();
-        if (level.isClientSide()) return;
-
-        DungeonFloor floor = DungeonSessionManager.getInstance().getFloorFromKey(level.dimension());
-        if (floor == null) return;
-
-        BlockPos pos = BlockPos.containing(event.getExplosion().center());
-        DungeonRoom room = findRoom(floor, pos);
-        if (room == null) return;
-
-        DungeonRoomTemplate.DestructionRule rule = room.getProperty(HierarchicalProperty.DESTRUCTION_RULE);
-        switch (rule) {
-            case PROTECT_ALL_CLEAR -> {
-                if (room.isClear()) return;
-                event.setCanceled(true);
-            }
-            case PROTECT_ALL, PROTECT_BREAK -> {
-                event.setCanceled(true);
-            }
-        }
-    }
+// Removed because we protect the blocks now instead of cancelling the explosion event
+//    @SubscribeEvent
+//    public static void onExplosionStart(ExplosionEvent.Start event){
+//        Level level = event.getLevel();
+//        if (level.isClientSide()) return;
+//
+//        DungeonFloor floor = DungeonSessionManager.getInstance().getFloorFromKey(level.dimension());
+//        if (floor == null) return;
+//
+//        BlockPos pos = BlockPos.containing(event.getExplosion().center());
+//        DungeonRoom room = findRoom(floor, pos);
+//        if (room == null) return;
+//
+//        DungeonRoomTemplate.DestructionRule rule = room.getProperty(HierarchicalProperty.DESTRUCTION_RULE);
+//        switch (rule) {
+//            case PROTECT_ALL_CLEAR -> {
+//                if (room.isClear()) return;
+//                event.setCanceled(true);
+//            }
+//            case PROTECT_ALL, PROTECT_BREAK -> {
+//                event.setCanceled(true);
+//            }
+//        }
+//    }
 
     @SubscribeEvent
     public static void onExplosionDetonate(ExplosionEvent.Detonate event){
@@ -358,17 +358,7 @@ public class WDEvents {
             DungeonRoom room = findRoom(floor, pos);
 
             if (room == null) return;
-
-            DungeonRoomTemplate.DestructionRule rule = room.getProperty(HierarchicalProperty.DESTRUCTION_RULE);
-            switch (rule) {
-                case PROTECT_ALL_CLEAR, SHELL_CLEAR -> {
-                    if (room.isClear()) return;
-                    event.getAffectedBlocks().removeIf(blockPos -> !room.canBreakBlock(blockPos, level.getBlockState(blockPos)));
-                }
-                case PROTECT_ALL, PROTECT_BREAK -> {
-                    event.getAffectedBlocks().removeIf(blockPos -> !room.canBreakBlock(blockPos, level.getBlockState(blockPos)));
-                }
-            }
+            event.getAffectedBlocks().removeIf(blockPos -> !room.canBreakBlock(blockPos, level.getBlockState(blockPos)));
         }
     }
 

@@ -702,8 +702,14 @@ public class DungeonRoom {
         DungeonRoomTemplate.DestructionRule rule = this.getProperty(DESTRUCTION_RULE);
         return switch (rule) {
             case PROTECT_ALL, PROTECT_BREAK -> false;
-            case SHELL -> isPosInsideShell(pos);
-            case SHELL_CLEAR -> isClear() && isPosInsideShell(pos);
+            case SHELL -> !isPosInsideShell(pos);
+            case SHELL_CLEAR -> {
+                if (!isPosInsideShell(pos)){
+                    yield isClear();
+                } else {
+                    yield true;
+                }
+            }
             case PROTECT_ALL_CLEAR -> isClear();
             case null, default -> true;
         };
@@ -713,8 +719,14 @@ public class DungeonRoom {
         DungeonRoomTemplate.DestructionRule rule = this.getProperty(DESTRUCTION_RULE);
         return switch (rule) {
             case PROTECT_ALL, PROTECT_PLACE -> false;
-            case SHELL -> isPosInsideShell(pos);
-            case SHELL_CLEAR -> isClear() && isPosInsideShell(pos);
+            case SHELL -> !isPosInsideShell(pos);
+            case SHELL_CLEAR -> {
+                if (!isPosInsideShell(pos)){
+                    yield isClear();
+                } else {
+                    yield true;
+                }
+            }
             case PROTECT_ALL_CLEAR -> isClear();
             case null, default -> true;
         };
