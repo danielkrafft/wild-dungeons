@@ -192,7 +192,7 @@ public class DungeonBranchRegistry {
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .addSimple(VILLAGE_METRO_CENTER)
             )
-            .set(PRE_WORLD_GEN_PROCESSING_STEPS, List.of(new BaseColumnHereStep(List.of(Blocks.WATER.defaultBlockState(), Blocks.WATER.defaultBlockState(), Blocks.WATER.defaultBlockState(), Blocks.SAND.defaultBlockState(), Blocks.BEDROCK.defaultBlockState()))))
+            .set(PRE_WORLD_GEN_PROCESSING_STEPS, List.of(new BaseColumnHereStep(List.of(Blocks.WATER.defaultBlockState(), Blocks.WATER.defaultBlockState(), Blocks.WATER.defaultBlockState(), Blocks.WATER.defaultBlockState(), Blocks.WATER.defaultBlockState(), Blocks.SAND.defaultBlockState(), Blocks.SAND.defaultBlockState(), Blocks.SAND.defaultBlockState(), Blocks.SAND.defaultBlockState(), Blocks.SANDSTONE.defaultBlockState(), Blocks.SANDSTONE.defaultBlockState(), Blocks.SANDSTONE.defaultBlockState(), Blocks.STONE.defaultBlockState(), Blocks.STONE.defaultBlockState(), Blocks.STONE.defaultBlockState(), Blocks.STONE.defaultBlockState(), Blocks.STONE.defaultBlockState(), Blocks.STONE.defaultBlockState(), Blocks.BEDROCK.defaultBlockState(), Blocks.BEDROCK.defaultBlockState(), Blocks.BEDROCK.defaultBlockState(), Blocks.BEDROCK.defaultBlockState(), Blocks.BEDROCK.defaultBlockState(), Blocks.BEDROCK.defaultBlockState(), Blocks.BEDROCK.defaultBlockState(), Blocks.BEDROCK.defaultBlockState()))))
             .set(PRE_ROOM_GEN_PROCESSING_STEPS, List.of(new CreateBorderStep(3)))
             .set(MATERIAL, VILLAGE_MATERIAL_POOL)
             .set(BLOCKING_MATERIAL_INDEX, 2);
