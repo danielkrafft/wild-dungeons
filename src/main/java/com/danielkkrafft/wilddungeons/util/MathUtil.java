@@ -1,5 +1,6 @@
 package com.danielkkrafft.wilddungeons.util;
 
+import com.danielkkrafft.wilddungeons.WildDungeons;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
@@ -70,6 +71,25 @@ public class MathUtil {
     {
         return entitylookAtEntity(e1.position(),e2.position());
     }
+
+    public static float[] entitylookAtEntityWith90DegLock(Vec3 from, Vec3 to)
+    {
+        float[] result = entitylookAtEntity(from, to);
+
+        WildDungeons.getLogger().info("Yaw BEFORE: " + result[0]);
+
+        result[0] %= 360;
+        if (result[0] < 0) {
+            result[0] += 360;
+        }
+
+        result[0] = Math.round(result[0] / 90f) * 90f;
+
+        WildDungeons.getLogger().info("Yaw AFTER: " + result[0]);
+
+        return result;
+    }
+
     public static float[] entitylookAtEntity(Vec3 from,Vec3 to)
     {
         double dx = to.x()-from.x();
