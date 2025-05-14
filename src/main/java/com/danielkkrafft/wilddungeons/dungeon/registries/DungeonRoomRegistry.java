@@ -592,11 +592,11 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate VILLAGE_METRO_FLYINGNOKK_TWR_VAULT = createCombat("village/metro/flyingnokk/twr/vault")
             .set(DO_PLACEMENT_MIRROR, false)
             .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(1)));
-    public static final DungeonRoomTemplate VILLAGE_METRO_MOBFIA_TWR_OFFICE = createSimple("village/metro/mobfia/twr/office")
+    public static final DungeonRoomTemplate VILLAGE_METRO_MOBFIA_TWR_OFFICE = createCombat("village/metro/mobfia/twr/office")
             .set(DO_PLACEMENT_MIRROR, false)
             .set(CHEST_SPAWN_CHANCE, 1.0)
             .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(1)));
-    public static final DungeonRoomTemplate VILLAGE_METRO_MOBFIA_TWR_CEO_OFFICE = createBoss("village/metro/mobfia/twr/ceo_office", new Vec3(13, 3, 13))
+    public static final DungeonRoomTemplate VILLAGE_METRO_MOBFIA_TWR_CEO_OFFICE = createBoss("village/metro/mobfia/twr/ceo_office", new Vec3(13, 3, 20))
             .set(DO_PLACEMENT_MIRROR, false)
             .set(ENEMY_TABLE, EnemyTableRegistry.VILLAGER_CEO_ARENA)
             .set(ROOM_CLEAR_REWARD_POOL, WeightedPool.of(OfferingTemplateRegistry.EXIT_RIFT))
