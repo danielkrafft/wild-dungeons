@@ -87,7 +87,16 @@ public class LootPoolRegistry {
             .add(DIAMOND, 1)
             .add(EMERALD, 1)
             .add(BLAZE_ROD, 1)
-            .add(ENDER_PEARL, 1);
+            .add(ENDER_PEARL, 1)
+            .add(OVERFLOW_MUSIC_DISC, 1)
+            .add(OVERFLOW_SAFE_MUSIC_DISC, 1)
+            .add(OVERFLOW_UNDERWATER_MUSIC_DISC, 1)
+            .add(OVERFLOW_UNDERWATER_SAFE_MUSIC_DISC, 1)
+            .add(ANGEL_INVESTOR_MUSIC_DISC, 1)
+            .add(ANGEL_INVESTOR_SAFE_MUSIC_DISC, 1)
+            .add(THE_CAPITAL_MUSIC_DISC, 1)
+            .add(THE_CAPITAL_SAFE_MUSIC_DISC, 1);
+
     public static final WeightedPool<ItemTemplate> EPIC_LOOT_POOL = create("EPIC_LOOT_POOL")
             .add(DIAMOND_AXE, 1)
             .add(NETHER_STAR, 1)

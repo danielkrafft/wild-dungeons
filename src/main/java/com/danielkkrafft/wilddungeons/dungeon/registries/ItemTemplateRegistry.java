@@ -88,6 +88,15 @@ public class ItemTemplateRegistry {
 
     public static ItemTemplate DUNGEON_KEY = create("dungeon_key", WDItems.WD_DUNGEON_KEY.get(), 1);
 
+    public static ItemTemplate OVERFLOW_MUSIC_DISC = create("overflow_music_disc", WDItems.OVERFLOW_MUSIC_DISC.get(), 1);
+    public static ItemTemplate OVERFLOW_SAFE_MUSIC_DISC = create("overflow_safe_music_disc", WDItems.OVERFLOW_SAFE_MUSIC_DISC.get(), 1);
+    public static ItemTemplate OVERFLOW_UNDERWATER_MUSIC_DISC = create("overflow_underwater_music_disc", WDItems.OVERFLOW_UNDERWATER_MUSIC_DISC.get(), 1);
+    public static ItemTemplate OVERFLOW_UNDERWATER_SAFE_MUSIC_DISC = create("overflow_underwater_safe_music_disc", WDItems.OVERFLOW_UNDERWATER_SAFE_MUSIC_DISC.get(), 1);
+    public static ItemTemplate ANGEL_INVESTOR_MUSIC_DISC = create("angel_investor_music_disc", WDItems.ANGEL_INVESTOR_MUSIC_DISC.get(), 1);
+    public static ItemTemplate ANGEL_INVESTOR_SAFE_MUSIC_DISC = create("angel_investor_safe_music_disc", WDItems.ANGEL_INVESTOR_SAFE_MUSIC_DISC.get(), 1);
+    public static ItemTemplate THE_CAPITAL_MUSIC_DISC = create("the_capital_music_disc", WDItems.THE_CAPITAL_MUSIC_DISC.get(), 1);
+    public static ItemTemplate THE_CAPITAL_SAFE_MUSIC_DISC = create("the_capital_safe_music_disc", WDItems.THE_CAPITAL_SAFE_MUSIC_DISC.get(), 1);
+
     public static ItemTemplate create(String name, Item item, int count) {
         ItemTemplate itemTemplate = new ItemTemplate(name, item, count);
         LOOT_ENTRY_REGISTRY.add(itemTemplate);
