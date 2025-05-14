@@ -3,7 +3,11 @@ package com.danielkkrafft.wilddungeons.registry;
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.item.JukeboxSong;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class WDSoundEvents {
@@ -64,16 +68,27 @@ public class WDSoundEvents {
     public static final Holder<SoundEvent> UI_BEEP = SOUND_EVENTS.register("ui.misc.beep", SoundEvent::createVariableRangeEvent);
 
     //------- VILLAGE DUNGEON -------//
-    public static final Holder<SoundEvent> VD_ANGEL_INVESTOR_SAFE = SOUND_EVENTS.register("soundscape.music.angel_investor_safe", SoundEvent::createVariableRangeEvent);
     public static final Holder<SoundEvent> VD_ANGEL_INVESTOR = SOUND_EVENTS.register("soundscape.music.angel_investor", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> VD_ANGEL_INVESTOR_SAFE = SOUND_EVENTS.register("soundscape.music.angel_investor_safe", SoundEvent::createVariableRangeEvent);
+
+    public static final ResourceKey<JukeboxSong> ANGEL_INVESTOR_KEY = CreateMusicDiscKey("angel_investor");
+    public static final ResourceKey<JukeboxSong> ANGEL_INVESTOR_SAFE_KEY = CreateMusicDiscKey("angel_investor_safe");
 
     public static final Holder<SoundEvent> VD_OVERFLOW = SOUND_EVENTS.register("soundscape.music.overflow", SoundEvent::createVariableRangeEvent);
     public static final Holder<SoundEvent> VD_OVERFLOW_SAFE = SOUND_EVENTS.register("soundscape.music.overflow_safe", SoundEvent::createVariableRangeEvent);
     public static final Holder<SoundEvent> VD_OVERFLOW_UNDERWATER = SOUND_EVENTS.register("soundscape.music.overflow_underwater", SoundEvent::createVariableRangeEvent);
     public static final Holder<SoundEvent> VD_OVERFLOW_UNDERWATER_SAFE = SOUND_EVENTS.register("soundscape.music.overflow_underwater_safe", SoundEvent::createVariableRangeEvent);
 
+    public static final ResourceKey<JukeboxSong> OVERFLOW_KEY = CreateMusicDiscKey("overflow");
+    public static final ResourceKey<JukeboxSong> OVERFLOW_SAFE_KEY = CreateMusicDiscKey("overflow_safe");
+    public static final ResourceKey<JukeboxSong> OVERFLOW_UNDERWATER_KEY = CreateMusicDiscKey("overflow_underwater");
+    public static final ResourceKey<JukeboxSong> OVERFLOW_UNDERWATER_SAFE_KEY = CreateMusicDiscKey("overflow_underwater_safe");
+
     public static final Holder<SoundEvent> VD_THE_CAPITAL = SOUND_EVENTS.register("soundscape.music.the_capital", SoundEvent::createVariableRangeEvent);
     public static final Holder<SoundEvent> VD_THE_CAPITAL_SAFE = SOUND_EVENTS.register("soundscape.music.the_capital_safe", SoundEvent::createVariableRangeEvent);
+
+    public static final ResourceKey<JukeboxSong> THE_CAPITAL_KEY = CreateMusicDiscKey("the_capital");
+    public static final ResourceKey<JukeboxSong> THE_CAPITAL_SAFE_KEY = CreateMusicDiscKey("the_capital_safe");
 
     //------- MEATHOOK -------//
     public static final Holder<SoundEvent> MEATHOOK_HIT = SOUND_EVENTS.register("entity.meathook.hit", SoundEvent::createVariableRangeEvent);
@@ -86,4 +101,9 @@ public class WDSoundEvents {
     public static final Holder<SoundEvent> MEATHOOK_LOAD = SOUND_EVENTS.register("item.meathook.loaded", SoundEvent::createVariableRangeEvent);
     public static final Holder<SoundEvent> MEATHOOK_FIRE = SOUND_EVENTS.register("item.meathook.fire", SoundEvent::createVariableRangeEvent);
     public static final Holder<SoundEvent> MEATHOOK_RETRACT = SOUND_EVENTS.register("item.meathook.retract", SoundEvent::createVariableRangeEvent);
+
+
+    public static ResourceKey<JukeboxSong> CreateMusicDiscKey(String name) {
+        return ResourceKey.create(Registries.JUKEBOX_SONG, ResourceLocation.fromNamespaceAndPath(WildDungeons.MODID, name));
+    }
 }

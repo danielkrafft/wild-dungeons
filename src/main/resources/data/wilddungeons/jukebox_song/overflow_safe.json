@@ -1,0 +1,8 @@
+{
+  "comparator_output": 15,
+  "description": {
+    "translate": "Overflow 2"
+  },
+  "length_in_seconds": 54.0,
+  "sound_event": "wilddungeons:soundscape.music.overflow_safe"
+}

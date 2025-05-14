@@ -15,6 +15,15 @@
   "item.wilddungeons.rift_item": "Rift Item",
   "item.wilddungeons.room_export_wand": "Room Export Wand",
   "item.wilddungeons.wd_dungeon_key": "Dungeon Key",
+  "item.wilddungeons.overflow_music_disc": "Overflow",
+  "item.wilddungeons.overflow_safe_music_disc": "Overflow 2",
+  "item.wilddungeons.overflow_underwater_music_disc": "Overflow Underwater",
+  "item.wilddungeons.overflow_underwater_safe_music_disc": "Overflow Underwater 2",
+  "item.wilddungeons.angel_investor_music_disc": "Angel Investor",
+  "item.wilddungeons.angel_investor_safe_music_disc": "Angel Investor 2",
+  "item.wilddungeons.the_capital_music_disc": "The Capital",
+  "item.wilddungeons.the_capital_safe_music_disc": "The Capital 2",
+
 
   "block.wilddungeons.connection_block": "Connection Block",
   "block.wilddungeons.rift_block": "Rift Block",

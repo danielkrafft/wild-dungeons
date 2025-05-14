@@ -44,6 +44,15 @@ public class WDCreativeTabs {
                 output.accept(RIFT_ITEM.get());
                 output.accept(ROOM_EXPORT_WAND.get());
                 output.accept(DEBUG_ITEM.get());
+
+                output.accept(OVERFLOW_MUSIC_DISC.get());
+                output.accept(OVERFLOW_SAFE_MUSIC_DISC.get());
+                output.accept(OVERFLOW_UNDERWATER_MUSIC_DISC.get());
+                output.accept(OVERFLOW_UNDERWATER_SAFE_MUSIC_DISC.get());
+                output.accept(ANGEL_INVESTOR_MUSIC_DISC.get());
+                output.accept(ANGEL_INVESTOR_SAFE_MUSIC_DISC.get());
+                output.accept(THE_CAPITAL_MUSIC_DISC.get());
+                output.accept(THE_CAPITAL_SAFE_MUSIC_DISC.get());
             })
             .build()
     );

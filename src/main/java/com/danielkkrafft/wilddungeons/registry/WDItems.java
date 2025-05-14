@@ -27,5 +27,16 @@ public class WDItems {
     public static final DeferredItem<Item> NETHER_DRAGON_SPAWN_EGG = ITEMS.register("nether_dragon_spawn_egg", () -> new SpawnEggItem(WDEntities.NETHER_DRAGON.get(), new Color(134, 0, 19).getRGB(), new Color(255, 136, 0).getRGB(), new Item.Properties()));
     public static final DeferredItem<Item> WD_DUNGEON_KEY = ITEMS.register("wd_dungeon_key", () -> new Item(new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.RARE)));
     public static final DeferredItem<Item> ROOM_EXPORT_WAND = ITEMS.register("room_export_wand", () -> new RoomExportWand(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC).component(WDDataComponents.WAND_MODE.get(),0).component(WDDataComponents.WAND_ROOM_NAME.get(),"room")));
+
+    //------- MUSIC DISCS -------//
+    public static final DeferredItem<Item> OVERFLOW_MUSIC_DISC = ITEMS.register("overflow_music_disc", () -> new Item( new Item.Properties().jukeboxPlayable(WDSoundEvents.OVERFLOW_KEY).stacksTo(1)));
+    public static final DeferredItem<Item> OVERFLOW_SAFE_MUSIC_DISC = ITEMS.register("overflow_safe_music_disc", () -> new Item( new Item.Properties().jukeboxPlayable(WDSoundEvents.OVERFLOW_SAFE_KEY).stacksTo(1)));
+    public static final DeferredItem<Item> OVERFLOW_UNDERWATER_MUSIC_DISC = ITEMS.register("overflow_underwater_music_disc", () -> new Item( new Item.Properties().jukeboxPlayable(WDSoundEvents.OVERFLOW_UNDERWATER_KEY).stacksTo(1)));
+    public static final DeferredItem<Item> OVERFLOW_UNDERWATER_SAFE_MUSIC_DISC = ITEMS.register("overflow_underwater_safe_music_disc", () -> new Item( new Item.Properties().jukeboxPlayable(WDSoundEvents.OVERFLOW_UNDERWATER_SAFE_KEY).stacksTo(1)));
+    public static final DeferredItem<Item> ANGEL_INVESTOR_MUSIC_DISC = ITEMS.register("angel_investor_music_disc", () -> new Item( new Item.Properties().jukeboxPlayable(WDSoundEvents.ANGEL_INVESTOR_KEY).stacksTo(1)));
+    public static final DeferredItem<Item> ANGEL_INVESTOR_SAFE_MUSIC_DISC = ITEMS.register("angel_investor_safe_music_disc", () -> new Item( new Item.Properties().jukeboxPlayable(WDSoundEvents.ANGEL_INVESTOR_SAFE_KEY).stacksTo(1)));
+    public static final DeferredItem<Item> THE_CAPITAL_MUSIC_DISC = ITEMS.register("the_capital_music_disc", () -> new Item( new Item.Properties().jukeboxPlayable(WDSoundEvents.THE_CAPITAL_KEY).stacksTo(1)));
+    public static final DeferredItem<Item> THE_CAPITAL_SAFE_MUSIC_DISC = ITEMS.register("the_capital_safe_music_disc", () -> new Item( new Item.Properties().jukeboxPlayable(WDSoundEvents.THE_CAPITAL_SAFE_KEY).stacksTo(1)));
+
 }
 
