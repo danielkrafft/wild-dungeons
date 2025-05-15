@@ -355,7 +355,6 @@ public class BusinessCEO extends Monster implements GeoEntity {
         public boolean canContinueToUse() {
             return !stopped && BusinessCEO.this.getTarget() != null &&
                     BusinessCEO.this.getTarget().isAlive() &&
-                    BusinessCEO.this.distanceToSqr(BusinessCEO.this.getTarget()) < 12 &&
                     !BusinessCEO.this.isInvulnerable();
         }
 
@@ -386,7 +385,9 @@ public class BusinessCEO extends Monster implements GeoEntity {
                 BusinessCEO.this.getLookControl().setLookAt(livingentity, 30.0F, 30.0F);
                 this.ticks = Math.max(this.ticks - 1, 0);
                 if (!this.hasAttacked && this.ticks <= 0 && this.canPerformAttack(livingentity)) {
-                    BusinessCEO.this.doHurtTarget(livingentity);
+                    if (BusinessCEO.this.distanceToSqr(BusinessCEO.this.getTarget()) < 12){
+                        BusinessCEO.this.doHurtTarget(livingentity);
+                    }
                     BusinessCEO.this.playSound(SoundEvents.PLAYER_ATTACK_SWEEP, 2, 0.8f);
                     this.hasAttacked = true;
                     this.ticks = 60;
