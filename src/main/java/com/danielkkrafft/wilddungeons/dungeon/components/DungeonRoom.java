@@ -374,6 +374,7 @@ public class DungeonRoom {
             List<DungeonRegistration.OfferingTemplate> entries = this.getProperty(SHOP_TABLE).randomResults(this.getTemplate().offerings().size(), (int) this.getDifficulty() * this.getTemplate().offerings().size(), 1.2f);
             getTemplate().offerings().forEach(pos -> {
                 if (entries.isEmpty()) {
+                    WildDungeons.getLogger().info("Ran out of offerings, likely due to a low difficulty or too many offerings");
                     return;
                 }
                 Offering next = entries.removeFirst().asOffering(this.getBranch().getFloor().getLevel());
