@@ -14,12 +14,15 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * {@link net.minecraft.client.renderer.entity.FishingHookRenderer}
  * @param <T>
  */
+@OnlyIn(Dist.CLIENT)
 public class GrapplingHookRenderer<T extends GrapplingHook> extends EntityRenderer<T> {
     private static final ResourceLocation HOOKS = WildDungeons.rl("textures/entity/grapplinghook_hooks.png");
     private static final ResourceLocation BODY = WildDungeons.rl("textures/entity/grapplinghook_body.png");
