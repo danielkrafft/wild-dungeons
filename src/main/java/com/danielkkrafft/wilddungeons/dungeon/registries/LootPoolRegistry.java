@@ -2,6 +2,7 @@ package com.danielkkrafft.wilddungeons.dungeon.registries;
 
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
+import com.mojang.datafixers.util.Pair;
 
 import static com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.ItemTemplate;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.ItemTemplateRegistry.*;
@@ -103,10 +104,35 @@ public class LootPoolRegistry {
             .add(PINK_SHULKER_BOX, 1)
             .add(ELYTRA, 1);
 
+    public static final WeightedPool<ItemTemplate> METRO_COMMON_POOL = copyOf(COMMON_LOOT_POOL,"METRO_COMMON_LOOT_POOL")
+            .add(EMERALD,15);
+    public static final WeightedPool<ItemTemplate> METRO_MEDIUM_POOL = copyOf(MEDIUM_LOOT_POOL,"METRO_MEDIUM_LOOT_POOL")
+            .add(EMERALD,15);
+    public static final WeightedPool<ItemTemplate> METRO_RARE_POOL = copyOf(RARE_LOOT_POOL,"METRO_RARE_LOOT_POOL")
+            .add(EMERALD,8);
+    public static final WeightedPool<ItemTemplate> METRO_EPIC_POOL = copyOf(EPIC_LOOT_POOL,"METRO_EPIC_LOOT_POOL")
+            .add(EMERALD,1);
+
+    public static final WeightedPool<ItemTemplate> VILLAGE_SEWER_COMMON_POOL = create("VILLAGE_SEWER_COMMON_POOL")
+            .add(WATER_BREATHING_POTION, 15);
+    public static final WeightedPool<ItemTemplate> VILLAGE_SEWER_MEDIUM_POOL = copyOf(MEDIUM_LOOT_POOL,"VILLAGE_SEWER_MEDIUM_POOL")
+            .add(WATER_BREATHING_POTION, 5);
+    public static final WeightedPool<ItemTemplate> VILLAGE_SEWER_RARE_POOL = copyOf(RARE_LOOT_POOL,"VILLAGE_SEWER_RARE_POOL")
+            .add(WATER_BREATHING_POTION, 5);
+    public static final WeightedPool<ItemTemplate> VILLAGE_SEWER_EPIC_POOL = copyOf(EPIC_LOOT_POOL,"VILLAGE_SEWER_EPIC_POOL")
+            .add(WATER_BREATHING_POTION, 5);
 
     public static WeightedPool<ItemTemplate> create(String name) {
         WeightedPool<ItemTemplate> pool = new WeightedPool<ItemTemplate>().setName(name);
         LOOT_POOL_REGISTRY.add(pool);
         return pool;
+    }
+
+    public static WeightedPool<ItemTemplate> copyOf(WeightedPool<ItemTemplate> pool, String name) {
+        WeightedPool<ItemTemplate> newPool = new WeightedPool<ItemTemplate>().setName(name);
+        for (Pair<ItemTemplate, Integer> entry : pool.getAllWithWeights()) {
+            newPool.add(entry.getFirst(), entry.getSecond());
+        }
+        return newPool;
     }
 }

@@ -18,6 +18,8 @@ import static com.danielkkrafft.wilddungeons.dungeon.components.template.Hierarc
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialPoolRegistry.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomPoolRegistry.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomRegistry.*;
+import static com.danielkkrafft.wilddungeons.dungeon.registries.LootTableRegistry.METRO_LOOT_TABLE;
+import static com.danielkkrafft.wilddungeons.dungeon.registries.LootTableRegistry.SEWER_LOOT_TABLE;
 import static com.danielkkrafft.wilddungeons.util.WeightedPool.combine;
 import static com.mojang.datafixers.util.Pair.of;
 
@@ -188,6 +190,7 @@ public class DungeonBranchRegistry {
                     .addSimple(VILLAGE_PIPE_TO_METRO))
             .set(MATERIAL, VILLAGE_SEWER_MATERIAL_POOL)
             .set(FLOOR_DISTANCE_WEIGHT, 400)
+            .set(LOOT_TABLE,SEWER_LOOT_TABLE)
             .set(HAS_BEDROCK_SHELL, true)
             .set(SOUNDSCAPE, SoundscapeTemplateRegistry.VD_OVERFLOW);
 
@@ -220,6 +223,7 @@ public class DungeonBranchRegistry {
             .set(PRE_ROOM_GEN_PROCESSING_STEPS, List.of(new CreateBorderStep(3)))
             .set(MATERIAL, VILLAGE_MATERIAL_POOL)
             .set(BLOCKING_MATERIAL_INDEX, 2)
+            .set(LOOT_TABLE,METRO_LOOT_TABLE)
             .set(SOUNDSCAPE, SoundscapeTemplateRegistry.VD_THE_CAPITAL);
 
     public static final DungeonBranchTemplate VILLAGE_METRO_STREETS_BRANCH = create("VILLAGE_METRO_STREETS_BRANCH")
@@ -232,6 +236,7 @@ public class DungeonBranchRegistry {
             .set(FLOOR_DISTANCE_WEIGHT, 0)
             .set(BRANCH_DISTANCE_WEIGHT, -1000)
             .set(CHEST_SPAWN_CHANCE, 1.0)
+            .set(LOOT_TABLE,METRO_LOOT_TABLE)
             .set(PRE_ROOM_GEN_PROCESSING_STEPS, List.of(new CreateBorderStep(0)))
             .set(PLACE_ANYWHERE, true)
             .set(SOUNDSCAPE, SoundscapeTemplateRegistry.VD_THE_CAPITAL)
@@ -247,6 +252,7 @@ public class DungeonBranchRegistry {
             .set(BRANCH_DISTANCE_WEIGHT, -50)
             .set(FLOOR_DISTANCE_WEIGHT, 0)
             .set(CHEST_SPAWN_CHANCE, 1.0)
+            .set(LOOT_TABLE,METRO_LOOT_TABLE)
             .set(PRE_ROOM_GEN_PROCESSING_STEPS, List.of(new CreateBorderStep(0)))
             .set(PLACE_ANYWHERE, true)
             .set(SOUNDSCAPE, SoundscapeTemplateRegistry.VD_THE_CAPITAL)
@@ -262,6 +268,7 @@ public class DungeonBranchRegistry {
             .set(BRANCH_DISTANCE_WEIGHT, -50)
             .set(FLOOR_DISTANCE_WEIGHT, 0)
             .set(CHEST_SPAWN_CHANCE, 1.0)
+            .set(LOOT_TABLE,METRO_LOOT_TABLE)
             .set(PRE_ROOM_GEN_PROCESSING_STEPS, List.of(new CreateBorderStep(0)))
             .set(PLACE_ANYWHERE, true)
             .set(SOUNDSCAPE, SoundscapeTemplateRegistry.VD_THE_CAPITAL)
@@ -282,6 +289,7 @@ public class DungeonBranchRegistry {
                     .addSimple(VILLAGE_METRO_MOBFIA_TWR_CEO_OFFICE)
             )
             .set(MATERIAL, VILLAGE_MATERIAL_POOL)
+            .set(LOOT_TABLE,METRO_LOOT_TABLE)
             .setLimitedRooms(new HashMap<>(Map.of(
                     VILLAGE_METRO_CHLTER121_TWR_CUBICLES,2,
                     VILLAGE_METRO_CHLTER121_TWR_LIBRARY,2,
@@ -317,6 +325,7 @@ public class DungeonBranchRegistry {
                     .addSimple(VILLAGE_METRO_MOBFIA_TWR_CEO_OFFICE)
             )
             .set(MATERIAL, VILLAGE_MATERIAL_POOL)
+            .set(LOOT_TABLE,METRO_LOOT_TABLE)
             .setLimitedRooms(new HashMap<>(Map.of(
                     VILLAGE_METRO_CHLTER121_TWR_CUBICLES,2,
                     VILLAGE_METRO_CHLTER121_TWR_LIBRARY,2,
