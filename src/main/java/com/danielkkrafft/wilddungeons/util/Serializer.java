@@ -2,7 +2,7 @@ package com.danielkkrafft.wilddungeons.util;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.components.*;
-import com.danielkkrafft.wilddungeons.dungeon.components.perk.DungeonPerk;
+import com.danielkkrafft.wilddungeons.dungeon.components.perk.*;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.*;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateOrientation;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
@@ -85,6 +85,21 @@ public class Serializer
         addCustom(Mirror.class);
         addCustom(Rotation.class);
         addCustom(LootChoiceRoom.class);
+        addCustom(SwordDamagePerk.class);
+        addCustom(AxeDamagePerk.class);
+        addCustom(AxeDamagePerk.class);
+        addCustom(BowDamagePerk.class);
+        addCustom(ExtraLifePerk.class);
+        addCustom(PermanentFireResistPerk.class);
+        addCustom(PermanentStrengthPerk.class);
+        addCustom(PermanentNightVisionPerk.class);
+        addCustom(PermanentHealthBoostPerk.class);
+        addCustom(PermanentMovementSpeedPerk.class);
+        addCustom(PermanentDigSpeedPerk.class);
+        addCustom(BigAbsorptionPerk.class);
+        addCustom(AttackSpeedPerk.class);
+        addCustom(PoisonImmunePerk.class);
+        addCustom(StepHeightPerk.class);
     }
 
     private static void addCustom(Class<?> clazz) {
