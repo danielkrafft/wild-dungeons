@@ -11,6 +11,7 @@ import com.danielkkrafft.wilddungeons.ui.RoomExportScreen;
 import com.danielkkrafft.wilddungeons.ui.WDLoadingScreen;
 import com.danielkkrafft.wilddungeons.ui.WDPostDungeonScreen;
 import com.danielkkrafft.wilddungeons.util.Serializer;
+import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -24,7 +25,7 @@ import java.util.HashSet;
 
 public class ClientPacketHandler {
     public enum Packets {
-        REMOVE_DECAL, ADD_DECAL, SYNC_DECALS, SWITCH_SOUNDSCAPE, PLAY_DYNAMIC_SOUND, POST_DUNGEON_SCREEN, LOADING_SCREEN, NULL_SCREEN, OPEN_CONNECTION_BLOCK_UI, UPDATE_WD_PLAYER, OPEN_WAND_SCREEN;
+        REMOVE_DECAL, ADD_DECAL, SYNC_DECALS, SWITCH_SOUNDSCAPE, PLAY_DYNAMIC_SOUND, POST_DUNGEON_SCREEN, LOADING_SCREEN, NULL_SCREEN, OPEN_CONNECTION_BLOCK_UI, UPDATE_WD_PLAYER, OPEN_WAND_SCREEN, IS_UNDERWATER;
 
         public CompoundTag asTag() {
             CompoundTag tag = new CompoundTag();
@@ -46,7 +47,10 @@ public class ClientPacketHandler {
                 DecalRenderer.CLIENT_DECALS_MAP = Serializer.fromCompoundTag(data.getCompound("decal"));
             }
             case SWITCH_SOUNDSCAPE -> {
-                SoundscapeHandler.handleSwitchSoundscape(SoundscapeTemplateRegistry.SOUNDSCAPE_TEMPLATE_REGISTRY.get(data.getString("sound_key")), data.getInt("intensity"), data.getBoolean("reset"));
+                SoundscapeHandler.handleSwitchSoundscape(
+                        SoundscapeTemplateRegistry.SOUNDSCAPE_TEMPLATE_REGISTRY.get(data.getString("sound_key")),
+                        data.getInt("intensity"),
+                        data.getBoolean("reset"));
             }
             case PLAY_DYNAMIC_SOUND -> {
                 SoundEvent soundEvent = BuiltInRegistries.SOUND_EVENT.byId(data.getInt("soundEvent"));
@@ -85,6 +89,9 @@ public class ClientPacketHandler {
                 ItemStack itemStack = Minecraft.getInstance().player.getItemInHand(Minecraft.getInstance().player.getUsedItemHand());
                 ClientLevel level = Minecraft.getInstance().level;
                 Minecraft.getInstance().setScreen(new RoomExportScreen(itemStack , ((RoomExportWand)itemStack.getItem()).getDungeonMaterials(itemStack, level)));
+            }
+            case IS_UNDERWATER -> {
+                SoundscapeHandler.toggleUnderwater(data.getBoolean("isUnderwater"));
             }
         }
     }

@@ -242,15 +242,27 @@ public class DungeonRegistration {
         public ItemTemplate setLingeringPotion() {this.itemID=Item.getId(Items.LINGERING_POTION); return this;}
     }
 
+    public static void AddSoundEventToSoundList(List<List<Holder<SoundEvent>>> list, Holder<SoundEvent> event, int intensity) {
+        while (list.size() <= intensity) {
+            list.add(new ArrayList<>());
+        }
+        list.get(intensity).add(event);
+    }
+
     public static class SoundscapeTemplate implements DungeonComponent {
         public String name;
         public List<List<Holder<SoundEvent>>> soundsList = new ArrayList<>();
         public SoundscapeTemplate(String name) {this.name = name;}
+
         public SoundscapeTemplate addSound(Holder<SoundEvent> event, int intensity) {
-            while (soundsList.size() <= intensity) {
-                soundsList.add(new ArrayList<>());
-            }
-            this.soundsList.get(intensity).add(event); return this;
+            AddSoundEventToSoundList(soundsList, event, intensity);
+            return this;
+        }
+
+        public List<List<Holder<SoundEvent>>> underwaterSoundsList = new ArrayList<>();
+        public SoundscapeTemplate addUnderwaterSound(Holder<SoundEvent> event, int intensity) {
+            AddSoundEventToSoundList(underwaterSoundsList, event, intensity);
+            return this;
         }
         public String name() {return this.name;}
     }

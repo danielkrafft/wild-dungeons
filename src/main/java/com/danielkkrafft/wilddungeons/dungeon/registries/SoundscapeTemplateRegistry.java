@@ -3,7 +3,6 @@ package com.danielkkrafft.wilddungeons.dungeon.registries;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.SoundscapeTemplate;
 import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
-import net.minecraft.client.resources.sounds.Sound;
 
 public class SoundscapeTemplateRegistry {
     public static final DungeonRegistration.DungeonComponentRegistry<SoundscapeTemplate> SOUNDSCAPE_TEMPLATE_REGISTRY = new DungeonRegistration.DungeonComponentRegistry<>();
@@ -55,7 +54,9 @@ public class SoundscapeTemplateRegistry {
 
     public static final SoundscapeTemplate VD_OVERFLOW = create("VD_OVERFLOW")
             .addSound(WDSoundEvents.VD_OVERFLOW, 1)
-            .addSound(WDSoundEvents.VD_OVERFLOW_SAFE, 0);
+            .addSound(WDSoundEvents.VD_OVERFLOW_SAFE, 0)
+            .addUnderwaterSound(WDSoundEvents.VD_OVERFLOW_UNDERWATER, 1)
+            .addUnderwaterSound(WDSoundEvents.VD_OVERFLOW_UNDERWATER_SAFE, 0);
 
     public static final SoundscapeTemplate VD_THE_CAPITAL = create("VD_THE_CAPITAL")
             .addSound(WDSoundEvents.VD_THE_CAPITAL, 1)

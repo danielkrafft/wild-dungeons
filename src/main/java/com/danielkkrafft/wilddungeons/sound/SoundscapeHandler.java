@@ -4,7 +4,9 @@ import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
+import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
@@ -17,55 +19,108 @@ import net.neoforged.neoforge.client.event.sound.PlaySoundEvent;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 
 @EventBusSubscriber(value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME)
 public class SoundscapeHandler {
 
     public static HashSet<SynchronizedSoundLoop> currentlyPlayingSounds = new HashSet<>();
+    public static HashSet<SynchronizedSoundLoop> currentlyPlayingUnderwaterSounds = new HashSet<>();
+    public static DungeonRegistration.SoundscapeTemplate currentTemplate = null;
+    public static int currentIntensity = 0;
+    public static boolean isUnderwater = false;
 
     public static void handleSwitchSoundscape(DungeonRegistration.SoundscapeTemplate template, int intensity, boolean forceReset) {
+
         if (template == null || forceReset) {
-            currentlyPlayingSounds.forEach(SynchronizedSoundLoop::stopPlaying);
-            currentlyPlayingSounds.clear();
+            stopAndClearAllPlayingSounds();
             if (template == null) return;
         }
+
+        currentIntensity = intensity;
         HashSet<ResourceLocation> soundRLs = new HashSet<>();
         HashSet<SynchronizedSoundLoop> toPlay = new HashSet<>();
 
+        addSoundsToPlay(template.soundsList, soundRLs, toPlay, currentlyPlayingSounds);
+        playSounds(toPlay, currentlyPlayingSounds);
 
-        for (int i = 0; i < template.soundsList.size(); i++) {
-            for (int j = 0; j < template.soundsList.get(i).size(); j++) {
-                SoundEvent soundEvent = template.soundsList.get(i).get(j).value();
-                soundRLs.add(soundEvent.getLocation());
+        if (!template.underwaterSoundsList.isEmpty()) {
+            toPlay.clear();
+            addSoundsToPlay(template.underwaterSoundsList, soundRLs, toPlay, currentlyPlayingUnderwaterSounds);
+            playSounds(toPlay, currentlyPlayingUnderwaterSounds);
 
-                if (currentlyPlayingSounds.stream().noneMatch(sound -> sound.getLocation().equals(soundEvent.getLocation()))) {
+        }
+         refreshCurrentlyPlayingSounds();
+
+        removeSounds(soundRLs, currentlyPlayingSounds);
+        removeSounds(soundRLs, currentlyPlayingUnderwaterSounds);
+    }
+
+    public static void refreshCurrentlyPlayingSounds() {
+
+        if (isUnderwater && !currentlyPlayingUnderwaterSounds.isEmpty()) {
+
+            currentlyPlayingUnderwaterSounds.forEach(soundInstance -> {
+                if (currentIntensity >= soundInstance.layer && !soundInstance.active) soundInstance.rise();
+                else if (currentIntensity < soundInstance.layer && soundInstance.active) soundInstance.fade();
+            });
+            currentlyPlayingSounds.forEach(SynchronizedSoundLoop::fade);
+        } else {
+
+            currentlyPlayingSounds.forEach(soundInstance -> {
+                if (currentIntensity >= soundInstance.layer && !soundInstance.active) soundInstance.rise();
+                else if (currentIntensity < soundInstance.layer && soundInstance.active) soundInstance.fade();
+            });
+            currentlyPlayingUnderwaterSounds.forEach(SynchronizedSoundLoop::fade);
+        }
+    }
+
+    public static void stopAndClearSoundSet(HashSet<SynchronizedSoundLoop> soundSetToStopAndClear) {
+
+        soundSetToStopAndClear.forEach(SynchronizedSoundLoop::stopPlaying);
+        soundSetToStopAndClear.clear();
+    }
+
+    public static void stopAndClearAllPlayingSounds(){
+
+        stopAndClearSoundSet(currentlyPlayingSounds);
+        stopAndClearSoundSet(currentlyPlayingUnderwaterSounds);
+    }
+
+    public static void addSoundsToPlay(List<List<Holder<SoundEvent>>> rawSoundList, HashSet<ResourceLocation> inSoundRLs, HashSet<SynchronizedSoundLoop> inToPlay, HashSet<SynchronizedSoundLoop> registryCheck) {
+
+        for (int i = 0; i < rawSoundList.size(); i++) {
+            for (int j = 0; j < rawSoundList.get(i).size(); j++) {
+                SoundEvent soundEvent = rawSoundList.get(i).get(j).value();
+                inSoundRLs.add(soundEvent.getLocation());
+
+                if (registryCheck.stream().noneMatch(sound -> sound.getLocation().equals(soundEvent.getLocation()))) {
                     SynchronizedSoundLoop sound = new SynchronizedSoundLoop(soundEvent, SoundSource.MUSIC, i);
-                    toPlay.add(sound);
+                    inToPlay.add(sound);
                 }
             }
         }
+    }
 
-        toPlay.forEach(soundLoop -> {
-            currentlyPlayingSounds.add(soundLoop);
+    public static void playSounds(HashSet<SynchronizedSoundLoop> inToPlay, HashSet<SynchronizedSoundLoop> currentlyPlayingRegistry) {
+
+        inToPlay.forEach(soundLoop -> {
+            currentlyPlayingRegistry.add(soundLoop);
             Minecraft.getInstance().getSoundManager().play(soundLoop);
         });
+    }
 
-        currentlyPlayingSounds.forEach(soundInstance -> {
-            if (intensity >= soundInstance.layer && !soundInstance.active) soundInstance.rise();
-            else if (intensity < soundInstance.layer && soundInstance.active) soundInstance.fade();
-        });
+    public static void removeSounds(HashSet<ResourceLocation> soundLocationSet, HashSet<SynchronizedSoundLoop> SyncSoundLoopSet) {
 
         List<SynchronizedSoundLoop> toRemove = new ArrayList<>();
-        currentlyPlayingSounds.forEach(soundLoop -> {
-           if (!soundRLs.contains(soundLoop.getLocation())) {
-               toRemove.add(soundLoop);
-               Minecraft.getInstance().getSoundManager().stop(soundLoop);
-           }
+        SyncSoundLoopSet.forEach(soundLoop -> {
+            if (!soundLocationSet.contains(soundLoop.getLocation())) {
+                toRemove.add(soundLoop);
+                Minecraft.getInstance().getSoundManager().stop(soundLoop);
+            }
         });
 
-        toRemove.forEach(soundLoop -> {
-            currentlyPlayingSounds.remove(soundLoop);
-        });
+        toRemove.forEach(SyncSoundLoopSet::remove);
     }
 
     @SubscribeEvent
@@ -96,5 +151,11 @@ public class SoundscapeHandler {
             currentlyPlayingSounds.clear();
             return;
         }
+    }
+
+    public static void toggleUnderwater(boolean inUnderwaterStatus) {
+
+        isUnderwater = inUnderwaterStatus;
+        refreshCurrentlyPlayingSounds();
     }
 }

@@ -48,6 +48,7 @@ public class WDPlayer {
     private int currentBranch = -1;
     private int currentRoom = -1;
     private int currentLives = 0;
+    private boolean isUnderwater = false;
 
     private long blockPos = 0;
 
@@ -101,6 +102,27 @@ public class WDPlayer {
             this.onPlayerMovedBlocks();
             this.blockPos = getServerPlayer().blockPosition().asLong();
         }
+
+        underwaterHandler();
+    }
+
+    public void underwaterHandler() {
+
+        if (getServerPlayer().isUnderWater() && !isUnderwater){
+            isUnderwater = true;
+            sendUnderwaterPacket();
+        } else if(!getServerPlayer().isUnderWater() && isUnderwater){
+            isUnderwater = false;
+            sendUnderwaterPacket();
+        }
+    }
+
+    public void sendUnderwaterPacket(){
+
+        CompoundTag tag = new CompoundTag();                                                                            // create packet tag to send to client
+        tag.putString("packet", ClientPacketHandler.Packets.IS_UNDERWATER.toString());                                  // sets the enum path for ClientPacketHandler
+        tag.putBoolean("isUnderwater", isUnderwater);                                                                   // sets the isUnderwater key and value
+        PacketDistributor.sendToPlayer(this.getServerPlayer(), new SimplePacketManager.ClientboundTagPacket(tag));      // sends the packet to the client
     }
 
     public void rootRespawn(MinecraftServer server) {
@@ -256,20 +278,24 @@ public class WDPlayer {
         return !Objects.equals(this.currentDungeon,"none");
     }
 
+    // Server method to tell the client to switch soundscapes
     public void setSoundScape(@Nullable DungeonRegistration.SoundscapeTemplate soundScape, int intensity, boolean forceReset) {
-        if (this.getServerPlayer() == null) return;
-        CompoundTag tag = new CompoundTag();
-        tag.putString("packet", ClientPacketHandler.Packets.SWITCH_SOUNDSCAPE.toString());
 
-        if (soundScape == null) {
+        if (this.getServerPlayer() == null) return; // checks to see if we are on the server
+
+        CompoundTag tag = new CompoundTag(); // create packet tag to send to client
+        tag.putString("packet", ClientPacketHandler.Packets.SWITCH_SOUNDSCAPE.toString()); // sets the enum path for ClientPacketHandler
+
+        if (soundScape == null) { // if we are resetting the soundscape - early exit.
             PacketDistributor.sendToPlayer(this.getServerPlayer(), new SimplePacketManager.ClientboundTagPacket(tag));
             return;
         }
 
-        tag.putString("sound_key", soundScape.name());
-        tag.putInt("intensity", intensity);
-        tag.putBoolean("reset", forceReset);
-        PacketDistributor.sendToPlayer(this.getServerPlayer(), new SimplePacketManager.ClientboundTagPacket(tag));
+        tag.putString("sound_key", soundScape.name());      // used to pull the correct soundscape
+        tag.putInt("intensity", intensity);                 // used to set which soundscape is active
+        tag.putBoolean("reset", forceReset);                // used to clear out SoundscapeHandler.currentlyPlayingSounds
+
+        PacketDistributor.sendToPlayer(this.getServerPlayer(), new SimplePacketManager.ClientboundTagPacket(tag)); // sends the packet to the client
     }
 
     @SubscribeEvent
