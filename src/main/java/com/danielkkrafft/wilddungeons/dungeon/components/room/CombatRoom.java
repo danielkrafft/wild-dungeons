@@ -72,8 +72,6 @@ public class CombatRoom extends TargetPurgeRoom {
     public void spawnNext() {
         WildDungeons.getLogger().info("SPAWNING A GROUP OF {}", Math.floor(groupSize * this.getDifficulty()));
 
-        Vec3 pos = this.getActivePlayers().getFirst().getServerPlayer().position();
-
         for (int i = 0; i < Math.floor(groupSize * this.getDifficulty()); i++) {
             if (totalSpawns <= 0) return;
             Optional<DungeonTarget> target = targets.stream().filter(t -> !t.spawned).findFirst();
