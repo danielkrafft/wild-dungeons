@@ -34,7 +34,8 @@ public class AddEmeraldPiles extends PostProcessingStep{
 
                 for (int y = innerShell.minY(); y < innerShell.maxY(); y++) {
                     mutableBlockPos.set(randX, y, randZ);
-                    if (level.getBlockState(mutableBlockPos).isAir() && level.getBlockState(mutableBlockPos.below()).isFaceSturdy(level, mutableBlockPos.below(), net.minecraft.core.Direction.UP)) {
+                    //this null check is necessary because carved pumpkin blocks are returning null for some reason
+                    if (level.getBlockState(mutableBlockPos) != null && level.getBlockState(mutableBlockPos).isAir() && level.getBlockState(mutableBlockPos.below()).isFaceSturdy(level, mutableBlockPos.below(), net.minecraft.core.Direction.UP)) {
                         setBlockFast(level, mutableBlockPos, EmeraldPileBlock.getRandomPile().rotate(Rotation.getRandom(level.random)));
                         placed++;
                         break;
