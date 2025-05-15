@@ -74,7 +74,7 @@ public class TargetTemplateRegistry {
     public static final TargetTemplate BREEZE_GOLEM = createMob("BREEZE_GOLEM", WDEntities.BREEZE_GOLEM.get());
 
     public static final TargetTemplate BUSINESS_GOLEM = createMob("BUSINESS_GOLEM", WDEntities.BUSINESS_GOLEM.get());
-    public static final TargetTemplate BUSINESS_VINDICATOR = createMob("BUSINESS_VINDICATOR", WDEntities.BUSINESS_VINDICATOR.get()).setMainHandItem(Items.GOLDEN_AXE);
+    public static final TargetTemplate BUSINESS_VINDICATOR = createMob("BUSINESS_VINDICATOR", WDEntities.BUSINESS_VINDICATOR.get()).setMainHandItem(Items.GOLDEN_AXE,true);
     public static final TargetTemplate BUSINESS_EVOKER = createMob("BUSINESS_EVOKER", WDEntities.BUSINESS_EVOKER.get());
     public static final TargetTemplate BUSINESS_CEO = createMob("BUSINESS_CEO", WDEntities.BUSINESS_CEO.get());
     public static final TargetTemplate EMERALD_WISP = createMob("EMERALD_WISP", WDEntities.SMALL_EMERALD_WISP.get());
