@@ -61,7 +61,7 @@ public class SoundscapeHandler {
 
         if (isUnderwater && !currentlyPlayingUnderwaterSounds.isEmpty()) {
 
-            WildDungeons.getLogger().info("Underwater Soundscape Profile.");
+            //WildDungeons.getLogger().info("Underwater Soundscape Profile.");
             currentlyPlayingUnderwaterSounds.forEach(soundInstance -> {
                 if (currentIntensity >= soundInstance.layer && !soundInstance.active) soundInstance.rise();
                 else if (currentIntensity < soundInstance.layer && soundInstance.active) soundInstance.fade();
@@ -69,7 +69,7 @@ public class SoundscapeHandler {
             currentlyPlayingSounds.forEach(SynchronizedSoundLoop::fade);
         } else {
 
-            WildDungeons.getLogger().info("Normal Soundscape Profile.");
+            //WildDungeons.getLogger().info("Normal Soundscape Profile.");
             currentlyPlayingSounds.forEach(soundInstance -> {
                 if (currentIntensity >= soundInstance.layer && !soundInstance.active) soundInstance.rise();
                 else if (currentIntensity < soundInstance.layer && soundInstance.active) soundInstance.fade();
