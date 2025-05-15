@@ -15,6 +15,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientPauseChangeEvent;
 import net.neoforged.neoforge.client.event.sound.PlaySoundEvent;
+import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -29,6 +30,8 @@ public class SoundscapeHandler {
     public static DungeonRegistration.SoundscapeTemplate currentTemplate = null;
     public static int currentIntensity = 0;
     public static boolean isUnderwater = false;
+
+    private static final Logger LOGGER = LogUtils.getLogger();
 
     public static void handleSwitchSoundscape(DungeonRegistration.SoundscapeTemplate template, int intensity, boolean forceReset) {
 
@@ -60,6 +63,7 @@ public class SoundscapeHandler {
 
         if (isUnderwater && !currentlyPlayingUnderwaterSounds.isEmpty()) {
 
+            LOGGER.info("Underwater Soundscape Profile.");
             currentlyPlayingUnderwaterSounds.forEach(soundInstance -> {
                 if (currentIntensity >= soundInstance.layer && !soundInstance.active) soundInstance.rise();
                 else if (currentIntensity < soundInstance.layer && soundInstance.active) soundInstance.fade();
@@ -67,6 +71,7 @@ public class SoundscapeHandler {
             currentlyPlayingSounds.forEach(SynchronizedSoundLoop::fade);
         } else {
 
+            LOGGER.info("Normal Soundscape Profile.");
             currentlyPlayingSounds.forEach(soundInstance -> {
                 if (currentIntensity >= soundInstance.layer && !soundInstance.active) soundInstance.rise();
                 else if (currentIntensity < soundInstance.layer && soundInstance.active) soundInstance.fade();
