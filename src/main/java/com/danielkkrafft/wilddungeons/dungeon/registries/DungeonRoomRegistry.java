@@ -226,12 +226,12 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate VILLAGE_SEWER_11 = createSimple("village/sewer/11");//pillars with canal
     public static final DungeonRoomTemplate VILLAGE_SEWER_12 = createSimple("village/sewer/12");//big open cube
     public static final DungeonRoomTemplate VILLAGE_SEWER_13 = createSimple("village/sewer/13");//small open cube
-    public static final DungeonRoomTemplate VILLAGE_SEWER_12_COMBAT = copyCombatOf(VILLAGE_SEWER_12, "village_sewer_12_combat").set(DIFFICULTY_MODIFIER, 0.5).set(WAVE_SIZE, 2);
+    public static final DungeonRoomTemplate VILLAGE_SEWER_12_COMBAT = copyCombatOf(VILLAGE_SEWER_12, "village_sewer_12_combat").set(ENEMY_TABLE, EnemyTableRegistry.VILLAGE_SEWER_ENEMY_TABLE).set(DIFFICULTY_MODIFIER, 0.5).set(WAVE_SIZE, 2);
     public static final DungeonRoomTemplate VILLAGE_SEWER_CHESTCAP = createSimple("village/sewer/chestcap").setClazz(SecretRoom.class);
     public static final DungeonRoomTemplate VILLAGE_SEWER_ELEVATOR = createSimple("village/sewer/elevator");
     public static final DungeonRoomTemplate VILLAGE_SEWER_DEELEVATOR = createSimple("village/sewer/deelevator");
     public static final DungeonRoomTemplate VILLAGE_SEWER_START = createSimple("village/sewer/start");
-    public static final DungeonRoomTemplate VILLAGE_SEWER_PERK = createSimple("village/sewer/perk").setClazz(LootRoom.class);
+    public static final DungeonRoomTemplate VILLAGE_SEWER_PERK = createSimple("village/sewer/perk").set(SOUNDSCAPE, SoundscapeTemplateRegistry.PEACEFUL).set(INTENSITY, 1).setClazz(LootRoom.class);
     public static final DungeonRoomTemplate VILLAGE_PIPE_TO_METRO = createSimple("village/sewer/pipe_to_metro");
 
     public static final DungeonRoomTemplate VILLAGE_METRO_CENTER = createSimple("village/metro/center");
@@ -566,6 +566,8 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
 
     public static final DungeonRoomTemplate VILLAGE_METRO_TOWER_START = createSimple("village/tower/tower_start").setClazz(KeyRequiredRoom.class)
             .set(DO_PLACEMENT_MIRROR, false)
+            .set(SOUNDSCAPE, SoundscapeTemplateRegistry.PEACEFUL)
+            .set(INTENSITY, 1)
             .set(SHOP_TABLE, new WeightedTable<DungeonRegistration.OfferingTemplate>().add(OfferingTemplatePoolRegistry.VILLAGE_STORE_POOL, 1))
             .set(DESTRUCTION_RULE, DestructionRule.PROTECT_ALL_CLEAR);//so they can't tunnel through the wall and cheat the keys
     public static final DungeonRoomTemplate VILLAGE_METRO_TOWER_STAIRS = createSimple("village/tower/tower_connection")

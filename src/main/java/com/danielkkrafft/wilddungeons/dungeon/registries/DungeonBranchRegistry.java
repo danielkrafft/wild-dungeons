@@ -174,7 +174,7 @@ public class DungeonBranchRegistry {
                     .add(VILLAGE_SEWER_POOL,10)
                     .addSimple(VILLAGE_SEWER_PERK))
             .set(MATERIAL, VILLAGE_SEWER_MATERIAL_POOL)
-            .set(HierarchicalProperty.ENEMY_TABLE, EnemyTableRegistry.VILLAGE_SEWER_ENEMY_TABLE)
+            .set(HierarchicalProperty.ENEMY_TABLE, EnemyTableRegistry.BASIC_ENEMY_TABLE)
             .set(ROOM_TARGET_Y, 50)
             .set(MAX_Y, 100)
             .set(FLOOR_DISTANCE_WEIGHT, 400)

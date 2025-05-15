@@ -43,9 +43,10 @@ public class EnemyTableRegistry {
                             .add(DROWNED, 10)
                     , 1)
             .add(new WeightedPool<TargetTemplate>()
-                            .add(GUARDIAN, 5)
-                            .add(ELDER_GUARDIAN, 1)
+                            .add(GUARDIAN, 1)
                     ,10)
+            .add(new WeightedPool<TargetTemplate>()
+                    .add(ELDER_GUARDIAN, 1), 50)
             ;
 
 
