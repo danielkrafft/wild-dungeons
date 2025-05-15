@@ -8,8 +8,11 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
+@OnlyIn(Dist.CLIENT)
 public class LaserbeamRenderer<T extends Laserbeam> extends EntityRenderer<T> {
     private static final ResourceLocation
             RING = WildDungeons.rl("textures/entity/laserbeam_ring.png"),
