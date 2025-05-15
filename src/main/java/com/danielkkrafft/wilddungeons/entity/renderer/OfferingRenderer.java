@@ -335,7 +335,7 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
                 case OVERWORLD -> Minecraft.getInstance().player.experienceLevel;
                 case NETHER -> Mth.floor(wdPlayer.getEssenceLevel(EssenceOrb.Type.NETHER));
                 case END -> Mth.floor(wdPlayer.getEssenceLevel(EssenceOrb.Type.END));
-                case ITEM -> wdPlayer.getServerPlayer().getInventory().countItem(entity.getCostItem());
+                case ITEM -> /*wdPlayer.getServerPlayer().getInventory().countItem(entity.getCostItem());*/entity.getCostAmount();
             };
 
             if (currencyAmount >= entity.getCostAmount()) {
