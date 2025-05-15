@@ -144,9 +144,11 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
 
     public ItemStack getItemStack() {
         if (this.itemStack == null) {
-            WildDungeons.getLogger().info("Getting itemstack of ID: {}", this.offerID);
+//            WildDungeons.getLogger().info("Getting itemstack of ID: {}", this.offerID);
+//            WildDungeons.getLogger().info("ItemStack should be: {}", Item.byId(Integer.parseInt(this.offerID)));
             try {
                 itemStack = new ItemStack(Item.byId(Integer.parseInt(this.offerID)), this.amount);
+//                WildDungeons.getLogger().info("Itemstack is: {}", itemStack);
             } catch (Exception e) {
                 itemStack = Items.DIRT.getDefaultInstance();
             }

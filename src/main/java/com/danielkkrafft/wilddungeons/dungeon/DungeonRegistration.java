@@ -99,6 +99,7 @@ public class DungeonRegistration {
 
         public Offering asOffering(Level level) {
             int adjustedAmount = RandomUtil.randIntBetween((int) (amount / deviance), (int) (amount * deviance));
+            adjustedAmount = Math.max(1, adjustedAmount);
             int adjustedCost = RandomUtil.randIntBetween((int) (costAmount / deviance), (int) (costAmount * deviance));
             Offering offering = new Offering(level, type, adjustedAmount, id, costType, adjustedCost);
             if (costType.equals(Offering.CostType.ITEM)){
