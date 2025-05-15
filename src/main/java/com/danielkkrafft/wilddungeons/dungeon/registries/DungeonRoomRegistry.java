@@ -606,6 +606,7 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate VILLAGE_METRO_TOWER_PERK = createSimple("village/tower/tower_perk")
             .set(DO_PLACEMENT_MIRROR, false)
             .setClazz(LootChoiceRoom.class)
+            .set(CHEST_SPAWN_CHANCE, 1.0)
             .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(1)));
 
 
