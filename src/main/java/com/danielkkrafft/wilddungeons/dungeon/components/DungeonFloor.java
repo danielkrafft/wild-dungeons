@@ -48,7 +48,7 @@ public class DungeonFloor {
     private final int index;
     private final HashMap<ChunkPos, ArrayList<Vector2i>> chunkMap = new HashMap<>();
     private final HashMap<String, Boolean> playersInside = new HashMap<>();
-    public BlockState[] baseColumn = null;
+    @Serializer.IgnoreSerialization public BlockState[] baseColumn = null;
 
     public DungeonFloorTemplate getTemplate() {return DUNGEON_FLOOR_REGISTRY.get(this.templateKey);}
     public DungeonSession getSession() {return DungeonSessionManager.getInstance().getDungeonSession(this.sessionKey);}
