@@ -108,17 +108,17 @@ public class WDPlayer {
 
     public void underwaterHandler() {
 
-        if (getServerPlayer().isUnderWater() && !isUnderwater){
+        if (getServerPlayer() != null && getServerPlayer().isUnderWater() && !isUnderwater){
             isUnderwater = true;
             sendUnderwaterPacket();
-        } else if(!getServerPlayer().isUnderWater() && isUnderwater){
+        } else if(getServerPlayer() != null && !getServerPlayer().isUnderWater() && isUnderwater){
             isUnderwater = false;
             sendUnderwaterPacket();
         }
     }
 
     public void sendUnderwaterPacket(){
-
+        if (getServerPlayer() == null) return;
         CompoundTag tag = new CompoundTag();                                                                            // create packet tag to send to client
         tag.putString("packet", ClientPacketHandler.Packets.IS_UNDERWATER.toString());                                  // sets the enum path for ClientPacketHandler
         tag.putBoolean("isUnderwater", isUnderwater);                                                                   // sets the isUnderwater key and value
