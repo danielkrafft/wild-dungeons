@@ -337,6 +337,12 @@ public class DungeonBranchRegistry {
                     VILLAGE_METRO_FLYINGNOKK_TWR_VAULT,2)))
             .set(SOUNDSCAPE, SoundscapeTemplateRegistry.VD_ANGEL_INVESTOR_SAFE)
             .setRootOriginBranchIndex(6);
+    public static final DungeonBranchTemplate VILLAGE_METRO_STREETS_GAUNTLET_BRANCH = copyOf(VILLAGE_METRO_STREETS_BRANCH, "VILLAGE_METRO_STREETS_GAUNTLET_BRANCH")
+            .setRootOriginBranchIndex(6);
+    public static final DungeonBranchTemplate VILLAGE_MEDIUM_GAUNTLET_BRANCH = copyOf(VILLAGE_MEDIUM_BRANCH, "VILLAGE_MEDIUM_GAUNTLET_BRANCH")
+            .setRootOriginBranchIndex(6);
+    public static final DungeonBranchTemplate VILLAGE_SMALL_GAUNTLET_BRANCH = copyOf(VILLAGE_SMALL_BRANCH, "VILLAGE_SMALL_GAUNTLET_BRANCH")
+            .setRootOriginBranchIndex(6);
 
     public static DungeonBranchTemplate copyOf(DungeonBranchTemplate branch, String name) {
         DungeonBranchTemplate copy = DungeonBranchTemplate.copyOf(branch, name);
