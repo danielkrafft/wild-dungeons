@@ -177,6 +177,7 @@ public class DungeonBranchRegistry {
                     .addSimple(VILLAGE_SEWER_PERK))
             .set(MATERIAL, VILLAGE_SEWER_MATERIAL_POOL)
             .set(HierarchicalProperty.ENEMY_TABLE, EnemyTableRegistry.BASIC_ENEMY_TABLE)
+            .set(LOOT_TABLE,SEWER_LOOT_TABLE)
             .set(ROOM_TARGET_Y, 50)
             .set(MAX_Y, 100)
             .set(FLOOR_DISTANCE_WEIGHT, 400)
@@ -190,7 +191,6 @@ public class DungeonBranchRegistry {
                     .addSimple(VILLAGE_PIPE_TO_METRO))
             .set(MATERIAL, VILLAGE_SEWER_MATERIAL_POOL)
             .set(FLOOR_DISTANCE_WEIGHT, 400)
-            .set(LOOT_TABLE,SEWER_LOOT_TABLE)
             .set(HAS_BEDROCK_SHELL, true)
             .set(SOUNDSCAPE, SoundscapeTemplateRegistry.VD_OVERFLOW);
 
