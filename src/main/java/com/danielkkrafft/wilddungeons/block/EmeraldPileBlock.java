@@ -34,7 +34,7 @@ import javax.annotation.Nullable;
 
 @EventBusSubscriber(modid = WildDungeons.MODID)
 public class EmeraldPileBlock extends Block {
-    public static final int MAX_EMERALD_COUNT = 40;
+    public static final int MAX_EMERALD_COUNT = 64;
     public static final IntegerProperty EMERALD_COUNT = IntegerProperty.create("emerald_count", 0, MAX_EMERALD_COUNT);
     public static final IntegerProperty MODEL = IntegerProperty.create("model", 1, 7);
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
