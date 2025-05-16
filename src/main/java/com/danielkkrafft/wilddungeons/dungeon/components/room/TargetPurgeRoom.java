@@ -71,6 +71,7 @@ public class TargetPurgeRoom extends LockableEventRoom {
     @Override
     public void reset() {
         super.reset();
+        if (this instanceof LootRoom) return;
         targets.forEach(enemy -> enemy.discard(this));
         targets.clear();
     }
