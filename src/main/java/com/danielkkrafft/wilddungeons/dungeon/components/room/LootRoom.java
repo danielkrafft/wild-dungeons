@@ -32,11 +32,16 @@ public class LootRoom extends TargetPurgeRoom {
             List<DungeonRegistration.OfferingTemplate> entries = OfferingTemplateTableRegistry.FREE_PERK_OFFERING_TABLE.randomResults(this.getTemplate().offerings().size(), (int) this.getDifficulty() * this.getTemplate().offerings().size(), 1.2f);
             Set<String> uniquePerks = new HashSet<>();
 
+            int quality = Math.max(1, (int)(this.getDifficulty() * this.getTemplate().offerings().size() * 1.2f)); // 1.2 is the deviance
+
             for (int i = 0; i < entries.size(); i++) {
+
                 DungeonRegistration.OfferingTemplate offeringTemplate = entries.get(i);
                 DungeonPerkTemplate perkEntry = PerkRegistry.DUNGEON_PERK_REGISTRY.get(offeringTemplate.id());
+
                 while (perkEntry != null && (perkEntry.isUnique() && (this.getSession().getPerkByClass(perkEntry.getClazz()) != null || !uniquePerks.add(perkEntry.name())))) {
-                    offeringTemplate = OfferingTemplateTableRegistry.FREE_PERK_OFFERING_TABLE.randomResults(1, (int) this.getDifficulty() * this.getTemplate().offerings().size(), 1.2f).getFirst();
+
+                    offeringTemplate = OfferingTemplateTableRegistry.FREE_PERK_OFFERING_TABLE.randomResults(1, quality, 1f).getFirst();
                     entries.set(i, offeringTemplate);
                     perkEntry = PerkRegistry.DUNGEON_PERK_REGISTRY.get(offeringTemplate.id());
                 }
