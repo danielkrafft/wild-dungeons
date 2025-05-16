@@ -65,7 +65,10 @@ import net.neoforged.neoforge.common.EffectCures;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.entity.EntityMobGriefingEvent;
 import net.neoforged.neoforge.event.entity.EntityStruckByLightningEvent;
-import net.neoforged.neoforge.event.entity.living.*;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.living.LivingExperienceDropEvent;
+import net.neoforged.neoforge.event.entity.living.LivingUseTotemEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerXpEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
@@ -518,14 +521,17 @@ public class WDEvents {
         event.addListener(WDStructureTemplateManager.StructureTemplateManagerReloadListener);
     }
 
-    @SubscribeEvent
-    public static void canMobEffectBeApplied(MobEffectEvent.Applicable event){
-        if (event.getEntity() instanceof ServerPlayer serverPlayer && !serverPlayer.isCreative() && !serverPlayer.isSpectator()) {
-            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer);
-            if (wdPlayer.getCurrentDungeon() == null) return;
-            if (event.getEffectInstance().isInfiniteDuration()) {
-                event.setResult(MobEffectEvent.Applicable.Result.DO_NOT_APPLY);
-            }
-        }
-    }
+//    @SubscribeEvent
+//    public static void canMobEffectBeApplied(MobEffectEvent.Applicable event){
+//        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
+//            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer);
+//            if (wdPlayer.getCurrentDungeon() == null) return;
+//            if (event.getEffectInstance().getDuration()==69420) {
+//                event.setResult(MobEffectEvent.Applicable.Result.DO_NOT_APPLY);
+//                MobEffectInstance effectInstance = event.getEffectInstance();
+//                effectInstance = new MobEffectInstance(effectInstance.getEffect(), -1, effectInstance.getAmplifier(), effectInstance.isAmbient(), effectInstance.isVisible(), effectInstance.showIcon());
+//                wdPlayer.getServerPlayer().addEffect(effectInstance);
+//            }
+//        }
+//    }
 }
