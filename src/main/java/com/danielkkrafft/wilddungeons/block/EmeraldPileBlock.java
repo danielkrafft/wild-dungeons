@@ -184,6 +184,8 @@ public class EmeraldPileBlock extends Block {
 
     public static BlockState getRandomPile(){
         int count = (int) (Math.random() * MAX_EMERALD_COUNT);
+        count = Math.max(1,count);
+        count = Math.min(MAX_EMERALD_COUNT,count);
         int model = getModel(count);
         return WDBlocks.EMERALD_PILE.get().defaultBlockState().setValue(EMERALD_COUNT,count).setValue(MODEL,model);
     }
