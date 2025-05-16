@@ -183,7 +183,7 @@ public class EmeraldPileBlock extends Block {
     }
 
     public static BlockState getRandomPile(){
-        int count = (int) (Math.random() * MAX_EMERALD_COUNT);
+        int count = (int) (Math.random() * MAX_EMERALD_COUNT * 0.75f);
         count = Math.max(1,count);
         count = Math.min(MAX_EMERALD_COUNT,count);
         int model = getModel(count);
