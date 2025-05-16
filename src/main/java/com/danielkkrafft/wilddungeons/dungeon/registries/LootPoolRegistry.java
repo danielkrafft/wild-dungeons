@@ -113,7 +113,7 @@ public class LootPoolRegistry {
     public static final WeightedPool<ItemTemplate> METRO_EPIC_POOL = copyOf(EPIC_LOOT_POOL,"METRO_EPIC_LOOT_POOL")
             .add(EMERALD,1);
 
-    public static final WeightedPool<ItemTemplate> VILLAGE_SEWER_COMMON_POOL = create("VILLAGE_SEWER_COMMON_POOL")
+    public static final WeightedPool<ItemTemplate> VILLAGE_SEWER_COMMON_POOL = copyOf(COMMON_LOOT_POOL,"VILLAGE_SEWER_COMMON_POOL")
             .add(WATER_BREATHING_POTION, 15);
     public static final WeightedPool<ItemTemplate> VILLAGE_SEWER_MEDIUM_POOL = copyOf(MEDIUM_LOOT_POOL,"VILLAGE_SEWER_MEDIUM_POOL")
             .add(WATER_BREATHING_POTION, 5);
