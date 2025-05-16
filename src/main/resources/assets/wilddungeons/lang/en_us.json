@@ -180,6 +180,11 @@
   "wilddungeons.offering.wd-dungeon_1": "END TEST Rift",
 
   "painting.wilddungeons.angel_investor.title": "Angel Investor",
-  "painting.wilddungeons.angel_investor.author": "Daniel Krafft"
+  "painting.wilddungeons.angel_investor.author": "Daniel Krafft",
 
+  "item.wilddungeons.instant_loadout_leather": "Leather Loadout",
+  "item.wilddungeons.instant_loadout_iron": "Iron Loadout",
+  "item.wilddungeons.instant_loadout_diamond": "Diamond Loadout",
+  "item.wilddungeons.instant_loadout_netherite": "Netherite Loadout",
+  "item.wilddungeons.instant_loadout_gold": "Gold Loadout"
 }

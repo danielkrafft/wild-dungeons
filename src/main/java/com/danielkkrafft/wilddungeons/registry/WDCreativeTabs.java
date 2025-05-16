@@ -45,6 +45,12 @@ public class WDCreativeTabs {
                 output.accept(ROOM_EXPORT_WAND.get());
                 output.accept(DEBUG_ITEM.get());
 
+                output.accept(INSTANT_LOADOUT_LEATHER.get());
+                output.accept(INSTANT_LOADOUT_IRON.get());
+                output.accept(INSTANT_LOADOUT_DIAMOND.get());
+                output.accept(INSTANT_LOADOUT_NETHERITE.get());
+                output.accept(INSTANT_LOADOUT_GOLD.get());
+
                 output.accept(OVERFLOW_MUSIC_DISC.get());
                 output.accept(OVERFLOW_SAFE_MUSIC_DISC.get());
                 output.accept(OVERFLOW_UNDERWATER_MUSIC_DISC.get());

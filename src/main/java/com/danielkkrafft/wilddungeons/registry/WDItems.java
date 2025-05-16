@@ -27,7 +27,11 @@ public class WDItems {
     public static final DeferredItem<Item> NETHER_DRAGON_SPAWN_EGG = ITEMS.register("nether_dragon_spawn_egg", () -> new SpawnEggItem(WDEntities.NETHER_DRAGON.get(), new Color(134, 0, 19).getRGB(), new Color(255, 136, 0).getRGB(), new Item.Properties()));
     public static final DeferredItem<Item> WD_DUNGEON_KEY = ITEMS.register("wd_dungeon_key", () -> new Item(new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.RARE)));
     public static final DeferredItem<Item> ROOM_EXPORT_WAND = ITEMS.register("room_export_wand", () -> new RoomExportWand(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC).component(WDDataComponents.WAND_MODE.get(),0).component(WDDataComponents.WAND_ROOM_NAME.get(),"room")));
-
+    public static final DeferredItem<Item> INSTANT_LOADOUT_LEATHER = ITEMS.register("instant_loadout_leather", () -> new InstantLoadout(new Item.Properties().stacksTo(1).rarity(Rarity.COMMON), InstantLoadout.Type.Leather));
+    public static final DeferredItem<Item> INSTANT_LOADOUT_IRON = ITEMS.register("instant_loadout_iron", () -> new InstantLoadout(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON), InstantLoadout.Type.Iron));
+    public static final DeferredItem<Item> INSTANT_LOADOUT_DIAMOND = ITEMS.register("instant_loadout_diamond", () -> new InstantLoadout(new Item.Properties().stacksTo(1).rarity(Rarity.RARE), InstantLoadout.Type.Diamond));
+    public static final DeferredItem<Item> INSTANT_LOADOUT_NETHERITE = ITEMS.register("instant_loadout_netherite", () -> new InstantLoadout(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), InstantLoadout.Type.Netherite));
+    public static final DeferredItem<Item> INSTANT_LOADOUT_GOLD = ITEMS.register("instant_loadout_gold", () -> new InstantLoadout(new Item.Properties().stacksTo(1).rarity(Rarity.RARE), InstantLoadout.Type.Gold));
     //------- MUSIC DISCS -------//
     public static final DeferredItem<Item> OVERFLOW_MUSIC_DISC = ITEMS.register("overflow_music_disc", () -> new Item( new Item.Properties().jukeboxPlayable(WDSoundEvents.OVERFLOW_KEY).stacksTo(1).rarity(Rarity.EPIC)));
     public static final DeferredItem<Item> OVERFLOW_SAFE_MUSIC_DISC = ITEMS.register("overflow_safe_music_disc", () -> new Item( new Item.Properties().jukeboxPlayable(WDSoundEvents.OVERFLOW_SAFE_KEY).stacksTo(1).rarity(Rarity.EPIC)));
