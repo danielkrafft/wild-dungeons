@@ -1,7 +1,6 @@
 package com.danielkkrafft.wilddungeons.dungeon.components;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.block.WDBedrockBlock;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.components.process.PostProcessingStep;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.LockableEventRoom;
@@ -50,7 +49,6 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
-import static com.danielkkrafft.wilddungeons.block.WDBedrockBlock.MIMIC;
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialRegistry.DUNGEON_MATERIAL_REGISTRY;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomRegistry.DUNGEON_ROOM_REGISTRY;
@@ -203,13 +201,6 @@ public class DungeonRoom {
     }
 
     /**
-     * Toggles the protective bedrock shell which safeguards rooms from griefing and cheating
-     */
-    public void removeProtection() {
-        this.getBoundingBoxes().forEach(box -> fillShellWith(this.getBranch().getFloor(), this, box, WDBedrockBlock.of(Blocks.DIAMOND_BLOCK), 0, handleRemoveProtectedShell()));
-    }
-
-    /**
      * Handles the actual placement of a shell
      *
      * @param floor      The DungeonFloor where the shell will be placed
@@ -256,19 +247,6 @@ public class DungeonRoom {
                 potentialConflicts.addAll(floor.getBranches().get(vector2i.x).getRooms().get(vector2i.y).getBoundingBoxes());
             });
             return potentialConflicts.stream().noneMatch(potentialConflict -> potentialConflict.isInside(blockPos));
-        };
-    }
-
-    /**
-     * Used as a predicate for fillShellWith.
-     * Always returns false, skips the regular shell creation in order to match the new blockstate to the Bedrock blockstate which is being removed.
-     */
-    public static TriFunction<DungeonFloor, DungeonRoom, BlockPos, Boolean> handleRemoveProtectedShell() {
-        return (floor, room, blockPos) -> {
-            BlockState blockState = floor.getLevel().getBlockState(blockPos);
-            if (blockState.hasProperty(MIMIC))
-                floor.getLevel().setBlock(blockPos, BuiltInRegistries.BLOCK.byId(blockState.getValue(MIMIC)).defaultBlockState(), 130);
-            return false;
         };
     }
 

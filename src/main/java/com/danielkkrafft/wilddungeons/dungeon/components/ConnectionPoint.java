@@ -1,7 +1,6 @@
 package com.danielkkrafft.wilddungeons.dungeon.components;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.block.WDBedrockBlock;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
@@ -254,7 +253,7 @@ public class ConnectionPoint {
         getPositions(this.getRoom().getOrientation(), this.getRoom().getPosition()).forEach((pos) -> {
             BlockState blockState = this.getRoom().getMaterial().get(DungeonMaterial.BlockSetting.BlockType.BASIC, this.getRoom().getProperty(HierarchicalProperty.BLOCKING_MATERIAL_INDEX), this.getRoom().getProperty(HierarchicalProperty.MATERIAL_NOISE), pos);
             if (this.getRoom().getProperty(HierarchicalProperty.DESTRUCTION_RULE).equals(DungeonRoomTemplate.DestructionRule.SHELL) || (this.getRoom().getProperty(HierarchicalProperty.DESTRUCTION_RULE).equals(DungeonRoomTemplate.DestructionRule.SHELL_CLEAR) && !this.getRoom().isClear())) {
-                level.setBlock(pos, WDBedrockBlock.of(blockState.getBlock()), flags);
+                level.setBlock(pos, blockState.getBlock().defaultBlockState(), flags);
             } else {
                 level.setBlock(pos, blockState, flags);
             }

@@ -1,7 +1,6 @@
 package com.danielkkrafft.wilddungeons.dungeon.components.room;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.block.WDBedrockBlock;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateOrientation;
@@ -122,7 +121,7 @@ public class LockableEventRoom extends DungeonRoom {
     public void processDataMarker(BlockPos pos, String metadata) {
         super.processDataMarker(pos, metadata);
         if (metadata.equals("wd_gate")) {
-            BlockState state = this.isClear() ? Blocks.AIR.defaultBlockState() : WDBedrockBlock.of(Blocks.REDSTONE_BLOCK);
+            BlockState state = this.isClear() ? Blocks.AIR.defaultBlockState() : Blocks.REDSTONE_BLOCK.defaultBlockState();
             this.getBranch().getFloor().getLevel().setBlock(pos, state, 130);
         }
     }
