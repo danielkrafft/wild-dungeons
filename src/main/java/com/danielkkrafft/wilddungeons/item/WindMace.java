@@ -2,6 +2,8 @@ package com.danielkkrafft.wilddungeons.item;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.entity.WindChargeProjectile;
+import com.danielkkrafft.wilddungeons.item.itemhelpers.WDItemBase;
+import com.danielkkrafft.wilddungeons.registry.WDItems;
 import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
 import com.danielkkrafft.wilddungeons.util.CameraShakeUtil;
 import com.danielkkrafft.wilddungeons.util.UtilityMethods;
@@ -20,11 +22,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
-import software.bernie.geckolib.animatable.GeoItem;
 
-import java.util.concurrent.atomic.AtomicInteger;
 
-public class WindMace extends WDWeapon {
+public class WindMace extends WDItemBase {
 
     public static final String NAME = "wind_mace";
 
@@ -39,22 +39,20 @@ public class WindMace extends WDWeapon {
         super(NAME, new Properties().rarity(Rarity.EPIC).durability(2000).attributes(SwordItem.createAttributes(Tiers.DIAMOND, 0.f, 0.f)));
 
         hasIdle = false;
-        addLoopingAnimation(AnimationList.swing.toString());
-        addAnimation(AnimationList.slam.toString());
+        animator.addLoopingAnimation(AnimationList.swing.toString());
+        animator.addAnimation(AnimationList.slam.toString());
     }
 
     @Override
     @NotNull
     public InteractionResultHolder<ItemStack> use(@NotNull Level level,@NotNull Player player, @NotNull InteractionHand hand) {
 
-        AtomicInteger tickDiff = new AtomicInteger(0);
-
         if (!level.isClientSide()) {
-            setAnimation(AnimationList.swing.toString(), player.getItemInHand(hand), player, level);
-            setSoundKeyframeHandler(state -> {
+            animator.setSoundKeyframeHandler(state -> {
                 if(state.getKeyframeData().getSound().equals("mace_swing"))
                     level.playSound(null,player,WDSoundEvents.WIND_MACE_SWING.value(),SoundSource.PLAYERS, 1.f, 1.f);
             });
+            animator.playAnimation(this, AnimationList.swing.toString(), player.getItemInHand(hand), player, level);
         }
 
         player.startUsingItem(hand);
@@ -72,7 +70,7 @@ public class WindMace extends WDWeapon {
     {
         if(entity instanceof Player p && p.level()instanceof ServerLevel server)
         {
-            setAnimation(AnimationList.slam.toString(),stack, p, p.level());
+            animator.playAnimation(this, AnimationList.slam.toString(),stack, p, p.level());
         }
     }
 
@@ -84,7 +82,7 @@ public class WindMace extends WDWeapon {
 
         if (!level.isClientSide()) {
             if (livingEntity instanceof Player player) {
-                setAnimationSpeed(r, level);
+                animator.setAnimationSpeed(r);
 
                 // Swing Volume
                 final float BASE_VOLUME = 0.25f;
@@ -98,7 +96,7 @@ public class WindMace extends WDWeapon {
 
                 float volume = Math.min(BASE_VOLUME + (diff * VOLUME_SCALING), MAX_VOLUME);
                 float pitch = Math.min(BASE_PITCH + (diff * PITCH_SCALING), MAX_PITCH);
-                setSoundKeyframeHandler(state -> {
+                animator.setSoundKeyframeHandler(state -> {
                     if(state.getKeyframeData().getSound().equals("mace_swing"))
                         level.playSound(null,player,WDSoundEvents.WIND_MACE_SWING.value(),SoundSource.PLAYERS, volume, pitch);
                 });
@@ -136,7 +134,7 @@ public class WindMace extends WDWeapon {
             {
                 //stack.hurtAndBreak(5, player, ignored -> player.broadcastBreakEvent(player.getUsedItemHand()));
 
-                setSoundKeyframeHandler(state -> {
+                animator.setSoundKeyframeHandler(state -> {
                     if(state.getKeyframeData().getSound().equals("mace_smash"))
                     {
                         WildDungeons.getLogger().info("Strike? DMG: {} ", dmg);

@@ -24,8 +24,9 @@ public class WDCreativeTabs {
                 output.accept(AMOGUS_STAFF.get());
                 output.accept(EMERALD_STAFF.get());
                 output.accept(LASER_SWORD_ITEM.get());
-                output.accept(WIND_MACE_ITEM.get());
                 output.accept(FIREWORK_GUN_ITEM.get());
+                output.accept(WIND_MACE_ITEM.get());
+                output.accept(WIND_BOW_ITEM.get());
 
                 output.accept(ROTTEN_MOSS.get());
                 output.accept(HEAVY_RUNE.get());
