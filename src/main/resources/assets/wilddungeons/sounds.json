@@ -176,6 +176,16 @@
       {"name": "wilddungeons:item/meathook/meathook_retract"}
     ]
   },
+  "item.wind_mace.swing": {
+    "sounds": [
+      {"name": "wilddungeons:item/wind_mace/wind_mace_swing"}
+    ]
+  },
+  "item.wind_mace.smash": {
+    "sounds": [
+      {"name": "wilddungeons:item/wind_mace/wind_mace_smash"}
+    ]
+  },
   "soundscape.music.nether_dragon_bass": {
     "sounds": [
       {

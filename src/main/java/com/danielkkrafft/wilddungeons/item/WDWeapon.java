@@ -14,6 +14,7 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoAnimatable;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.SingletonGeoAnimatable;
@@ -37,6 +38,7 @@ public abstract class WDWeapon extends Item implements GeoAnimatable, GeoItem {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private final ArrayList<Pair<RawAnimation,Float>> animations = new ArrayList<>();
     public AnimationController<GeoAnimatable> controller = new AnimationController<>(this, WildDungeons.rl(this.name).toString(), 1,state -> PlayState.CONTINUE);
+    protected boolean hasIdle = true;
 
     public WDWeapon(String name) {
         super(new Item.Properties()
@@ -91,7 +93,7 @@ public abstract class WDWeapon extends Item implements GeoAnimatable, GeoItem {
 
     @Override
     public void inventoryTick(@NotNull ItemStack itemStack, @NotNull Level level, @NotNull Entity entity, int slot, boolean inMainHand) {
-        if(entity instanceof Player player && !player.getCooldowns().isOnCooldown(this) && !player.isUsingItem()) {
+        if(entity instanceof Player player && !player.getCooldowns().isOnCooldown(this) && !player.isUsingItem() && hasIdle) {
             setAnimation(this.getAnimationName(0), itemStack, player, level);
         }
     }
@@ -102,6 +104,25 @@ public abstract class WDWeapon extends Item implements GeoAnimatable, GeoItem {
             this.triggerAnim(player, GeoItem.getOrAssignId(stack, serverLevel), WildDungeons.rl(this.name).toString(), finalName);
             controller.setAnimationSpeed(animations.stream().filter(pair -> pair.getFirst().getAnimationStages().getFirst().animationName().equals(finalName)).findFirst().get().getSecond());
         }
+    }
+
+    protected void setAnimationSpeed(float inSpeed, Level level) {
+
+        // make sure we have a valid controller
+        if (controller == null) return;
+
+        // ensure we are on the server
+        if (level.isClientSide()) return;
+
+        controller.setAnimationSpeed(inSpeed);
+    }
+
+    protected void setSoundKeyframeHandler(@Nullable AnimationController.SoundKeyframeHandler<GeoAnimatable> geoAnimatable) {
+
+        // controller check
+        if (controller == null) return;
+
+        controller.setSoundKeyframeHandler(geoAnimatable);
     }
 
     public static class WDWeaponRenderer<T extends WDWeapon> extends GeoItemRenderer<T> {

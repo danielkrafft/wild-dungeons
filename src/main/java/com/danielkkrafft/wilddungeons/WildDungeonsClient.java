@@ -14,14 +14,13 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
+import net.neoforged.neoforge.common.NeoForge;
 
 import static com.danielkkrafft.KeyBindings.TOGGLE_ESSENCE_TYPE;
 
@@ -29,6 +28,12 @@ import static com.danielkkrafft.KeyBindings.TOGGLE_ESSENCE_TYPE;
 public class WildDungeonsClient {
 
     public static final String MODID = "wilddungeons";
+
+    public static void initializeClient() {
+        //ForgeEventBus.register();
+        NeoForge.EVENT_BUS.addListener(ForgeEventBus::onClientTick);
+        NeoForge.EVENT_BUS.addListener(ForgeEventBus::onCameraShake);
+    }
 
     @SubscribeEvent
     public static void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
@@ -111,5 +116,4 @@ public class WildDungeonsClient {
     public static ResourceLocation rl(String path) {
         return ResourceLocation.fromNamespaceAndPath(MODID, path);
     }
-
 }

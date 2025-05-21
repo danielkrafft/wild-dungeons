@@ -19,11 +19,13 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
@@ -57,6 +59,11 @@ public class WildDungeons {
 
         modEventBus.register(WildDungeons.class);
         NeoForge.EVENT_BUS.register(WDEvents.class);
+
+        // manually run client init if on client dist
+        if (FMLEnvironment.dist == Dist.CLIENT) {
+            WildDungeonsClient.initializeClient();
+        }
     }
 
     @SubscribeEvent
@@ -102,6 +109,7 @@ public class WildDungeons {
     public static ResourceLocation rl(String path) {
         return ResourceLocation.fromNamespaceAndPath(MODID, path);
     }
+
     public static Logger getLogger() {
         return LOGGER;
     }

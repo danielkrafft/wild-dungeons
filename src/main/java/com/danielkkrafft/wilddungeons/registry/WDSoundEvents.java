@@ -102,6 +102,9 @@ public class WDSoundEvents {
     public static final Holder<SoundEvent> MEATHOOK_FIRE = SOUND_EVENTS.register("item.meathook.fire", SoundEvent::createVariableRangeEvent);
     public static final Holder<SoundEvent> MEATHOOK_RETRACT = SOUND_EVENTS.register("item.meathook.retract", SoundEvent::createVariableRangeEvent);
 
+    //------- WIND_MACE -------//
+    public static final Holder<SoundEvent> WIND_MACE_SWING = SOUND_EVENTS.register("item.wind_mace.swing", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> WIND_MACE_SMASH = SOUND_EVENTS.register("item.wind_mace.smash", SoundEvent::createVariableRangeEvent);
 
     public static ResourceKey<JukeboxSong> CreateMusicDiscKey(String name) {
         return ResourceKey.create(Registries.JUKEBOX_SONG, ResourceLocation.fromNamespaceAndPath(WildDungeons.MODID, name));
