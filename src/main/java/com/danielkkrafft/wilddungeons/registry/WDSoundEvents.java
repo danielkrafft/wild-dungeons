@@ -106,6 +106,20 @@ public class WDSoundEvents {
     public static final Holder<SoundEvent> WIND_MACE_SWING = SOUND_EVENTS.register("item.wind_mace.swing", SoundEvent::createVariableRangeEvent);
     public static final Holder<SoundEvent> WIND_MACE_SMASH = SOUND_EVENTS.register("item.wind_mace.smash", SoundEvent::createVariableRangeEvent);
 
+    //------- WIND_HAMMER -------//
+    public static final Holder<SoundEvent> WIND_HAMMER_SMASH_HEAVY = SOUND_EVENTS.register("item.wind_hammer.smash_heavy", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> WIND_HAMMER_SMASH_MEDIUM = SOUND_EVENTS.register("item.wind_hammer.smash_medium", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> WIND_HAMMER_SMASH_LIGHT = SOUND_EVENTS.register("item.wind_hammer.smash_light", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> WIND_HAMMER_SMASH_WIND = SOUND_EVENTS.register("item.wind_hammer.smash_wind", SoundEvent::createVariableRangeEvent);
+
+    //------- WIND_BOX -------//
+    public static final Holder<SoundEvent> WIND_BOW_DRAW = SOUND_EVENTS.register("item.wind_bow.wind_bow_draw", SoundEvent::createVariableRangeEvent);
+
+    //------- WIND_GUN -------//
+    public static final Holder<SoundEvent> WIND_GUN_RELOAD = SOUND_EVENTS.register("item.wind_gun.wind_gun_reload", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> WIND_GUN_RUMBLE = SOUND_EVENTS.register("item.wind_gun.wind_gun_rumble", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> WIND_GUN_SHOOT = SOUND_EVENTS.register("item.wind_gun.wind_gun_shoot", SoundEvent::createVariableRangeEvent);
+
     public static ResourceKey<JukeboxSong> CreateMusicDiscKey(String name) {
         return ResourceKey.create(Registries.JUKEBOX_SONG, ResourceLocation.fromNamespaceAndPath(WildDungeons.MODID, name));
     }

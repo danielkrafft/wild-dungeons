@@ -186,6 +186,46 @@
       {"name": "wilddungeons:item/wind_mace/wind_mace_smash"}
     ]
   },
+  "item.wind_hammer.smash_heavy": {
+    "sounds": [
+      {"name": "wilddungeons:item/wind_hammer/smash_heavy"}
+    ]
+  },
+  "item.wind_hammer.smash_light": {
+    "sounds": [
+      {"name": "wilddungeons:item/wind_hammer/smash_light"}
+    ]
+  },
+  "item.wind_hammer.smash_medium": {
+    "sounds": [
+      {"name": "wilddungeons:item/wind_hammer/smash_medium"}
+    ]
+  },
+  "item.wind_hammer.smash_wind": {
+    "sounds": [
+      {"name": "wilddungeons:item/wind_hammer/smash_wind"}
+    ]
+  },
+  "item.wind_bow.wind_bow_draw": {
+    "sounds": [
+      {"name": "winddungeons:item/wind_bow/wind_bow_draw"}
+    ]
+  },
+  "item.wind_gun.wind_gun_reload": {
+    "sounds": [
+      {"name": "winddungeons:item/wind_gun/wind_gun_reload"}
+    ]
+  },
+  "item.wind_gun.wind_gun_rumble": {
+    "sounds": [
+      {"name": "winddungeons:item/wind_gun/wind_gun_rumble"}
+    ]
+  },
+  "item.wind_gun.wind_gun_shoot": {
+    "sounds": [
+      {"name": "winddungeons:item/wind_gun/wind_gun_shoot"}
+    ]
+  },
   "soundscape.music.nether_dragon_bass": {
     "sounds": [
       {
