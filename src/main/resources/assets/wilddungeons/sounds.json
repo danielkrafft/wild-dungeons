@@ -206,9 +206,14 @@
       {"name": "wilddungeons:item/wind_hammer/smash_wind"}
     ]
   },
-  "item.wind_bow.wind_bow_draw": {
+  "item.wind_bow.draw": {
     "sounds": [
       {"name": "winddungeons:item/wind_bow/wind_bow_draw"}
+    ]
+  },
+  "item.wind_bow.flyby": {
+    "sounds": [
+      {"name": "winddungeons:item/wind_bow/wind_arrow_flyby"}
     ]
   },
   "item.wind_gun.wind_gun_reload": {

@@ -1,14 +1,22 @@
 package com.danielkkrafft.wilddungeons.item.itemhelpers;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.entity.BaseClasses.ArrowFactory;
+import com.danielkkrafft.wilddungeons.entity.BaseClasses.WDArrow;
+import com.danielkkrafft.wilddungeons.entity.WindArrow;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.Arrow;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoAnimatable;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.SingletonGeoAnimatable;
@@ -18,7 +26,11 @@ import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
+import java.lang.reflect.Constructor;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
+
+import static net.minecraft.world.item.BowItem.getPowerForTime;
 
 public abstract class WDProjectileItemBase extends ProjectileWeaponItem implements GeoAnimatable, GeoItem {
 
@@ -26,6 +38,10 @@ public abstract class WDProjectileItemBase extends ProjectileWeaponItem implemen
 
     protected WDItemAnimator animator;
     protected boolean hasIdle = false;
+    protected static final int PROJECTILE_RANGE = 15;
+    protected ArrowFactory arrowFactory = (level, shooter) -> new Arrow(EntityType.ARROW, level);
+
+    protected int lastUseDuration = 0;
 
     public WDProjectileItemBase(String name) {
         this(name, new Item.Properties()
@@ -105,5 +121,34 @@ public abstract class WDProjectileItemBase extends ProjectileWeaponItem implemen
         public ResourceLocation getAnimationResource(T animatable) {
             return WildDungeons.rl("animations/" + animatable.name + ".animation.json");
         }
+    }
+
+    @Override
+    public Predicate<ItemStack> getAllSupportedProjectiles() {
+        return ARROW_ONLY;
+    }
+
+    @Override
+    public int getDefaultProjectileRange() {
+        return PROJECTILE_RANGE;
+    }
+
+    @Override
+    protected void shootProjectile(LivingEntity livingEntity, Projectile projectile, int i, float v, float v1, float v2, @Nullable LivingEntity livingEntity1) {
+
+    }
+
+    @Override
+    protected Projectile createProjectile(Level level, LivingEntity shooter, ItemStack weapon, ItemStack ammo, boolean isCrit) {
+
+        AbstractArrow arrow = arrowFactory.create(level, shooter);
+        arrow.setBaseDamage(2.5);
+        arrow.setCritArrow(true);
+
+        float power = getPowerForTime(lastUseDuration);
+
+        arrow.shootFromRotation(shooter, shooter.getXRot(), shooter.getYRot(), 0.0f, power * 3.0f, 1.0f);
+
+        return this.customArrow(arrow, ammo, weapon);
     }
 }

@@ -31,7 +31,7 @@ public class WDItemAnimator {
     private GeoAnimatable owner;
     private final AnimatableInstanceCache cache;
 
-    WDItemAnimator(String name, GeoAnimatable animatable) {
+    public WDItemAnimator(String name, GeoAnimatable animatable) {
 
         ownerName = name;
         cache = GeckoLibUtil.createInstanceCache(animatable);

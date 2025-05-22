@@ -1,9 +1,7 @@
 package com.danielkkrafft.wilddungeons;
 
-import com.danielkkrafft.wilddungeons.entity.model.AmogusModel;
-import com.danielkkrafft.wilddungeons.entity.model.BusinessGolemModel;
-import com.danielkkrafft.wilddungeons.entity.model.BusinessIllagerModel;
-import com.danielkkrafft.wilddungeons.entity.model.EmeraldWispModel;
+import com.danielkkrafft.wilddungeons.entity.WindArrow;
+import com.danielkkrafft.wilddungeons.entity.model.*;
 import com.danielkkrafft.wilddungeons.entity.renderer.*;
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
 import com.danielkkrafft.wilddungeons.registry.WDFluids;
@@ -58,6 +56,7 @@ public class WildDungeonsClient {
         event.registerEntityRenderer(WDEntities.FRIENDLY_LARGE_EMERALD_WISP.get(), (EntityRendererProvider.Context context) -> new EmeraldWispRenderer(context, true));
         event.registerEntityRenderer(WDEntities.BUSINESS_CEO.get(), BusinessCEORenderer::new);
         event.registerEntityRenderer(WDEntities.EMERALD_PROJECTILE.get(), context -> new ThrownItemRenderer<>( context,2f,false));
+        event.registerEntityRenderer(WDEntities.WIND_ARROW.get(), ctx -> new WDArrowRenderer<>(ctx, new WindArrowModel()));
     }
 
     @SubscribeEvent

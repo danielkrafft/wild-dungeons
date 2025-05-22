@@ -8,6 +8,7 @@
   "item.wilddungeons.grappling_hook": "Grappling Hook",
   "item.wilddungeons.laser_sword": "Laser Sword",
   "item.wilddungeons.wind_mace": "Wind Mace",
+  "item.wilddungeons.wind_bow": "Wind Bow",
   "item.wilddungeons.life_liquid_bucket": "Life Liquid Bucket",
   "item.wilddungeons.meathook": "Grappling Hook",
   "item.wilddungeons.mutant_bogged_spawn_egg": "Mutant Bogged Spawn Egg",
@@ -25,6 +26,7 @@
   "item.wilddungeons.the_capital_music_disc": "The Capital",
   "item.wilddungeons.the_capital_safe_music_disc": "The Capital 2",
 
+  "enchantment.wilddungeons.wind_trail": "Wind Trail",
 
   "block.wilddungeons.connection_block": "Connection Block",
   "block.wilddungeons.rift_block": "Rift Block",
