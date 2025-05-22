@@ -1,4 +1,9 @@
 package com.danielkkrafft.wilddungeons.item;
 
-public class WindHammer {
+import com.danielkkrafft.wilddungeons.item.itemhelpers.WDItemBase;
+
+public class WindHammer extends WDItemBase {
+    public WindHammer(String name) {
+        super(name);
+    }
 }

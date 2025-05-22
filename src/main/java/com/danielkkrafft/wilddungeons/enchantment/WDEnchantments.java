@@ -12,7 +12,6 @@ import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.EnchantmentTarget;
-import net.minecraft.world.item.enchantment.Enchantments;
 
 public class WDEnchantments {
 
@@ -23,18 +22,19 @@ public class WDEnchantments {
         var enchantments = context.lookup(Registries.ENCHANTMENT);
         var items = context.lookup(Registries.ITEM);
 
-        register(context, DENSITY, Enchantment.enchantment(Enchantment.definition(
-                items.getOrThrow(ItemTags.WEAPON_ENCHANTABLE),
-                items.getOrThrow(ItemTags.SWORD_ENCHANTABLE),
-                1,
-                5,
-                Enchantment.dynamicCost(5, 8),
-                Enchantment.dynamicCost(25, 8),
-                2,
-                EquipmentSlotGroup.MAINHAND))
-                .exclusiveWith(enchantments.getOrThrow(EnchantmentTags.DAMAGE_EXCLUSIVE))
-                .withEffect(EnchantmentEffectComponents.POST_ATTACK, EnchantmentTarget.ATTACKER,
-                        EnchantmentTarget.VICTIM, new DensityEnchantmentEffect()));
+        // commented out as a template to use for making new enchantments
+//        register(context, DENSITY, Enchantment.enchantment(Enchantment.definition(
+//                items.getOrThrow(ItemTags.WEAPON_ENCHANTABLE),
+//                items.getOrThrow(ItemTags.SWORD_ENCHANTABLE),
+//                1,
+//                5,
+//                Enchantment.dynamicCost(5, 8),
+//                Enchantment.dynamicCost(25, 8),
+//                2,
+//                EquipmentSlotGroup.MAINHAND))
+//                .exclusiveWith(enchantments.getOrThrow(EnchantmentTags.DAMAGE_EXCLUSIVE))
+//                .withEffect(EnchantmentEffectComponents.POST_ATTACK, EnchantmentTarget.ATTACKER,
+//                        EnchantmentTarget.VICTIM, new DensityEnchantmentEffect()));
     }
 
     private static void register(BootstrapContext<Enchantment> registry, ResourceKey<Enchantment> key, Enchantment.Builder builder) {
