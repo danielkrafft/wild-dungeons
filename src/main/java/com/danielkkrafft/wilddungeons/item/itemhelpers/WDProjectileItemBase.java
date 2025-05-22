@@ -2,8 +2,6 @@ package com.danielkkrafft.wilddungeons.item.itemhelpers;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.entity.BaseClasses.ArrowFactory;
-import com.danielkkrafft.wilddungeons.entity.BaseClasses.WDArrow;
-import com.danielkkrafft.wilddungeons.entity.WindArrow;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -26,7 +24,6 @@ import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
-import java.lang.reflect.Constructor;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -69,11 +66,12 @@ public abstract class WDProjectileItemBase extends ProjectileWeaponItem implemen
         return animator.getCache();
     }
 
-    @Override
-    public void createGeoRenderer(Consumer<GeoRenderProvider> consumer) {
+    public abstract void createGeoRenderer(Consumer<GeoRenderProvider> consumer);
+
+    public void createGeoRenderer_internal(GeoItemRenderer<?> inRenderer, Consumer<GeoRenderProvider> consumer) {
 
         consumer.accept(new GeoRenderProvider() {
-            private final BlockEntityWithoutLevelRenderer renderer = new WDProjectileItemBase.WDWeaponRenderer<>();
+            private final GeoItemRenderer<?> renderer = inRenderer;
 
             @Override
             public BlockEntityWithoutLevelRenderer getGeoItemRenderer() {

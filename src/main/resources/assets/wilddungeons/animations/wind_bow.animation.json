@@ -1,7 +1,7 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"wind_bow.animation.draw": {
+		"animation.wind_bow.draw": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 1.5,
 			"bones": {
@@ -57,7 +57,7 @@
 				}
 			}
 		},
-		"wind_bow.animation.release": {
+		"animation.wind_bow.release": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 0.5,
 			"bones": {

@@ -2,71 +2,37 @@ package com.danielkkrafft.wilddungeons.item;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.entity.WindArrow;
-import com.danielkkrafft.wilddungeons.entity.model.ClientModel;
+import com.danielkkrafft.wilddungeons.entity.model.WindBowModel;
+import com.danielkkrafft.wilddungeons.entity.renderer.WindBowRenderer;
 import com.danielkkrafft.wilddungeons.item.itemhelpers.WDProjectileItemBase;
 import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
-import net.minecraft.client.multiplayer.chat.report.ReportEnvironment;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.item.ArrowItem;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import software.bernie.geckolib.model.GeoModel;
+import software.bernie.geckolib.animatable.client.GeoRenderProvider;
+import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import static net.minecraft.world.item.BowItem.getPowerForTime;
-import static net.neoforged.neoforge.event.EventHooks.onArrowLoose;
-import static net.neoforged.neoforge.event.EventHooks.onArrowNock;
 
 public class WindBow extends WDProjectileItemBase {
 
-    public static class WindBowModel extends GeoModel<WindBow> {
-        @Override
-        public ResourceLocation getAnimationResource(WindBow animatable) {
-            return WildDungeons.rl("animations/item/wind_bow.animation.json");
-        }
-
-        @Override
-        public ResourceLocation getModelResource(WindBow animatable) {
-            // You can return a default here, like MOD_IDLE, but it’ll be overridden in the renderer.
-            return WindBowModel.MOD_IDLE;
-        }
-
-        @Override
-        public ResourceLocation getTextureResource(WindBow animatable) {
-            return WindBowModel.STILL;
-        }
-
-        // Optional: Static paths
-        public static final ResourceLocation
-                MOD_IDLE = WildDungeons.rl("geo/item/wind_bow.geo.json"),
-                MOD_NOCKED = WildDungeons.rl("geo/item/wind_bow_nocked.geo.json"),
-                STILL = WildDungeons.rl("textures/item/wind_bow.png"),
-                CHARGE = WildDungeons.rl("textures/item/wind_bow_charge.png");
-    }
-
     private static final String NAME = "wind_bow";
-    private static final WindBowModel WIND_BOW_MODEL = new WindBowModel();
+    public static final WindBowModel WIND_BOW_MODEL = new WindBowModel();
 
     private enum AnimationList {
         draw,
@@ -85,9 +51,16 @@ public class WindBow extends WDProjectileItemBase {
     }
 
     @Override
+    public void createGeoRenderer(Consumer<GeoRenderProvider> consumer) {
+
+        GeoItemRenderer<?> Renderer = new WindBowRenderer();
+        super.createGeoRenderer_internal(Renderer, consumer);
+    }
+
+    @Override
     public void onStopUsing(ItemStack stack, LivingEntity entity, int count) {
-//        WIND_BOW_MODEL.setTex(WindBowModel.STILL);
-//        WIND_BOW_MODEL.setModel(WindBowModel.MOD_IDLE);
+        WIND_BOW_MODEL.setTex(WindBowModel.STILL);
+        WIND_BOW_MODEL.setModel(WindBowModel.MOD_IDLE);
 
         if (entity instanceof Player player && player.level() instanceof ServerLevel serverLevel) {
             animator.playAnimation(this, AnimationList.release.toString(), stack, player, player.level());
@@ -101,12 +74,15 @@ public class WindBow extends WDProjectileItemBase {
         ItemStack stack = player.getItemInHand(hand);
         boolean flag = !player.getProjectile(stack).isEmpty();
 
+        InteractionResultHolder<ItemStack> ret = net.neoforged.neoforge.event.EventHooks.onArrowNock(stack, level, player, hand, flag);
+        if (ret != null) return ret;
+
         if (!player.getAbilities().instabuild && !flag){
             return InteractionResultHolder.fail(stack);
         }
         else {
-//            WIND_BOW_MODEL.setTex(WindBowModel.CHARGE);
-//            WIND_BOW_MODEL.setModel(WindBowModel.MOD_NOCKED);
+            WIND_BOW_MODEL.setTex(WindBowModel.CHARGE);
+            WIND_BOW_MODEL.setModel(WindBowModel.MOD_NOCKED);
 
             if (level instanceof ServerLevel serverLevel) {
                 serverLevel.playSound(null, player, WDSoundEvents.WIND_BOW_DRAW.value(), SoundSource.PLAYERS, 1f, 1f);
@@ -119,8 +95,8 @@ public class WindBow extends WDProjectileItemBase {
 
     @Override
     public void releaseUsing(ItemStack stack, Level level, LivingEntity entityLiving, int timeLeft) {
-//        WIND_BOW_MODEL.setTex(WindBowModel.STILL);
-//        WIND_BOW_MODEL.setModel(WindBowModel.MOD_IDLE);
+        WIND_BOW_MODEL.setTex(WindBowModel.STILL);
+        WIND_BOW_MODEL.setModel(WindBowModel.MOD_IDLE);
 
         if (entityLiving instanceof Player player) {
             ItemStack itemstack = player.getProjectile(stack);

@@ -1,6 +1,5 @@
 package com.danielkkrafft.wilddungeons;
 
-import com.danielkkrafft.wilddungeons.entity.WindArrow;
 import com.danielkkrafft.wilddungeons.entity.model.*;
 import com.danielkkrafft.wilddungeons.entity.renderer.*;
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
@@ -9,7 +8,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.ItemEntityRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
@@ -20,6 +18,7 @@ import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.common.NeoForge;
+import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 import static com.danielkkrafft.KeyBindings.TOGGLE_ESSENCE_TYPE;
 
@@ -111,8 +110,6 @@ public class WildDungeonsClient {
             event.register(TOGGLE_ESSENCE_TYPE);
         }
     }
-
-
 
     public static ResourceLocation rl(String path) {
         return ResourceLocation.fromNamespaceAndPath(MODID, path);
