@@ -24,4 +24,7 @@ public class WDDataComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> WAND_ADDITIVE_ROOM_LOADING = DATA_COMPONENT_TYPES.register("wand_additive_room_loading", () -> DataComponentType.<Boolean>builder().persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL).build());
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> ESSENCE_TYPE = DATA_COMPONENT_TYPES.register("essence_type", () -> DataComponentType.<Integer>builder().persistent(Codec.INT).networkSynchronized(ByteBufCodecs.INT).build());
+
+    //------- WIND WEAPONS -------//
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> WIND_CANNON_COMPRESSION = DATA_COMPONENT_TYPES.register("wind_cannon_compression", () -> DataComponentType.<Integer>builder().persistent(Codec.INT).networkSynchronized(ByteBufCodecs.INT).build());
 }

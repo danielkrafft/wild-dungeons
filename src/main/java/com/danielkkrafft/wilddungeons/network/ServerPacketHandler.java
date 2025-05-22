@@ -2,6 +2,7 @@ package com.danielkkrafft.wilddungeons.network;
 
 import com.danielkkrafft.wilddungeons.entity.blockentity.ConnectionBlockEntity;
 import com.danielkkrafft.wilddungeons.item.RoomExportWand;
+import com.danielkkrafft.wilddungeons.item.itemhelpers.SwingHandler;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.danielkkrafft.wilddungeons.registry.WDItems;
@@ -18,7 +19,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public class ServerPacketHandler {
     public enum Packets {
-        RESTORE_PLAYER_GAMEMODE, UPDATE_CONNECTION_BLOCK, ROOM_EXPORT_WAND_CLOSE
+        RESTORE_PLAYER_GAMEMODE, UPDATE_CONNECTION_BLOCK, ROOM_EXPORT_WAND_CLOSE, ON_SWING
     }
 
     public static void handleInbound(IPayloadContext context, CompoundTag data) {
@@ -71,6 +72,15 @@ public class ServerPacketHandler {
                             }
                         }
                     }
+                }
+            }
+            case ON_SWING -> {
+                var player = context.player();
+                if (player == null) return;
+
+                var stack = player.getMainHandItem();
+                if (stack.getItem() instanceof SwingHandler handler) {
+                    handler.onSwing(player, stack);
                 }
             }
         }

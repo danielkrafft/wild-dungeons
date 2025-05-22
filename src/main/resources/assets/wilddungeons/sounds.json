@@ -208,27 +208,27 @@
   },
   "item.wind_bow.draw": {
     "sounds": [
-      {"name": "winddungeons:item/wind_bow/wind_bow_draw"}
+      {"name": "wilddungeons:item/wind_bow/wind_bow_draw"}
     ]
   },
   "item.wind_bow.flyby": {
     "sounds": [
-      {"name": "winddungeons:item/wind_bow/wind_arrow_flyby"}
+      {"name": "wilddungeons:item/wind_bow/wind_arrow_flyby"}
     ]
   },
-  "item.wind_gun.wind_gun_reload": {
+  "item.wind_cannon.reload": {
     "sounds": [
-      {"name": "winddungeons:item/wind_gun/wind_gun_reload"}
+      {"name": "wilddungeons:item/wind_cannon/wind_cannon_reload"}
     ]
   },
-  "item.wind_gun.wind_gun_rumble": {
+  "item.wind_cannon.rumble": {
     "sounds": [
-      {"name": "winddungeons:item/wind_gun/wind_gun_rumble"}
+      {"name": "wilddungeons:item/wind_cannon/wind_cannon_rumble"}
     ]
   },
-  "item.wind_gun.wind_gun_shoot": {
+  "item.wind_cannon.shoot": {
     "sounds": [
-      {"name": "winddungeons:item/wind_gun/wind_gun_shoot"}
+      {"name": "wilddungeons:item/wind_cannon/wind_cannon_shoot"}
     ]
   },
   "soundscape.music.nether_dragon_bass": {

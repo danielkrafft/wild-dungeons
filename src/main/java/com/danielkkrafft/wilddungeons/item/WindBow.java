@@ -8,6 +8,7 @@ import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
 import net.minecraft.client.multiplayer.chat.report.ReportEnvironment;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
@@ -28,6 +29,7 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import software.bernie.geckolib.model.GeoModel;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -38,19 +40,29 @@ import static net.neoforged.neoforge.event.EventHooks.onArrowNock;
 
 public class WindBow extends WDProjectileItemBase {
 
-    public static class WindBowModel extends ClientModel<WindBow> {
+    public static class WindBowModel extends GeoModel<WindBow> {
+        @Override
+        public ResourceLocation getAnimationResource(WindBow animatable) {
+            return WildDungeons.rl("animations/item/wind_bow.animation.json");
+        }
 
+        @Override
+        public ResourceLocation getModelResource(WindBow animatable) {
+            // You can return a default here, like MOD_IDLE, but it’ll be overridden in the renderer.
+            return WindBowModel.MOD_IDLE;
+        }
+
+        @Override
+        public ResourceLocation getTextureResource(WindBow animatable) {
+            return WindBowModel.STILL;
+        }
+
+        // Optional: Static paths
         public static final ResourceLocation
                 MOD_IDLE = WildDungeons.rl("geo/item/wind_bow.geo.json"),
                 MOD_NOCKED = WildDungeons.rl("geo/item/wind_bow_nocked.geo.json"),
                 STILL = WildDungeons.rl("textures/item/wind_bow.png"),
                 CHARGE = WildDungeons.rl("textures/item/wind_bow_charge.png");
-        public WindBowModel()
-        {
-            super(WildDungeons.rl("animations/item/wind_bow.animation.json"),
-                    MOD_IDLE,
-                    STILL);
-        }
     }
 
     private static final String NAME = "wind_bow";
@@ -74,8 +86,8 @@ public class WindBow extends WDProjectileItemBase {
 
     @Override
     public void onStopUsing(ItemStack stack, LivingEntity entity, int count) {
-        WIND_BOW_MODEL.setTex(WindBowModel.STILL);
-        WIND_BOW_MODEL.setModel(WindBowModel.MOD_IDLE);
+//        WIND_BOW_MODEL.setTex(WindBowModel.STILL);
+//        WIND_BOW_MODEL.setModel(WindBowModel.MOD_IDLE);
 
         if (entity instanceof Player player && player.level() instanceof ServerLevel serverLevel) {
             animator.playAnimation(this, AnimationList.release.toString(), stack, player, player.level());
@@ -88,14 +100,13 @@ public class WindBow extends WDProjectileItemBase {
 
         ItemStack stack = player.getItemInHand(hand);
         boolean flag = !player.getProjectile(stack).isEmpty();
-        //InteractionResultHolder<ItemStack> ret = onArrowNock(stack, level, player, hand, flag);
 
         if (!player.getAbilities().instabuild && !flag){
             return InteractionResultHolder.fail(stack);
         }
         else {
-            WIND_BOW_MODEL.setTex(WindBowModel.CHARGE);
-            WIND_BOW_MODEL.setModel(WindBowModel.MOD_NOCKED);
+//            WIND_BOW_MODEL.setTex(WindBowModel.CHARGE);
+//            WIND_BOW_MODEL.setModel(WindBowModel.MOD_NOCKED);
 
             if (level instanceof ServerLevel serverLevel) {
                 serverLevel.playSound(null, player, WDSoundEvents.WIND_BOW_DRAW.value(), SoundSource.PLAYERS, 1f, 1f);
@@ -108,8 +119,8 @@ public class WindBow extends WDProjectileItemBase {
 
     @Override
     public void releaseUsing(ItemStack stack, Level level, LivingEntity entityLiving, int timeLeft) {
-        WIND_BOW_MODEL.setTex(WindBowModel.STILL);
-        WIND_BOW_MODEL.setModel(WindBowModel.MOD_IDLE);
+//        WIND_BOW_MODEL.setTex(WindBowModel.STILL);
+//        WIND_BOW_MODEL.setModel(WindBowModel.MOD_IDLE);
 
         if (entityLiving instanceof Player player) {
             ItemStack itemstack = player.getProjectile(stack);

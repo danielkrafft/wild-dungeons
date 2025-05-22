@@ -117,9 +117,9 @@ public class WDSoundEvents {
     public static final Holder<SoundEvent> WIND_ARROW_FLYBY = SOUND_EVENTS.register("item.wind_bow.flyby", SoundEvent::createVariableRangeEvent);
 
     //------- WIND_GUN -------//
-    public static final Holder<SoundEvent> WIND_GUN_RELOAD = SOUND_EVENTS.register("item.wind_gun.wind_gun_reload", SoundEvent::createVariableRangeEvent);
-    public static final Holder<SoundEvent> WIND_GUN_RUMBLE = SOUND_EVENTS.register("item.wind_gun.wind_gun_rumble", SoundEvent::createVariableRangeEvent);
-    public static final Holder<SoundEvent> WIND_GUN_SHOOT = SOUND_EVENTS.register("item.wind_gun.wind_gun_shoot", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> WIND_CANNON_RELOAD = SOUND_EVENTS.register("item.wind_cannon.reload", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> WIND_CANNON_RUMBLE = SOUND_EVENTS.register("item.wind_cannon.rumble", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> WIND_CANNON_SHOOT = SOUND_EVENTS.register("item.wind_cannon.shoot", SoundEvent::createVariableRangeEvent);
 
     public static ResourceKey<JukeboxSong> CreateMusicDiscKey(String name) {
         return ResourceKey.create(Registries.JUKEBOX_SONG, ResourceLocation.fromNamespaceAndPath(WildDungeons.MODID, name));
