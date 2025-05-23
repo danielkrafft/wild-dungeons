@@ -99,7 +99,14 @@ public class WindCannon extends WDItemBase implements SwingHandler {
             WindChargeProjectile wind = WDEntities.WIND_CHARGE_PROJECTILE.value().create(lvl);
 
             if (wind != null) {
-                wind.setCompressions(false, false, new Vec3(2.5, 2.5, 2.5), comps, entity);
+                Vec3 eyePos = entity.getEyePosition();
+                Vec3 launchDir = entity.getLookAngle().normalize();
+                Vec3 spawnPos = eyePos.add(launchDir.scale(1.5)); // Spawns half a block ahead of eyes
+
+                wind.setPos(spawnPos);
+                //wind.setDeltaMovement(launchDir.scale(1.5)); // or whatever velocity you want
+                wind.hasImpulse = true;
+                wind.setCompressions(false, false, launchDir.scale(1.5), comps, entity);
                 lvl.addFreshEntity(wind);
             }
         }

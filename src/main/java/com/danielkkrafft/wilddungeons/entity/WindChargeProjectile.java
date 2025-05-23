@@ -81,7 +81,9 @@ public class WindChargeProjectile extends Projectile implements GeoEntity
         setRot(entity.getYRot(), entity.getXRot());
         moveTo(entity.getX(),entity.getEyeY()-0.1,entity.getZ(),getYRot(),getXRot());
         reapplyPosition();
-        setDeltaMovement(vel);//gravity?vel:entity.getLookAngle().multiply(vel));
+        setDeltaMovement(vel);
+        hasImpulse = true;
+        //gravity?vel:entity.getLookAngle().multiply(vel));
         //Math.min(compressions,10); normally limit to 10
         entityData.set(COMPS,compressions);
         setKB(compressions/8f+defKB);
