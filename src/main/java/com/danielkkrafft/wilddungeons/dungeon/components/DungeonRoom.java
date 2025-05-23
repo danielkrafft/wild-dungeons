@@ -656,9 +656,6 @@ public class DungeonRoom {
 
     public void onClear() {
         this.clear = true;
-        //removed because WDBedrock is obsolete, but kept because I don't feel comfortable removing it yet
-//        if (this.getProperty(DESTRUCTION_RULE) == SHELL_CLEAR)
-//            CompletableFuture.runAsync(this::removeProtection);
     }
 
     public void reset() {

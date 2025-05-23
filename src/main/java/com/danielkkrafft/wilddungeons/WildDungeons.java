@@ -44,7 +44,6 @@ public class WildDungeons {
 
     public WildDungeons(IEventBus modEventBus, ModContainer modContainer) {
         Serializer.setup();
-//        BedrockBlockstateHelper.generateBedrockBlockstate();//this is only used when we need to make the gigantic blockstate list for wdbedrock
 
         WDEntities.ENTITIES.register(modEventBus);
         WDBlockEntities.BLOCK_ENTITY_TYPES.register(modEventBus);

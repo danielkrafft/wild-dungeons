@@ -228,7 +228,7 @@ public class DungeonBranchRegistry {
 
     public static final DungeonBranchTemplate VILLAGE_METRO_STREETS_BRANCH = create("VILLAGE_METRO_STREETS_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
-                    .add(VILLAGE_WIDE_PATH_POOL,7)
+                    .add(VILLAGE_WIDE_PATH_POOL,28)
             )
             .setLimitedRooms(new HashMap<>(Map.of(VILLAGE_METRO_WIDE_CROSSROADS, 2)))
             .set(MATERIAL, VILLAGE_MATERIAL_POOL)
@@ -244,7 +244,7 @@ public class DungeonBranchRegistry {
 
     public static final DungeonBranchTemplate VILLAGE_MEDIUM_BRANCH = create("VILLAGE_MEDIUM_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
-                    .add(VILLAGE_MEDIUM_PLOTS,20)
+                    .add(VILLAGE_MEDIUM_PLOTS,80)
             )
             .setLimitedRooms(new HashMap<>(Map.of(VILLAGE_METRO_WIDE_CROSSROADS, 2)))
             .set(MATERIAL, VILLAGE_MATERIAL_POOL)
@@ -260,7 +260,7 @@ public class DungeonBranchRegistry {
 
     public static final DungeonBranchTemplate VILLAGE_SMALL_BRANCH = create("VILLAGE_SMALL_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
-                    .add(VILLAGE_SMALL_PLOTS,40)
+                    .add(VILLAGE_SMALL_PLOTS,160)
             )
             .setLimitedRooms(new HashMap<>(Map.of(VILLAGE_METRO_WIDE_CROSSROADS, 2)))
             .set(MATERIAL, VILLAGE_MATERIAL_POOL)
