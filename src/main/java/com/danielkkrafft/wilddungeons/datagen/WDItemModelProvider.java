@@ -13,14 +13,14 @@ public class WDItemModelProvider extends ItemModelProvider {
 
     @Override
     protected void registerModels() {
-        withExistingParent(WDItems.OVERFLOW_MUSIC_DISC.getId().getPath(), mcLoc("item/generated")).texture("layer0", mcLoc("item/music_disc_13"));
-        withExistingParent(WDItems.OVERFLOW_SAFE_MUSIC_DISC.getId().getPath(), mcLoc("item/generated")).texture("layer0", mcLoc("item/music_disc_cat"));
-        withExistingParent(WDItems.OVERFLOW_UNDERWATER_MUSIC_DISC.getId().getPath(), mcLoc("item/generated")).texture("layer0", mcLoc("item/music_disc_blocks"));
-        withExistingParent(WDItems.OVERFLOW_UNDERWATER_SAFE_MUSIC_DISC.getId().getPath(), mcLoc("item/generated")).texture("layer0", mcLoc("item/music_disc_chirp"));
-        withExistingParent(WDItems.ANGEL_INVESTOR_MUSIC_DISC.getId().getPath(), mcLoc("item/generated")).texture("layer0", mcLoc("item/music_disc_far"));
-        withExistingParent(WDItems.ANGEL_INVESTOR_SAFE_MUSIC_DISC.getId().getPath(), mcLoc("item/generated")).texture("layer0", mcLoc("item/music_disc_mall"));
-        withExistingParent(WDItems.THE_CAPITAL_MUSIC_DISC.getId().getPath(), mcLoc("item/generated")).texture("layer0", mcLoc("item/music_disc_mellohi"));
-        withExistingParent(WDItems.THE_CAPITAL_SAFE_MUSIC_DISC.getId().getPath(), mcLoc("item/generated")).texture("layer0", mcLoc("item/music_disc_stal"));
+        withExistingParent(WDItems.OVERFLOW_MUSIC_DISC.getId().getPath(), mcLoc("item/generated")).texture("layer0", WildDungeons.rl("item/village_music_disc"));
+        withExistingParent(WDItems.OVERFLOW_SAFE_MUSIC_DISC.getId().getPath(), mcLoc("item/generated")).texture("layer0", WildDungeons.rl("item/village_music_disc"));
+        withExistingParent(WDItems.OVERFLOW_UNDERWATER_MUSIC_DISC.getId().getPath(), mcLoc("item/generated")).texture("layer0", WildDungeons.rl("item/village_music_disc"));
+        withExistingParent(WDItems.OVERFLOW_UNDERWATER_SAFE_MUSIC_DISC.getId().getPath(), mcLoc("item/generated")).texture("layer0", WildDungeons.rl("item/village_music_disc"));
+        withExistingParent(WDItems.ANGEL_INVESTOR_MUSIC_DISC.getId().getPath(), mcLoc("item/generated")).texture("layer0", WildDungeons.rl("item/village_music_disc"));
+        withExistingParent(WDItems.ANGEL_INVESTOR_SAFE_MUSIC_DISC.getId().getPath(), mcLoc("item/generated")).texture("layer0", WildDungeons.rl("item/village_music_disc"));
+        withExistingParent(WDItems.THE_CAPITAL_MUSIC_DISC.getId().getPath(), mcLoc("item/generated")).texture("layer0", WildDungeons.rl("item/village_music_disc"));
+        withExistingParent(WDItems.THE_CAPITAL_SAFE_MUSIC_DISC.getId().getPath(), mcLoc("item/generated")).texture("layer0", WildDungeons.rl("item/village_music_disc"));
 
     }
 }

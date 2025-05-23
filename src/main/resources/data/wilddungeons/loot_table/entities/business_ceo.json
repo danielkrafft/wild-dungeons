@@ -2,7 +2,7 @@
   "type": "minecraft:entity",
   "pools": [
     {
-      "bonus_rolls": 0.0,
+      "rolls": 1.0,
       "conditions": [
         {
           "condition": "minecraft:killed_by_player"
@@ -11,17 +11,35 @@
       "entries": [
         {
           "type": "minecraft:item",
+          "name": "wilddungeons:emerald_staff",
           "functions": [
             {
-              "add": false,
-              "count": 1,
-              "function": "minecraft:set_count"
+              "function": "minecraft:set_count",
+              "count": 1
             }
-          ],
-          "name": "wilddungeons:emerald_staff"
+          ]
+        }
+      ]
+    },
+    {
+      "rolls": 1.0,
+      "conditions": [
+        {
+          "condition": "minecraft:killed_by_player"
         }
       ],
-      "rolls": 1.0
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "wilddungeons:boss_key",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": 1
+            }
+          ]
+        }
+      ]
     }
   ],
   "random_sequence": "wilddungeons:entities/business_ceo"

@@ -1,5 +1,6 @@
 package com.danielkkrafft.wilddungeons;
 
+
 import com.danielkkrafft.wilddungeons.enchantment.WDEnchantmentEffects;
 import com.danielkkrafft.wilddungeons.entity.*;
 import com.danielkkrafft.wilddungeons.entity.boss.BreezeGolem;
@@ -105,13 +106,13 @@ public class WildDungeons {
         e.put(WDEntities.BUSINESS_CEO.get(), BusinessCEO.setAttributes());
     }
 
-
-
     public static ResourceLocation rl(String path) {
         return ResourceLocation.fromNamespaceAndPath(MODID, path);
     }
 
     public static Holder<Enchantment> getEnchantment(ResourceKey<Enchantment> key) {
+
+
         return Minecraft.getInstance()
                 .level
                 .registryAccess()

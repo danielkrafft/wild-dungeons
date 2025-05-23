@@ -63,6 +63,8 @@ public class WDCreativeTabs {
                 output.accept(ANGEL_INVESTOR_SAFE_MUSIC_DISC.get());
                 output.accept(THE_CAPITAL_MUSIC_DISC.get());
                 output.accept(THE_CAPITAL_SAFE_MUSIC_DISC.get());
+
+                output.accept(BOSS_KEY.get());
             })
             .build()
     );

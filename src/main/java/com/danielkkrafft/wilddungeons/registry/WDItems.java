@@ -37,6 +37,7 @@ public class WDItems {
     public static final DeferredItem<Item> INSTANT_LOADOUT_DIAMOND = ITEMS.register("instant_loadout_diamond", () -> new InstantLoadout(new Item.Properties().stacksTo(1).rarity(Rarity.RARE), InstantLoadout.Type.Diamond));
     public static final DeferredItem<Item> INSTANT_LOADOUT_NETHERITE = ITEMS.register("instant_loadout_netherite", () -> new InstantLoadout(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), InstantLoadout.Type.Netherite));
     public static final DeferredItem<Item> INSTANT_LOADOUT_GOLD = ITEMS.register("instant_loadout_gold", () -> new InstantLoadout(new Item.Properties().stacksTo(1).rarity(Rarity.RARE), InstantLoadout.Type.Gold));
+    public static final DeferredItem<Item> BOSS_KEY = ITEMS.register("boss_key", () -> new Item(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)));
 
     //------- MUSIC DISCS -------//
     public static final DeferredItem<Item> OVERFLOW_MUSIC_DISC = ITEMS.register("overflow_music_disc", () -> new Item( new Item.Properties().jukeboxPlayable(WDSoundEvents.OVERFLOW_KEY).stacksTo(1).rarity(Rarity.EPIC)));
