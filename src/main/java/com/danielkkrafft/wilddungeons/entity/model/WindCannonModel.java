@@ -9,8 +9,8 @@ public class WindCannonModel extends ClientModel<WindCannon>
     public WindCannonModel()
     {
         super(
-                WildDungeons.rl("animations/item/wind_gun.animation.json"),
-                WildDungeons.rl("geo/item/wind_gun.geo.json"),
+                WildDungeons.rl("animations/wind_cannon.animation.json"),
+                WildDungeons.rl("geo/wind_cannon.geo.json"),
                 WildDungeons.rl("textures/item/wind_cannon.png")
         );
     }

@@ -9,7 +9,7 @@ public class WindHammerWindChargeModel extends ClientModel<WindHammer> {
         super(
                 null,
                 WildDungeons.rl("geo/wind_hammer/hammer.windcharge.geo.json"),
-                WildDungeons.rl("textures/item/hammer_wind_charge.png")
+                WildDungeons.rl("textures/item/wind_hammer/wind_hammer_wind_charge.png")
         );
     }
 }

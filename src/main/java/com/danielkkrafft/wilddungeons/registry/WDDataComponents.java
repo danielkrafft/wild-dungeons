@@ -27,4 +27,5 @@ public class WDDataComponents {
 
     //------- WIND WEAPONS -------//
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> WIND_CANNON_COMPRESSION = DATA_COMPONENT_TYPES.register("wind_cannon_compression", () -> DataComponentType.<Integer>builder().persistent(Codec.INT).networkSynchronized(ByteBufCodecs.INT).build());
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Float>> FALL_DIST = DATA_COMPONENT_TYPES.register("fall_dist", () -> DataComponentType.<Float>builder().persistent(Codec.FLOAT).networkSynchronized(ByteBufCodecs.FLOAT).build());
 }

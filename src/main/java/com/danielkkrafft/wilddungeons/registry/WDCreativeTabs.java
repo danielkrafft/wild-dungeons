@@ -28,6 +28,7 @@ public class WDCreativeTabs {
                 output.accept(WIND_MACE_ITEM.get());
                 output.accept(WIND_BOW_ITEM.get());
                 output.accept(WIND_CANNON_ITEM.get());
+                output.accept(WIND_HAMMER_ITEM.get());
 
                 output.accept(ROTTEN_MOSS.get());
                 output.accept(HEAVY_RUNE.get());

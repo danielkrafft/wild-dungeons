@@ -107,6 +107,7 @@ public class WDSoundEvents {
     public static final Holder<SoundEvent> WIND_MACE_SMASH = SOUND_EVENTS.register("item.wind_mace.smash", SoundEvent::createVariableRangeEvent);
 
     //------- WIND_HAMMER -------//
+    public static final Holder<SoundEvent> WIND_HAMMER_SMASH = SOUND_EVENTS.register("item.wind_hammer.smash", SoundEvent::createVariableRangeEvent);
     public static final Holder<SoundEvent> WIND_HAMMER_SMASH_HEAVY = SOUND_EVENTS.register("item.wind_hammer.smash_heavy", SoundEvent::createVariableRangeEvent);
     public static final Holder<SoundEvent> WIND_HAMMER_SMASH_MEDIUM = SOUND_EVENTS.register("item.wind_hammer.smash_medium", SoundEvent::createVariableRangeEvent);
     public static final Holder<SoundEvent> WIND_HAMMER_SMASH_LIGHT = SOUND_EVENTS.register("item.wind_hammer.smash_light", SoundEvent::createVariableRangeEvent);

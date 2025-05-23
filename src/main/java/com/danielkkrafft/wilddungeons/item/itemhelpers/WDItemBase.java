@@ -29,17 +29,22 @@ public abstract class WDItemBase extends Item implements GeoAnimatable, GeoItem 
 
     protected WDItemAnimator animator;
     protected boolean hasIdle = false;
+    private final GeoItemRenderer<?> itemRenderer;
 
-    public WDItemBase(String name) {
-        this(name, new Item.Properties()
+    public WDItemBase(String name, GeoItemRenderer<?> renderer) {
+        this(
+                name,
+                renderer,
+                new Item.Properties()
                         .rarity(Rarity.RARE)
                         .durability(1000)
         );
     }
 
-    public WDItemBase(String name, Properties properties) {
+    public WDItemBase(String name, GeoItemRenderer<?> renderer, Properties properties) {
         super(properties);
         this.name = name;
+        itemRenderer = renderer;
         animator = new WDItemAnimator(name, this);
         SingletonGeoAnimatable.registerSyncedAnimatable(this);
     }
@@ -60,7 +65,7 @@ public abstract class WDItemBase extends Item implements GeoAnimatable, GeoItem 
     public void createGeoRenderer(Consumer<GeoRenderProvider> consumer) {
 
         consumer.accept(new GeoRenderProvider() {
-            private final BlockEntityWithoutLevelRenderer renderer = new WDItemBase.WDWeaponRenderer<>();
+            private final GeoItemRenderer<?> renderer = itemRenderer;
 
             @Override
             public BlockEntityWithoutLevelRenderer getGeoItemRenderer() {

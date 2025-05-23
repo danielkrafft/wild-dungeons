@@ -8,7 +8,7 @@ public class WindChargeProjectileModel extends ClientModel<WindChargeProjectile>
     public WindChargeProjectileModel()
     {
         super(null,
-                WildDungeons.rl("geo/entity/wind_charge.geo.json"),
-                WildDungeons.rl("textures/entity/wind_charge.png"));
+                WildDungeons.rl("geo/entity/wind_charge_projectile.geo.json"),
+                WildDungeons.rl("textures/entity/wind_charge_projectile.png"));
     }
 }

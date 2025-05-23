@@ -41,20 +41,15 @@ public class WindBow extends WDProjectileItemBase {
 
     public WindBow(){
         super(NAME,
+                new WindBowRenderer(),
                 new Properties()
                         .stacksTo(1)
-                        .durability(2000));
+                        .durability(2000)
+        );
         animator.addAnimation(AnimationList.draw.toString());
         animator.addAnimation(AnimationList.release.toString());
         hasIdle = false;
         this.arrowFactory = WindArrow::new; // sets the projectile for this bow to be the wind arrow
-    }
-
-    @Override
-    public void createGeoRenderer(Consumer<GeoRenderProvider> consumer) {
-
-        GeoItemRenderer<?> Renderer = new WindBowRenderer();
-        super.createGeoRenderer_internal(Renderer, consumer);
     }
 
     @Override

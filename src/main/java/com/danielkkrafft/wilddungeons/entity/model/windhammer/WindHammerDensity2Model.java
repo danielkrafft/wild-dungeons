@@ -9,7 +9,7 @@ public class WindHammerDensity2Model extends ClientModel<WindHammer> {
         super(
                 null,
                 WildDungeons.rl("geo/wind_hammer/hammer.density.2.geo.json"),
-                WildDungeons.rl("textures/item/hammer_density_2.png")
+                WildDungeons.rl("textures/item/wind_hammer/wind_hammer_density_2.png")
         );
     }
 }

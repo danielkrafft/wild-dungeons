@@ -37,19 +37,24 @@ public abstract class WDProjectileItemBase extends ProjectileWeaponItem implemen
     protected boolean hasIdle = false;
     protected static final int PROJECTILE_RANGE = 15;
     protected ArrowFactory arrowFactory = (level, shooter) -> new Arrow(EntityType.ARROW, level);
+    private final GeoItemRenderer<?> projectileItemRenderer;
 
     protected int lastUseDuration = 0;
 
-    public WDProjectileItemBase(String name) {
-        this(name, new Item.Properties()
+    public WDProjectileItemBase(String name, GeoItemRenderer<?> renderer) {
+        this(
+                name,
+                renderer,
+                new Item.Properties()
                 .rarity(Rarity.RARE)
                 .durability(1000)
         );
     }
 
-    public WDProjectileItemBase(String name, Properties properties) {
+    public WDProjectileItemBase(String name, GeoItemRenderer<?> renderer, Properties properties) {
         super(properties);
         this.name = name;
+        projectileItemRenderer = renderer;
         animator = new WDItemAnimator(name, this);
         SingletonGeoAnimatable.registerSyncedAnimatable(this);
     }
@@ -66,12 +71,11 @@ public abstract class WDProjectileItemBase extends ProjectileWeaponItem implemen
         return animator.getCache();
     }
 
-    public abstract void createGeoRenderer(Consumer<GeoRenderProvider> consumer);
-
-    public void createGeoRenderer_internal(GeoItemRenderer<?> inRenderer, Consumer<GeoRenderProvider> consumer) {
+    @Override
+    public void createGeoRenderer(Consumer<GeoRenderProvider> consumer) {
 
         consumer.accept(new GeoRenderProvider() {
-            private final GeoItemRenderer<?> renderer = inRenderer;
+            private final GeoItemRenderer<?> renderer = projectileItemRenderer;
 
             @Override
             public BlockEntityWithoutLevelRenderer getGeoItemRenderer() {

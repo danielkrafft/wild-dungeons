@@ -2,6 +2,7 @@ package com.danielkkrafft.wilddungeons.item;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.entity.WindChargeProjectile;
+import com.danielkkrafft.wilddungeons.entity.renderer.WindCannonRenderer;
 import com.danielkkrafft.wilddungeons.item.itemhelpers.SwingHandler;
 import com.danielkkrafft.wilddungeons.item.itemhelpers.WDItemBase;
 import com.danielkkrafft.wilddungeons.registry.WDDataComponents;
@@ -47,10 +48,13 @@ public class WindCannon extends WDItemBase implements SwingHandler {
     }
 
     public WindCannon() {
-        super(NAME, new Properties()
-                .rarity(Rarity.EPIC)
-                .durability(2000)
-                .stacksTo(1));
+        super(
+                NAME,
+                new WindCannonRenderer(),
+                new Properties()
+                        .rarity(Rarity.EPIC)
+                        .durability(2000)
+                        .stacksTo(1));
 
         animator.addAnimation(AnimationList.compress.toString());
     }
@@ -88,30 +92,20 @@ public class WindCannon extends WDItemBase implements SwingHandler {
         Level lvl = entity.level();
         stack.hurtAndBreak(1, entity, EquipmentSlot.MAINHAND);
         lvl.playSound(null, entity, WDSoundEvents.WIND_CANNON_SHOOT.value(), SoundSource.PLAYERS, 1.0F,  1.0F);
-        Vec3 pos=entity.position();
+        Vec3 pos = entity.position();
 
-        if(lvl instanceof ServerLevel server)
-        {
-            UtilityMethods.sendParticles(server, ParticleTypes.CLOUD,true,Math.min(15*comps+1,60),pos.x,entity.getEyeY(),pos.z,0.025f,0.025f,0.025f,Math.min(comps/5f+0.002f,0.15f));
+        if(lvl instanceof ServerLevel server) {
+            UtilityMethods.sendParticles(server, ParticleTypes.CLOUD, true, Math.min(15 * comps + 1, 60), pos.x, entity.getEyeY(), pos.z, 0.025f, 0.025f, 0.025f, Math.min(comps / 5f + 0.002f, 0.15f));
             WindChargeProjectile wind = WDEntities.WIND_CHARGE_PROJECTILE.value().create(lvl);
 
-            if (wind == null) {
-                WildDungeons.getLogger().warn("Failed to create WIND_CHARGE_PROJECTILE");
-                return;
+            if (wind != null) {
+                wind.setCompressions(false, false, new Vec3(2.5, 2.5, 2.5), comps, entity);
+                lvl.addFreshEntity(wind);
             }
-
-            Vec3 look = entity.getLookAngle().normalize();
-            Vec3 spawnPos = entity.position().add(look.scale(1.0)); // spawn 1 block forward
-            wind.setPos(spawnPos);
-
-            double vel=Math.min(comps/3.,2);
-            entity.setDeltaMovement(Vec3.directionFromRotation(0,entity.getYHeadRot()).scale(-1).multiply(vel,0,vel).add(0,vel,0));
-
-            WildDungeons.getLogger().info("LaunchWindCharge - fo realz.");
-            wind.setCompressions(false,false,new Vec3(2.5,2.5,2.5),comps,entity);
-            lvl.addFreshEntity(wind);
         }
 
+        double vel = Math.min(comps / 3. ,2);
+        entity.setDeltaMovement(Vec3.directionFromRotation(0,entity.getYHeadRot()).scale(-1).multiply(vel,0,vel).add(0,vel,0));
         stack.set(WDDataComponents.WIND_CANNON_COMPRESSION.get(), 0);
     }
 

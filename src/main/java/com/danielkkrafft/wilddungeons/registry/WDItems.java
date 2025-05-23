@@ -24,6 +24,7 @@ public class WDItems {
     public static final DeferredItem<Item> WIND_MACE_ITEM = ITEMS.register("wind_mace", WindMace::new);
     public static final DeferredItem<Item> WIND_BOW_ITEM = ITEMS.register("wind_bow", WindBow::new);
     public static final DeferredItem<Item> WIND_CANNON_ITEM = ITEMS.register("wind_cannon", WindCannon::new);
+    public static final DeferredItem<Item> WIND_HAMMER_ITEM = ITEMS.register("wind_hammer", WindHammer::new);
     public static final DeferredItem<Item> FIREWORK_GUN_ITEM = ITEMS.register("firework_gun", FireworkGun::new);
     public static final DeferredItem<Item> LIFE_LIQUID_BUCKET = ITEMS.register("life_liquid_bucket", () -> new BucketItem(WDFluids.LIFE_LIQUID.get(), (new Item.Properties()).craftRemainder(Items.BUCKET).stacksTo(1)));
     public static final DeferredItem<Item> BREEZE_GOLEM_SPAWN_EGG = ITEMS.register("breeze_golem_spawn_egg", () -> new SpawnEggItem(WDEntities.BREEZE_GOLEM.get(), new Color(115, 124, 255).getRGB(), new Color(0, 255, 233).getRGB(), new Item.Properties()));

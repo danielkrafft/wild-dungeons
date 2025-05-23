@@ -2,6 +2,7 @@ package com.danielkkrafft.wilddungeons.item;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.entity.WindChargeProjectile;
+import com.danielkkrafft.wilddungeons.entity.renderer.WindMaceRenderer;
 import com.danielkkrafft.wilddungeons.item.itemhelpers.WDItemBase;
 import com.danielkkrafft.wilddungeons.registry.WDItems;
 import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
@@ -35,7 +36,16 @@ public class WindMace extends WDItemBase {
     private static final int SHAKE_TICK=30, JITTER_TICK=60;
 
     public WindMace() {
-        super(NAME, new Properties().rarity(Rarity.EPIC).durability(2000).attributes(SwordItem.createAttributes(Tiers.DIAMOND, 0.f, 0.f)));
+        super(
+                NAME,
+                new WindMaceRenderer(),
+                new Properties()
+                        .rarity(Rarity.EPIC)
+                        .durability(2000)
+                        .attributes(SwordItem.createAttributes(
+                                Tiers.DIAMOND, 0.f, 0.f
+                        ))
+        );
 
         animator.addLoopingAnimation(AnimationList.swing.toString());
         animator.addAnimation(AnimationList.slam.toString());

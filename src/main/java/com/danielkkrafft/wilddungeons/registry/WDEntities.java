@@ -36,10 +36,10 @@ public class WDEntities {
             .updateInterval(20)
             .build(WildDungeons.rl("offering").toString()));
 
-    public static final DeferredHolder<EntityType<?>, EntityType<WindChargeProjectile>> WIND_CHARGE_PROJECTILE = ENTITIES.register("custom_wind_charge", () -> EntityType.Builder
+    public static final DeferredHolder<EntityType<?>, EntityType<WindChargeProjectile>> WIND_CHARGE_PROJECTILE = ENTITIES.register("wind_charge_projectile", () -> EntityType.Builder
             .of(WindChargeProjectile::new, MobCategory.MISC)
             .sized(0.3125f, 0.3125f)
-            .build("custom_wind_charge"));
+            .build("wind_charge_projectile"));
 
     public static final DeferredHolder<EntityType<?>, EntityType<GrapplingHook>> GRAPPLING_HOOK = ENTITIES.register("grappling_hook", () -> EntityType.Builder
             .<GrapplingHook>of(GrapplingHook::new, MobCategory.MISC)

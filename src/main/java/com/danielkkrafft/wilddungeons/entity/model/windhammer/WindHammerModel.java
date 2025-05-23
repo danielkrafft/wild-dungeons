@@ -8,8 +8,8 @@ public class WindHammerModel extends ClientModel<WindHammer> {
     public WindHammerModel() {
         super(
                 null,
-                WildDungeons.rl("geo/item/wind_hammer/hammer.geo.json"),
-                WildDungeons.rl("textures/item/hammer.png")
+                WildDungeons.rl("geo/wind_hammer/hammer.geo.json"),
+                WildDungeons.rl("textures/item/wind_hammer/wind_hammer.png")
         );
     }
 }

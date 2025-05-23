@@ -9,7 +9,7 @@ public class WindHammerBreach2Model extends ClientModel<WindHammer> {
         super(
                 null,
                 WildDungeons.rl("geo/wind_hammer/hammer.breaching.geo.json"),
-                WildDungeons.rl("textures/item/hammer_breaching.png")
+                WildDungeons.rl("textures/item/wind_hammer/wind_hammer_breaching.png")
         );
     }
 }
