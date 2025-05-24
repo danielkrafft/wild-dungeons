@@ -28,6 +28,7 @@ import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.function.Predicate;
 
+import static com.danielkkrafft.wilddungeons.WildDungeons.*;
 import static net.minecraft.world.item.BowItem.getPowerForTime;
 
 public class BaseBowWeapon extends WDProjectileItemBase {
@@ -98,20 +99,18 @@ public class BaseBowWeapon extends WDProjectileItemBase {
 
         public BowFactoryModel(BowWeaponData newBowData) {
             this(
-                    WildDungeons.rl("animations/" + newBowData.bowAnimations + ".animation.json"),
-                    STILL_MODEL = WildDungeons.rl(newBowData.bowModelStill),
-                    STILL_TEXTURE = WildDungeons.rl(newBowData.bowTextureStill));
+                    makeAnimationRL(newBowData.bowAnimations),
+                    STILL_MODEL = makeGeoModelRL(newBowData.bowModelStill),
+                    STILL_TEXTURE = makeItemTextureRL(newBowData.bowTextureStill));
 
-            CHARGED_MODEL = WildDungeons.rl(newBowData.bowModelCharged);
-            CHARGED_TEXTURE = WildDungeons.rl(newBowData.bowTextureCharged);
+            CHARGED_MODEL = makeGeoModelRL(newBowData.bowModelCharged);
+            CHARGED_TEXTURE = makeItemTextureRL(newBowData.bowTextureCharged);
         }
 
         protected BowFactoryModel(ResourceLocation animations, ResourceLocation stillModel, ResourceLocation stillTexture) {
             super(animations, stillModel, stillTexture);
         }
     }
-
-
 
     @Override
     public void onStopUsing(@NotNull ItemStack stack, @NotNull LivingEntity entity, int count) {

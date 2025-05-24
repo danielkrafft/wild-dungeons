@@ -1,7 +1,6 @@
 package com.danielkkrafft.wilddungeons.item.itemhelpers.ItemData;
 
 import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.UseAnim;
 
@@ -23,10 +22,10 @@ public class BowDataRegistry {
                     Rarity.EPIC,
                     "WindBowRenderer",
                     "wind_bow",
-                    "geo/wind_bow.geo.json",
-                    "geo/wind_bow_nocked.geo.json",
-                    "textures/item/wind_bow.png",
-                    "textures/item/wind_bow_charge.png",
+                    "wind_bow",
+                    "wind_bow_nocked",
+                    "wind_bow",
+                    "wind_bow_charge",
                     WDSoundEvents.WIND_BOW_DRAW
             )
             // Add more bows here

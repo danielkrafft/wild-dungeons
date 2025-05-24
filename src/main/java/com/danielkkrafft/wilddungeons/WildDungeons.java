@@ -109,6 +109,18 @@ public class WildDungeons {
         return ResourceLocation.fromNamespaceAndPath(MODID, path);
     }
 
+    public static ResourceLocation makeAnimationRL(String animationName) {
+        return rl("animations/" + animationName + ".animation.json");
+    }
+
+    public static ResourceLocation makeGeoModelRL(String modelName) {
+        return rl("geo/" + modelName + ".geo.json");
+    }
+
+    public static ResourceLocation makeItemTextureRL(String textureName) {
+        return rl("textures/item/" + textureName + ".png");
+    }
+
     public static Holder<Enchantment> getEnchantment(ResourceKey<Enchantment> key) {
 
 
