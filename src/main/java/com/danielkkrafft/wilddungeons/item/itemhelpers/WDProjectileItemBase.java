@@ -4,6 +4,11 @@ import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.entity.BaseClasses.ArrowFactory;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.stats.Stats;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -12,6 +17,7 @@ import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.*;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -24,6 +30,7 @@ import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -85,14 +92,10 @@ public abstract class WDProjectileItemBase extends ProjectileWeaponItem implemen
     }
 
     @Override
-    public int getUseDuration(ItemStack stack, LivingEntity livingEntity) {
-        return 100000;
-    }
+    public abstract int getUseDuration(ItemStack stack, LivingEntity livingEntity);
 
     @Override
-    public @NotNull UseAnim getUseAnimation(@NotNull ItemStack stack) {
-        return UseAnim.BOW;
-    }
+    public abstract @NotNull UseAnim getUseAnimation(@NotNull ItemStack stack);
 
     @Override
     public void inventoryTick(@NotNull ItemStack itemStack, @NotNull Level level, @NotNull Entity entity, int slot, boolean inMainHand) {
@@ -101,11 +104,11 @@ public abstract class WDProjectileItemBase extends ProjectileWeaponItem implemen
         }
     }
 
-    public static class WDWeaponRenderer<T extends WDProjectileItemBase> extends GeoItemRenderer<T> {
-        public WDWeaponRenderer() {
-            super(new WDProjectileItemBase.WDWeaponModel<T>());
-        }
-    }
+//    public static class WDWeaponRenderer<T extends WDProjectileItemBase> extends GeoItemRenderer<T> {
+//        public WDWeaponRenderer() {
+//            super(new WDProjectileItemBase.WDWeaponModel<T>());
+//        }
+//    }
 
     public static class WDWeaponModel<T extends WDProjectileItemBase> extends GeoModel<T> {
 
@@ -126,7 +129,7 @@ public abstract class WDProjectileItemBase extends ProjectileWeaponItem implemen
     }
 
     @Override
-    public Predicate<ItemStack> getAllSupportedProjectiles() {
+    public @NotNull Predicate<ItemStack> getAllSupportedProjectiles() {
         return ARROW_ONLY;
     }
 
@@ -136,12 +139,43 @@ public abstract class WDProjectileItemBase extends ProjectileWeaponItem implemen
     }
 
     @Override
-    protected void shootProjectile(LivingEntity livingEntity, Projectile projectile, int i, float v, float v1, float v2, @Nullable LivingEntity livingEntity1) {
+    protected void shoot(
+            @NotNull ServerLevel level,
+            @NotNull LivingEntity shooter,
+            @NotNull InteractionHand hand,
+            @NotNull ItemStack weapon,
+            List<ItemStack> projectileItems,
+            float velocity,
+            float inaccuracy,
+            boolean isCrit,
+            @javax.annotation.Nullable LivingEntity target
+    ) {
+        float f = EnchantmentHelper.processProjectileSpread(level, weapon, shooter, 0.0F);
+        float f1 = projectileItems.size() == 1 ? 0.0F : 2.0F * f / (float)(projectileItems.size() - 1);
+        float f2 = (float)((projectileItems.size() - 1) % 2) * f1 / 2.0F;
+        float f3 = 1.0F;
 
+        for (int i = 0; i < projectileItems.size(); i++) {
+            ItemStack itemstack = projectileItems.get(i);
+            if (!itemstack.isEmpty()) {
+                float f4 = f2 + f3 * (float)((i + 1) / 2) * f1;
+                f3 = -f3;
+                Projectile projectile = this.createProjectile(level, shooter, weapon, itemstack, isCrit);
+                this.shootProjectile(shooter, projectile, i, velocity, inaccuracy, f4, target);
+                level.addFreshEntity(projectile);
+                weapon.hurtAndBreak(this.getDurabilityUse(itemstack), shooter, LivingEntity.getSlotForHand(hand));
+                if (weapon.isEmpty()) {
+                    break;
+                }
+            }
+        }
     }
 
     @Override
-    protected Projectile createProjectile(Level level, LivingEntity shooter, ItemStack weapon, ItemStack ammo, boolean isCrit) {
+    public abstract void releaseUsing(ItemStack stack, Level level, LivingEntity livingEntity, int timeLeft);
+
+    @Override
+    protected @NotNull Projectile createProjectile(Level level, LivingEntity shooter, ItemStack weapon, ItemStack ammo, boolean isCrit) {
 
         AbstractArrow arrow = arrowFactory.create(level, shooter);
         arrow.setBaseDamage(2.5);

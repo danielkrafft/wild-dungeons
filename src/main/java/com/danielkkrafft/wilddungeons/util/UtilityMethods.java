@@ -18,6 +18,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.SpawnData;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Constructor;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -82,5 +83,24 @@ public final class UtilityMethods
         }
 
         return builder.build();
+    }
+
+    /**
+     * Instantiates a class of the given type using its fully-qualified name.
+     *
+     * @param className Fully-qualified class name (e.g. "com.yourmod.projectile.LightningArrow")
+     * @param type The expected type (interface or superclass) to cast to
+     * @return A new instance of the class, cast to the specified type
+     * @throws Exception If class not found, type mismatch, or instantiation error
+     */
+    public static <T> T instantiate(String className, Class<T> type) throws Exception {
+        Class<?> clazz = Class.forName(className);
+        if (!type.isAssignableFrom(clazz)) {
+            throw new IllegalArgumentException("Class " + className + " is not a subtype of " + type.getName());
+        }
+
+        Constructor<?> constructor = clazz.getDeclaredConstructor();
+        constructor.setAccessible(true);
+        return type.cast(constructor.newInstance());
     }
 }
