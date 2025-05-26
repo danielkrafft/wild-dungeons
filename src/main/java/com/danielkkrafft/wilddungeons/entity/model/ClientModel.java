@@ -10,12 +10,13 @@ import software.bernie.geckolib.renderer.GeoRenderer;
 
 public abstract class ClientModel<T extends GeoAnimatable> extends GeoModel<T>
 {
-    private ResourceLocation animation, model, texture;
+    public ResourceLocation animation, model, texture;
 
     protected ClientModel(ResourceLocation a, ResourceLocation m, ResourceLocation t)
     {
         animation=a;model=m;texture=t==null?ResourceLocation.fromNamespaceAndPath(WildDungeons.MODID,"textures/misc/enchanted_glint_item.png"):t;
     }
+
     public void setAnim(ResourceLocation a){animation=a;}
     public void setModel(ResourceLocation m){model=m;}
     public void setTex(ResourceLocation t){texture=t;}

@@ -18,7 +18,6 @@ import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 import static com.danielkkrafft.KeyBindings.TOGGLE_ESSENCE_TYPE;
 

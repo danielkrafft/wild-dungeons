@@ -47,7 +47,7 @@
 				}
 			}
 		},
-		"animation.emerald_staff.summon": {
+		"animation.emerald_staff.fire": {
 			"animation_length": 0.5,
 			"bones": {
 				"short": {

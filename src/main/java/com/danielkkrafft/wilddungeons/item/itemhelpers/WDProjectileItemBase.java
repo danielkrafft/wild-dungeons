@@ -5,9 +5,6 @@ import com.danielkkrafft.wilddungeons.entity.BaseClasses.ArrowFactory;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -20,7 +17,6 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoAnimatable;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.SingletonGeoAnimatable;
@@ -48,17 +44,7 @@ public abstract class WDProjectileItemBase extends ProjectileWeaponItem implemen
 
     protected int lastUseDuration = 0;
 
-    public WDProjectileItemBase(String name, GeoItemRenderer<?> renderer) {
-        this(
-                name,
-                renderer,
-                new Item.Properties()
-                .rarity(Rarity.RARE)
-                .durability(1000)
-        );
-    }
-
-    public WDProjectileItemBase(String name, GeoItemRenderer<?> renderer, Properties properties) {
+    public WDProjectileItemBase(String name, GeoItemRenderer<?> renderer, Item.Properties properties) {
         super(properties);
         this.name = name;
         projectileItemRenderer = renderer;
@@ -99,16 +85,14 @@ public abstract class WDProjectileItemBase extends ProjectileWeaponItem implemen
 
     @Override
     public void inventoryTick(@NotNull ItemStack itemStack, @NotNull Level level, @NotNull Entity entity, int slot, boolean inMainHand) {
-        if (entity instanceof Player player && !player.getCooldowns().isOnCooldown(this) && !player.isUsingItem() && hasIdle) {
-            animator.playAnimation(this, animator.getAnimationName(0), itemStack, player, level);
-        }
-    }
+        if (!(entity instanceof Player player)) return;
+        if (player.getCooldowns().isOnCooldown(this)) return;
+        if (player.isUsingItem()) return;
+        if (!hasIdle) return;
+        if (animator == null) return;
 
-//    public static class WDWeaponRenderer<T extends WDProjectileItemBase> extends GeoItemRenderer<T> {
-//        public WDWeaponRenderer() {
-//            super(new WDProjectileItemBase.WDWeaponModel<T>());
-//        }
-//    }
+        animator.playAnimation(this, "idle", itemStack, player, level);
+    }
 
     public static class WDWeaponModel<T extends WDProjectileItemBase> extends GeoModel<T> {
 
@@ -161,6 +145,14 @@ public abstract class WDProjectileItemBase extends ProjectileWeaponItem implemen
                 float f4 = f2 + f3 * (float)((i + 1) / 2) * f1;
                 f3 = -f3;
                 Projectile projectile = this.createProjectile(level, shooter, weapon, itemstack, isCrit);
+
+                if (projectile != null) {
+                    projectile.setOwner(shooter);
+                    projectile.setPos(shooter.getX(), shooter.getEyeY() - 0.1, shooter.getZ());
+                    projectile.setYRot(shooter.getYRot());
+                    projectile.setXRot(shooter.getXRot());
+                }
+
                 this.shootProjectile(shooter, projectile, i, velocity, inaccuracy, f4, target);
                 level.addFreshEntity(projectile);
                 weapon.hurtAndBreak(this.getDurabilityUse(itemstack), shooter, LivingEntity.getSlotForHand(hand));

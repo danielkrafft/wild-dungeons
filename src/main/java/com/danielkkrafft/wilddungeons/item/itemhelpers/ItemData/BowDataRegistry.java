@@ -1,5 +1,6 @@
 package com.danielkkrafft.wilddungeons.item.itemhelpers.ItemData;
 
+import com.danielkkrafft.wilddungeons.registry.WDEntities;
 import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.UseAnim;
@@ -17,16 +18,17 @@ public class BowDataRegistry {
                     7200,
                     ARROW_ONLY, // ammoType
                     18,
-                    UseAnim.BOW,
-                    "WindArrow",
+                    UseAnim.NONE,
+                    WDEntities.WIND_ARROW,
                     Rarity.EPIC,
-                    "WindBowRenderer",
+                    //"WindBowRenderer",
                     "wind_bow",
                     "wind_bow",
                     "wind_bow_nocked",
                     "wind_bow",
                     "wind_bow_charge",
-                    WDSoundEvents.WIND_BOW_DRAW
+                    WDSoundEvents.WIND_BOW_DRAW,
+                    false
             )
             // Add more bows here
     );

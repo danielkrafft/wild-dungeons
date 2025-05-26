@@ -59,11 +59,16 @@ public class FriendlyEmeraldWisp extends EmeraldWisp{
         public void tick() {
             chargeTicks++;
 
-            Vec3 motion = wisp.getLookAngle().normalize();
-            double speed = wisp.getAttributeValue(Attributes.FLYING_SPEED);
-            this.wisp.setDeltaMovement(motion.x * speed, motion.y * speed, motion.z * speed);
+            // Optional: ensure rotations are consistent
+            wisp.yBodyRot = wisp.getYRot();
+            wisp.yHeadRot = wisp.getYRot();
 
-            if (this.wisp.horizontalCollision || this.wisp.minorHorizontalCollision || this.wisp.verticalCollision || this.wisp.verticalCollisionBelow || chargeTicks >= MAX_CHARGE_TICKS) {
+            // Calculate forward motion from pitch/yaw
+            Vec3 forward = Vec3.directionFromRotation(wisp.getXRot(), wisp.getYRot()).normalize();
+            double speed = wisp.getAttributeValue(Attributes.FLYING_SPEED);
+            wisp.setDeltaMovement(forward.scale(speed));
+
+            if (wisp.horizontalCollision || wisp.minorHorizontalCollision || wisp.verticalCollision || wisp.verticalCollisionBelow || chargeTicks >= MAX_CHARGE_TICKS) {
                 wisp.setSwellDir(1);
             }
         }

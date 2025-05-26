@@ -48,13 +48,15 @@ public class WDItemAnimator {
     }
 
     public void setAnimationSpeed(double speed) {
-        //if (isClient()) return;
+
+        if (animController == null) return;
 
         animController.setAnimationSpeed(speed);
     }
 
     public void setSoundKeyframeHandler(@Nullable AnimationController.SoundKeyframeHandler<GeoAnimatable> geoAnimatable) {
-        //if (isClient()) return;
+
+        if (animController == null) return;
 
         animController.setSoundKeyframeHandler(geoAnimatable);
     }
@@ -118,7 +120,7 @@ public class WDItemAnimator {
     }
 
     public void playAnimation(GeoItem owner, String animName, ItemStack stack, Player player, Level level) {
-        //if (isClient()) return;
+        if (level.isClientSide) return;
 
         String finalName = animName.startsWith("animation.") ? animName : generateAnimPathString(animName);
         owner.triggerAnim(
@@ -132,7 +134,7 @@ public class WDItemAnimator {
                 .filter(pair -> pair.getFirst().getAnimationStages().getFirst().animationName().equals(finalName))
                 .findFirst().get().getSecond();
 
-        setAnimationSpeed(speed);  // this is still OK
+        setAnimationSpeed(speed);
     }
 
     private String generateAnimPathString(String animName) {
