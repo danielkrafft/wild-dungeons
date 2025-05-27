@@ -33,7 +33,7 @@ public class BlackHole extends SelfGovernedEntity {
     // --- Size & Decay ---
     private float size = 1.0f;
     private static final float MIN_SIZE = 0.1f;
-    private static final float MAX_SIZE = 2.5f;
+    private static final float MAX_SIZE = 4f;
     private static final float GROWTH_PER_CONSUME = 0.01f;
     private static final float SHRINK_RATE = 0.001f;
     private static final float BASE_DECAY_RATE = 0.001f;
@@ -175,7 +175,7 @@ public class BlackHole extends SelfGovernedEntity {
                 } else {
                     target.discard();
                     onEatThing();
-                    flashAbsorbEffect(flashPos);
+                    //flashAbsorbEffect(flashPos);
                 }
             } else {
                 Vec3 pullDir = pullCenter.subtract(target.position()).normalize();
@@ -214,7 +214,6 @@ public class BlackHole extends SelfGovernedEntity {
             } else if (state.getDestroySpeed(level(), pos) >= 0 && level().random.nextDouble() < chance) {
                 level().destroyBlock(pos, false);
                 onEatThing();
-                flashAbsorbEffect(pos);
             }
         }
     }
@@ -222,7 +221,7 @@ public class BlackHole extends SelfGovernedEntity {
     private void flashAbsorbEffect(BlockPos pos) {
         if (level() instanceof ServerLevel serverLevel) {
             serverLevel.sendParticles(
-                    ParticleTypes.END_ROD,
+                    ParticleTypes.FLASH,
                     pos.getX() + 0.5 + (serverLevel.random.nextDouble() - 0.5) * 0.3,
                     pos.getY() + 0.5 + (serverLevel.random.nextDouble() * 0.3),
                     pos.getZ() + 0.5 + (serverLevel.random.nextDouble() - 0.5) * 0.3,
