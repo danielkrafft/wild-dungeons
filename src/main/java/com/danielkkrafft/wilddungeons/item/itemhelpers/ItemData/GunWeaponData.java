@@ -20,6 +20,8 @@ public class GunWeaponData extends BaseProjectileData {
     public float spawnDistanceOffset;
     public float spawnHeightOffset;
     public float projectileSpeed;
+    public boolean hasFire;
+    public boolean hasReload;
 
     public GunWeaponData(
             String name, int stacksTo, int durability, int duration,
@@ -28,7 +30,7 @@ public class GunWeaponData extends BaseProjectileData {
             Rarity rarity, String animations, String model, String texture,
             Holder<SoundEvent> fireSound, Boolean usesAmmo, int cooldown,
             float spawnDistanceOffset, float spawnHeightOffset, float projectileSpeed,
-            String projectileName, boolean hasIdle
+            String projectileName, boolean hasIdle, boolean hasFire, boolean hasReload
     ) {
 
         this.name = name;
@@ -51,5 +53,7 @@ public class GunWeaponData extends BaseProjectileData {
         this.projectileSpeed = projectileSpeed;
         this.projectileName = projectileName;
         this.hasIdle = hasIdle;
+        this.hasFire = hasFire;
+        this.hasReload = hasReload;
     }
 }

@@ -54,8 +54,9 @@ public class WildDungeonsClient {
         event.registerEntityRenderer(WDEntities.FRIENDLY_EMERALD_WISP.get(), (EntityRendererProvider.Context context) -> new EmeraldWispRenderer(context, false));
         event.registerEntityRenderer(WDEntities.FRIENDLY_LARGE_EMERALD_WISP.get(), (EntityRendererProvider.Context context) -> new EmeraldWispRenderer(context, true));
         event.registerEntityRenderer(WDEntities.BUSINESS_CEO.get(), BusinessCEORenderer::new);
-        event.registerEntityRenderer(WDEntities.EMERALD_PROJECTILE.get(), context -> new ThrownItemRenderer<>( context,2f,false));
+        event.registerEntityRenderer(WDEntities.EMERALD_PROJECTILE.get(), context -> new ThrownItemRenderer<>(context, 2f, false));
         event.registerEntityRenderer(WDEntities.WIND_ARROW.get(), ctx -> new WDArrowRenderer<>(ctx, new WindArrowModel()));
+        event.registerEntityRenderer(WDEntities.BLACK_HOLE.get(), BlackHoleRenderer::new);
     }
 
     @SubscribeEvent

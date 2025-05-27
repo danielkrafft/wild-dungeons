@@ -21,6 +21,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -34,6 +35,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
+import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.slf4j.Logger;
 
@@ -57,6 +59,7 @@ public class WildDungeons {
         WDSoundEvents.SOUND_EVENTS.register(modEventBus);
         WDDataComponents.DATA_COMPONENT_TYPES.register(modEventBus);
         WDEnchantmentEffects.ENTITY_ENCHANTMENT_EFFECTS.register(modEventBus);
+        WDDamageTypes.DAMAGE_TYPES.register(modEventBus);
 
         modEventBus.register(WildDungeons.class);
         NeoForge.EVENT_BUS.register(WDEvents.class);

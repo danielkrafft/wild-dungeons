@@ -130,4 +130,12 @@ public class WDEntities {
                     .<WindArrow>of(WindArrow::new, MobCategory.MISC)
                     .sized(1f, 1f)
                     .build(WildDungeons.rl("wind_arrow").toString()));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<BlackHole>> BLACK_HOLE = ENTITIES.register("black_hole",
+            () -> EntityType.Builder
+                    .<BlackHole>of(BlackHole::new, MobCategory.MISC)
+                    .sized(1.0f, 1.0f)
+                    .updateInterval(1)
+                    .clientTrackingRange(80)
+                    .build(WildDungeons.rl("black_hole").toString()));
 }

@@ -4,6 +4,7 @@ import com.danielkkrafft.wilddungeons.entity.model.ClientModel;
 import com.danielkkrafft.wilddungeons.item.itemhelpers.WDProjectileItemBase;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -157,6 +158,10 @@ public abstract class AbstractProjectileParent<
             if (projectile instanceof Mob mob) {
                 mob.setYBodyRot(shooter.getYRot());
                 mob.setYHeadRot(shooter.getYRot());
+            }
+
+            if (projectile instanceof AbstractArrow a) {
+                a.setOwner(shooter);
             }
 
             // Allow custom configuration (name, effects, tags, etc.)

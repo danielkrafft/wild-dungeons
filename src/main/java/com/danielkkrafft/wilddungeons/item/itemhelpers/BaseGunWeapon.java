@@ -1,5 +1,6 @@
 package com.danielkkrafft.wilddungeons.item.itemhelpers;
 
+import com.danielkkrafft.wilddungeons.entity.BaseClasses.SelfGovernedEntity;
 import com.danielkkrafft.wilddungeons.item.itemhelpers.ItemData.GunWeaponData;
 import com.danielkkrafft.wilddungeons.item.itemhelpers.ItemData.AbstractProjectileParent;
 import net.minecraft.network.chat.Component;
@@ -24,9 +25,9 @@ public class BaseGunWeapon extends AbstractProjectileParent<BaseGunWeapon, GunWe
                 buildProperties(newGunWeaponData)
         );
 
-        animator.addLoopingAnimation(IDLE_ANIM);
-        animator.addAnimation(FIRE_ANIM);
-        animator.addAnimation(RELOAD_ANIM);
+        if (newGunWeaponData.hasIdle) animator.addLoopingAnimation(IDLE_ANIM);
+        if (newGunWeaponData.hasFire) animator.addAnimation(FIRE_ANIM);
+        if (newGunWeaponData.hasReload) animator.addAnimation(RELOAD_ANIM);
     }
 
     public static class GunFactoryModel extends ProjectileRenderModel<BaseGunWeapon> {
@@ -56,7 +57,9 @@ public class BaseGunWeapon extends AbstractProjectileParent<BaseGunWeapon, GunWe
                 player.getInventory().removeItem(ammo);
             }
 
-            animator.playAnimation(this, FIRE_ANIM, stack, player, level);
+            if (itemData.hasFire) {
+                animator.playAnimation(this, FIRE_ANIM, stack, player, level);
+            }
 
             ProjectileFactory.spawnProjectile(
                     level,
@@ -67,6 +70,10 @@ public class BaseGunWeapon extends AbstractProjectileParent<BaseGunWeapon, GunWe
                     itemData.projectileSpeed,
                     projectile -> {
                         projectile.setCustomName(Component.literal(itemData.projectileName));
+
+                        if (projectile instanceof SelfGovernedEntity sG) {
+                            sG.setFiredDirectionAndSpeed(player.getLookAngle(), itemData.projectileSpeed);
+                        }
                     }
             );
 

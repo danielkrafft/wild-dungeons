@@ -33,28 +33,32 @@ public class GunDataRegistry {
                     0.0f,
                     1.5f,
                     "Summoned Wisp",
-                    true
+                    true,
+                    true,
+                    false
             ),
             new GunWeaponData(
                     "star_cannon",
                     1,
                     2000,
                     7200,
-                    itemStack -> itemStack.is(Items.EMERALD),
+                    itemStack -> itemStack.is(Items.NETHER_STAR),
                     50,
                     UseAnim.NONE,
-                    WDEntities.SMALL_EMERALD_WISP,
+                    WDEntities.BLACK_HOLE,
                     Rarity.EPIC,
-                    "star_cannon",
+                    "",
                     "star_cannon",
                     "star_cannon",
                     BuiltInRegistries.SOUND_EVENT.wrapAsHolder(SoundEvents.BLAZE_SHOOT),
                     true,
-                    1,
+                    0,
                     2.0f,
                     0.0f,
-                    1.5f,
+                    1f,
                     "Black Hole",
+                    false,
+                    false,
                     false
             )
     );
