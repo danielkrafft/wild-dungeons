@@ -39,7 +39,7 @@ public class BlackHoleRenderer extends EntityRenderer<BlackHole> {
         poseStack.mulPose(this.entityRenderDispatcher.camera.rotation());
 
         float pulse = 1.0f + 0.1f * Mth.sin((entity.tickCount + partialTicks) * 0.3f);
-        float size = entity.getSize();
+        float size = entity.getMass();
 
         // Apply size * pulse scale for the glowing outer layer
         poseStack.scale(size * pulse, size * pulse, size * pulse);
