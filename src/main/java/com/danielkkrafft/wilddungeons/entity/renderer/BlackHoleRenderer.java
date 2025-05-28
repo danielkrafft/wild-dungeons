@@ -52,15 +52,19 @@ public class BlackHoleRenderer extends EntityRenderer<BlackHole> {
 
         poseStack.popPose();
 
-        // Rotate and render ring (flat & spinning)
+// Rotate and render ring (flat & spinning)
         poseStack.pushPose();
+        poseStack.mulPose(this.entityRenderDispatcher.camera.rotation());
 
-        // Ring scales with size (but not pulse)
+// Center and rotate the ring
+        poseStack.translate(0.0, 0.0, 0.001f); // Slight forward to separate it from the core
+        poseStack.mulPose(Axis.YP.rotationDegrees((entity.tickCount + partialTicks) * 4f)); // Yaw spin
+        poseStack.mulPose(Axis.XP.rotationDegrees(80)); // Tilt ring
+
+// Scale the ring with black hole size (but no pulse)
         poseStack.scale(size, size, size);
-        poseStack.mulPose(Axis.YP.rotationDegrees((entity.tickCount + partialTicks) * 4f));
-        poseStack.mulPose(Axis.XP.rotationDegrees(80));
-        renderQuad(poseStack, bufferSource, TEXTURE_RING, packedLight);
 
+        renderQuad(poseStack, bufferSource, TEXTURE_RING, packedLight);
         poseStack.popPose();
     }
 

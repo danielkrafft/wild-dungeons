@@ -55,7 +55,7 @@ public class GunDataRegistry {
                     0,
                     2.0f,
                     0.0f,
-                    1f,
+                    5f,
                     "Black Hole",
                     false,
                     false,

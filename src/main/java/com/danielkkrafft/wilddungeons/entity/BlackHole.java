@@ -16,6 +16,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
@@ -23,27 +24,22 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.core.particles.ParticleTypes;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class BlackHole extends SelfGovernedEntity {
 
-    // --- Size & Decay ---
     private float size = 1.0f;
     private static final float MIN_SIZE = 0.1f;
     private static final float MAX_SIZE = 4f;
     private static final float GROWTH_PER_CONSUME = 0.01f;
     private static final float SHRINK_RATE = 0.001f;
     private static final float BASE_DECAY_RATE = 0.001f;
-    private static final float MAX_DECAY_MULTIPLIER = 8.0f;
+    private static final float MAX_DECAY_MULTIPLIER = 100f;
     private static final int DECAY_GRACE_PERIOD_TICKS = 10;
     private int decayCooldownTicks = 0;
 
-    // --- Pull & Damage ---
-    private static final double RADIUS_PULL_SCALE = 4;
-    private static final double RADIUS_EFFECT_SCALE = 2;
+    private static final double RADIUS_OUTER_SCALE = 2.0;
+    private static final double RADIUS_INNER_SCALE = 0.75;
     private static final int MIN_DAMAGE = 1;
     private static final int MAX_DAMAGE = 10;
     private static final double MIN_PULL_STRENGTH = 1;
@@ -51,16 +47,17 @@ public class BlackHole extends SelfGovernedEntity {
     private static final double PULL_BASE_MULTIPLIER = 3;
     private static final double PULL_FALLOFF_EXPONENT = 2;
 
-    // --- Timing & Iteration ---
-    private static final int EAT_COOLDOWN_BASE = 3;
     private static final int ENTITY_DAMAGE_COOLDOWN_TICKS = 10;
-    private static final int BLOCK_CHECK_BATCH_SIZE = 750;
-    private int eatCooldown = 0;
-    private Iterator<BlockPos> blockIterator = null;
+    private static final int MIN_BLOCKS_DESTROYED = 1;
+    private static final int MAX_BLOCKS_DESTROYED = 500;
+    private static final int BLOCK_DESTROY_SPREAD_TICKS = 3;
+    private Queue<BlockPos> pendingDestruction = new ArrayDeque<>();
+    private int destructionSpreadTickCounter = 0;
+
     private final Map<Integer, Integer> damageCooldowns = new HashMap<>();
 
-    // --- Entity Data ---
     private static final EntityDataAccessor<Float> DATA_BLACK_HOLE_SIZE = SynchedEntityData.defineId(BlackHole.class, EntityDataSerializers.FLOAT);
+    private boolean hasReachedMaxSize = false;
 
     public BlackHole(EntityType<? extends Entity> entityType, Level level) {
         super(entityType, level);
@@ -71,12 +68,13 @@ public class BlackHole extends SelfGovernedEntity {
         if (wasFired) {
             if (!level().isClientSide) {
                 if (getSize() >= MAX_SIZE) {
+                    hasReachedMaxSize = true;
                     handleDecay();
                 } else {
                     handleMoving();
                 }
-
                 handleEating();
+                handleFusion();
 
                 if (getSize() <= MIN_SIZE) {
                     triggerCollapseEffect();
@@ -90,21 +88,59 @@ public class BlackHole extends SelfGovernedEntity {
     }
 
     private void handleMoving() {
-        size = Mth.clamp(getSize() - SHRINK_RATE, MIN_SIZE, MAX_SIZE);
-        setSize(size);
-
-        if (getSize() >= MAX_SIZE) {
+        if (hasReachedMaxSize) {
+            size = Mth.clamp(getSize() - SHRINK_RATE, MIN_SIZE, MAX_SIZE);
+            setSize(size);
             setDeltaMovement(Vec3.ZERO);
             return;
         }
+
+        size = Mth.clamp(getSize() - SHRINK_RATE, MIN_SIZE, MAX_SIZE);
+        setSize(size);
 
         float baseSpeed = 0.25f;
         float minSpeed = 0.02f;
         float speed = Mth.clamp(baseSpeed - (size * 0.01f), minSpeed, baseSpeed);
 
         Vec3 motion = firedDirection.normalize().scale(speed);
+
+        // Lerp toward the largest black hole nearby (if still moving)
+        BlackHole biggestNearby = null;
+        float biggestSize = -1f;
+        for (Entity entity : level().getEntities(this, new AABB(blockPosition()).inflate(getSize() * RADIUS_OUTER_SCALE * 2))) {
+            if (entity instanceof BlackHole other && other != this && other.getSize() > biggestSize) {
+                biggestSize = other.getSize();
+                biggestNearby = other;
+            }
+        }
+
+        if (biggestNearby != null && !getDeltaMovement().equals(Vec3.ZERO)) {
+            Vec3 toTarget = biggestNearby.position().subtract(position()).normalize();
+            Vec3 blended = motion.normalize().lerp(toTarget, 0.5).normalize().scale(motion.length());
+            motion = blended;
+        }
+
         setPos(getX() + motion.x, getY() + motion.y, getZ() + motion.z);
         lerpMotion(motion.x, motion.y, motion.z);
+    }
+
+    private void handleFusion() {
+        List<Entity> nearby = level().getEntities(this, new AABB(blockPosition()).inflate(getSize() * RADIUS_INNER_SCALE));
+        for (Entity entity : nearby) {
+            if (entity instanceof BlackHole other && other != this) {
+                if (this.getSize() > other.getSize()) {
+                    float drain = Math.min(0.01f, other.getSize());
+                    other.setSize(other.getSize() - drain);
+                    this.setSize(this.getSize() + drain);
+
+                    if (other.getSize() <= MIN_SIZE) {
+                        other.triggerCollapseEffect();
+                        other.discard();
+                        WildDungeons.getLogger().info("Black hole fused and vanished.");
+                    }
+                }
+            }
+        }
     }
 
     private void handleDecay() {
@@ -112,7 +148,6 @@ public class BlackHole extends SelfGovernedEntity {
 
         float decayAmount = BASE_DECAY_RATE;
 
-        // Only accelerate decay if size is *at or above* max
         if (getSize() >= MAX_SIZE) {
             float cooldownProgress = 1.0f - (decayCooldownTicks / (float) DECAY_GRACE_PERIOD_TICKS);
             float decayMultiplier = Mth.lerp(cooldownProgress, 1.0f, MAX_DECAY_MULTIPLIER);
@@ -124,62 +159,66 @@ public class BlackHole extends SelfGovernedEntity {
 
     private void handleEating() {
         damageCooldowns.replaceAll((id, ticks) -> Math.max(0, ticks - 1));
-        if (--eatCooldown > 0) return;
-        eatCooldown = EAT_COOLDOWN_BASE;
 
-        Vec3 motion = getDeltaMovement();
-        if (!motion.equals(Vec3.ZERO)) {
-            Vec3 direction = motion.normalize();
-            for (int i = 1; i <= 3; i++) {
-                BlockPos stepPos = BlockPos.containing(position().add(direction.scale(i * 0.3)));
-                BlockState state = level().getBlockState(stepPos);
-                FluidState fluid = state.getFluidState();
-                if (!level().isEmptyBlock(stepPos)) {
-                    if (!fluid.isEmpty()) {
-                        level().setBlockAndUpdate(stepPos, Fluids.EMPTY.defaultFluidState().createLegacyBlock());
-                        level().addParticle(ParticleTypes.CLOUD, stepPos.getX() + 0.5, stepPos.getY() + 0.5, stepPos.getZ() + 0.5, 0, 0.1, 0);
-                    } else if (state.getDestroySpeed(level(), stepPos) >= 0) {
-                        level().destroyBlock(stepPos, false);
-                        onEatThing();
-                        flashAbsorbEffect(stepPos);
-                    }
-                }
-            }
-        }
-
-        double pullRadius = getSize() * RADIUS_PULL_SCALE;
-        double effectRadius = getSize() * RADIUS_EFFECT_SCALE;
-        double pullDistSq = pullRadius * pullRadius;
-        double effectDistSq = effectRadius * effectRadius;
+        double outerRadius = getSize() * RADIUS_OUTER_SCALE;
+        double innerRadius = getSize() * RADIUS_INNER_SCALE;
+        double outerDistSq = outerRadius * outerRadius;
+        double innerDistSq = innerRadius * innerRadius;
         BlockPos center = blockPosition();
         Vec3 pullCenter = position().add(0, 0.75, 0);
-        AABB zone = new AABB(center).inflate(pullRadius);
+        AABB zone = new AABB(center).inflate(outerRadius);
 
         List<Entity> entities = level().getEntities(this, zone);
         for (Entity target : entities) {
             if (target == this) continue;
-            double distSq = target.position().distanceToSqr(pullCenter);
-            double normDist = distSq / pullDistSq;
+            if (target instanceof BlackHole otherHole && otherHole.getSize() > 0 && otherHole != this) {
+                Vec3 pullDir = position().add(0, 0.75, 0).subtract(otherHole.position().add(0, 0.75, 0)).normalize();
+                double distSq = otherHole.position().distanceToSqr(position().add(0, 0.75, 0));
+                double sizeFactor = (getSize() - MIN_SIZE) / (MAX_SIZE - MIN_SIZE);
+                double normDist = distSq / (outerRadius * outerRadius);
+                double clampedNormDist = Mth.clamp(normDist, 0.0, 1.0);
+                double baseStrength = Math.max(0, sizeFactor * PULL_BASE_MULTIPLIER * (1.0 - Math.pow(clampedNormDist, PULL_FALLOFF_EXPONENT)));
+                double pullStrength = Mth.clamp(baseStrength, MIN_PULL_STRENGTH, MAX_PULL_STRENGTH) * (1.0 - clampedNormDist);
 
-            if (distSq <= effectDistSq) {
+                Vec3 currentMotion = otherHole.getDeltaMovement().scale(0.85);
+                Vec3 pullVelocity = pullDir.scale(pullStrength);
+                Vec3 newMotion = currentMotion.add(pullVelocity).scale(0.5);
+                otherHole.setDeltaMovement(newMotion);
+            }
+            double distSq = target.position().distanceToSqr(pullCenter);
+            double normDist = distSq / outerDistSq;
+
+            if (distSq <= innerDistSq) {
                 BlockPos flashPos = target.blockPosition().above();
-                if (target instanceof LivingEntity living) {
+                if (target instanceof BlackHole otherHole) {
+                    if (otherHole.getSize() < getSize()) {
+                        float siphonAmount = 0.01f; // Amount to siphon per tick
+                        float newOtherSize = Math.max(MIN_SIZE, otherHole.getSize() - siphonAmount);
+                        float siphoned = otherHole.getSize() - newOtherSize;
+                        otherHole.setSize(newOtherSize);
+                        setSize(getSize() + siphoned);
+                        decayCooldownTicks = DECAY_GRACE_PERIOD_TICKS;
+                        //flashAbsorbEffect(flashPos);
+                    }
+                } else if (target instanceof LivingEntity living) {
+                } else if (target instanceof LivingEntity living) {
                     int id = living.getId();
                     if (damageCooldowns.getOrDefault(id, 0) <= 0) {
-                        float damage = Mth.lerp(1.0f - (float)(distSq / effectDistSq), MIN_DAMAGE, MAX_DAMAGE);
+                        float damage = Mth.lerp((getSize() - MIN_SIZE) / (MAX_SIZE - MIN_SIZE), MIN_DAMAGE, MAX_DAMAGE);
                         living.hurt(blackHoleDamage(level().damageSources()), damage);
                         onEatThing();
                         damageCooldowns.put(id, ENTITY_DAMAGE_COOLDOWN_TICKS);
-                        flashAbsorbEffect(flashPos);
+                        //flashAbsorbEffect(flashPos);
                     }
                 } else {
                     target.discard();
                     onEatThing();
-                    //flashAbsorbEffect(flashPos);
                 }
             } else {
                 Vec3 pullDir = pullCenter.subtract(target.position()).normalize();
-                double baseStrength = PULL_BASE_MULTIPLIER * (1.0 - Math.pow(normDist, PULL_FALLOFF_EXPONENT));
+                double sizeFactor = (getSize() - MIN_SIZE) / (MAX_SIZE - MIN_SIZE);
+                double clampedNormDist = Mth.clamp(normDist, 0.0, 1.0);
+                double baseStrength = Math.max(0, sizeFactor * PULL_BASE_MULTIPLIER * (1.0 - Math.pow(clampedNormDist, PULL_FALLOFF_EXPONENT)));
                 double pullStrength = Mth.clamp(baseStrength, MIN_PULL_STRENGTH, MAX_PULL_STRENGTH) * (1.0 - normDist);
 
                 Vec3 currentMotion = target.getDeltaMovement().scale(0.85);
@@ -189,33 +228,42 @@ public class BlackHole extends SelfGovernedEntity {
             }
         }
 
-        if (blockIterator == null || !blockIterator.hasNext()) {
-            BlockPos min = center.offset(-(int) pullRadius, -(int) pullRadius, -(int) pullRadius);
-            BlockPos max = center.offset((int) pullRadius, (int) pullRadius, (int) pullRadius);
-            blockIterator = BlockPos.betweenClosedStream(min, max).iterator();
+        if (pendingDestruction.isEmpty()) {
+            int blocksToSample = (int) Mth.lerp((getSize() - MIN_SIZE) / (MAX_SIZE - MIN_SIZE), MIN_BLOCKS_DESTROYED, MAX_BLOCKS_DESTROYED);
+            for (int i = 0; i < blocksToSample; i++) {
+                int dx = Mth.floor((random.nextDouble() - 0.5) * 2 * outerRadius);
+                int dy = Mth.floor((random.nextDouble() - 0.5) * 2 * outerRadius);
+                int dz = Mth.floor((random.nextDouble() - 0.5) * 2 * outerRadius);
+                BlockPos pos = center.offset(dx, dy, dz);
+                pendingDestruction.add(pos);
+            }
+            destructionSpreadTickCounter = BLOCK_DESTROY_SPREAD_TICKS;
         }
 
-        int processed = 0;
-        while (blockIterator.hasNext() && processed++ < BLOCK_CHECK_BATCH_SIZE) {
-            BlockPos pos = blockIterator.next();
+        int blocksThisTick = (int)Math.ceil((double)pendingDestruction.size() / destructionSpreadTickCounter);
+        for (int i = 0; i < blocksThisTick && !pendingDestruction.isEmpty(); i++) {
+            BlockPos pos = pendingDestruction.poll();
+            if (pos == null || level().isEmptyBlock(pos)) continue;
+
             BlockState state = level().getBlockState(pos);
             FluidState fluid = state.getFluidState();
-            if (level().isEmptyBlock(pos)) continue;
-
             double distSq = pos.distSqr(center);
-            if (distSq > effectDistSq) continue;
-
-            double normDist = distSq / effectDistSq;
+            double normDist = distSq / outerDistSq;
             double chance = Mth.clamp(1.0 - Math.pow(normDist, 2.2), 0.05, 1.0);
 
-            if (!fluid.isEmpty()) {
-                level().setBlockAndUpdate(pos, Fluids.EMPTY.defaultFluidState().createLegacyBlock());
-                level().addParticle(ParticleTypes.CLOUD, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0, 0.1, 0);
-            } else if (state.getDestroySpeed(level(), pos) >= 0 && level().random.nextDouble() < chance) {
-                level().destroyBlock(pos, false);
-                onEatThing();
+            if (distSq <= innerDistSq || (random.nextDouble() < chance && state.getDestroySpeed(level(), pos) >= 0)) {
+                if (!fluid.isEmpty()) {
+                    level().setBlockAndUpdate(pos, Fluids.EMPTY.defaultFluidState().createLegacyBlock());
+                    level().addParticle(ParticleTypes.CLOUD, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0, 0.1, 0);
+                } else {
+                    level().levelEvent(2001, pos, Block.getId(state));
+                    level().destroyBlock(pos, false);
+                    onEatThing();
+                }
             }
         }
+
+        if (destructionSpreadTickCounter > 0) destructionSpreadTickCounter--;
     }
 
     private void flashAbsorbEffect(BlockPos pos) {
@@ -225,8 +273,8 @@ public class BlackHole extends SelfGovernedEntity {
                     pos.getX() + 0.5 + (serverLevel.random.nextDouble() - 0.5) * 0.3,
                     pos.getY() + 0.5 + (serverLevel.random.nextDouble() * 0.3),
                     pos.getZ() + 0.5 + (serverLevel.random.nextDouble() - 0.5) * 0.3,
-                    1, // count
-                    0, 0, 0, 0 // no velocity spread
+                    1,
+                    0, 0, 0, 0
             );
         }
     }
@@ -236,9 +284,9 @@ public class BlackHole extends SelfGovernedEntity {
             serverLevel.sendParticles(
                     ParticleTypes.FLASH,
                     getX(), getY(), getZ(),
-                    1,  // particle count
-                    0, 0, 0,  // x/y/z offset (spread)
-                    0        // speed
+                    1,
+                    0, 0, 0,
+                    0
             );
         }
     }
@@ -248,7 +296,8 @@ public class BlackHole extends SelfGovernedEntity {
     }
 
     public void onEatThing() {
-        setSize(getSize() + GROWTH_PER_CONSUME);
+        float newSize = getSize() + GROWTH_PER_CONSUME;
+        setSize(newSize);
         decayCooldownTicks = DECAY_GRACE_PERIOD_TICKS;
     }
 
@@ -273,6 +322,6 @@ public class BlackHole extends SelfGovernedEntity {
     }
 
     public void setSize(float size) {
-        this.entityData.set(DATA_BLACK_HOLE_SIZE, Mth.clamp(size, MIN_SIZE, 10f));
+        this.entityData.set(DATA_BLACK_HOLE_SIZE, Mth.clamp(size, MIN_SIZE, MAX_SIZE + 1.0f));
     }
 }
