@@ -35,7 +35,8 @@ public class GunDataRegistry {
                     "Summoned Wisp",
                     true,
                     true,
-                    false
+                    false,
+                    "Emerald"
             ),
             new GunWeaponData(
                     "star_cannon",
@@ -59,7 +60,8 @@ public class GunDataRegistry {
                     "Black Hole",
                     false,
                     false,
-                    false
+                    false,
+                    "Nether Star"
             )
     );
 

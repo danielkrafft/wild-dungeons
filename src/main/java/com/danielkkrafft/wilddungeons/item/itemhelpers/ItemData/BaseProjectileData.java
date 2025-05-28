@@ -17,4 +17,5 @@ public abstract class BaseProjectileData extends BaseItemData {
     public int projectileRange;
     public DeferredHolder<EntityType<?>, ? extends EntityType<? extends Entity>> projectileClass;
     public String projectileName;
+    public String ammoDisplayName;
 }

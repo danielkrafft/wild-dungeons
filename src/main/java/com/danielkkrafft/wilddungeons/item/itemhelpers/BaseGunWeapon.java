@@ -9,8 +9,11 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ProjectileWeaponItem;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.function.Predicate;
 
 public class BaseGunWeapon extends AbstractProjectileParent<BaseGunWeapon, GunWeaponData, BaseGunWeapon.GunFactoryModel> {
 
@@ -42,44 +45,43 @@ public class BaseGunWeapon extends AbstractProjectileParent<BaseGunWeapon, GunWe
 
         if (level.isClientSide) return InteractionResultHolder.pass(player.getItemInHand(hand));
         ItemStack stack = player.getItemInHand(hand);
-        boolean flag = !player.getProjectile(stack).isEmpty();
+        boolean hasAmmo = !player.getProjectile(stack).isEmpty();
 
-        InteractionResultHolder<ItemStack> ret = net.neoforged.neoforge.event.EventHooks.onArrowNock(stack, level, player, hand, flag);
+        InteractionResultHolder<ItemStack> ret = net.neoforged.neoforge.event.EventHooks.onArrowNock(stack, level, player, hand, hasAmmo);
         if (ret != null) return ret;
 
-        if (!player.getAbilities().instabuild && !flag) {
+        if (!player.getAbilities().instabuild && !hasAmmo) {
+            player.displayClientMessage(Component.literal("§cMissing 1x " + itemData.ammoDisplayName), true);
             return InteractionResultHolder.fail(stack);
         }
-        else {
-            ItemStack ammo = player.getProjectile(stack);
-            ammo.shrink(1);
-            if (ammo.isEmpty()) {
-                player.getInventory().removeItem(ammo);
-            }
 
-            if (itemData.hasFire) {
-                animator.playAnimation(this, FIRE_ANIM, stack, player, level);
-            }
-
-            ProjectileFactory.spawnProjectile(
-                    level,
-                    itemData.projectileClass.get(),
-                    player,
-                    itemData.spawnDistanceOffset,
-                    itemData.spawnHeightOffset,
-                    itemData.projectileSpeed,
-                    projectile -> {
-                        projectile.setCustomName(Component.literal(itemData.projectileName));
-
-                        if (projectile instanceof SelfGovernedEntity sG) {
-                            sG.setFiredDirectionAndSpeed(player.getLookAngle(), itemData.projectileSpeed);
-                        }
-                    }
-            );
-
-            player.getCooldowns().addCooldown(this, itemData.cooldown);
-            level.playSound(null, player.blockPosition(), itemData.fireSound.value(), SoundSource.PLAYERS, 1.0f, 1.0f);
+        ItemStack ammo = player.getProjectile(stack);
+        ammo.shrink(1);
+        if (ammo.isEmpty()) {
+            player.getInventory().removeItem(ammo);
         }
+
+        if (itemData.hasFire) {
+            animator.playAnimation(this, FIRE_ANIM, stack, player, level);
+        }
+
+        ProjectileFactory.spawnProjectile(
+                level,
+                itemData.projectileClass.get(),
+                player,
+                itemData.spawnDistanceOffset,
+                itemData.spawnHeightOffset,
+                itemData.projectileSpeed,
+                projectile -> {
+                    projectile.setCustomName(Component.literal(itemData.projectileName));
+                    if (projectile instanceof SelfGovernedEntity sG) {
+                        sG.setFiredDirectionAndSpeed(player.getLookAngle(), itemData.projectileSpeed);
+                    }
+                }
+        );
+
+        player.getCooldowns().addCooldown(this, itemData.cooldown);
+        level.playSound(null, player.blockPosition(), itemData.fireSound.value(), SoundSource.PLAYERS, 1.0f, 1.0f);
 
         return super.use(level, player, hand);
     }

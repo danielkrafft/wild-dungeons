@@ -28,7 +28,8 @@ public class BowDataRegistry {
                     "wind_bow",
                     "wind_bow_charge",
                     WDSoundEvents.WIND_BOW_DRAW,
-                    false
+                    false,
+                    "Arrow"
             )
             // Add more bows here
     );

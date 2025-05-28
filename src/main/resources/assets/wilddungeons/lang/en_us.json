@@ -196,5 +196,8 @@
   "item.wilddungeons.instant_loadout_iron": "Iron Loadout",
   "item.wilddungeons.instant_loadout_diamond": "Diamond Loadout",
   "item.wilddungeons.instant_loadout_netherite": "Netherite Loadout",
-  "item.wilddungeons.instant_loadout_gold": "Gold Loadout"
+  "item.wilddungeons.instant_loadout_gold": "Gold Loadout",
+
+  "death.attack.blackhole": "%1$s was consumed by a black hole",
+  "death.attack.blackhole.player": "%1$s was consumed by a black hole fired by %2$s"
 }

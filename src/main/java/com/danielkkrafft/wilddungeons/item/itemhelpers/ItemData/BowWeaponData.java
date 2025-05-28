@@ -23,7 +23,7 @@ public class BowWeaponData extends BaseProjectileData {
             DeferredHolder<EntityType<?>, ? extends EntityType<? extends Entity>> arrowClass,
             Rarity bowRarity, String bowAnimations, String bowModelStill, String bowModelCharged,
             String bowTextureStill, String bowTextureCharged, Holder<SoundEvent> bowDrawSound,
-            boolean hasIdle
+            boolean hasIdle, String ammoName
     ) {
         this.name = name;
         this.stacksTo = stacksTo;
@@ -41,6 +41,7 @@ public class BowWeaponData extends BaseProjectileData {
         this.bowTextureCharged = bowTextureCharged;
         this.drawSound = bowDrawSound;
         this.hasIdle = hasIdle;
+        this.ammoDisplayName = ammoName;
     }
 }
 
