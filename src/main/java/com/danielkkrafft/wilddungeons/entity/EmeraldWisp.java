@@ -34,6 +34,7 @@ public class EmeraldWisp extends PathfinderMob implements TraceableEntity {
     Entity owner;
     private static final EntityDataAccessor<Integer> DATA_SWELL_DIR = SynchedEntityData.defineId(EmeraldWisp.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> DATA_IS_IGNITED = SynchedEntityData.defineId(EmeraldWisp.class, EntityDataSerializers.BOOLEAN);
+    private static final boolean INSTANT_EXPLODE = true;
     protected int oldSwell;
     protected int swell;
     private int explosionRadius = 2;
@@ -133,6 +134,12 @@ public class EmeraldWisp extends PathfinderMob implements TraceableEntity {
 
             int i = this.getSwellDir();
             if (i > 0 && this.swell == 0) {
+
+                if (INSTANT_EXPLODE) {
+                    explodeWisp();
+                    return;
+                }
+
                 this.playSound(SoundEvents.CREEPER_PRIMED, 1.0F, 0.5F);
                 this.gameEvent(GameEvent.PRIME_FUSE);
             }
@@ -182,8 +189,8 @@ public class EmeraldWisp extends PathfinderMob implements TraceableEntity {
     public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 16f)
-                .add(Attributes.FLYING_SPEED, 0.2F)
-                .add(Attributes.MOVEMENT_SPEED, 0.1F)
+                .add(Attributes.FLYING_SPEED, 0.3)
+                .add(Attributes.MOVEMENT_SPEED, 0.15F)
                 .add(Attributes.ATTACK_DAMAGE, 2.0F)
                 .add(Attributes.FOLLOW_RANGE, 48.0F);
     }
