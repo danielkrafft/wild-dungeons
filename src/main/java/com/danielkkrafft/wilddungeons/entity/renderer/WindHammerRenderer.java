@@ -40,8 +40,6 @@ public class WindHammerRenderer extends GeoItemRenderer<WindHammer>
         int density = currentItemStack.getEnchantmentLevel(WildDungeons.getEnchantment(Enchantments.DENSITY));
         int wind = currentItemStack.getEnchantmentLevel(WildDungeons.getEnchantment(Enchantments.WIND_BURST));
 
-        WildDungeons.getLogger().info("Breaching: {}, Density: {}, Wind: {}", breaching, density, wind);
-
         return (breaching > 0 ||
                 density > 0 ||
                 wind > 0) ? wind > 0 ? WIND_MOD : (breaching > 0 ? (breaching >= 2 ? BRE2_MOD : BRE1_MOD) : (density >= 2 ? DEN2_MOD : DEN1_MOD)) : DEF_MOD;

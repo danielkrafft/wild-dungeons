@@ -10,6 +10,8 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -166,10 +168,10 @@ public class GrapplingHook extends ThrowableProjectile {
                     final double maxVel = 0.5;
                     double vel = p.getDeltaMovement().length();
                     if (vel > maxVel && (p.onGround() || p.horizontalCollision || p.verticalCollision)) {
-                        Meathook.resetHook(p, it);
+                        //Meathook.resetHook(p, it);
                         if (Meathook.getHookUUID(it) == null) {
                             p.setDeltaMovement(p.getDeltaMovement().multiply(0.1, 0, 0.1).add(0, 0.65, 0));
-                            discard();
+                            //discard();
                         }
                     } else {
                         // Check if player is trying to release the hook (crouching is more reliable for server use)

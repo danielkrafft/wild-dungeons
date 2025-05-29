@@ -107,7 +107,10 @@ public class Meathook extends WDWeapon {
             p.startUsingItem(hand);
             return InteractionResultHolder.consume(it);
         }
-        return InteractionResultHolder.fail(it);
+        else {
+            resetHook(p, it);
+            return InteractionResultHolder.fail(it);
+        }
     }
 
     @Override
