@@ -234,6 +234,8 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate VILLAGE_SEWER_PERK = createSimple("village/sewer/perk").set(SOUNDSCAPE, SoundscapeTemplateRegistry.PEACEFUL).set(INTENSITY, 1).setClazz(LootRoom.class);
     public static final DungeonRoomTemplate VILLAGE_PIPE_TO_METRO = createSimple("village/sewer/pipe_to_metro");
 
+    public static final DungeonRoomTemplate BOSS_KEY_ROOM = createSimple("special/boss_key_room");
+
     public static final DungeonRoomTemplate VILLAGE_METRO_CENTER = createSimple("village/metro/center");
 
     public static final DungeonRoomTemplate VILLAGE_METRO_WIDE_PATH = createSimple("village/metro/path_wide")

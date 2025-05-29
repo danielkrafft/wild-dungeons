@@ -23,6 +23,7 @@ import net.minecraft.world.level.Level;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 
 public class DungeonRegistration {
@@ -51,6 +52,16 @@ public class DungeonRegistration {
             this.order.add(new WeightedPool<T>().add(entry, 1));
             return this;
         }
+
+        // Adds a room if the chance is met or below. For example, chance = 30 means a 30% chance this room will spawn.
+        public DungeonLayout<T> addSimpleMaybe(T entry, int chance) {
+            int roll = ThreadLocalRandom.current().nextInt(1, 101); // 1 to 100 inclusive
+            if (roll <= chance) {
+                this.addSimple(entry);
+            }
+            return this;
+        }
+
 
         public WeightedPool<T> get(int index) {return this.order.get(index);}
         public int size() {return this.order.size();}

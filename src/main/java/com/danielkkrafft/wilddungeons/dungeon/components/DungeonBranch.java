@@ -18,6 +18,7 @@ import java.util.*;
 
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonBranchRegistry.DUNGEON_BRANCH_REGISTRY;
+import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomRegistry.BOSS_KEY_ROOM;
 
 public class DungeonBranch {
 
@@ -112,6 +113,11 @@ public class DungeonBranch {
         // Select the next room, attempting to pick one with at least 2 connection points so we don't get stuck
 
         DungeonRoomTemplate nextRoom = selectNextRoom();
+
+        if (nextRoom == BOSS_KEY_ROOM) {
+            WildDungeons.getLogger().info("Spawning BOSS_KEY_ROOM");
+        }
+
         if (openConnections < OPEN_CONNECTIONS_TARGET) {
             int tries = 0;
             while (nextRoom.connectionPoints().size() < 2 && tries < 15) {

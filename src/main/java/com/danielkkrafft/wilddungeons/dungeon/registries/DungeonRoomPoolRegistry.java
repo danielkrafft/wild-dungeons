@@ -142,8 +142,7 @@ public class DungeonRoomPoolRegistry {
             .add(VILLAGE_SEWER_CHESTCAP, 1)
             .add(VILLAGE_SEWER_ELEVATOR, 1)
             .add(VILLAGE_SEWER_DEELEVATOR, 1)
-            .add(VILLAGE_SEWER_12_COMBAT, 2)
-            ;
+            .add(VILLAGE_SEWER_12_COMBAT, 2);
     
     public static final WeightedPool<DungeonRoomTemplate> VILLAGE_WIDE_PATH_POOL = create("VILLAGE_WIDE_PATH_POOL")
             .add(VILLAGE_METRO_WIDE_CROSSROADS,2)
