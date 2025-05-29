@@ -6,6 +6,7 @@ import com.danielkkrafft.wilddungeons.dungeon.components.process.AddRandomVillag
 import com.danielkkrafft.wilddungeons.dungeon.components.process.AddVillagersOfProfession;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.*;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
+import com.danielkkrafft.wilddungeons.registry.WDBlocks;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.util.WeightedTable;
 import com.mojang.datafixers.util.Pair;
@@ -28,7 +29,7 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
      * INITIAL TEST ROOMS
      */
 
-    public static final DungeonRoomTemplate PERK_TEST = createSimple("loot/perk_tester").setClazz(LootRoom.class);
+    public static final DungeonRoomTemplate PERK_TEST = createSimple("loot/perk_tester").setClazz(LootRoom.class).set(BLOCKING_BLOCK, WDBlocks.IRON_GRATE.get());
     public static final DungeonRoomTemplate SMALL_1 = createSimple("stone/small_1");
     public static final DungeonRoomTemplate SMALL_2 = createSimple("stone/small_2");
     public static final DungeonRoomTemplate SMALL_3 = createSimple("stone/small_3");
@@ -61,7 +62,8 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
             .set(SHOP_TABLE, OfferingTemplateTableRegistry.FREE_CUSTOM_WEAPON_TABLE);
     public static final DungeonRoomTemplate SHOP_1 = createSimple("shop/1");
     public static final DungeonRoomTemplate LOOT_1 = createSimple("single_perk")
-            .setClazz(LootRoom.class);
+            .setClazz(LootRoom.class)
+            .set(BLOCKING_BLOCK, WDBlocks.IRON_GRATE.get());
     public static final DungeonRoomTemplate REST = create(
             "rest",
             List.of(
@@ -97,7 +99,7 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate OVERWORLD_CRAFTING_ROOM = createSimple("overworld/crafting");
     public static final DungeonRoomTemplate OVERWORLD_REST_ROOM = createSimple("overworld/rest_basic");
     public static final DungeonRoomTemplate OVERWORLD_SHOP_ROOM = createSimple("overworld/shop");
-    public static final DungeonRoomTemplate OVERWORLD_FREE_PERK = createSimple("overworld/free_perk").setClazz(LootRoom.class);
+    public static final DungeonRoomTemplate OVERWORLD_FREE_PERK = createSimple("overworld/free_perk").setClazz(LootRoom.class).set(BLOCKING_BLOCK, WDBlocks.IRON_GRATE.get());
     public static final DungeonRoomTemplate OVERWORLD_DOUBLE_LOOT = createSimple("overworld/double_loot").setClazz(LootChoiceRoom.class);
     public static final DungeonRoomTemplate OVERWORLD_EXIT_ROOM = createSimple("overworld/exit");
     public static final DungeonRoomTemplate OVERWORLD_TRANSITION_ROOM = create(
@@ -208,6 +210,7 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
                     of("nether/factory/boss_10", new BlockPos(-48, 18, 7))
             ))
             .setClazz(BossRoom.class)
+            .set(BLOCKING_BLOCK, WDBlocks.IRON_GRATE.get())
             .set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR)
             .set(ROOM_CLEAR_REWARD_POOL, WeightedPool.of(OfferingTemplateRegistry.EXIT_RIFT))
             .set(ENEMY_TABLE, EnemyTableRegistry.NETHER_DRAGON_ARENA)
@@ -231,7 +234,7 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static final DungeonRoomTemplate VILLAGE_SEWER_ELEVATOR = createSimple("village/sewer/elevator");
     public static final DungeonRoomTemplate VILLAGE_SEWER_DEELEVATOR = createSimple("village/sewer/deelevator");
     public static final DungeonRoomTemplate VILLAGE_SEWER_START = createSimple("village/sewer/start");
-    public static final DungeonRoomTemplate VILLAGE_SEWER_PERK = createSimple("village/sewer/perk").set(SOUNDSCAPE, SoundscapeTemplateRegistry.PEACEFUL).set(INTENSITY, 1).setClazz(LootRoom.class);
+    public static final DungeonRoomTemplate VILLAGE_SEWER_PERK = createSimple("village/sewer/perk").set(SOUNDSCAPE, SoundscapeTemplateRegistry.PEACEFUL).set(INTENSITY, 1).setClazz(LootRoom.class).set(BLOCKING_BLOCK, WDBlocks.IRON_GRATE.get());
     public static final DungeonRoomTemplate VILLAGE_PIPE_TO_METRO = createSimple("village/sewer/pipe_to_metro");
 
     public static final DungeonRoomTemplate BOSS_KEY_ROOM = createSimple("special/boss_key_room");
@@ -623,6 +626,7 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
         room.setClazz(CombatRoom.class);
         room.set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
         DUNGEON_ROOM_REGISTRY.add(room);
+        room.set(BLOCKING_BLOCK, WDBlocks.IRON_GRATE.get());
         return room;
     }
 
@@ -642,6 +646,7 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
         DungeonRoomTemplate room = DungeonRoomTemplate.create(name, List.of(Pair.of(name, EMPTY_BLOCK_POS)));
         room.setClazz(CombatRoom.class);
         room.set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
+        room.set(BLOCKING_BLOCK, WDBlocks.IRON_GRATE.get());
         DUNGEON_ROOM_REGISTRY.add(room);
         return room;
     }
@@ -652,6 +657,7 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
         room.set(DESTRUCTION_RULE, DestructionRule.SHELL_CLEAR);
         room.set(MOBS_FACE_PLAYER_ON_SPAWN, true);
         room.set(BOSS_SPAWN_POS, bossSpawnPos);
+        room.set(BLOCKING_BLOCK, WDBlocks.IRON_GRATE.get());
         DUNGEON_ROOM_REGISTRY.add(room);
         return room;
     }

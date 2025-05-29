@@ -35,7 +35,7 @@ public class BlackHole extends SelfGovernedEntity {
     private static final float GROWTH_PER_CONSUME = 0.01f;                  // Mass increase when consuming blocks/entities
     private static final float SHRINK_RATE = 0.001f;                        // Shrink per tick when moving or at max size
     private static final float BASE_DECAY_RATE = 0.001f;                    // Base decay rate once max size is hit
-    private static final float MAX_DECAY_MULTIPLIER = 100f;                 // Max scaling of decay based on cooldown progress
+    private static final float MAX_DECAY_MULTIPLIER = 1000f;                 // Max scaling of decay based on cooldown progress
     private static final int DECAY_GRACE_PERIOD_TICKS = 10;                 // Ticks before decay begins after hitting max size
     private int decayCooldownTicks = 0;                                     // Tracks remaining grace period ticks
 
@@ -267,6 +267,9 @@ public class BlackHole extends SelfGovernedEntity {
         double distSq = pos.distSqr(center);
         double normDist = distSq / outerDistSq;
         double chance = Mth.clamp(1.0 - Math.pow(normDist, 2.2), 0.05, 1.0);
+
+        float destroySpeed = state.getDestroySpeed(level(), pos);
+        if (destroySpeed < 0) return; // Indestructible block like bedrock
 
         if (distSq <= innerRadius * innerRadius || (random.nextDouble() < chance && state.getDestroySpeed(level(), pos) >= 0)) {
             if (!fluid.isEmpty()) {

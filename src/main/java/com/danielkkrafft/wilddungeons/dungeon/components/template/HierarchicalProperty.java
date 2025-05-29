@@ -12,6 +12,7 @@ import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.util.WeightedTable;
 import com.danielkkrafft.wilddungeons.world.dimension.EmptyGenerator;
 import com.google.gson.reflect.TypeToken;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
@@ -60,6 +61,8 @@ public class HierarchicalProperty<T> {
     public static final HierarchicalProperty<Boolean> PLACE_ANYWHERE = new HierarchicalProperty<>(new TypeToken<>() {}, false);
     public static final HierarchicalProperty<Integer> MIN_Y = new HierarchicalProperty<>(new TypeToken<>() {}, EmptyGenerator.MIN_Y + 1);
     public static final HierarchicalProperty<Integer> MAX_Y = new HierarchicalProperty<>(new TypeToken<>() {}, EmptyGenerator.GEN_DEPTH - 1);
+    public static final HierarchicalProperty<Block> BLOCKING_BLOCK = new HierarchicalProperty<>(new TypeToken<>() {}, null);
+
 
     private final TypeToken<T> type;
     private final T defaultValue;

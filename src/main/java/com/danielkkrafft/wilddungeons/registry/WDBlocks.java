@@ -66,6 +66,7 @@ public class WDBlocks {
 
     public static final DeferredBlock<Block> IRON_GRATE = registerWithItem("iron_grate", () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.COPPER_GRATE)));
 
+
     private static <T extends Block> DeferredBlock<T> registerWithItem(String name, Supplier<T> supplier, Item.@NotNull Properties properties) {
         DeferredBlock<T> block = BLOCKS.register(name, supplier);
         ITEMS.register(name, () -> new BlockItem(block.get(), properties));
