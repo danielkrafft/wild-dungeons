@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/copper_grate",
+  "textures": {
+    "all": "wilddungeons:block/iron_grate"
+  }
+}

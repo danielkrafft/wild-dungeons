@@ -65,6 +65,8 @@ public class WDCreativeTabs {
                 output.accept(THE_CAPITAL_MUSIC_DISC.get());
                 output.accept(THE_CAPITAL_SAFE_MUSIC_DISC.get());
 
+                output.accept(IRON_GRATE.get());
+
                 output.accept(BOSS_KEY.get());
             })
             .build()

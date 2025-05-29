@@ -2,6 +2,7 @@ package com.danielkkrafft.wilddungeons;
 
 import com.danielkkrafft.wilddungeons.entity.model.*;
 import com.danielkkrafft.wilddungeons.entity.renderer.*;
+import com.danielkkrafft.wilddungeons.registry.WDBlocks;
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
 import com.danielkkrafft.wilddungeons.registry.WDFluids;
 import net.minecraft.client.Minecraft;
@@ -92,6 +93,7 @@ public class WildDungeonsClient {
 
         ItemBlockRenderTypes.setRenderLayer(WDFluids.LIFE_LIQUID.get(), RenderType.translucent());
         ItemBlockRenderTypes.setRenderLayer(WDFluids.FLOWING_LIFE_LIQUID.get(), RenderType.translucent());
+        ItemBlockRenderTypes.setRenderLayer(WDBlocks.IRON_GRATE.get(), RenderType.cutout());
     }
 
     @SubscribeEvent
