@@ -355,6 +355,30 @@ public class DungeonBranchRegistry {
     public static final DungeonBranchTemplate VILLAGE_SMALL_GAUNTLET_BRANCH = copyOf(VILLAGE_SMALL_BRANCH, "VILLAGE_SMALL_GAUNTLET_BRANCH")
             .setRootOriginBranchIndex(6);
 
+    public static final DungeonBranchTemplate GAUNTLET_SCIFI_BRANCH = create("GAUNTLET_SCIFI_BRANCH")
+            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
+                    .addSimple(SCIFI_ARENA_LOOT_CHOICE_ROOM)
+                    .addSimple(SCIFI_ARENA_LOOT_CHOICE_ROOM)
+                    .addSimple(SCIFI_ARENA_LOOT_CHOICE_ROOM)
+                    .addSimple(SCIFI_ARENA_COMBAT_ROOM)
+                    .addSimple(SCIFI_ARENA_EXIT_ROOM));
+
+    public static final DungeonBranchTemplate GAUNTLET_TRIAL_BRANCH = create("GAUNTLET_TRIAL_BRANCH")
+            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
+                    .addSimple(TRIAL_ARENA_LOOT_CHOICE_ROOM)
+                    .addSimple(TRIAL_ARENA_LOOT_CHOICE_ROOM)
+                    .addSimple(TRIAL_ARENA_LOOT_CHOICE_ROOM)
+                    .addSimple(TRIAL_ARENA_COMBAT_ROOM)
+                    .addSimple(TRIAL_ARENA_EXIT_ROOM));
+
+    public static final DungeonBranchTemplate GAUNTLET_GENERAL_BRANCH = create("GAUNTLET_GENERAL_BRANCH")
+            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
+                    .addSimple(GENERAL_ARENA_LOOT_CHOICE_ROOM)
+                    .addSimple(GENERAL_ARENA_LOOT_CHOICE_ROOM)
+                    .addSimple(GENERAL_ARENA_LOOT_CHOICE_ROOM)
+                    .addSimple(GENERAL_ARENA_COMBAT_ROOM)
+                    .addSimple(GENERAL_ARENA_EXIT_ROOM));
+
     public static DungeonBranchTemplate copyOf(DungeonBranchTemplate branch, String name) {
         DungeonBranchTemplate copy = DungeonBranchTemplate.copyOf(branch, name);
         DUNGEON_BRANCH_REGISTRY.add(copy);

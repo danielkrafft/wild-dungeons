@@ -127,6 +127,27 @@ public class DungeonFloorRegistry {
             .set(HierarchicalProperty.SOUNDSCAPE, SoundscapeTemplateRegistry.VD_OVERFLOW)
             .setOrigin(new BlockPos(0,30,0));
 
+    public static DungeonFloorTemplate GAUNTLET_SCIFI_FLOOR = create("gauntlet_scifi")
+            .setBranchTemplates(
+                    new DungeonLayout<DungeonBranchTemplate>()
+                            .addSimple(GAUNTLET_SCIFI_BRANCH)
+            )
+            .set(HierarchicalProperty.PRE_ROOM_GEN_PROCESSING_STEPS, List.of(new AddBedrockShellStep()));
+
+    public static DungeonFloorTemplate GAUNTLET_TRIAL_FLOOR = create("gauntlet_trial")
+            .setBranchTemplates(
+                    new DungeonLayout<DungeonBranchTemplate>()
+                            .addSimple(GAUNTLET_TRIAL_BRANCH)
+            )
+            .set(HierarchicalProperty.PRE_ROOM_GEN_PROCESSING_STEPS, List.of(new AddBedrockShellStep()));
+
+    public static DungeonFloorTemplate GAUNTLET_GENERAL_FLOOR = create("gauntlet_general")
+            .setBranchTemplates(
+                    new DungeonLayout<DungeonBranchTemplate>()
+                            .addSimple(GAUNTLET_GENERAL_BRANCH)
+            )
+            .set(HierarchicalProperty.PRE_ROOM_GEN_PROCESSING_STEPS, List.of(new AddBedrockShellStep()));
+
     public static DungeonFloorTemplate copyOf(DungeonFloorTemplate floor, String name) {
         DungeonFloorTemplate copy = DungeonFloorTemplate.copyOf(floor, name);
         DUNGEON_FLOOR_REGISTRY.add(copy);
