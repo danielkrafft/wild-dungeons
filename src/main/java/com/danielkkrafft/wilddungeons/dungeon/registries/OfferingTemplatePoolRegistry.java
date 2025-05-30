@@ -115,6 +115,21 @@ public class OfferingTemplatePoolRegistry {
 //            .add(VILLAGE_CRITICAL_HIT,1)
             ;
 
+    public static final WeightedPool<OfferingTemplate> WIND_WEAPONS_POOL = create("WIND_WEAPONS_POOL")
+            .add(FREE_WIND_BOW, 1)
+            .add(FREE_WIND_MACE, 1)
+            .add(FREE_WIND_HAMMER, 1)
+            .add(FREE_WIND_CANNON, 1);
+
+    public static final WeightedPool<OfferingTemplate> SCIFI_WEAPONS_POOL = create("STAR_WEAPONS_POOL")
+            .add(FREE_STAR_CANNON, 1);
+
+    public static final WeightedPool<OfferingTemplate> GENERAL_WEAPONS_POOL = create("GENERAL_WEAPONS_POOL")
+            .add(FREE_AMOGUS_STAFF, 1)
+            .add(FREE_LASER_SWORD, 1)
+            .add(FREE_FIREWORK_GUN, 1)
+            .add(FREE_MEATHOOK, 1);
+
     public static WeightedPool<OfferingTemplate> create(String name){
         WeightedPool<OfferingTemplate> offeringPool = new WeightedPool<OfferingTemplate>().setName(name);
         OFFERING_TEMPLATE_POOL_REGISTRY.add(offeringPool);

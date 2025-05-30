@@ -81,10 +81,7 @@ public class ItemTemplateRegistry {
     public static ItemTemplate EGG = create("egg", Items.EGG, 6).setDeviance(2.0f);
     public static ItemTemplate IRON_PICKAXE = create("iron_pickaxe", Items.IRON_PICKAXE, 1).setDeviance(1.0f);
 
-    public static ItemTemplate AMOGUS_STAFF = create("amogus_staff", WDItems.AMOGUS_STAFF.get(), 1);
-    public static ItemTemplate LASER_SWORD = create("laser_sword", WDItems.LASER_SWORD_ITEM.get(), 1);
-    public static ItemTemplate FIREWORK_GUN = create("firework_gun", WDItems.FIREWORK_GUN_ITEM.get(), 1);
-    public static ItemTemplate MEATHOOK = create("meathook", WDItems.MEATHOOK_ITEM.get(), 1);
+
 
     public static ItemTemplate DUNGEON_KEY = create("dungeon_key", WDItems.WD_DUNGEON_KEY.get(), 1);
 
@@ -96,6 +93,23 @@ public class ItemTemplateRegistry {
     public static ItemTemplate ANGEL_INVESTOR_SAFE_MUSIC_DISC = create("angel_investor_safe_music_disc", WDItems.ANGEL_INVESTOR_SAFE_MUSIC_DISC.get(), 1);
     public static ItemTemplate THE_CAPITAL_MUSIC_DISC = create("the_capital_music_disc", WDItems.THE_CAPITAL_MUSIC_DISC.get(), 1);
     public static ItemTemplate THE_CAPITAL_SAFE_MUSIC_DISC = create("the_capital_safe_music_disc", WDItems.THE_CAPITAL_SAFE_MUSIC_DISC.get(), 1);
+
+    // ----- WIND WEAPONS FOR TRIAL GAUNTLET
+    public static ItemTemplate WIND_BOW = create("wind_bow", WDItems.WIND_BOW_ITEM.get(), 1);
+    public static ItemTemplate WIND_MACE = create("wind_mace", WDItems.WIND_MACE_ITEM.get(), 1);
+    public static ItemTemplate WIND_HAMMER = create("wind_hammer", WDItems.WIND_HAMMER_ITEM.get(), 1);
+    public static ItemTemplate WIND_CANNON = create("wind_cannon", WDItems.WIND_CANNON_ITEM.get(), 1);
+
+    // ----- STAR WEAPONS FOR SCIFI GAUNTLET
+    public static ItemTemplate STAR_CANNON = create("star_cannon", WDItems.STAR_CANNON.get(), 1);
+
+    // ----- GENERAL WEAPONS FOR GENERAL GAUNTLET
+    public static ItemTemplate EMERALD_STAFF = create("emerald_staff", WDItems.EMERALD_STAFF.get(), 1);
+    public static ItemTemplate AMOGUS_STAFF = create("amogus_staff", WDItems.AMOGUS_STAFF.get(), 1);
+    public static ItemTemplate LASER_SWORD = create("laser_sword", WDItems.LASER_SWORD_ITEM.get(), 1);
+    public static ItemTemplate FIREWORK_GUN = create("firework_gun", WDItems.FIREWORK_GUN_ITEM.get(), 1);
+    public static ItemTemplate MEATHOOK = create("meathook", WDItems.MEATHOOK_ITEM.get(), 1);
+
 
     public static ItemTemplate create(String name, Item item, int count) {
         ItemTemplate itemTemplate = new ItemTemplate(name, item, count);

@@ -91,6 +91,15 @@ public class OfferingTemplateRegistry {
     public static final OfferingTemplate VILLAGE_CRITICAL_HIT = createPerk("VILLAGE_CRITICAL_HIT", PerkRegistry.CRITICAL_HIT, OVERWORLD, 20, 1.5f).setCostItem(Items.EMERALD,150);
     //endregion
 
+    // ----- WIND WEAPONS FOR TRIAL GAUNTLET
+    public static final OfferingTemplate FREE_WIND_BOW = createItem("FREE_WIND_BOW", ItemTemplateRegistry.WIND_BOW, OVERWORLD, 0, 1);
+    public static final OfferingTemplate FREE_WIND_MACE = createItem("FREE_WIND_MACE", ItemTemplateRegistry.WIND_MACE, OVERWORLD, 0, 1);
+    public static final OfferingTemplate FREE_WIND_HAMMER = createItem("FREE_WIND_HAMMER", ItemTemplateRegistry.WIND_HAMMER, OVERWORLD, 0, 1);
+    public static final OfferingTemplate FREE_WIND_CANNON = createItem("FREE_WIND_CANNON", ItemTemplateRegistry.WIND_CANNON, OVERWORLD, 0, 1);
+
+    // ----- STAR WEAPONS FOR SCIFI GAUNTLET
+    public static final OfferingTemplate FREE_STAR_CANNON = createItem("FREE_STAR_CANNON", ItemTemplateRegistry.STAR_CANNON, OVERWORLD, 0, 1);
+
 
     public static final OfferingTemplate FREE_SWORD_DAMAGE = createPerk("FREE_SWORD_DAMAGE", PerkRegistry.SWORD_DAMAGE, OVERWORLD, 0, 1);
     public static final OfferingTemplate FREE_AXE_DAMAGE = createPerk("FREE_AXE_DAMAGE", PerkRegistry.AXE_DAMAGE, OVERWORLD, 0, 1);
