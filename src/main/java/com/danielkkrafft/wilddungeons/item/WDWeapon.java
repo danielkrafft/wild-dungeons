@@ -1,8 +1,11 @@
 package com.danielkkrafft.wilddungeons.item;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
@@ -26,7 +29,9 @@ import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.animation.RawAnimation;
 import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
+import software.bernie.geckolib.renderer.layer.AutoGlowingGeoLayer;
 import software.bernie.geckolib.util.GeckoLibUtil;
+
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -39,6 +44,7 @@ public abstract class WDWeapon extends Item implements GeoAnimatable, GeoItem {
     private final ArrayList<Pair<RawAnimation,Float>> animations = new ArrayList<>();
     public AnimationController<GeoAnimatable> controller = new AnimationController<>(this, WildDungeons.rl(this.name).toString(), 1,state -> PlayState.CONTINUE);
     protected boolean hasIdle = true;
+    protected boolean hasEmissive = false;
 
     public WDWeapon(String name) {
         super(new Item.Properties()
@@ -70,7 +76,7 @@ public abstract class WDWeapon extends Item implements GeoAnimatable, GeoItem {
     @Override
     public void createGeoRenderer(Consumer<GeoRenderProvider> consumer) {
         consumer.accept(new GeoRenderProvider() {
-            private final BlockEntityWithoutLevelRenderer renderer = new WDWeaponRenderer<>();
+            private final BlockEntityWithoutLevelRenderer renderer = new WDWeaponRenderer<>(hasEmissive);
             @Override
             public BlockEntityWithoutLevelRenderer getGeoItemRenderer() { return this.renderer; }
         });
@@ -126,10 +132,13 @@ public abstract class WDWeapon extends Item implements GeoAnimatable, GeoItem {
     }
 
     public static class WDWeaponRenderer<T extends WDWeapon> extends GeoItemRenderer<T> {
-        public WDWeaponRenderer() {
-            super(new WDWeaponModel<T>());
+        public WDWeaponRenderer(boolean hasEmissive) {
+            super(new WDWeaponModel<>());
+
+            if (hasEmissive) this.addRenderLayer(new AutoGlowingGeoLayer<>(this));
         }
     }
+
 
     public static class WDWeaponModel<T extends WDWeapon> extends GeoModel<T> {
 

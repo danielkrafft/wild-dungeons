@@ -1,8 +1,10 @@
 package com.danielkkrafft.wilddungeons.item;
 
+import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.entity.Laserbeam;
 import com.danielkkrafft.wilddungeons.util.MathUtil;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -17,6 +19,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
+import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 public class LaserSword extends WDWeapon {
 
@@ -38,6 +41,7 @@ public class LaserSword extends WDWeapon {
 
     public LaserSword() {
         super(NAME, new Properties().rarity(Rarity.RARE).durability(200).attributes(SwordItem.createAttributes(Tiers.DIAMOND, 3, -2.4F)));
+        hasEmissive = true;
         this.addLoopingAnimation(AnimationList.idle.toString());//default animation
         this.addAnimation(AnimationList.gun_transform.toString(), (float) 2 / warmUpSeconds);//2 seconds long
         this.addLoopingAnimation(AnimationList.charging_up.toString(), (float) 20 / (maxChargeSeconds + warmUpSeconds));//20 seconds long
