@@ -130,7 +130,9 @@ public class DungeonFloorRegistry {
     public static DungeonFloorTemplate GAUNTLET_SCIFI_FLOOR = create("gauntlet_scifi")
             .setBranchTemplates(
                     new DungeonLayout<DungeonBranchTemplate>()
-                            .addSimple(GAUNTLET_SCIFI_BRANCH)
+                            .addSimple(GAUNTLET_SCIFI_LOOT_BRANCH)
+                            .addSimple(GAUNTLET_SCIFI_COMBAT_BRANCH)
+                            .addSimple(GAUNTLET_SCIFI_EXIT_BRANCH)
             )
             .setOrigin(new BlockPos(0,30,0))
             .set(HierarchicalProperty.PRE_ROOM_GEN_PROCESSING_STEPS, List.of(new AddBedrockShellStep()));
