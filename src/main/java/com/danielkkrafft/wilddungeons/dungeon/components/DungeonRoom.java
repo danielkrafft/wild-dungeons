@@ -319,7 +319,7 @@ public class DungeonRoom {
                 };
             }
             if (!point.isConnected()) {
-                point.block(2);
+                point.block(2, false);
                 point.removeDecal();
             }
         }

@@ -163,7 +163,7 @@ public class ConnectionPoint {
         List<Boolean> conditions = List.of(
                 !ex.isConnected(),
                 !Objects.equals(ex.type, "entrance"),
-                Objects.equals(en.pool, "all") || Objects.equals(ex.pool, "all") || Objects.equals(en.pool, ex.pool),
+                Objects.equals(en.pool, ex.pool),
                 en.getEmptyDirection().getAxis() != Direction.Axis.Y || ex.getEmptyDirection().getName().equals(en.getEmptyDirection().getOpposite().getName()),
                 en.getSize(TemplateOrientation.EMPTY, TemplateHelper.EMPTY_BLOCK_POS).equals(ex.getSize(ex.getRoom().getOrientation(), ex.getRoom().getPosition()))
         );
@@ -235,7 +235,7 @@ public class ConnectionPoint {
         getPositions(this.getRoom().getOrientation(), this.getRoom().getPosition()).forEach((pos) -> level.setBlock(pos, this.getRoom().getMaterial().get(DungeonMaterial.BlockSetting.BlockType.HIDDEN, 0, this.getRoom().getProperty(HierarchicalProperty.MATERIAL_NOISE), pos), 2));
     }
 
-    public void block(int flags) {
+    public void block(int flags, boolean isConnected) {
         this.getRoom().getActivePlayers().forEach(wdPlayer -> {
             ServerPlayer player = wdPlayer.getServerPlayer();
             if (player!=null && this.getRealBoundingBox().isInside(player.blockPosition())) {
@@ -254,7 +254,7 @@ public class ConnectionPoint {
 
             BlockState blockState = this.getRoom().getMaterial().get(DungeonMaterial.BlockSetting.BlockType.BASIC, this.getRoom().getProperty(HierarchicalProperty.BLOCKING_MATERIAL_INDEX), this.getRoom().getProperty(HierarchicalProperty.MATERIAL_NOISE), pos);
 
-            if (this.getRoom().getProperty(HierarchicalProperty.BLOCKING_BLOCK) != null) {
+            if (isConnected && this.getRoom().getProperty(HierarchicalProperty.BLOCKING_BLOCK) != null) {
                 blockState = this.getRoom().getProperty(HierarchicalProperty.BLOCKING_BLOCK).defaultBlockState();
             }
 
