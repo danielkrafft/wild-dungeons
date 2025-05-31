@@ -132,6 +132,7 @@ public class DungeonFloorRegistry {
                     new DungeonLayout<DungeonBranchTemplate>()
                             .addSimple(GAUNTLET_SCIFI_BRANCH)
             )
+            .setOrigin(new BlockPos(0,30,0))
             .set(HierarchicalProperty.PRE_ROOM_GEN_PROCESSING_STEPS, List.of(new AddBedrockShellStep()));
 
     public static DungeonFloorTemplate GAUNTLET_TRIAL_FLOOR = create("gauntlet_trial")

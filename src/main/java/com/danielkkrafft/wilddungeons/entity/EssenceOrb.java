@@ -77,6 +77,7 @@ public class EssenceOrb extends ExperienceOrb implements IEntityWithComplexSpawn
             case OVERWORLD, ITEM -> 0xFFFFFFFF;
             case NETHER -> NETHER_HUE_OFFSET;
             case END -> END_HUE_OFFSET;
+            case GAUNTLET -> END_HUE_OFFSET;
         };
     }
 

@@ -14,5 +14,4 @@ public class DungeonPoolRegistry {//is this redundant? We have RiftPoolRegistry 
             .add(VILLAGE_DUNGEON, 1);
     public static final WeightedPool<DungeonTemplate> NETHER_DUNGEON_POOL = new WeightedPool<DungeonTemplate>()
             .add(PIGLIN_FACTORY_DUNGEON, 1);
-
 }

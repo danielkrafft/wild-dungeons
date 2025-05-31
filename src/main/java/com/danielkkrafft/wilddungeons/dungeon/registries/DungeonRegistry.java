@@ -115,6 +115,16 @@ public class DungeonRegistry {
             .set(TARGET_SCORE, 15000)
             .set(EXIT_BEHAVIOR, DESTROY);
 
+    public static DungeonTemplate SCIFI_WEAPON_GAUNTLET = create("weapon_gauntlet")
+            .setFloorTemplates(new DungeonLayout<DungeonFloorTemplate>()
+                    .add(WeightedPool.of(GAUNTLET_SCIFI_FLOOR), 1)
+            )
+            .set(HAS_BEDROCK_SHELL, true)
+            .set(DISPLAY_NAME, "GAUNTLET CHALLENGE")
+            .set(ICON, "G-2")
+            .set(PRIMARY_COLOR, 0xFF44cc00)
+            .set(SECONDARY_COLOR, 0xFF3ee67e);
+
 
     public static DungeonTemplate create(String name){
         DungeonTemplate dungeon = DungeonTemplate.create(name);

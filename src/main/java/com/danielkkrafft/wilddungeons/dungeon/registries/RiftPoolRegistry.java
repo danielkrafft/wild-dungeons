@@ -13,5 +13,6 @@ public class RiftPoolRegistry {
             .add(NETHER_TEST_RIFT, 1);
     public static WeightedPool<DungeonRegistration.OfferingTemplate> END_RIFT_POOL = new WeightedPool<DungeonRegistration.OfferingTemplate>()
             .add(END_TEST_RIFT, 1);
-
+    public static WeightedPool<DungeonRegistration.OfferingTemplate> GAUNTLET_RIFT_POOL = new WeightedPool<DungeonRegistration.OfferingTemplate>()
+            .add(GAUNTLET_RIFT, 1);
 }

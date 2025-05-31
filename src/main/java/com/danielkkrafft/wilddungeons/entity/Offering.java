@@ -60,7 +60,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     public static final int BUBBLE_ANIMATION_TIME = 10;
 
     public enum Type {ITEM, PERK, RIFT}
-    public enum CostType {OVERWORLD, NETHER, END, ITEM}//todo
+    public enum CostType {OVERWORLD, NETHER, END, ITEM, GAUNTLET}//todo
 
     private String type;
     private String costType;
@@ -393,6 +393,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
                 case NETHER -> Mth.floor(player.getEssenceLevel(EssenceOrb.Type.NETHER));
                 case END -> Mth.floor(player.getEssenceLevel(EssenceOrb.Type.END));
                 case ITEM -> player.getServerPlayer().getInventory().countItem(this.getCostItem());
+                case GAUNTLET -> player.getServerPlayer().getInventory().countItem(this.getCostItem());
             };
 
             if (this.getCostAmount() == 0 || this.getCostAmount() <= ownedCurrency) {

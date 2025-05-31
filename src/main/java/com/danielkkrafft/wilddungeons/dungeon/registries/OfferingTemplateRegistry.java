@@ -5,6 +5,7 @@ import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.DungeonCompone
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.OfferingTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonPerkTemplate;
 import com.danielkkrafft.wilddungeons.entity.Offering;
+import com.danielkkrafft.wilddungeons.registry.WDItems;
 import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
 import net.minecraft.world.item.Items;
 
@@ -151,7 +152,7 @@ public class OfferingTemplateRegistry {
     public static final OfferingTemplate NETHER_TEST_RIFT = createRift("NETHER_TEST_RIFT", "wd-piglin_factory", NETHER, 30, 1.5f).setSoundLoop(WDSoundEvents.WHISPERS.value());
     public static final OfferingTemplate REACTION_TEST_RIFT = createRift("REACTION_TEST_RIFT", "wd-village_dungeon", OVERWORLD, 30, 1.5f).setSoundLoop(WDSoundEvents.WHISPERS.value());
     public static final OfferingTemplate END_TEST_RIFT = createRift("END_TEST_RIFT", "wd-dungeon_1", END, 30, 1.5f);
-
+    public static final OfferingTemplate GAUNTLET_RIFT = createRift("GAUNTLET_RIFT", "wd-weapon_gauntlet", GAUNTLET, 0, 1.0f).setSoundLoop(WDSoundEvents.WHISPERS.value()).setCostItem(WDItems.BOSS_KEY.get(), 1);
     public static final OfferingTemplate EXIT_RIFT = createRift("EXIT_RIFT", "win", OVERWORLD, 0, 1.5f).setSoundLoop(WDSoundEvents.RIFT_AURA.value()).setRenderScale(0.5f);
 
     public static OfferingTemplate create(String name, Offering.Type type, int amount, String offeringID, Offering.CostType costType, int xpLevel, float rarity){

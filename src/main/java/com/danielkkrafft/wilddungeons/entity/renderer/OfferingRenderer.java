@@ -336,6 +336,7 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
                 case NETHER -> Mth.floor(wdPlayer.getEssenceLevel(EssenceOrb.Type.NETHER));
                 case END -> Mth.floor(wdPlayer.getEssenceLevel(EssenceOrb.Type.END));
                 case ITEM -> /*wdPlayer.getServerPlayer().getInventory().countItem(entity.getCostItem());*/entity.getCostAmount();
+                case GAUNTLET -> entity.getCostAmount();
             };
 
             if (currencyAmount >= entity.getCostAmount()) {
