@@ -163,7 +163,7 @@ public class ConnectionPoint {
         List<Boolean> conditions = List.of(
                 !ex.isConnected(),
                 !Objects.equals(ex.type, "entrance"),
-                Objects.equals(en.pool, ex.pool),
+                Objects.equals(en.pool, "all") || Objects.equals(ex.pool, "all") || Objects.equals(en.pool, ex.pool),
                 en.getEmptyDirection().getAxis() != Direction.Axis.Y || ex.getEmptyDirection().getName().equals(en.getEmptyDirection().getOpposite().getName()),
                 en.getSize(TemplateOrientation.EMPTY, TemplateHelper.EMPTY_BLOCK_POS).equals(ex.getSize(ex.getRoom().getOrientation(), ex.getRoom().getPosition()))
         );
