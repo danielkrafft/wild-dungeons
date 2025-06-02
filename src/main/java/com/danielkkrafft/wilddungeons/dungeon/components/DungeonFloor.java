@@ -85,9 +85,9 @@ public class DungeonFloor {
      * @param wdPlayer The player to handle entry for
      */
     public void attemptEnter(WDPlayer wdPlayer) {
-        if (getBranches().stream().mapToInt(b -> b.getRooms().size()).sum() <= 10) {
-            playersWaitingToEnter.add(wdPlayer); return;
-        }
+//        if (getBranches().stream().mapToInt(b -> b.getRooms().size()).sum() <= 10) {
+//            playersWaitingToEnter.add(wdPlayer); return;
+//        }
         onEnter(wdPlayer);
     }
 
@@ -266,7 +266,7 @@ public class DungeonFloor {
     int totalRooms = 0;
     public void onBranchComplete(DungeonBranch branch) {
         totalRooms += branch.getRooms().size();
-        if (!playersWaitingToEnter.isEmpty() && totalRooms > 10) {
+        if (!playersWaitingToEnter.isEmpty()) {
             playersWaitingToEnter.forEach(this::onEnter);
             playersWaitingToEnter.clear();
         }

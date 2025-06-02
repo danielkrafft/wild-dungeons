@@ -53,9 +53,11 @@ public class LockableEventRoom extends DungeonRoom {
 
         WildDungeons.getLogger().info("LOCKABLE ROOM TICKING");
 
+        int branchIndex = Math.max(0, this.getBranch().getIndex() - 1);
+
         if (!this.started && this.startCooldown > 0) {
             this.startCooldown -= 1;
-            if (this.getActivePlayers().size() >= this.getBranch().getActivePlayers().size() + this.getBranch().getFloor().getBranches().get(this.getBranch().getIndex() - 1).getActivePlayers().size()) {
+            if (this.getActivePlayers().size() >= this.getBranch().getActivePlayers().size() + this.getBranch().getFloor().getBranches().get(branchIndex).getActivePlayers().size()) {
                 this.startCooldown -= 5;
             }
         }
