@@ -14,6 +14,7 @@ public final class DungeonFloorTemplate implements DungeonRegistration.DungeonCo
     private DungeonRegistration.DungeonLayout<DungeonBranchTemplate> branchTemplates;
     private BlockPos origin = null;
     private LimitedRoomTracker limitedRooms = new LimitedRoomTracker();
+    private int returnFloorIndex = -1;
 
     public HashMap<HierarchicalProperty<?>, Object> PROPERTIES = new HashMap<>();
     public <T> DungeonFloorTemplate set(HierarchicalProperty<T> property, T value) { this.PROPERTIES.put(property, value); return this; }
@@ -32,6 +33,15 @@ public final class DungeonFloorTemplate implements DungeonRegistration.DungeonCo
         DungeonFloor newFloor = new DungeonFloor(this.name, session.getSessionKey(), position);
         newFloor.asyncGenerateBranches();
         return newFloor;
+    }
+
+    public DungeonFloor placeInWorld(DungeonSession session, BlockPos position, int returnFloorIndex) {
+        this.returnFloorIndex = returnFloorIndex;
+        return placeInWorld(session, position);
+    }
+
+    public int getReturnFloorIndex() {
+        return returnFloorIndex;
     }
 
     @Override public String name() {

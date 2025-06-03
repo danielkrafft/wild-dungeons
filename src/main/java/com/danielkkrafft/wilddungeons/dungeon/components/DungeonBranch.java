@@ -222,7 +222,6 @@ public class DungeonBranch {
                                 .getRoomContainer(nextRoom)
                                 .map(LimitedRoomTracker.RoomContainer::getFallbackTemplate)
                                 .orElse(null);
-
                     }
                 }
             }

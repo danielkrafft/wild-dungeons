@@ -4,10 +4,7 @@ import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.components.ConnectionPoint;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.dungeon.components.perk.DungeonPerk;
-import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonPerkTemplate;
-import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonTemplate;
-import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
-import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.*;
 import com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRegistry;
 import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.network.ClientPacketHandler;
@@ -18,6 +15,7 @@ import com.danielkkrafft.wilddungeons.render.DecalRenderer;
 import com.danielkkrafft.wilddungeons.util.FileUtil;
 import com.danielkkrafft.wilddungeons.util.SaveSystem;
 import com.danielkkrafft.wilddungeons.util.Serializer;
+import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.world.dimension.tools.InfiniverseAPI;
 import com.google.common.collect.Iterables;
 import com.mojang.authlib.properties.Property;
@@ -89,6 +87,21 @@ public class DungeonSession {
             getTemplate().floorTemplates().get(index).getRandom().placeInWorld(this, TemplateHelper.EMPTY_BLOCK_POS);
         }
         return floors.get(index);
+    }
+
+    /**
+     * Generates a new specific floor. To be used by dynamically created floors
+     *
+     * @param returnIndex - The index of the floor spawning this one.
+     * @param newFloor - the WeightedPool for the new floor.
+     */
+    public int generateDynamicFloor(int returnIndex, WeightedPool<DungeonFloorTemplate> newFloor) {
+
+        if (newFloor == null) { return -1; }
+
+        int floorIndex = getTemplate().floorTemplates().add(newFloor, 1).size() - 1;
+        getTemplate().floorTemplates().get(floorIndex).getRandom().placeInWorld(this, TemplateHelper.EMPTY_BLOCK_POS, returnIndex);
+        return floorIndex;
     }
 
     /**

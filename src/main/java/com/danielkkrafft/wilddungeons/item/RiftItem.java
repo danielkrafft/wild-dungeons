@@ -28,5 +28,4 @@ public class RiftItem extends Item {
         context.getLevel().addFreshEntity(offering);
         return InteractionResultHolder.pass(context.getPlayer().getItemInHand(context.getHand())).getResult();
     }
-
 }

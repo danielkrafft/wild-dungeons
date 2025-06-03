@@ -20,7 +20,7 @@ public class ReturnToPreviousFloorRoom extends DungeonRoom {
     public void processRifts() {
         getTemplate().rifts().forEach(pos -> {
 
-            String destination = String.valueOf(this.getBranch().getFloor().getIndex() - 1);
+            String destination = String.valueOf(Math.max(this.getBranch().getFloor().getTemplate().getReturnFloorIndex(), 0));
             Offering rift = EXIT_RIFT.asOffering(this.getBranch().getFloor().getLevel()).setOfferingId(destination).setSoundLoop(0);
 
             Vec3 pos1 = StructureTemplate.transform(pos, this.getSettings().getMirror(), this.getSettings().getRotation(), TemplateHelper.EMPTY_BLOCK_POS).add(this.position.getX(), this.position.getY(), this.position.getZ());

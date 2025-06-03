@@ -7,10 +7,13 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateOrientation;
 import com.danielkkrafft.wilddungeons.dungeon.registries.DungeonFloorPoolRegistry;
 import com.danielkkrafft.wilddungeons.entity.Offering;
+import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.phys.Vec3;
 
+import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.INTENSITY;
+import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.SOUNDSCAPE;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.OfferingTemplateRegistry.GAUNTLET_RIFT;
 
 public class WeaponGauntletKeyRoom extends DungeonRoom {
@@ -18,13 +21,18 @@ public class WeaponGauntletKeyRoom extends DungeonRoom {
         super(branch, templateKey, position, orientation);
     }
 
-    public void processRifts() {
+    public void processRifts() {}
+
+    @Override
+    public void onEnter(WDPlayer player) {
+        super.onEnter(player);
+        setupRifts();
+    }
+
+    private void setupRifts() {
         getTemplate().rifts().forEach(pos -> {
 
-            int index = getBranch().getFloor().getSession().getTemplate().floorTemplates().add(DungeonFloorPoolRegistry.WEAPON_GAUNTLET_POOL, 1).size() - 1;
-            getBranch().getFloor().getSession().generateOrGetFloor(index);
-
-            String destination = String.valueOf(index);
+            String destination = String.valueOf(getBranch().getFloor().getSession().generateDynamicFloor(getBranch().getFloor().getIndex(), DungeonFloorPoolRegistry.WEAPON_GAUNTLET_POOL));
 
             Offering rift = GAUNTLET_RIFT.asOffering(this.getBranch().getFloor().getLevel()).setOfferingId(destination).setSoundLoop(0);
             Vec3 pos1 = StructureTemplate.transform(pos, this.getSettings().getMirror(), this.getSettings().getRotation(), TemplateHelper.EMPTY_BLOCK_POS).add(this.position.getX(), this.position.getY(), this.position.getZ());

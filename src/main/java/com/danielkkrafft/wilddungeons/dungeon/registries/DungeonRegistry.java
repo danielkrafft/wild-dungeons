@@ -87,6 +87,7 @@ public class DungeonRegistry {
     public static DungeonTemplate VILLAGE_DUNGEON = create("village_dungeon")
             .setFloorTemplates(new DungeonLayout<DungeonFloorTemplate>()
                     .add(WeightedPool.of(VILLAGE_DUNGEON_FLOOR), 1)
+                    .add(WeightedPool.of(VILLAGE_DUNGEON_FLOOR), 1)
             )
             .set(MATERIAL, VILLAGE_SEWER_MATERIAL_POOL)
             .set(HAS_BEDROCK_SHELL, false)
