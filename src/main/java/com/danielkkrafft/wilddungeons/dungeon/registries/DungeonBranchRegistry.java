@@ -174,7 +174,7 @@ public class DungeonBranchRegistry {
     public static final DungeonBranchTemplate VILLAGE_SEWER_ALL = create("VILLAGE_SEWER_ALL")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .add(VILLAGE_SEWER_POOL,10)
-                    //.addSimpleMaybe(BOSS_KEY_ROOM, 100)
+                    .addSimpleMaybe(BOSS_KEY_ROOM, 100)
                     .addSimple(VILLAGE_SEWER_PERK))
             .setLimitedRooms(new HashMap<>(Map.of(BOSS_KEY_ROOM, 1)))
             .set(MATERIAL, VILLAGE_SEWER_MATERIAL_POOL)

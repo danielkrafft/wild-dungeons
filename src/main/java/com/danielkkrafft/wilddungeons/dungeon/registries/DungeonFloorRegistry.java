@@ -131,6 +131,8 @@ public class DungeonFloorRegistry {
             .setBranchTemplates(
                     new DungeonLayout<DungeonBranchTemplate>()
                             .addSimple(GAUNTLET_SCIFI_LOOT_BRANCH)
+                            .addSimple(GAUNTLET_SCIFI_LOOT_BRANCH)
+                            .addSimple(GAUNTLET_SCIFI_LOOT_BRANCH)
                             .addSimple(GAUNTLET_SCIFI_COMBAT_BRANCH)
                             .addSimple(GAUNTLET_SCIFI_EXIT_BRANCH)
             )

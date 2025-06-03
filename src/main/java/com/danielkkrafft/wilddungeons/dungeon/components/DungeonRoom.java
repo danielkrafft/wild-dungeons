@@ -56,11 +56,11 @@ import static com.danielkkrafft.wilddungeons.dungeon.registries.OfferingTemplate
 
 public class DungeonRoom {
     private final String templateKey;
-    private final BlockPos position;
+    protected final BlockPos position;
     private BlockPos spawnPoint;
     private final TemplateOrientation orientation;
     private final List<ConnectionPoint> connectionPoints = new ArrayList<>();
-    private final List<String> riftUUIDs = new ArrayList<>();
+    protected final List<String> riftUUIDs = new ArrayList<>();
     private final List<String> offeringUUIDs = new ArrayList<>();
     private final List<BoundingBox> boundingBoxes;
     private final int branchIndex;
