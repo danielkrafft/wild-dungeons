@@ -176,7 +176,6 @@ public class DungeonBranchRegistry {
                     .add(VILLAGE_SEWER_POOL,10)
                     .addSimpleMaybe(BOSS_KEY_ROOM, 100)
                     .addSimple(VILLAGE_SEWER_PERK))
-            .setLimitedRooms(new HashMap<>(Map.of(BOSS_KEY_ROOM, 1)))
             .set(MATERIAL, VILLAGE_SEWER_MATERIAL_POOL)
             .set(HierarchicalProperty.ENEMY_TABLE, EnemyTableRegistry.BASIC_ENEMY_TABLE)
             .set(LOOT_TABLE,SEWER_LOOT_TABLE)
@@ -186,14 +185,14 @@ public class DungeonBranchRegistry {
             .set(HAS_BEDROCK_SHELL, true)
             .set(SOUNDSCAPE, SoundscapeTemplateRegistry.VD_OVERFLOW);
 
-//    public static final DungeonBranchTemplate VILLAGE_SEWER_BOSS_KEY_BRANCH = create("VILLAGE_SEWER_BOSS_KEY_BRANCH")
-//            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
-//                    .addSimple(BOSS_KEY_ROOM))
-//            .setLimitedRooms(new HashMap<>(Map.of(BOSS_KEY_ROOM, 1)))
-//            .set(MATERIAL, VILLAGE_SEWER_MATERIAL_POOL)
-//            .set(HAS_BEDROCK_SHELL, true)
-//            .set(SOUNDSCAPE, SoundscapeTemplateRegistry.VD_OVERFLOW)
-//            .set(PLACE_ANYWHERE, true);
+    public static final DungeonBranchTemplate VILLAGE_SEWER_BOSS_KEY_BRANCH = create("VILLAGE_SEWER_BOSS_KEY_BRANCH")
+            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
+                    .addSimple(BOSS_KEY_ROOM))
+            .setLimitedRooms(new HashMap<>(Map.of(BOSS_KEY_ROOM, 1)))
+            .set(MATERIAL, VILLAGE_SEWER_MATERIAL_POOL)
+            .set(HAS_BEDROCK_SHELL, true)
+            .set(SOUNDSCAPE, SoundscapeTemplateRegistry.VD_OVERFLOW)
+            .set(PLACE_ANYWHERE, true);
 
     public static final DungeonBranchTemplate VILLAGE_SEWER_ENDING_BRANCH = create("VILLAGE_SEWER_ENDING_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()

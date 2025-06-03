@@ -10,9 +10,13 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalPr
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import net.minecraft.core.BlockPos;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonBranchRegistry.*;
+import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomRegistry.BOSS_KEY_ROOM;
+import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomRegistry.VILLAGE_SEWER_CHESTCAP;
 
 public class DungeonFloorRegistry {
     public static final DungeonRegistration.DungeonComponentRegistry<DungeonFloorTemplate> DUNGEON_FLOOR_REGISTRY = new DungeonRegistration.DungeonComponentRegistry<>();
@@ -99,6 +103,7 @@ public class DungeonFloorRegistry {
                             .addSimple(VILLAGE_MEDIUM_BRANCH)
                             .addSimple(VILLAGE_SMALL_BRANCH)
             )
+            .addLimitedRoom(BOSS_KEY_ROOM, VILLAGE_SEWER_CHESTCAP, 1)
             .set(HierarchicalProperty.PRE_ROOM_GEN_PROCESSING_STEPS, List.of(new AddBedrockShellStep()))
             .set(HierarchicalProperty.ENEMY_TABLE, EnemyTableRegistry.VILLAGE_ENEMY_TABLE)
             .set(HierarchicalProperty.SOUNDSCAPE, SoundscapeTemplateRegistry.VD_OVERFLOW)

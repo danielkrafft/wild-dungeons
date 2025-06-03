@@ -48,6 +48,14 @@ public class DungeonRegistration {
             return this;
         }
 
+        public DungeonLayout<T> addMaybe(WeightedPool<T> pool, int count, int chance) {
+            int roll = ThreadLocalRandom.current().nextInt(1, 101); // 1 to 100 inclusive
+            if (roll <= chance) {
+                this.add(pool, count);
+            }
+            return this;
+        }
+
         public DungeonLayout<T> addSimple(T entry) {
             this.order.add(new WeightedPool<T>().add(entry, 1));
             return this;

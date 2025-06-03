@@ -1,6 +1,7 @@
 package com.danielkkrafft.wilddungeons.dungeon.components;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.dungeon.components.helpers.LimitedRoomTracker;
 import com.danielkkrafft.wilddungeons.dungeon.components.process.PostProcessingStep;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.*;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
@@ -114,6 +115,10 @@ public class DungeonBranch {
 
         DungeonRoomTemplate nextRoom = selectNextRoom();
 
+        if (nextRoom == null) {
+            return false;
+        }
+
         if (nextRoom == BOSS_KEY_ROOM) {
             WildDungeons.getLogger().info("Spawning BOSS_KEY_ROOM");
         }
@@ -203,13 +208,26 @@ public class DungeonBranch {
 
         DungeonRoomTemplate nextRoom = getTemplate().roomTemplates().get(getRooms().size()).getRandom();
 
-        if (getTemplate().limitedRooms().containsKey(nextRoom)) {
+        if (getTemplate().limitedRooms().containsKey(nextRoom) ||
+            this.floor.getTemplate().limitedRooms().contains(nextRoom)
+        ) {
             final DungeonRoomTemplate limitedTemplate = nextRoom;
             int placedRooms = getRooms().stream().filter(room -> room.getTemplate().equals(limitedTemplate)).toList().size();
-            if (placedRooms >= getTemplate().limitedRooms().get(nextRoom)) {
+            if ((getTemplate().limitedRooms().containsKey(nextRoom) && placedRooms >= getTemplate().limitedRooms().get(nextRoom)) ||
+                    (this.floor.getTemplate().limitedRooms().contains(nextRoom) && this.floor.getTemplate().limitedRooms().atMax(nextRoom))) {
                 while (nextRoom == limitedTemplate) {
                     nextRoom = getTemplate().roomTemplates().get(getRooms().size()).getRandom();
+                    if (getTemplate().roomTemplates().get(getRooms().size()).size() == 1) {
+                        return this.floor.getTemplate().limitedRooms()
+                                .getRoomContainer(nextRoom)
+                                .map(LimitedRoomTracker.RoomContainer::getFallbackTemplate)
+                                .orElse(null);
+
+                    }
                 }
+            }
+            else {
+                this.floor.getTemplate().limitedRooms().increment(nextRoom);
             }
         }
 

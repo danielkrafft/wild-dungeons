@@ -3,6 +3,7 @@ package com.danielkkrafft.wilddungeons.dungeon.components.template;
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
+import com.danielkkrafft.wilddungeons.dungeon.components.helpers.LimitedRoomTracker;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import net.minecraft.core.BlockPos;
 
@@ -12,6 +13,7 @@ public final class DungeonFloorTemplate implements DungeonRegistration.DungeonCo
     private String name;
     private DungeonRegistration.DungeonLayout<DungeonBranchTemplate> branchTemplates;
     private BlockPos origin = null;
+    private LimitedRoomTracker limitedRooms = new LimitedRoomTracker();
 
     public HashMap<HierarchicalProperty<?>, Object> PROPERTIES = new HashMap<>();
     public <T> DungeonFloorTemplate set(HierarchicalProperty<T> property, T value) { this.PROPERTIES.put(property, value); return this; }
@@ -50,6 +52,16 @@ public final class DungeonFloorTemplate implements DungeonRegistration.DungeonCo
     public DungeonFloorTemplate setBranchTemplates(DungeonRegistration.DungeonLayout<DungeonBranchTemplate> branchTemplates) {
         this.branchTemplates = branchTemplates;
         return this;
+    }
+
+    public DungeonFloorTemplate addLimitedRoom(DungeonRoomTemplate template, DungeonRoomTemplate fallbackTemplate, Integer maxAmount) {
+
+        limitedRooms.add(template, fallbackTemplate, maxAmount);
+        return this;
+    }
+
+    public LimitedRoomTracker limitedRooms() {
+        return limitedRooms;
     }
 
     public DungeonFloorTemplate setOrigin(BlockPos origin) {
