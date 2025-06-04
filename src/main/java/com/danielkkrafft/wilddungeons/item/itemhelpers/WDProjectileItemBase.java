@@ -94,24 +94,6 @@ public abstract class WDProjectileItemBase extends ProjectileWeaponItem implemen
         animator.playAnimation(this, "idle", itemStack, player, level);
     }
 
-    public static class WDWeaponModel<T extends WDProjectileItemBase> extends GeoModel<T> {
-
-        @Override @SuppressWarnings("removal") // Must be overridden, warning is unavoidable
-        public ResourceLocation getModelResource(T animatable) {
-            return WildDungeons.rl("geo/" + animatable.name + ".geo.json");
-        }
-
-        @Override @SuppressWarnings("removal") // Must be overridden, warning is unavoidable
-        public ResourceLocation getTextureResource(T animatable) {
-            return WildDungeons.rl("textures/item/" + animatable.name + ".png");
-        }
-
-        @Override
-        public ResourceLocation getAnimationResource(T animatable) {
-            return WildDungeons.rl("animations/" + animatable.name + ".animation.json");
-        }
-    }
-
     @Override
     public @NotNull Predicate<ItemStack> getAllSupportedProjectiles() {
         return ARROW_ONLY;
