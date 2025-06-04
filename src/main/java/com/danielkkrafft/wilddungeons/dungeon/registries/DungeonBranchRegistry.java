@@ -366,20 +366,28 @@ public class DungeonBranchRegistry {
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .addSimple(SCIFI_ARENA_EXIT_ROOM));
 
-    public static final DungeonBranchTemplate GAUNTLET_TRIAL_BRANCH = create("GAUNTLET_TRIAL_BRANCH")
+    public static final DungeonBranchTemplate GAUNTLET_TRIAL_LOOT_BRANCH = create("GAUNTLET_TRIAL_LOOT_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
-                    .addSimple(TRIAL_ARENA_LOOT_CHOICE_ROOM)
-                    .addSimple(TRIAL_ARENA_LOOT_CHOICE_ROOM)
-                    .addSimple(TRIAL_ARENA_LOOT_CHOICE_ROOM)
-                    .addSimple(TRIAL_ARENA_COMBAT_ROOM)
+                    .addSimple(TRIAL_ARENA_LOOT_CHOICE_ROOM));
+
+    public static final DungeonBranchTemplate GAUNTLET_TRIAL_COMBAT_BRANCH = create("GAUNTLET_TRIAL_COMBAT_BRANCH")
+            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
+                    .addSimple(TRIAL_ARENA_COMBAT_ROOM));
+
+    public static final DungeonBranchTemplate GAUNTLET_TRIAL_EXIT_BRANCH = create("GAUNTLET_TRIAL_EXIT_BRANCH")
+            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .addSimple(TRIAL_ARENA_EXIT_ROOM));
 
-    public static final DungeonBranchTemplate GAUNTLET_GENERAL_BRANCH = create("GAUNTLET_GENERAL_BRANCH")
+    public static final DungeonBranchTemplate GAUNTLET_GENERAL_LOOT_BRANCH = create("GAUNTLET_GENERAL_LOOT_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
-                    .addSimple(GENERAL_ARENA_LOOT_CHOICE_ROOM)
-                    .addSimple(GENERAL_ARENA_LOOT_CHOICE_ROOM)
-                    .addSimple(GENERAL_ARENA_LOOT_CHOICE_ROOM)
-                    .addSimple(GENERAL_ARENA_COMBAT_ROOM)
+                    .addSimple(GENERAL_ARENA_LOOT_CHOICE_ROOM));
+
+    public static final DungeonBranchTemplate GAUNTLET_GENERAL_COMBAT_BRANCH = create("GAUNTLET_GENERAL_COMBAT_BRANCH")
+            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
+                    .addSimple(GENERAL_ARENA_COMBAT_ROOM));
+
+    public static final DungeonBranchTemplate GAUNTLET_GENERAL_EXIT_BRANCH = create("GAUNTLET_GENERAL_EXIT_BRANCH")
+            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .addSimple(GENERAL_ARENA_EXIT_ROOM));
 
     public static DungeonBranchTemplate copyOf(DungeonBranchTemplate branch, String name) {

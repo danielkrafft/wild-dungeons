@@ -67,6 +67,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     private String costItemID;
     private String purchaseBehavior;
     private String offerID;
+    private String riftDestination;
     private int amount;
     private static final EntityDataAccessor<Integer> costAmount = SynchedEntityData.defineId(Offering.class, EntityDataSerializers.INT);
     private boolean purchased = false;
@@ -76,6 +77,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     private int secondaryColor = 0xFFFFFFFF;
     private int soundLoop = 0;
     private static final EntityDataAccessor<Boolean> highlightItem = SynchedEntityData.defineId(Offering.class, EntityDataSerializers.BOOLEAN);
+
 
     public Offering(EntityType<Offering> entityType, Level level) {
         super(entityType, level);
@@ -127,6 +129,13 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     public Offering setSoundLoop(int soundEvent) {this.soundLoop = soundEvent;return this;}
     public boolean renderItemHighlight() {return this.entityData.get(highlightItem);}
     public void setShowItemHighlight(boolean shouldShow) {this.entityData.set(highlightItem, shouldShow);}
+    public Offering setRiftDestination(String destination) {
+        this.riftDestination = destination;
+        return this;
+    }
+    public String getRiftDestination() {
+        return this.riftDestination;
+    }
 
     public Offering(Level level) {super(WDEntities.OFFERING.get(), level);}
 
@@ -538,6 +547,9 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
                 if (offerID.split("-")[0].equals("wd")) {
 
                     DungeonTemplate dungeonTemplate = DungeonRegistry.DUNGEON_REGISTRY.get(offerID.split("-")[1]);
+                    if (dungeonTemplate == null) {
+                        dungeonTemplate = DungeonRegistry.DUNGEON_REGISTRY.get(getRiftDestination());
+                    }
                     WildDungeons.getLogger().info("TRYING TO ENTER {}", dungeonTemplate.name());
 
                     if (dungeonTemplate != null) {

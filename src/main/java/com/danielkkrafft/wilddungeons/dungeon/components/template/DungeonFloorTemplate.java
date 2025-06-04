@@ -24,6 +24,25 @@ public final class DungeonFloorTemplate implements DungeonRegistration.DungeonCo
         return new DungeonFloorTemplate().setName(name).set(HierarchicalProperty.DIFFICULTY_MODIFIER, 1.0);
     }
 
+    /**
+     * Sets the return floor index for any rifts on this floor.
+     *
+     * @param newReturnFloorIndex - the index of the floor to return to
+     */
+    public DungeonFloorTemplate setReturnFloorIndex(int newReturnFloorIndex) {
+        this.returnFloorIndex = newReturnFloorIndex;
+        return this;
+    }
+
+    /**
+     * Gets the return floor index for any rifts on this floor.
+     *
+     * @return - the return floor index
+     */
+    public int getReturnFloorIndex() {
+        return this.returnFloorIndex;
+    }
+
     public DungeonFloor calculateLayout(DungeonSession session, BlockPos position) {
         return new DungeonFloor(this.name, session.getSessionKey(), position);
     }
@@ -33,15 +52,6 @@ public final class DungeonFloorTemplate implements DungeonRegistration.DungeonCo
         DungeonFloor newFloor = new DungeonFloor(this.name, session.getSessionKey(), position);
         newFloor.asyncGenerateBranches();
         return newFloor;
-    }
-
-    public DungeonFloor placeInWorld(DungeonSession session, BlockPos position, int returnFloorIndex) {
-        this.returnFloorIndex = returnFloorIndex;
-        return placeInWorld(session, position);
-    }
-
-    public int getReturnFloorIndex() {
-        return returnFloorIndex;
     }
 
     @Override public String name() {

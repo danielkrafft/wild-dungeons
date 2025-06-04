@@ -67,6 +67,7 @@ public class DungeonSession {
     public String getSessionKey() {return DungeonSessionManager.buildDungeonSessionKey(this.entranceUUID);}
     public DungeonStats getStats(String uuid) {return this.playerStats.get(uuid);}
     public List<WDPlayer> getPlayers() { return this.playersInside.keySet().stream().map(uuid -> WDPlayerManager.getInstance().getOrCreateServerWDPlayer(uuid)).toList(); }
+    private HashMap<Integer, DungeonFloorTemplate> clientFloorPoolIndex = new HashMap<>();
 
     public enum DungeonExitBehavior {DESTROY, NEXT, RANDOMIZE, RESET, NOTHING}
     public enum DungeonOpenBehavior {NONE, ESSENCE_REQUIRED, ITEMS_REQUIRED, ENTITY_REQUIRED, GUARD_REQUIRED, KILLS_REQUIRED}
@@ -100,8 +101,19 @@ public class DungeonSession {
         if (newFloor == null) { return -1; }
 
         int floorIndex = getTemplate().floorTemplates().add(newFloor, 1).size() - 1;
-        getTemplate().floorTemplates().get(floorIndex).getRandom().placeInWorld(this, TemplateHelper.EMPTY_BLOCK_POS, returnIndex);
+        DungeonFloorTemplate template = getTemplate().floorTemplates().get(floorIndex).getRandom();
+
+        if (!clientFloorPoolIndex.containsKey(floorIndex)) {
+            clientFloorPoolIndex.put(floorIndex, template);
+        }
+
+        template.setReturnFloorIndex(returnIndex);
+        generateDynamicFloor(template);
         return floorIndex;
+    }
+
+    public DungeonFloor generateDynamicFloor(DungeonFloorTemplate template) {
+        return template.placeInWorld(this, TemplateHelper.EMPTY_BLOCK_POS);
     }
 
     /**
@@ -113,7 +125,13 @@ public class DungeonSession {
      */
     public void onEnter(WDPlayer wdPlayer, int floorIndex) {
         this.dirty = true;
-        DungeonFloor floor = generateOrGetFloor(floorIndex);
+        DungeonFloor floor;
+        if (clientFloorPoolIndex.containsKey(floorIndex)) {
+            floor = generateDynamicFloor(clientFloorPoolIndex.get(floorIndex));
+        } else {
+            floor = generateOrGetFloor(floorIndex);
+        }
+
         if (!this.playersInside.containsKey(wdPlayer.getUUID())) {
             offsetLives(LIVES_PER_PLAYER);
         } else {

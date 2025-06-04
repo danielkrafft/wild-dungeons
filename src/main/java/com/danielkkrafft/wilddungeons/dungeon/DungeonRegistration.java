@@ -1,5 +1,6 @@
 package com.danielkkrafft.wilddungeons.dungeon;
 
+import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonTarget;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
@@ -90,6 +91,7 @@ public class DungeonRegistration {
         private int colorTint;
         private int soundLoop;
         private boolean showRing = false;
+        private String riftDestination;
 
         public OfferingTemplate(String name, Offering.Type type, int amount, String id, Offering.CostType costType, int costAmount, float costDeviance) {
             this.name = name;
@@ -99,6 +101,14 @@ public class DungeonRegistration {
             this.costType = costType;
             this.costAmount = costAmount;
             this.deviance = costDeviance;
+        }
+
+        public OfferingTemplate setRiftDestination(String destination) {
+            this.riftDestination = destination;
+            return this;
+        }
+        public String getRiftDestination() {
+            return this.riftDestination;
         }
 
         public OfferingTemplate setRenderScale(float renderScale) {this.renderScale = renderScale; return this;}
@@ -120,7 +130,7 @@ public class DungeonRegistration {
             int adjustedAmount = RandomUtil.randIntBetween((int) (amount / deviance), (int) (amount * deviance));
             adjustedAmount = Math.max(1, adjustedAmount);
             int adjustedCost = RandomUtil.randIntBetween((int) (costAmount / deviance), (int) (costAmount * deviance));
-            Offering offering = new Offering(level, type, adjustedAmount, id, costType, adjustedCost);
+            Offering offering = new Offering(level, type, adjustedAmount, id, costType, adjustedCost).setRiftDestination(getRiftDestination());
             if (costType.equals(Offering.CostType.ITEM)){
                 offering.setCostItem(costItem);
             }
@@ -129,6 +139,17 @@ public class DungeonRegistration {
             offering.setShowItemHighlight(showRing);
             if (this.type == Offering.Type.RIFT && this.id.split("-")[0].equals("wd")) {
                 DungeonTemplate dungeonTemplate = DungeonRegistry.DUNGEON_REGISTRY.get(this.id.split("wd-")[1]);
+
+                if (dungeonTemplate == null) {
+                    dungeonTemplate = DungeonRegistry.DUNGEON_REGISTRY.get(offering.getRiftDestination());
+                }
+
+                // let's gracefully fail if we run into an issue. Worse case, the rift is colored wrong but still works.
+                if (dungeonTemplate == null) {
+                    WildDungeons.getLogger().error("No dungeon found by that id");
+                    return offering;
+                }
+
                 offering.setPrimaryColor(dungeonTemplate.get(HierarchicalProperty.PRIMARY_COLOR));
                 offering.setSecondaryColor(dungeonTemplate.get(HierarchicalProperty.SECONDARY_COLOR));
             }

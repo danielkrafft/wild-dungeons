@@ -338,6 +338,8 @@ public class DungeonRoom {
                 destination = String.valueOf(this.getBranch().getFloor().getIndex() + 1);
             }
 
+            WildDungeons.getLogger().info("DESTINATION: {}", destination);
+
             Offering rift = EXIT_RIFT.asOffering(this.getBranch().getFloor().getLevel()).setOfferingId(destination).setSoundLoop(0);
             Vec3 pos1 = StructureTemplate.transform(pos, this.getSettings().getMirror(), this.getSettings().getRotation(), TemplateHelper.EMPTY_BLOCK_POS).add(this.position.getX(), this.position.getY(), this.position.getZ());
             WildDungeons.getLogger().info("ADDING RIFT AT {}", pos1);

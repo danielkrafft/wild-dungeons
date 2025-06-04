@@ -14,7 +14,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.PRIMARY_COLOR;
+import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.SECONDARY_COLOR;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonBranchRegistry.*;
+import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonBranchRegistry.GAUNTLET_GENERAL_EXIT_BRANCH;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomRegistry.BOSS_KEY_ROOM;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomRegistry.VILLAGE_SEWER_CHESTCAP;
 
@@ -142,20 +145,36 @@ public class DungeonFloorRegistry {
                             .addSimple(GAUNTLET_SCIFI_EXIT_BRANCH)
             )
             .setOrigin(new BlockPos(0,30,0))
+            .set(PRIMARY_COLOR, 0xFFde1616)
+            .set(SECONDARY_COLOR, 0xFFb83f1a)
             .set(HierarchicalProperty.PRE_ROOM_GEN_PROCESSING_STEPS, List.of(new AddBedrockShellStep()));
 
     public static DungeonFloorTemplate GAUNTLET_TRIAL_FLOOR = create("gauntlet_trial")
             .setBranchTemplates(
                     new DungeonLayout<DungeonBranchTemplate>()
-                            .addSimple(GAUNTLET_TRIAL_BRANCH)
+                            .addSimple(GAUNTLET_TRIAL_LOOT_BRANCH)
+                            .addSimple(GAUNTLET_TRIAL_LOOT_BRANCH)
+                            .addSimple(GAUNTLET_TRIAL_LOOT_BRANCH)
+                            .addSimple(GAUNTLET_TRIAL_COMBAT_BRANCH)
+                            .addSimple(GAUNTLET_TRIAL_EXIT_BRANCH)
             )
+            .setOrigin(new BlockPos(0,30,0))
+            .set(PRIMARY_COLOR, 0xFFde1616)
+            .set(SECONDARY_COLOR, 0xFFb83f1a)
             .set(HierarchicalProperty.PRE_ROOM_GEN_PROCESSING_STEPS, List.of(new AddBedrockShellStep()));
 
     public static DungeonFloorTemplate GAUNTLET_GENERAL_FLOOR = create("gauntlet_general")
             .setBranchTemplates(
                     new DungeonLayout<DungeonBranchTemplate>()
-                            .addSimple(GAUNTLET_GENERAL_BRANCH)
+                            .addSimple(GAUNTLET_GENERAL_LOOT_BRANCH)
+                            .addSimple(GAUNTLET_GENERAL_LOOT_BRANCH)
+                            .addSimple(GAUNTLET_GENERAL_LOOT_BRANCH)
+                            .addSimple(GAUNTLET_GENERAL_COMBAT_BRANCH)
+                            .addSimple(GAUNTLET_GENERAL_EXIT_BRANCH)
             )
+            .setOrigin(new BlockPos(0,30,0))
+            .set(PRIMARY_COLOR, 0xFFde1616)
+            .set(SECONDARY_COLOR, 0xFFb83f1a)
             .set(HierarchicalProperty.PRE_ROOM_GEN_PROCESSING_STEPS, List.of(new AddBedrockShellStep()));
 
     public static DungeonFloorTemplate copyOf(DungeonFloorTemplate floor, String name) {

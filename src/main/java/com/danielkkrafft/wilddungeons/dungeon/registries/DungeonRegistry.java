@@ -116,15 +116,35 @@ public class DungeonRegistry {
             .set(TARGET_SCORE, 15000)
             .set(EXIT_BEHAVIOR, DESTROY);
 
-    public static DungeonTemplate SCIFI_WEAPON_GAUNTLET = create("weapon_gauntlet")
+    public static DungeonTemplate SCIFI_WEAPON_GAUNTLET = create("gauntlet_scifi")
             .setFloorTemplates(new DungeonLayout<DungeonFloorTemplate>()
                     .add(WeightedPool.of(GAUNTLET_SCIFI_FLOOR), 1)
             )
             .set(HAS_BEDROCK_SHELL, true)
             .set(DISPLAY_NAME, "GAUNTLET CHALLENGE")
             .set(ICON, "G-2")
-            .set(PRIMARY_COLOR, 0xFF44cc00)
-            .set(SECONDARY_COLOR, 0xFF3ee67e);
+            .set(PRIMARY_COLOR, 0xFFde1616)
+            .set(SECONDARY_COLOR, 0xFFb83f1a);
+
+    public static DungeonTemplate TRIAL_WEAPON_GAUNTLET = create("gauntlet_trial")
+            .setFloorTemplates(new DungeonLayout<DungeonFloorTemplate>()
+                    .add(WeightedPool.of(GAUNTLET_TRIAL_FLOOR), 1)
+            )
+            .set(HAS_BEDROCK_SHELL, true)
+            .set(DISPLAY_NAME, "GAUNTLET CHALLENGE")
+            .set(ICON, "G-2")
+            .set(PRIMARY_COLOR, 0xFFde1616)
+            .set(SECONDARY_COLOR, 0xFFb83f1a);
+
+    public static DungeonTemplate GENERAL_WEAPON_GAUNTLET = create("gauntlet_general")
+            .setFloorTemplates(new DungeonLayout<DungeonFloorTemplate>()
+                    .add(WeightedPool.of(GAUNTLET_GENERAL_FLOOR), 1)
+            )
+            .set(HAS_BEDROCK_SHELL, true)
+            .set(DISPLAY_NAME, "GAUNTLET CHALLENGE")
+            .set(ICON, "G-2")
+            .set(PRIMARY_COLOR, 0xFFde1616)
+            .set(SECONDARY_COLOR, 0xFFb83f1a);
 
 
     public static DungeonTemplate create(String name){
