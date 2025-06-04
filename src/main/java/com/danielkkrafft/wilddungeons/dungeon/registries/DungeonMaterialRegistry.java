@@ -441,6 +441,33 @@ public class DungeonMaterialRegistry {
             .add(DungeonMaterial.BlockSetting.BlockType.HIDDEN, new WeightedPool<BlockState>().add(NETHERRACK.defaultBlockState(), 1))
             ;
 
+    public static final DungeonMaterial SCIFI_GAUNTLET_MATERIAL = create("scifi_gauntlet_materials",//todo delete when all rooms have been converted
+            new WeightedPool<BlockState>().add(QUARTZ_BLOCK.defaultBlockState(), 1),
+            new WeightedPool<BlockState>().add(QUARTZ_STAIRS.defaultBlockState(), 1),
+            new WeightedPool<BlockState>().add(QUARTZ_SLAB.defaultBlockState(), 1),
+            new WeightedPool<BlockState>().add(QUARTZ_BLOCK.defaultBlockState(), 1),
+            new WeightedPool<BlockState>().add(SHROOMLIGHT.defaultBlockState(), 1),
+            new WeightedPool<BlockState>().add(SEA_LANTERN.defaultBlockState(), 1),
+            new WeightedPool<BlockState>().add(QUARTZ_BLOCK.defaultBlockState(), 1));
+
+    public static final DungeonMaterial TRIAL_GAUNTLET_MATERIAL = create("trial_gauntlet_materials",//todo delete when all rooms have been converted
+            new WeightedPool<BlockState>().add(TUFF_BRICKS.defaultBlockState(), 1),
+            new WeightedPool<BlockState>().add(TUFF_BRICK_STAIRS.defaultBlockState(), 1),
+            new WeightedPool<BlockState>().add(TUFF_BRICK_SLAB.defaultBlockState(), 1),
+            new WeightedPool<BlockState>().add(TUFF_BRICKS.defaultBlockState(), 1),
+            new WeightedPool<BlockState>().add(SHROOMLIGHT.defaultBlockState(), 1),
+            new WeightedPool<BlockState>().add(SEA_LANTERN.defaultBlockState(), 1),
+            new WeightedPool<BlockState>().add(TUFF_BRICKS.defaultBlockState(), 1));
+
+    public static final DungeonMaterial GENERAL_GAUNTLET_MATERIAL = create("general_gauntlet_materials",//todo delete when all rooms have been converted
+            new WeightedPool<BlockState>().add(POLISHED_DEEPSLATE.defaultBlockState(), 1),
+            new WeightedPool<BlockState>().add(POLISHED_DEEPSLATE_STAIRS.defaultBlockState(), 1),
+            new WeightedPool<BlockState>().add(POLISHED_DEEPSLATE_SLAB.defaultBlockState(), 1),
+            new WeightedPool<BlockState>().add(POLISHED_DEEPSLATE.defaultBlockState(), 1),
+            new WeightedPool<BlockState>().add(SHROOMLIGHT.defaultBlockState(), 1),
+            new WeightedPool<BlockState>().add(SEA_LANTERN.defaultBlockState(), 1),
+            new WeightedPool<BlockState>().add(POLISHED_DEEPSLATE.defaultBlockState(), 1));
+
     public static DungeonMaterial create(String name, WeightedPool<BlockState> defaultBasicBlocks, WeightedPool<BlockState> defaultStairBlocks, WeightedPool<BlockState> defaultSlabBlocks, WeightedPool<BlockState> defaultWallBlocks, WeightedPool<BlockState> defaultLightBlocks, WeightedPool<BlockState> defaultHangingLights, WeightedPool<BlockState> defaultHiddenBlocks) {
         DungeonMaterial material = new DungeonMaterial(name, defaultBasicBlocks, defaultStairBlocks, defaultSlabBlocks, defaultWallBlocks, defaultLightBlocks, defaultHangingLights, defaultHiddenBlocks);
         dungeonMaterials.add(material);

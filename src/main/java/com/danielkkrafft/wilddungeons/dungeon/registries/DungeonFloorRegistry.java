@@ -9,6 +9,7 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonFloorTe
 import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.levelgen.Heightmap;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,8 +19,7 @@ import static com.danielkkrafft.wilddungeons.dungeon.components.template.Hierarc
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.SECONDARY_COLOR;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonBranchRegistry.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonBranchRegistry.GAUNTLET_GENERAL_EXIT_BRANCH;
-import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomRegistry.BOSS_KEY_ROOM;
-import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomRegistry.VILLAGE_SEWER_CHESTCAP;
+import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomRegistry.*;
 
 public class DungeonFloorRegistry {
     public static final DungeonRegistration.DungeonComponentRegistry<DungeonFloorTemplate> DUNGEON_FLOOR_REGISTRY = new DungeonRegistration.DungeonComponentRegistry<>();
@@ -147,6 +147,7 @@ public class DungeonFloorRegistry {
             .setOrigin(new BlockPos(0,30,0))
             .set(PRIMARY_COLOR, 0xFFde1616)
             .set(SECONDARY_COLOR, 0xFFb83f1a)
+            .set(HierarchicalProperty.MATERIAL, DungeonMaterialPoolRegistry.SCIFI_GAUNTLET_MATERIAL_POOL)
             .set(HierarchicalProperty.PRE_ROOM_GEN_PROCESSING_STEPS, List.of(new AddBedrockShellStep()));
 
     public static DungeonFloorTemplate GAUNTLET_TRIAL_FLOOR = create("gauntlet_trial")
@@ -161,6 +162,7 @@ public class DungeonFloorRegistry {
             .setOrigin(new BlockPos(0,30,0))
             .set(PRIMARY_COLOR, 0xFFde1616)
             .set(SECONDARY_COLOR, 0xFFb83f1a)
+            .set(HierarchicalProperty.MATERIAL, DungeonMaterialPoolRegistry.TRIAL_GAUNTLET_MATERIAL_POOL)
             .set(HierarchicalProperty.PRE_ROOM_GEN_PROCESSING_STEPS, List.of(new AddBedrockShellStep()));
 
     public static DungeonFloorTemplate GAUNTLET_GENERAL_FLOOR = create("gauntlet_general")
@@ -175,6 +177,7 @@ public class DungeonFloorRegistry {
             .setOrigin(new BlockPos(0,30,0))
             .set(PRIMARY_COLOR, 0xFFde1616)
             .set(SECONDARY_COLOR, 0xFFb83f1a)
+            .set(HierarchicalProperty.MATERIAL, DungeonMaterialPoolRegistry.GENERAL_GAUNTLET_MATERIAL_POOL)
             .set(HierarchicalProperty.PRE_ROOM_GEN_PROCESSING_STEPS, List.of(new AddBedrockShellStep()));
 
     public static DungeonFloorTemplate copyOf(DungeonFloorTemplate floor, String name) {

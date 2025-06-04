@@ -24,5 +24,10 @@ public class DungeonMaterialPoolRegistry {
             .add(VILLAGE_SEWER_MATERIAL, 1);
     public static final WeightedPool<DungeonMaterial> VILLAGE_MATERIAL_POOL = new WeightedPool<DungeonMaterial>()
             .add(VILLAGE_MATERIAL, 1);
-
+    public static final WeightedPool<DungeonMaterial> SCIFI_GAUNTLET_MATERIAL_POOL = new WeightedPool<DungeonMaterial>()
+            .add(SCIFI_GAUNTLET_MATERIAL, 1);
+    public static final WeightedPool<DungeonMaterial> TRIAL_GAUNTLET_MATERIAL_POOL = new WeightedPool<DungeonMaterial>()
+            .add(TRIAL_GAUNTLET_MATERIAL, 1);
+    public static final WeightedPool<DungeonMaterial> GENERAL_GAUNTLET_MATERIAL_POOL = new WeightedPool<DungeonMaterial>()
+            .add(GENERAL_GAUNTLET_MATERIAL, 1);
 }
