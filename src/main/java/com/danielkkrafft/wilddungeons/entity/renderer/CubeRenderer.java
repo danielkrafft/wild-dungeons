@@ -55,7 +55,7 @@ public final class CubeRenderer
         matrix.mulPose(Axis.XP.rotationDegrees(pitch));
         matrix.mulPose(Axis.ZP.rotationDegrees(roll));
         float f16 = height * textureScale * (0.15F / radius)-1f;
-        renderCube(matrix,buffer,texture,r,g,b,alpha,yOffset,i,radius,-1,f16);
+        renderCross(matrix,buffer,texture,r,g,b,alpha,yOffset,i,radius,-1,f16);
         matrix.popPose();
     }
     private static void renderPlane(PoseStack matrix,MultiBufferSource bufferIn,ResourceLocation texture,float r,float g,float b,float a,float yOffset,float radius)
