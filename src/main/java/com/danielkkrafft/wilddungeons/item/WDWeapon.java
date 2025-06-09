@@ -1,11 +1,8 @@
 package com.danielkkrafft.wilddungeons.item;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
@@ -32,7 +29,6 @@ import software.bernie.geckolib.renderer.GeoItemRenderer;
 import software.bernie.geckolib.renderer.layer.AutoGlowingGeoLayer;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -41,10 +37,11 @@ public abstract class WDWeapon extends Item implements GeoAnimatable, GeoItem {
 
     public String name = "default";
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    private final ArrayList<Pair<RawAnimation,Float>> animations = new ArrayList<>();
-    public AnimationController<GeoAnimatable> controller = new AnimationController<>(this, WildDungeons.rl(this.name).toString(), 1,state -> PlayState.CONTINUE);
+    private final ArrayList<Pair<RawAnimation, Float>> animations = new ArrayList<>();
+    public AnimationController<GeoAnimatable> controller = new AnimationController<>(this, WildDungeons.rl(this.name).toString(), 1, state -> PlayState.CONTINUE);
     protected boolean hasIdle = true;
     protected boolean hasEmissive = false;
+    protected WDWeaponModel<?> model = new WDWeaponModel<>(null, null, null);
 
     public WDWeapon(String name) {
         super(new Item.Properties()
@@ -54,31 +51,60 @@ public abstract class WDWeapon extends Item implements GeoAnimatable, GeoItem {
         SingletonGeoAnimatable.registerSyncedAnimatable(this);
     }
 
-    public WDWeapon(String name, Properties properties){
+    public WDWeapon(String name, Properties properties) {
         super(properties);
         this.name = name;
         SingletonGeoAnimatable.registerSyncedAnimatable(this);
     }
 
     /**
-     *  The first animation added to the list will be treated as the "idle", default animation
+     * The first animation added to the list will be treated as the "idle", default animation
      */
-    public void addAnimation(String animName) {addAnimation(animName,1);}
-    public void addAnimation(String animName, float animationSpeed) { animations.add(Pair.of(RawAnimation.begin().thenPlay("animation." + this.name + "." + animName),animationSpeed)); }
-    public void addLoopingAnimation(String animName) { addLoopingAnimation(animName, 1); }
-    public void addLoopingAnimation(String animName, float animationSpeed) { animations.add(Pair.of(RawAnimation.begin().thenLoop("animation." + this.name + "." + animName),animationSpeed)); }
-    public void addHoldingAnimation(String animName) { addHoldingAnimation(animName, 1); }
-    public void addHoldingAnimation(String animName, float animationSpeed) { animations.add(Pair.of(RawAnimation.begin().thenPlayAndHold("animation." + this.name + "." + animName),animationSpeed)); }
-    public void addThenPlayAnimation(String animName, String nextAnimName) { addThenPlayAnimation(animName, nextAnimName, 1); }
-    public void addThenPlayAnimation(String animName, String nextAnimName, float animationSpeed) { animations.add(Pair.of(RawAnimation.begin().thenPlay("animation." + this.name + "." + animName).thenPlay("animation." + this.name + "." + nextAnimName),animationSpeed)); }
-    public String getAnimationName(int index) { return this.animations.get(index).getFirst().getAnimationStages().getFirst().animationName(); }
+    public void addAnimation(String animName) {
+        addAnimation(animName, 1);
+    }
+
+    public void addAnimation(String animName, float animationSpeed) {
+        animations.add(Pair.of(RawAnimation.begin().thenPlay("animation." + this.name + "." + animName), animationSpeed));
+    }
+
+    public void addLoopingAnimation(String animName) {
+        addLoopingAnimation(animName, 1);
+    }
+
+    public void addLoopingAnimation(String animName, float animationSpeed) {
+        animations.add(Pair.of(RawAnimation.begin().thenLoop("animation." + this.name + "." + animName), animationSpeed));
+    }
+
+    public void addHoldingAnimation(String animName) {
+        addHoldingAnimation(animName, 1);
+    }
+
+    public void addHoldingAnimation(String animName, float animationSpeed) {
+        animations.add(Pair.of(RawAnimation.begin().thenPlayAndHold("animation." + this.name + "." + animName), animationSpeed));
+    }
+
+    public void addThenPlayAnimation(String animName, String nextAnimName) {
+        addThenPlayAnimation(animName, nextAnimName, 1);
+    }
+
+    public void addThenPlayAnimation(String animName, String nextAnimName, float animationSpeed) {
+        animations.add(Pair.of(RawAnimation.begin().thenPlay("animation." + this.name + "." + animName).thenPlay("animation." + this.name + "." + nextAnimName), animationSpeed));
+    }
+
+    public String getAnimationName(int index) {
+        return this.animations.get(index).getFirst().getAnimationStages().getFirst().animationName();
+    }
 
     @Override
     public void createGeoRenderer(Consumer<GeoRenderProvider> consumer) {
         consumer.accept(new GeoRenderProvider() {
-            private final BlockEntityWithoutLevelRenderer renderer = new WDWeaponRenderer<>(hasEmissive);
+            private final BlockEntityWithoutLevelRenderer renderer = new WDWeaponRenderer<>(model, hasEmissive);
+
             @Override
-            public BlockEntityWithoutLevelRenderer getGeoItemRenderer() { return this.renderer; }
+            public BlockEntityWithoutLevelRenderer getGeoItemRenderer() {
+                return this.renderer;
+            }
         });
     }
 
@@ -86,26 +112,35 @@ public abstract class WDWeapon extends Item implements GeoAnimatable, GeoItem {
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controller = new AnimationController<>(this, WildDungeons.rl(this.name).toString(), 1, state -> PlayState.CONTINUE);
         this.animations.forEach(rawAnimation -> {
-           controller.triggerableAnim(rawAnimation.getFirst().getAnimationStages().getFirst().animationName(), rawAnimation.getFirst());
+            controller.triggerableAnim(rawAnimation.getFirst().getAnimationStages().getFirst().animationName(), rawAnimation.getFirst());
         });
         controllers.add(controller);
     }
 
-    @Override public AnimatableInstanceCache getAnimatableInstanceCache() {
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
         return cache;
     }
-    @Override public int getUseDuration(ItemStack stack, LivingEntity entity) {return 100000;}
-    @Override public @NotNull UseAnim getUseAnimation(@NotNull ItemStack it){return UseAnim.BOW;}
+
+    @Override
+    public int getUseDuration(ItemStack stack, LivingEntity entity) {
+        return 100000;
+    }
+
+    @Override
+    public @NotNull UseAnim getUseAnimation(@NotNull ItemStack it) {
+        return UseAnim.BOW;
+    }
 
     @Override
     public void inventoryTick(@NotNull ItemStack itemStack, @NotNull Level level, @NotNull Entity entity, int slot, boolean inMainHand) {
-        if(entity instanceof Player player && !player.getCooldowns().isOnCooldown(this) && !player.isUsingItem() && hasIdle) {
+        if (entity instanceof Player player && !player.getCooldowns().isOnCooldown(this) && !player.isUsingItem() && hasIdle) {
             setAnimation(this.getAnimationName(0), itemStack, player, level);
         }
     }
 
     public void setAnimation(String animName, ItemStack stack, Player player, Level level) {
-        if(level instanceof ServerLevel serverLevel) {
+        if (level instanceof ServerLevel serverLevel) {
             String finalName = Objects.equals(animName.split("\\.")[0], "animation") ? animName : "animation." + this.name + "." + animName;
             this.triggerAnim(player, GeoItem.getOrAssignId(stack, serverLevel), WildDungeons.rl(this.name).toString(), finalName);
             controller.setAnimationSpeed(animations.stream().filter(pair -> pair.getFirst().getAnimationStages().getFirst().animationName().equals(finalName)).findFirst().get().getSecond());
@@ -131,9 +166,14 @@ public abstract class WDWeapon extends Item implements GeoAnimatable, GeoItem {
         controller.setSoundKeyframeHandler(geoAnimatable);
     }
 
+    public void setModel(WDWeaponModel<?> model) {
+        this.model = model;
+        this.model.activateInventoryModel();
+    }
+
     public static class WDWeaponRenderer<T extends WDWeapon> extends GeoItemRenderer<T> {
-        public WDWeaponRenderer(boolean hasEmissive) {
-            super(new WDWeaponModel<>());
+        public WDWeaponRenderer(GeoModel<T> model, boolean hasEmissive) {
+            super(model);
 
             if (hasEmissive) this.addRenderLayer(new AutoGlowingGeoLayer<>(this));
         }
@@ -141,20 +181,66 @@ public abstract class WDWeapon extends Item implements GeoAnimatable, GeoItem {
 
 
     public static class WDWeaponModel<T extends WDWeapon> extends GeoModel<T> {
+        private ResourceLocation animation, model, texture, inventoryModel, inventoryTexture, workingModel, workingTexture;
 
-        @Override @SuppressWarnings("removal") // Must be overridden, warning is unavoidable
-        public ResourceLocation getModelResource(T animatable) {
-            return WildDungeons.rl("geo/" + animatable.name + ".geo.json");
+        public WDWeaponModel(ResourceLocation a, ResourceLocation m, ResourceLocation t) {
+            super();
+            this.animation = a;
+            this.model = m;
+            this.texture = t;
+            setInventoryModel(m, t);
+            setWorkingModel(m, t);
         }
 
-        @Override @SuppressWarnings("removal") // Must be overridden, warning is unavoidable
+        public void setAnim(ResourceLocation a) {
+            animation = a;
+        }
+
+        public void setModel(ResourceLocation m) {
+            model = m;
+        }
+
+        public void setTex(ResourceLocation t) {
+            texture = t;
+        }
+
+        public void activateWorkingModel() {
+            this.setModel(workingModel);
+            this.setTex(workingTexture);
+        }
+
+        public void activateInventoryModel() {
+            this.setModel(inventoryModel);
+            this.setTex(inventoryTexture);
+        }
+
+        public WDWeaponModel<?> setInventoryModel(ResourceLocation model, ResourceLocation texture) {
+            this.inventoryModel = model;
+            this.inventoryTexture = texture;
+            return this;
+        }
+
+        public WDWeaponModel<?> setWorkingModel(ResourceLocation model, ResourceLocation texture) {
+            this.workingModel = model;
+            this.workingTexture = texture;
+            return this;
+        }
+
+        @Override
+        @SuppressWarnings("removal") // Must be overridden, warning is unavoidable
+        public ResourceLocation getModelResource(T animatable) {
+            return model != null ? model : WildDungeons.makeGeoModelRL(animatable.name);
+        }
+
+        @Override
+        @SuppressWarnings("removal") // Must be overridden, warning is unavoidable
         public ResourceLocation getTextureResource(T animatable) {
-            return WildDungeons.rl("textures/item/" + animatable.name + ".png");
+            return texture != null ? texture : WildDungeons.makeItemTextureRL(animatable.name);
         }
 
         @Override
         public ResourceLocation getAnimationResource(T animatable) {
-            return WildDungeons.rl("animations/" + animatable.name + ".animation.json");
+            return animation != null ? animation : WildDungeons.makeAnimationRL(animatable.name);
         }
     }
 }

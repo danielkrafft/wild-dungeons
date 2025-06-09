@@ -2,11 +2,8 @@ package com.danielkkrafft.wilddungeons.item;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.entity.Laserbeam;
-import com.danielkkrafft.wilddungeons.entity.model.ClientModel;
 import com.danielkkrafft.wilddungeons.util.MathUtil;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -21,12 +18,6 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
-import software.bernie.geckolib.animatable.client.GeoRenderProvider;
-import software.bernie.geckolib.model.GeoModel;
-import software.bernie.geckolib.renderer.GeoItemRenderer;
-import software.bernie.geckolib.renderer.layer.AutoGlowingGeoLayer;
-
-import java.util.function.Consumer;
 
 public class LaserSword extends WDWeapon {
 
@@ -44,12 +35,19 @@ public class LaserSword extends WDWeapon {
     private static final Vector2f laserRadiusRange = new Vector2f(0.1f, 1.0f);
     private static final Vector2f laserDistanceRange = new Vector2f(15, 160);
     private static final Vector2i explosionRadiusRange = new Vector2i(1, 30);
-    private LaserSwordModel<LaserSword> model;
 
 
     public LaserSword() {
         super(NAME, new Properties().rarity(Rarity.RARE).durability(200).attributes(SwordItem.createAttributes(Tiers.DIAMOND, 3, -2.4F)));
         hasEmissive = true;
+        this.setModel(new WDWeaponModel<>(
+                        WildDungeons.makeAnimationRL("laser_sword"),
+                        WildDungeons.makeGeoModelRL("laser_sword"),
+                        WildDungeons.makeItemTextureRL("laser_sword_working")
+                )
+                        .setWorkingModel(WildDungeons.makeGeoModelRL("laser_sword_working"),
+                                WildDungeons.makeItemTextureRL("laser_sword_working"))
+        );
         this.addLoopingAnimation(AnimationList.idle.toString());//default animation
         this.addAnimation(AnimationList.gun_transform.toString(), (float) 2 / warmUpSeconds);//2 seconds long
         this.addLoopingAnimation(AnimationList.charging_up.toString(), (float) 20 / (maxChargeSeconds + warmUpSeconds));//20 seconds long
@@ -59,28 +57,9 @@ public class LaserSword extends WDWeapon {
     }
 
     @Override
-    public void createGeoRenderer(Consumer<GeoRenderProvider> consumer) {
-
-        this.model = new LaserSwordModel<>(
-                WildDungeons.makeAnimationRL("laser_sword"),
-                WildDungeons.makeGeoModelRL("laser_sword"),
-                WildDungeons.makeItemTextureRL("laser_sword_working")
-        );
-
-        model.WORKING_MODEL = WildDungeons.makeGeoModelRL("laser_sword_working");
-        model.WORKING_TEXTURE = WildDungeons.makeItemTextureRL("laser_sword_working");
-
-        consumer.accept(new GeoRenderProvider() {
-            private final BlockEntityWithoutLevelRenderer renderer = new LaserSwordRenderer<>(model, hasEmissive);
-            @Override
-            public BlockEntityWithoutLevelRenderer getGeoItemRenderer() { return this.renderer; }
-        });
-    }
-
-    @Override
     @NotNull
     public InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
-        model.setWorkingModel();
+        model.activateWorkingModel();
         player.startUsingItem(hand);
         setAnimation(AnimationList.gun_transform.toString(), player.getItemInHand(hand), player, player.level());
         return InteractionResultHolder.consume(player.getItemInHand(hand));
@@ -106,7 +85,7 @@ public class LaserSword extends WDWeapon {
     @Override
     public void releaseUsing(@NotNull ItemStack stack, @NotNull Level level, @NotNull LivingEntity livingEntity, int remainingUseDuration) {
 
-        model.setInventoryModel();
+        model.activateInventoryModel();
         if (!(livingEntity instanceof Player player)) return;
         int charge = getUseDuration(stack, player) - remainingUseDuration - warmUpSeconds * 20;
         if (charge <= 0) return;
@@ -162,50 +141,6 @@ public class LaserSword extends WDWeapon {
         } else if (blastLevel >= 3) {
             level.addAlwaysVisibleParticle(ParticleTypes.EXPLOSION, true, vec.x, vec.y, vec.z, 0, 0, 0);
             level.addAlwaysVisibleParticle(ParticleTypes.SMOKE, true, vec.x, vec.y, vec.z, 0, 0, 0);
-        }
-    }
-
-    public static class LaserSwordRenderer<T extends WDWeapon> extends GeoItemRenderer<T> {
-        public LaserSwordRenderer(GeoModel<T> model, boolean hasEmissive) {
-            super(model);
-
-            if (hasEmissive) this.addRenderLayer(new AutoGlowingGeoLayer<>(this));
-        }
-    }
-
-    public static class LaserSwordModel<T extends WDWeapon> extends ClientModel<T> {
-
-        public ResourceLocation CREATIVE_TAB_MODEL;
-        public ResourceLocation CREATIVE_TAB_TEXTURE;
-        public ResourceLocation WORKING_MODEL;
-        public ResourceLocation WORKING_TEXTURE;
-
-        public LaserSwordModel(ResourceLocation a, ResourceLocation m, ResourceLocation t) {
-            super(a, m, t);
-            this.CREATIVE_TAB_MODEL = m;
-            this.CREATIVE_TAB_TEXTURE = t;
-        }
-
-        public void setWorkingModel(){
-            this.setModel(WORKING_MODEL);
-            this.setTex(WORKING_TEXTURE);
-        }
-
-        public void setInventoryModel(){
-            this.setModel(CREATIVE_TAB_MODEL);
-            this.setTex(CREATIVE_TAB_TEXTURE);
-        }
-
-        public ResourceLocation getModel() {
-            return this.model;
-        }
-
-        public ResourceLocation getTexture() {
-            return this.texture;
-        }
-
-        public ResourceLocation getAnimation() {
-            return this.animation;
         }
     }
 }
