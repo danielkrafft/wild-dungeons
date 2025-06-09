@@ -45,12 +45,11 @@ public class LaserSword extends WDWeapon {
     private static final Vector2f laserDistanceRange = new Vector2f(15, 160);
     private static final Vector2i explosionRadiusRange = new Vector2i(1, 30);
     private LaserSwordModel<LaserSword> model;
-    private boolean setWorkingModel = false;
 
 
     public LaserSword() {
         super(NAME, new Properties().rarity(Rarity.RARE).durability(200).attributes(SwordItem.createAttributes(Tiers.DIAMOND, 3, -2.4F)));
-        hasEmissive = false;
+        hasEmissive = true;
         this.addLoopingAnimation(AnimationList.idle.toString());//default animation
         this.addAnimation(AnimationList.gun_transform.toString(), (float) 2 / warmUpSeconds);//2 seconds long
         this.addLoopingAnimation(AnimationList.charging_up.toString(), (float) 20 / (maxChargeSeconds + warmUpSeconds));//20 seconds long
@@ -81,8 +80,7 @@ public class LaserSword extends WDWeapon {
     @Override
     @NotNull
     public InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
-        model.setModel(model.WORKING_MODEL);
-        model.setTex(model.WORKING_TEXTURE);
+        model.setWorkingModel();
         player.startUsingItem(hand);
         setAnimation(AnimationList.gun_transform.toString(), player.getItemInHand(hand), player, player.level());
         return InteractionResultHolder.consume(player.getItemInHand(hand));
@@ -108,8 +106,7 @@ public class LaserSword extends WDWeapon {
     @Override
     public void releaseUsing(@NotNull ItemStack stack, @NotNull Level level, @NotNull LivingEntity livingEntity, int remainingUseDuration) {
 
-        model.setModel(model.CREATIVE_TAB_MODEL);
-        model.setTex(model.CREATIVE_TAB_TEXTURE);
+        model.setInventoryModel();
         if (!(livingEntity instanceof Player player)) return;
         int charge = getUseDuration(stack, player) - remainingUseDuration - warmUpSeconds * 20;
         if (charge <= 0) return;
@@ -176,7 +173,7 @@ public class LaserSword extends WDWeapon {
         }
     }
 
-    public static class LaserSwordModel<T extends LaserSword> extends ClientModel<T> {
+    public static class LaserSwordModel<T extends WDWeapon> extends ClientModel<T> {
 
         public ResourceLocation CREATIVE_TAB_MODEL;
         public ResourceLocation CREATIVE_TAB_TEXTURE;
@@ -187,6 +184,16 @@ public class LaserSword extends WDWeapon {
             super(a, m, t);
             this.CREATIVE_TAB_MODEL = m;
             this.CREATIVE_TAB_TEXTURE = t;
+        }
+
+        public void setWorkingModel(){
+            this.setModel(WORKING_MODEL);
+            this.setTex(WORKING_TEXTURE);
+        }
+
+        public void setInventoryModel(){
+            this.setModel(CREATIVE_TAB_MODEL);
+            this.setTex(CREATIVE_TAB_TEXTURE);
         }
 
         public ResourceLocation getModel() {
