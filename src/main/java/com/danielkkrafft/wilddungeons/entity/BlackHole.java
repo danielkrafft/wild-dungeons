@@ -17,7 +17,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.FallingBlockEntity;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -44,7 +43,7 @@ public class BlackHole extends SelfGovernedEntity {
 
     // Interaction and pull behavior
     private static final double RADIUS_OUTER_SCALE = 2.5;                   // Outer interaction radius multiplier
-    private static final double RADIUS_INNER_SCALE = .5;                  // Inner kill/damage radius multiplier
+    private static final double RADIUS_INNER_SCALE = .5;                    // Inner kill/damage radius multiplier
     private static final int MIN_DAMAGE = 1;                                // Minimum damage to entities in range
     private static final int MAX_DAMAGE = 10;                               // Maximum damage scaled by mass
     private static final double MIN_PULL_STRENGTH = 0.1;                   // Minimum gravitational pull strength
@@ -53,6 +52,13 @@ public class BlackHole extends SelfGovernedEntity {
     private static final double PULL_FALLOFF_EXPONENT = 3;                  // How fast pull drops off with distance (quadratic)
     private static final float DIRECTION_LERP_MIN = 0.1f;                   // Minimum influence when smaller black hole redirects
     private static final float DIRECTION_LERP_MAX = 0.25f;                  // Maximum influence when smaller black hole redirects
+    
+    // New orbital movement parameters
+    private static final double ORBITAL_STRENGTH_MIN = 0.02;                // Minimum orbital force strength
+    private static final double ORBITAL_STRENGTH_MAX = 0.10;                // Maximum orbital force strength
+    private static final double ORBITAL_DISTANCE_FACTOR = 0.6;              // How distance affects orbital force
+    private static final double ORBITAL_MASS_FACTOR = 0.15;                 // How black hole mass affects orbital force
+    private static final double DIRECT_PULL_BIAS = .9;                     // Balance between direct pull and orbital motion
 
     // Entity and block destruction
     private static final int ENTITY_DAMAGE_COOLDOWN_TICKS = 10;             // Per-entity cooldown for repeated damage
@@ -173,6 +179,53 @@ public class BlackHole extends SelfGovernedEntity {
         handleEntityPullAndConsumption();
     }
 
+    private void applyPullForce(Entity target, Vec3 motion, Vec3 pullDir, Vec3 toTarget, double normDist) {
+        double clampedNormDist = Mth.clamp(normDist, 0.0, 1.0);
+        double sizeFactor = (getMass() - MIN_MASS) / (MAX_MASS - MIN_MASS);
+        
+        // Smoother pull strength calculation
+        double distanceFactor = 1.0 - Math.pow(clampedNormDist, PULL_FALLOFF_EXPONENT);
+        double baseStrength = Math.max(0, sizeFactor * PULL_BASE_MULTIPLIER * distanceFactor);
+        double pullStrength = Mth.clamp(baseStrength, MIN_PULL_STRENGTH, MAX_PULL_STRENGTH);
+        
+        // Calculate direct pull force
+        Vec3 directPull = pullDir.scale(pullStrength * DIRECT_PULL_BIAS);
+        
+        // Calculate orbital/tangential force
+        // Cross product with UP vector to get perpendicular direction in horizontal plane
+        Vec3 up = new Vec3(0, 1, 0);
+        Vec3 orbitalDir;
+        
+        // Handle special case for vertical alignment
+        if (Math.abs(pullDir.x) < 0.001 && Math.abs(pullDir.z) < 0.001) {
+            // Use a default orbital direction if pull is directly up/down
+            orbitalDir = new Vec3(1, 0, 0);
+        } else {
+            Vec3 horizontalPullDir = new Vec3(pullDir.x, 0, pullDir.z).normalize();
+            orbitalDir = horizontalPullDir.cross(up);
+        }
+        
+        // Scale orbital force inversely with distance (stronger as you get closer)
+        double orbitalFactor = Math.pow(1.0 - clampedNormDist, ORBITAL_DISTANCE_FACTOR) * sizeFactor * ORBITAL_MASS_FACTOR;
+        double orbitalStrength = Mth.clamp(orbitalFactor, ORBITAL_STRENGTH_MIN, ORBITAL_STRENGTH_MAX);
+        Vec3 orbitalForce = orbitalDir.scale(orbitalStrength);
+        
+        // Combine forces (direct pull + orbital)
+        Vec3 totalForce = directPull.add(orbitalForce);
+        
+        // Apply velocity with limits for specific entity types
+        if (isForceToward(totalForce, toTarget) || toTarget.lengthSqr() < getMass() * 1.5) {
+            double momentumFactor = 0.8;
+            Vec3 preservedMotion = target.getDeltaMovement().scale(momentumFactor);
+            Vec3 newMotion = preservedMotion.add(totalForce);
+
+            target.setDeltaMovement(newMotion);
+            
+            // Mark the entity as needing physics update
+            target.hurtMarked = true;
+        }
+    }
+
     private void handleEntityPullAndConsumption() {
         Vec3 pullCenter = position().add(0, 0.75, 0);
         double outerRadius = getMass() * RADIUS_OUTER_SCALE;
@@ -192,10 +245,6 @@ public class BlackHole extends SelfGovernedEntity {
                 consumeTarget(target);
             } else {
                 applyPullForce(target, motion, pullDir, toTarget, normDist);
-            }
-
-            if (target instanceof LivingEntity living) {
-                living.hurtMarked = true;
             }
         }
     }
@@ -219,30 +268,6 @@ public class BlackHole extends SelfGovernedEntity {
         } else {
             target.discard();
             onEatThing();
-        }
-    }
-
-    private void applyPullForce(Entity target, Vec3 motion, Vec3 pullDir, Vec3 toTarget, double normDist) {
-        double clampedNormDist = Mth.clamp(normDist, 0.0, 1.0);
-        double sizeFactor = (getMass() - MIN_MASS) / (MAX_MASS - MIN_MASS);
-        double baseStrength = Math.max(0, sizeFactor * PULL_BASE_MULTIPLIER * (1.0 - Math.pow(clampedNormDist, PULL_FALLOFF_EXPONENT)));
-        double pullStrength = Mth.clamp(baseStrength, MIN_PULL_STRENGTH, MAX_PULL_STRENGTH);
-        Vec3 pullVelocity = pullDir.scale(pullStrength);
-
-        if (isForceToward(pullVelocity, toTarget)) {
-            // Apply velocity with limits for specific entity types
-            if (target instanceof FallingBlockEntity || target instanceof ItemEntity) {
-                // Get current velocity after adding pull force
-                Vec3 newVelocity = target.getDeltaMovement().add(pullVelocity);
-                // Limit maximum speed for these entities
-                double maxSpeed = 0.5;
-                if (newVelocity.lengthSqr() > maxSpeed * maxSpeed) {
-                    newVelocity = newVelocity.normalize().scale(maxSpeed);
-                }
-                target.setDeltaMovement(newVelocity);
-            } else {
-                target.addDeltaMovement(pullVelocity);
-            }
         }
     }
 
@@ -312,7 +337,13 @@ public class BlackHole extends SelfGovernedEntity {
     }
 
     private boolean isForceToward(Vec3 force, Vec3 toCenter) {
-        return force.normalize().dot(toCenter.normalize()) > 0.0;
+        // More lenient check to allow some orbital movement while still ensuring
+        // entities don't escape the pull radius
+        double alignment = force.normalize().dot(toCenter.normalize());
+        double distanceThreshold = toCenter.length() / (getMass() * RADIUS_OUTER_SCALE);
+        
+        // Allow more tangential movement when further away
+        return alignment > -0.3 || distanceThreshold < 0.5;
     }
 
     private void flashAbsorbEffect(BlockPos pos) {
