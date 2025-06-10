@@ -1,9 +1,8 @@
 package com.danielkkrafft.wilddungeons.item.itemhelpers;
 
-import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.entity.BaseClasses.ArrowFactory;
-import com.danielkkrafft.wilddungeons.item.itemhelpers.ItemData.BowWeaponData;
 import com.danielkkrafft.wilddungeons.item.itemhelpers.ItemData.AbstractProjectileParent;
+import com.danielkkrafft.wilddungeons.item.itemhelpers.ItemData.BowWeaponData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -21,7 +20,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-import static com.danielkkrafft.wilddungeons.WildDungeons.*;
+import static com.danielkkrafft.wilddungeons.WildDungeons.makeGeoModelRL;
+import static com.danielkkrafft.wilddungeons.WildDungeons.makeItemTextureRL;
 import static net.minecraft.world.item.BowItem.getPowerForTime;
 
 public class BaseBowWeapon extends AbstractProjectileParent<BaseBowWeapon, BowWeaponData, BaseBowWeapon.BowFactoryModel> {
@@ -112,7 +112,7 @@ public class BaseBowWeapon extends AbstractProjectileParent<BaseBowWeapon, BowWe
                 lastUseDuration = net.neoforged.neoforge.event.EventHooks.onArrowLoose(stack, level, player, lastUseDuration, !itemstack.isEmpty());
                 if (lastUseDuration < 0) return;
                 float f = getPowerForTime(lastUseDuration);
-                WildDungeons.getLogger().info("PowerForTime: {}", f);
+//                WildDungeons.getLogger().info("PowerForTime: {}", f);
                 if (!((double)f < 0.1)) {
                     List<ItemStack> list = draw(stack, itemstack, player);
                     if (level instanceof ServerLevel serverlevel && !list.isEmpty()) {

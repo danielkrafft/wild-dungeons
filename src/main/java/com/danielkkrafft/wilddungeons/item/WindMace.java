@@ -1,10 +1,8 @@
 package com.danielkkrafft.wilddungeons.item;
 
-import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.entity.WindChargeProjectile;
 import com.danielkkrafft.wilddungeons.entity.renderer.WindMaceRenderer;
 import com.danielkkrafft.wilddungeons.item.itemhelpers.WDItemBase;
-import com.danielkkrafft.wilddungeons.registry.WDItems;
 import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
 import com.danielkkrafft.wilddungeons.util.CameraShakeUtil;
 import com.danielkkrafft.wilddungeons.util.UtilityMethods;
@@ -128,7 +126,7 @@ public class WindMace extends WDItemBase {
                 double a =  10 - (diff - JITTER_TICK) / 20.0;
                 double b = 9;
                 double progress = Math.max(a, b);
-                WildDungeons.getLogger().info("a: {}, b: {}", a, b);
+//                WildDungeons.getLogger().info("a: {}, b: {}", a, b);
                 double pullDir = 0.4 * Math.sin(progress * Math.toRadians(diff * 9));
 
                 if(livingEntity instanceof Player player)
@@ -160,7 +158,7 @@ public class WindMace extends WDItemBase {
                 animator.setSoundKeyframeHandler(state -> {
                     if(state.getKeyframeData().getSound().equals("mace_smash"))
                     {
-                        WildDungeons.getLogger().info("Strike? DMG: {} ", dmg);
+//                        WildDungeons.getLogger().info("Strike? DMG: {} ", dmg);
                         level.playSound(null,strikePosition.x,strikePosition.y,strikePosition.z, WDSoundEvents.WIND_MACE_SMASH.value(),SoundSource.PLAYERS,3,0.7f);
                         WindChargeProjectile.radiusHit(level,strikePosition,radius,2,radius,null).forEach(
                                 l->{

@@ -2,9 +2,9 @@ package com.danielkkrafft.wilddungeons;
 
 import com.danielkkrafft.wilddungeons.entity.model.*;
 import com.danielkkrafft.wilddungeons.entity.renderer.*;
-import com.danielkkrafft.wilddungeons.registry.WDBlocks;
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
 import com.danielkkrafft.wilddungeons.registry.WDFluids;
+import com.danielkkrafft.wilddungeons.util.CameraShakeUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
@@ -14,8 +14,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.event.ViewportEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.common.NeoForge;
@@ -28,9 +30,8 @@ public class WildDungeonsClient {
     public static final String MODID = "wilddungeons";
 
     public static void initializeClient() {
-        //ForgeEventBus.register();
-        NeoForge.EVENT_BUS.addListener(ForgeEventBus::onClientTick);
-        NeoForge.EVENT_BUS.addListener(ForgeEventBus::onCameraShake);
+        NeoForge.EVENT_BUS.addListener(WildDungeonsClient::onClientTick);
+        NeoForge.EVENT_BUS.addListener(WildDungeonsClient::onCameraShake);
     }
 
     @SubscribeEvent
@@ -93,7 +94,6 @@ public class WildDungeonsClient {
 
         ItemBlockRenderTypes.setRenderLayer(WDFluids.LIFE_LIQUID.get(), RenderType.translucent());
         ItemBlockRenderTypes.setRenderLayer(WDFluids.FLOWING_LIFE_LIQUID.get(), RenderType.translucent());
-        ItemBlockRenderTypes.setRenderLayer(WDBlocks.IRON_GRATE.get(), RenderType.cutout());
     }
 
     @SubscribeEvent
@@ -107,9 +107,25 @@ public class WildDungeonsClient {
 
     @SubscribeEvent
     public static void registerKeymappings(RegisterKeyMappingsEvent event) {
-        //so... turns out if you register the keybinding in a 'dist = client' class, it doesn't register in the keybinding list. BUT, if you register it in the common class, it does. So we have to do this here, and then filter for the client
         if (net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) {
             event.register(TOGGLE_ESSENCE_TYPE);
+        }
+    }
+
+    //these are bus.GAME events, not bus.MOD events
+    public static void onClientTick(ClientTickEvent.Post event){
+        // --- Camera Shake ---
+        float delta = Minecraft.getInstance().getFrameTimeNs() / 50_000_000f; // for your camera shake
+        CameraShakeUtil.tick(delta);
+    }
+
+    public static void onCameraShake(ViewportEvent.ComputeCameraAngles event) {
+        float shake = CameraShakeUtil.getShakeStrength();
+        if (shake > 0f) {
+            double yawOffset = (Math.random() - 0.5) * shake;
+            double pitchOffset = (Math.random() - 0.5) * shake;
+            event.setYaw(event.getYaw() + (float)yawOffset);
+            event.setPitch(event.getPitch() + (float)pitchOffset);
         }
     }
 

@@ -1,9 +1,7 @@
 package com.danielkkrafft.wilddungeons.item;
 
-import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.entity.WindChargeProjectile;
 import com.danielkkrafft.wilddungeons.entity.renderer.WindCannonRenderer;
-import com.danielkkrafft.wilddungeons.item.itemhelpers.SwingHandler;
 import com.danielkkrafft.wilddungeons.item.itemhelpers.WDItemBase;
 import com.danielkkrafft.wilddungeons.registry.WDDataComponents;
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
@@ -35,7 +33,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
-public class WindCannon extends WDItemBase implements SwingHandler {
+public class WindCannon extends WDItemBase {
 
     public static final String NAME = "wind_cannon";
     public static final String COMPRESS_DATA = "compress_data";
@@ -73,18 +71,21 @@ public class WindCannon extends WDItemBase implements SwingHandler {
     }
 
     @Override
-    public void onSwing(Player player, ItemStack itemStack) {
-
-        if (getCompressions(itemStack) > 0) {
+    public boolean onEntitySwing(@NotNull ItemStack stack, @NotNull LivingEntity entity, @NotNull InteractionHand hand) {
+        if (!(entity instanceof Player player)) {
+            return super.onEntitySwing(stack, entity, hand);
+        }
+        if (getCompressions(stack) > 0) {
             if (player.getCooldowns().getCooldownPercent(this, (Minecraft.getInstance().getFrameTimeNs() / 50_000_000f)) <= 0) {
-                launchWindCharge(player, itemStack);
+                launchWindCharge(player, stack);
             }
         }
+        return super.onEntitySwing(stack, entity, hand);
     }
 
     public void launchWindCharge(@NotNull LivingEntity entity, @NotNull ItemStack stack)
     {
-        WildDungeons.getLogger().info("LaunchWindCharge");
+//        WildDungeons.getLogger().info("LaunchWindCharge");
         int comps = getCompressions(stack);
         Level lvl = entity.level();
         stack.hurtAndBreak(1, entity, EquipmentSlot.MAINHAND);

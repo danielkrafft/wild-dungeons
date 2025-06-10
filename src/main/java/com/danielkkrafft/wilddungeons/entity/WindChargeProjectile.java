@@ -1,6 +1,5 @@
 package com.danielkkrafft.wilddungeons.entity;
 
-import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
 import com.danielkkrafft.wilddungeons.util.UtilityMethods;
 import net.minecraft.client.Minecraft;
@@ -193,7 +192,7 @@ public class WindChargeProjectile extends Projectile implements GeoEntity
     }
     public void destroy()
     {
-        WildDungeons.getLogger().info("WindChargeProjectile#destroy");
+//        WildDungeons.getLogger().info("WindChargeProjectile#destroy");
         List<LivingEntity>list=radiusHit();
         DamageSource source=damageSources().generic();
         if(getOwner()instanceof LivingEntity owner)
