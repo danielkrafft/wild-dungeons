@@ -4,6 +4,7 @@ import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.entity.BaseClasses.SelfGovernedEntity;
 import com.danielkkrafft.wilddungeons.registry.WDDamageTypes;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -15,14 +16,16 @@ import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.FallingBlockEntity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.core.particles.ParticleTypes;
 
 import java.util.*;
 
@@ -45,16 +48,16 @@ public class BlackHole extends SelfGovernedEntity {
     private static final int MIN_DAMAGE = 1;                                // Minimum damage to entities in range
     private static final int MAX_DAMAGE = 10;                               // Maximum damage scaled by mass
     private static final double MIN_PULL_STRENGTH = 0.1;                   // Minimum gravitational pull strength
-    private static final double MAX_PULL_STRENGTH = 3;                      // Maximum gravitational pull strength
-    private static final double PULL_BASE_MULTIPLIER = 2.5;                   // Scaling multiplier for pull strength
-    private static final double PULL_FALLOFF_EXPONENT = 2;                  // How fast pull drops off with distance (quadratic)
+    private static final double MAX_PULL_STRENGTH = 0.2;                      // Maximum gravitational pull strength
+    private static final double PULL_BASE_MULTIPLIER = 0.25;                   // Scaling multiplier for pull strength
+    private static final double PULL_FALLOFF_EXPONENT = 3;                  // How fast pull drops off with distance (quadratic)
     private static final float DIRECTION_LERP_MIN = 0.1f;                   // Minimum influence when smaller black hole redirects
     private static final float DIRECTION_LERP_MAX = 0.25f;                  // Maximum influence when smaller black hole redirects
 
     // Entity and block destruction
     private static final int ENTITY_DAMAGE_COOLDOWN_TICKS = 10;             // Per-entity cooldown for repeated damage
-    private static final int MIN_BLOCKS_DESTROYED = 1;                      // Minimum blocks randomly selected to destroy
-    private static final int MAX_BLOCKS_DESTROYED = 500;                    // Maximum blocks randomly selected to destroy
+    private static final int MIN_BLOCKS_DESTROYED = 10;                      // Minimum blocks randomly selected to destroy
+    private static final int MAX_BLOCKS_DESTROYED = 100;                    // Maximum blocks randomly selected to destroy
     private static final int BLOCK_DESTROY_SPREAD_TICKS = 3;                // Number of ticks to spread block destruction across
     private Queue<BlockPos> pendingDestruction = new ArrayDeque<>();
     private int destructionSpreadTickCounter = 0;                           // Ticks remaining for this destruction round
@@ -127,8 +130,7 @@ public class BlackHole extends SelfGovernedEntity {
         }
 
         setPos(getX() + motion.x, getY() + motion.y, getZ() + motion.z);
-        lerpMotion(motion.x, motion.y, motion.z);
-        setDeltaMovement(motion);
+//        setDeltaMovement(motion);//this does nothing because this movement calculation is not vanilla friendly
     }
 
     private void handleFusion() {
@@ -167,8 +169,8 @@ public class BlackHole extends SelfGovernedEntity {
     private void handleEating() {
         damageCooldowns.replaceAll((id, ticks) -> Math.max(0, ticks - 1));
 
-        handleEntityPullAndConsumption();
         handleBlockDestruction();
+        handleEntityPullAndConsumption();
     }
 
     private void handleEntityPullAndConsumption() {
@@ -226,10 +228,21 @@ public class BlackHole extends SelfGovernedEntity {
         double baseStrength = Math.max(0, sizeFactor * PULL_BASE_MULTIPLIER * (1.0 - Math.pow(clampedNormDist, PULL_FALLOFF_EXPONENT)));
         double pullStrength = Mth.clamp(baseStrength, MIN_PULL_STRENGTH, MAX_PULL_STRENGTH);
         Vec3 pullVelocity = pullDir.scale(pullStrength);
-        Vec3 newMotion = motion.scale(0.85).add(pullVelocity).scale(0.5);
 
         if (isForceToward(pullVelocity, toTarget)) {
-            target.setDeltaMovement(newMotion);
+            // Apply velocity with limits for specific entity types
+            if (target instanceof FallingBlockEntity || target instanceof ItemEntity) {
+                // Get current velocity after adding pull force
+                Vec3 newVelocity = target.getDeltaMovement().add(pullVelocity);
+                // Limit maximum speed for these entities
+                double maxSpeed = 0.5;
+                if (newVelocity.lengthSqr() > maxSpeed * maxSpeed) {
+                    newVelocity = newVelocity.normalize().scale(maxSpeed);
+                }
+                target.setDeltaMovement(newVelocity);
+            } else {
+                target.addDeltaMovement(pullVelocity);
+            }
         }
     }
 
@@ -241,12 +254,26 @@ public class BlackHole extends SelfGovernedEntity {
 
         if (pendingDestruction.isEmpty()) {
             int blocksToSample = (int) Mth.lerp((getMass() - MIN_MASS) / (MAX_MASS - MIN_MASS), MIN_BLOCKS_DESTROYED, MAX_BLOCKS_DESTROYED);
-            for (int i = 0; i < blocksToSample; i++) {
-                int dx = Mth.floor((random.nextDouble() - 0.5) * 2 * outerRadius);
-                int dy = Mth.floor((random.nextDouble() - 0.5) * 2 * outerRadius);
-                int dz = Mth.floor((random.nextDouble() - 0.5) * 2 * outerRadius);
-                pendingDestruction.add(center.offset(dx, dy, dz));
+            int maxRadius = Mth.ceil(outerRadius);
+
+            // Start from center and expand outward in shells
+            for (int r = 0; r <= maxRadius && (long) pendingDestruction.size() < blocksToSample; r++) {
+                // Process each shell from the inside out
+                for (int x = -r; x <= r && (long) pendingDestruction.size() < blocksToSample; x++) {
+                    for (int y = -r; y <= r && (long) pendingDestruction.size() < blocksToSample; y++) {
+                        for (int z = -r; z <= r && (long) pendingDestruction.size() < blocksToSample; z++) {
+                            // Only consider blocks on the current shell
+                            if (Math.abs(x) == r || Math.abs(y) == r || Math.abs(z) == r) {
+                                BlockPos pos = center.offset(x, y, z);
+                                if (pos.distSqr(center) <= outerRadius * outerRadius && !level().isEmptyBlock(pos) && !pendingDestruction.contains(pos) && !level().getBlockState(pos).is(Blocks.BEDROCK)) {
+                                    pendingDestruction.add(pos);
+                                }
+                            }
+                        }
+                    }
+                }
             }
+
             destructionSpreadTickCounter = BLOCK_DESTROY_SPREAD_TICKS;
         }
 
@@ -277,8 +304,9 @@ public class BlackHole extends SelfGovernedEntity {
                 level().addParticle(ParticleTypes.CLOUD, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0, 0.1, 0);
             } else {
                 level().levelEvent(2001, pos, Block.getId(state));
+                FallingBlockEntity fallingBlock = FallingBlockEntity.fall(level(), pos, state);
                 level().destroyBlock(pos, false);
-                onEatThing();
+//                onEatThing();
             }
         }
     }
