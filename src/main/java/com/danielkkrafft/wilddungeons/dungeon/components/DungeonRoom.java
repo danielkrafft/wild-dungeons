@@ -20,7 +20,6 @@ import com.danielkkrafft.wilddungeons.util.Serializer;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ChunkHolder;
@@ -319,7 +318,7 @@ public class DungeonRoom {
                 };
             }
             if (!point.isConnected()) {
-                point.block(2, false);
+                point.block(2);
                 point.removeDecal();
             }
         }

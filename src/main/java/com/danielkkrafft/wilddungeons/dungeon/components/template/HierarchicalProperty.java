@@ -8,6 +8,7 @@ import com.danielkkrafft.wilddungeons.dungeon.registries.LootTableRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.registries.OfferingTemplateTableRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.registries.SoundscapeTemplateRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
+import com.danielkkrafft.wilddungeons.registry.WDBlocks;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.util.WeightedTable;
 import com.danielkkrafft.wilddungeons.world.dimension.EmptyGenerator;
@@ -61,7 +62,7 @@ public class HierarchicalProperty<T> {
     public static final HierarchicalProperty<Boolean> PLACE_ANYWHERE = new HierarchicalProperty<>(new TypeToken<>() {}, false);
     public static final HierarchicalProperty<Integer> MIN_Y = new HierarchicalProperty<>(new TypeToken<>() {}, EmptyGenerator.MIN_Y + 1);
     public static final HierarchicalProperty<Integer> MAX_Y = new HierarchicalProperty<>(new TypeToken<>() {}, EmptyGenerator.GEN_DEPTH - 1);
-    public static final HierarchicalProperty<Block> BLOCKING_BLOCK = new HierarchicalProperty<>(new TypeToken<>() {}, null);
+    public static final HierarchicalProperty<Block> BLOCKING_BLOCK = new HierarchicalProperty<>(new TypeToken<>() {}, WDBlocks.IRON_GRATE.get());
 
 
     private final TypeToken<T> type;

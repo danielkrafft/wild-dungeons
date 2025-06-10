@@ -33,6 +33,8 @@ import org.joml.Vector3f;
 
 import java.util.*;
 
+import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.BLOCKING_BLOCK;
+
 public class ConnectionPoint {
     public static final ResourceLocation SWORD_TEXTURE = WildDungeons.rl("textures/item/white_sword.png");
     public static final ResourceLocation CHEST_TEXTURE = WildDungeons.rl("textures/item/white_chest.png");
@@ -107,7 +109,7 @@ public class ConnectionPoint {
         for (int x = transBox.minX(); x <= transBox.maxX(); x++) {
             for (int y = transBox.minY(); y <= transBox.maxY(); y++) {
                 for (int z = transBox.minZ(); z <= transBox.maxZ(); z++) {
-                    result.add(new BlockPos(x, y , z));
+                    result.add(new BlockPos(x, y, z));
                 }
             }
         }
@@ -227,7 +229,7 @@ public class ConnectionPoint {
 
     public Vector3f getAveragePosition() {
         BoundingBox box = this.getRealBoundingBox();
-        return new Vector3f(box.minX() + (float) box.getXSpan() /2, box.minY() + (float) box.getYSpan() /2, box.minZ() + (float) box.getZSpan() /2);
+        return new Vector3f(box.minX() + (float) box.getXSpan() / 2, box.minY() + (float) box.getYSpan() / 2, box.minZ() + (float) box.getZSpan() / 2);
     }
 
     public void hide() {
@@ -235,10 +237,10 @@ public class ConnectionPoint {
         getPositions(this.getRoom().getOrientation(), this.getRoom().getPosition()).forEach((pos) -> level.setBlock(pos, this.getRoom().getMaterial().get(DungeonMaterial.BlockSetting.BlockType.HIDDEN, 0, this.getRoom().getProperty(HierarchicalProperty.MATERIAL_NOISE), pos), 2));
     }
 
-    public void block(int flags, boolean isConnected) {
+    public void block(int flags) {
         this.getRoom().getActivePlayers().forEach(wdPlayer -> {
             ServerPlayer player = wdPlayer.getServerPlayer();
-            if (player!=null && this.getRealBoundingBox().isInside(player.blockPosition())) {
+            if (player != null && this.getRealBoundingBox().isInside(player.blockPosition())) {
                 Vec3 position = wdPlayer.getServerPlayer().position();
                 Vec3i normal = this.getConnectedPoint().getDirection(this.getConnectedPoint().getRoom().getOrientation()).getNormal();
                 Vec3 newPosition = new Vec3(
@@ -252,11 +254,9 @@ public class ConnectionPoint {
         getPositions(this.getRoom().getOrientation(), this.getRoom().getPosition()).forEach((pos) -> {
 
 
-            BlockState blockState = this.getRoom().getMaterial().get(DungeonMaterial.BlockSetting.BlockType.BASIC, this.getRoom().getProperty(HierarchicalProperty.BLOCKING_MATERIAL_INDEX), this.getRoom().getProperty(HierarchicalProperty.MATERIAL_NOISE), pos);
-
-            if (isConnected && this.getRoom().getProperty(HierarchicalProperty.BLOCKING_BLOCK) != null) {
-                blockState = this.getRoom().getProperty(HierarchicalProperty.BLOCKING_BLOCK).defaultBlockState();
-            }
+            BlockState blockState = this.isConnected() ?
+                    this.getRoom().getProperty(BLOCKING_BLOCK).defaultBlockState() :
+                    this.getRoom().getMaterial().get(DungeonMaterial.BlockSetting.BlockType.BASIC, this.getRoom().getProperty(HierarchicalProperty.BLOCKING_MATERIAL_INDEX), this.getRoom().getProperty(HierarchicalProperty.MATERIAL_NOISE), pos);
 
             if (this.getRoom().getProperty(HierarchicalProperty.DESTRUCTION_RULE).equals(DungeonRoomTemplate.DestructionRule.SHELL) || (this.getRoom().getProperty(HierarchicalProperty.DESTRUCTION_RULE).equals(DungeonRoomTemplate.DestructionRule.SHELL_CLEAR) && !this.getRoom().isClear())) {
                 level.setBlock(pos, blockState.getBlock().defaultBlockState(), flags);
@@ -271,7 +271,7 @@ public class ConnectionPoint {
         unBlockedBlockStates.forEach((pos, blockState) -> level.setBlock(pos, TemplateHelper.fixBlockStateProperties(blockStateFromString(blockState), this.getRoom().getSettings()), 2));
     }
 
-    public void addDecal(){
+    public void addDecal() {
         Decal decal = this.getDecal();
         if (decal != null) {
             DecalRenderer.addServerDecal(decal);

@@ -32,7 +32,7 @@ public class LockableEventRoom extends DungeonRoom {
 
         this.getConnectionPoints().forEach(point -> {
             if (point.isConnected()) {
-                point.block(2, true);
+                point.block(2);
                 point.removeDecal();
             }
         });
@@ -109,7 +109,7 @@ public class LockableEventRoom extends DungeonRoom {
                 //this code only works when the *next* branch is generated too
                 if (point.getConnectedPoint().getBranchIndex() > this.getBranch().getIndex() ||
                         (point.getConnectedPoint().getRoom().getIndex() > this.getIndex() && point.getConnectedPoint().getBranchIndex() == this.getBranch().getIndex())) {
-                    point.block(2, false);
+                    point.block(2);
                     point.removeDecal();
                 } else {
                     point.unBlock();
