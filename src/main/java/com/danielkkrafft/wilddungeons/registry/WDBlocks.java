@@ -64,7 +64,7 @@ public class WDBlocks {
 
     public static final DeferredBlock<Block> EMERALD_PILE = registerWithItem("emerald_pile", () -> new EmeraldPileBlock(BlockBehaviour.Properties.of().mapColor(MapColor.EMERALD).strength(1.5F, 6.0F).noOcclusion().instabreak().sound(SoundType.AMETHYST)));
 
-    public static final DeferredBlock<Block> IRON_GRATE = registerWithItem("iron_grate", () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.COPPER_GRATE)));
+    public static final DeferredBlock<Block> IRON_GRATE = registerWithItem("iron_grate", () -> new WaterloggedTransparentBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.COPPER_GRATE).mapColor(MapColor.TERRACOTTA_LIGHT_GRAY)));
 
 
     private static <T extends Block> DeferredBlock<T> registerWithItem(String name, Supplier<T> supplier, Item.@NotNull Properties properties) {

@@ -1,6 +1,7 @@
 {
-  "parent": "minecraft:block/copper_grate",
+  "parent": "minecraft:block/cube_all",
   "textures": {
     "all": "wilddungeons:block/iron_grate"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }
