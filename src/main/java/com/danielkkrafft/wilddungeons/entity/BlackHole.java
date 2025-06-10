@@ -33,7 +33,7 @@ public class BlackHole extends SelfGovernedEntity {
     // Core size logic
     private float mass = 1.0f;
     private static final float MIN_MASS = 0.1f;                             // Minimum black hole size before death
-    private static final float MAX_MASS = 4f;                               // Maximum black hole size before advanced decay begins
+    private static final float MAX_MASS = 5f;                               // Maximum black hole size before advanced decay begins
     private static final float GROWTH_PER_CONSUME = 0.01f;                  // Mass increase when consuming blocks/entities
     private static final float SHRINK_RATE = 0.001f;                        // Shrink per tick when moving or at max size
     private static final float BASE_DECAY_RATE = 0.001f;                    // Base decay rate once max size is hit
@@ -42,14 +42,14 @@ public class BlackHole extends SelfGovernedEntity {
     private int decayCooldownTicks = 0;                                     // Tracks remaining grace period ticks
 
     // Interaction and pull behavior
-    private static final double RADIUS_OUTER_SCALE = 2.5;                   // Outer interaction radius multiplier
+    private static final double RADIUS_OUTER_SCALE = 3.5;                   // Outer interaction radius multiplier
     private static final double RADIUS_INNER_SCALE = .5;                    // Inner kill/damage radius multiplier
     private static final int MIN_DAMAGE = 1;                                // Minimum damage to entities in range
     private static final int MAX_DAMAGE = 10;                               // Maximum damage scaled by mass
     private static final double MIN_PULL_STRENGTH = 0.1;                   // Minimum gravitational pull strength
-    private static final double MAX_PULL_STRENGTH = 0.2;                      // Maximum gravitational pull strength
-    private static final double PULL_BASE_MULTIPLIER = 0.25;                   // Scaling multiplier for pull strength
-    private static final double PULL_FALLOFF_EXPONENT = 3;                  // How fast pull drops off with distance (quadratic)
+    private static final double MAX_PULL_STRENGTH = .5;                      // Maximum gravitational pull strength
+    private static final double PULL_BASE_MULTIPLIER = 0.5;                   // Scaling multiplier for pull strength
+    private static final double PULL_FALLOFF_EXPONENT = 4;                  // How fast pull drops off with distance (quadratic)
     private static final float DIRECTION_LERP_MIN = 0.1f;                   // Minimum influence when smaller black hole redirects
     private static final float DIRECTION_LERP_MAX = 0.25f;                  // Maximum influence when smaller black hole redirects
     
@@ -179,7 +179,7 @@ public class BlackHole extends SelfGovernedEntity {
         handleEntityPullAndConsumption();
     }
 
-    private void applyPullForce(Entity target, Vec3 motion, Vec3 pullDir, Vec3 toTarget, double normDist) {
+    private void applyPullForce(Entity target, Vec3 targetMovementDelta, Vec3 pullDir, Vec3 toTarget, double normDist) {
         double clampedNormDist = Mth.clamp(normDist, 0.0, 1.0);
         double sizeFactor = (getMass() - MIN_MASS) / (MAX_MASS - MIN_MASS);
         
@@ -215,14 +215,12 @@ public class BlackHole extends SelfGovernedEntity {
         
         // Apply velocity with limits for specific entity types
         if (isForceToward(totalForce, toTarget) || toTarget.lengthSqr() < getMass() * 1.5) {
-            double momentumFactor = 0.8;
-            Vec3 preservedMotion = target.getDeltaMovement().scale(momentumFactor);
-            Vec3 newMotion = preservedMotion.add(totalForce);
-
-            target.setDeltaMovement(newMotion);
-            
+            double momentumFactor = 0.75;
+            Vec3 invertedPreservedMotion = target.getDeltaMovement().scale(-(1 - momentumFactor));
+            target.addDeltaMovement(invertedPreservedMotion);
+            target.addDeltaMovement(totalForce);
             // Mark the entity as needing physics update
-            target.hurtMarked = true;
+            target.hurtMarked = true;//necessary or players wont move, and entities will appear jittery
         }
     }
 
@@ -376,7 +374,8 @@ public class BlackHole extends SelfGovernedEntity {
     }
 
     public void onEatThing() {
-        float newSize = getMass() + GROWTH_PER_CONSUME;
+        double sizeFactor = 1.1 - Math.clamp((getMass() - MIN_MASS) / (MAX_MASS - MIN_MASS),0,1);
+        float newSize = (float) (getMass() + (GROWTH_PER_CONSUME * sizeFactor));
         setMass(newSize);
         decayCooldownTicks = DECAY_GRACE_PERIOD_TICKS;
     }

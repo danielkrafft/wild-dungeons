@@ -38,30 +38,33 @@ public class BlackHoleRenderer extends EntityRenderer<BlackHole> {
         // Billboarded core + outer glow
         poseStack.mulPose(this.entityRenderDispatcher.camera.rotation());
 
-        float pulse = 1.0f + 0.1f * Mth.sin((entity.tickCount + partialTicks) * 0.3f);
+        float pulse = 1.5f + 0.1f * Mth.sin((entity.tickCount + partialTicks) * 0.1f);
         float size = entity.getMass();
 
         // Apply size * pulse scale for the glowing outer layer
-        poseStack.scale(size * pulse, size * pulse, size * pulse);
+
+        float outerScale = size * pulse;
+        poseStack.scale(outerScale,outerScale,outerScale);
         renderQuad(poseStack, bufferSource, TEXTURE_OUTER, packedLight);
 
         // Slight Z-forward for core, negate pulse so core stays crisp
         poseStack.translate(0.0, 0.0, 0.001f);
-        poseStack.scale(1.0f / pulse, 1.0f / pulse, 1.0f / pulse); // Only size scale remains
+        poseStack.scale(1 / pulse, 1 / pulse, 1 / pulse); // Only size scale remains
         renderQuad(poseStack, bufferSource, TEXTURE_CORE, packedLight);
 
         poseStack.popPose();
 
-// Rotate and render ring (flat & spinning)
+        // Rotate and render ring (flat & spinning)
         poseStack.pushPose();
         poseStack.mulPose(this.entityRenderDispatcher.camera.rotation());
 
-// Center and rotate the ring
+        // Center and rotate the ring
         poseStack.translate(0.0, 0.0, 0.001f); // Slight forward to separate it from the core
-        poseStack.mulPose(Axis.YP.rotationDegrees((entity.tickCount + partialTicks) * 4f)); // Yaw spin
+        poseStack.mulPose(Axis.YP.rotationDegrees((entity.tickCount + partialTicks) * 2f)); // Yaw spin
         poseStack.mulPose(Axis.XP.rotationDegrees(80)); // Tilt ring
 
-// Scale the ring with black hole size (but no pulse)
+        // Scale the ring with black hole size (but no pulse)
+        // Fixed ring size
         poseStack.scale(size, size, size);
 
         renderQuad(poseStack, bufferSource, TEXTURE_RING, packedLight);
