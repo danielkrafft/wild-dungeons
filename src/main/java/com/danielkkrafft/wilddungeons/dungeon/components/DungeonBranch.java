@@ -213,6 +213,8 @@ public class DungeonBranch {
         ) {
             final DungeonRoomTemplate limitedTemplate = nextRoom;
             int placedRooms = getRooms().stream().filter(room -> room.getTemplate().equals(limitedTemplate)).toList().size();
+            //todo I can't comprehend this logic because there are two different limited room systems with the same name, one in the template and one in the floor
+            // the systems should be unified and simplified
             if ((getTemplate().limitedRooms().containsKey(nextRoom) && placedRooms >= getTemplate().limitedRooms().get(nextRoom)) ||
                     (this.floor.getTemplate().limitedRooms().contains(nextRoom) && this.floor.getTemplate().limitedRooms().atMax(nextRoom))) {
                 while (nextRoom == limitedTemplate) {

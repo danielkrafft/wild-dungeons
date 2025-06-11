@@ -101,7 +101,7 @@ public class DungeonSession {
         if (newFloor == null) { return -1; }
 
         int floorIndex = getTemplate().floorTemplates().add(newFloor, 1).size() - 1;
-        DungeonFloorTemplate template = getTemplate().floorTemplates().get(floorIndex).getRandom();
+        DungeonFloorTemplate template = getTemplate().floorTemplates().get(floorIndex).getRandom();//todo double check this, it may be editing the base template and altering the default for the entire session
 
         if (!clientFloorPoolIndex.containsKey(floorIndex)) {
             clientFloorPoolIndex.put(floorIndex, template);
