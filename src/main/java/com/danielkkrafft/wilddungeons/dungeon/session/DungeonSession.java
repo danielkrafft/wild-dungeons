@@ -20,6 +20,7 @@ import com.danielkkrafft.wilddungeons.world.dimension.tools.InfiniverseAPI;
 import com.google.common.collect.Iterables;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -67,7 +68,7 @@ public class DungeonSession {
     public String getSessionKey() {return DungeonSessionManager.buildDungeonSessionKey(this.entranceUUID);}
     public DungeonStats getStats(String uuid) {return this.playerStats.get(uuid);}
     public List<WDPlayer> getPlayers() { return this.playersInside.keySet().stream().map(uuid -> WDPlayerManager.getInstance().getOrCreateServerWDPlayer(uuid)).toList(); }
-    private HashMap<Integer, DungeonFloorTemplate> clientFloorPoolIndex = new HashMap<>();
+    private final HashMap<Integer, Pair<DungeonFloorTemplate,Integer>> dynamicFloorInstances = new HashMap<>();// Maps floor index to a pair of the template and the return floor index
 
     public enum DungeonExitBehavior {DESTROY, NEXT, RANDOMIZE, RESET, NOTHING}
     public enum DungeonOpenBehavior {NONE, ESSENCE_REQUIRED, ITEMS_REQUIRED, ENTITY_REQUIRED, GUARD_REQUIRED, KILLS_REQUIRED}
@@ -84,8 +85,13 @@ public class DungeonSession {
      * @param index The index of the floor to be returned
      */
     public DungeonFloor generateOrGetFloor(int index) {
-        while (floors.size() <= index) {
-            getTemplate().floorTemplates().get(index).getRandom().placeInWorld(this, TemplateHelper.EMPTY_BLOCK_POS);
+        for (int i = floors.size(); i < index+1 ; i++) {
+            if (i > getTemplate().floorTemplates().size()-1){
+                DungeonFloorTemplate template = dynamicFloorInstances.get(index).getFirst();
+                template.placeInWorld(this, TemplateHelper.EMPTY_BLOCK_POS, dynamicFloorInstances.get(index).getSecond());
+            } else {
+                getTemplate().floorTemplates().get(index).getRandom().placeInWorld(this, TemplateHelper.EMPTY_BLOCK_POS, -1);
+            }
         }
         return floors.get(index);
     }
@@ -94,26 +100,14 @@ public class DungeonSession {
      * Generates a new specific floor. To be used by dynamically created floors
      *
      * @param returnIndex - The index of the floor spawning this one.
-     * @param newFloor - the WeightedPool for the new floor.
+     * @param newFloorPool - the WeightedPool for the new floor.
      */
-    public int generateDynamicFloor(int returnIndex, WeightedPool<DungeonFloorTemplate> newFloor) {
+    public int generateDynamicFloor(int returnIndex, WeightedPool<DungeonFloorTemplate> newFloorPool) {
 
-        if (newFloor == null) { return -1; }
-
-        int floorIndex = getTemplate().floorTemplates().add(newFloor, 1).size() - 1;
-        DungeonFloorTemplate template = getTemplate().floorTemplates().get(floorIndex).getRandom();//todo double check this, it may be editing the base template and altering the default for the entire session
-
-        if (!clientFloorPoolIndex.containsKey(floorIndex)) {
-            clientFloorPoolIndex.put(floorIndex, template);
-        }
-
-        template.setReturnFloorIndex(returnIndex);
-        generateDynamicFloor(template);
+        DungeonFloorTemplate template = newFloorPool.getRandom();
+        int floorIndex = getTemplate().floorTemplates().size() + dynamicFloorInstances.size();//total expected floors, plus any non-template floors that have been generated in this session
+        dynamicFloorInstances.put(floorIndex, new Pair<>(template,returnIndex));
         return floorIndex;
-    }
-
-    public DungeonFloor generateDynamicFloor(DungeonFloorTemplate template) {
-        return template.placeInWorld(this, TemplateHelper.EMPTY_BLOCK_POS);
     }
 
     /**
@@ -125,12 +119,7 @@ public class DungeonSession {
      */
     public void onEnter(WDPlayer wdPlayer, int floorIndex) {
         this.dirty = true;
-        DungeonFloor floor;
-        if (clientFloorPoolIndex.containsKey(floorIndex)) {
-            floor = generateDynamicFloor(clientFloorPoolIndex.get(floorIndex));
-        } else {
-            floor = generateOrGetFloor(floorIndex);
-        }
+        DungeonFloor floor = generateOrGetFloor(floorIndex);
 
         if (!this.playersInside.containsKey(wdPlayer.getUUID())) {
             offsetLives(LIVES_PER_PLAYER);

@@ -327,8 +327,8 @@ public class DungeonRoom {
     public void processRifts() {
         getTemplate().rifts().forEach(pos -> {
             String destination;
-            if (this.getBranch().getFloor().getTemplate().getReturnFloorIndex() != -1) {
-              destination = String.valueOf(this.getBranch().getFloor().getTemplate().getReturnFloorIndex());
+            if (this.getBranch().getFloor().getReturnFloorIndex() != -1) {
+              destination = String.valueOf(this.getBranch().getFloor().getReturnFloorIndex());
             } else if (this.getBranch().getIndex() == 0) {
                 destination = String.valueOf(this.getBranch().getFloor().getIndex() - 1);
             } else if (this.getBranch().getFloor().getIndex() == this.getBranch().getFloor().getSession().getTemplate().floorTemplates().size() - 1) {

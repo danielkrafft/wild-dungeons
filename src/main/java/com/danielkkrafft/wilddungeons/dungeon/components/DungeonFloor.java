@@ -294,4 +294,24 @@ public class DungeonFloor {
         if (this.dungeonBranches == null) this.dungeonBranches = new ArrayList<>();
         this.dungeonBranches.add(branch);
     }
+
+    /**
+     * Sets the return floor index for any rifts on this floor.
+     *
+     * @param newReturnFloorIndex - the index of the floor to return to
+     */
+    public void setReturnFloorIndex(int newReturnFloorIndex) {
+        this.returnFloorIndex = newReturnFloorIndex;
+    }
+
+
+    /**
+     * Gets the return floor index for any rifts on this floor.
+     *
+     * @return - the return floor index
+     */
+    public int getReturnFloorIndex() {
+        return this.returnFloorIndex;
+    }
+
 }

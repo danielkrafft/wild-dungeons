@@ -101,6 +101,7 @@ public class Serializer
         addCustom(AttackSpeedPerk.class);
         addCustom(PoisonImmunePerk.class);
         addCustom(StepHeightPerk.class);
+        addCustom(WeaponGauntletKeyRoom.class);
         addCustom(LimitedRoomTracker.class);
         addCustom(LimitedRoomTracker.RoomContainer.class);
     }

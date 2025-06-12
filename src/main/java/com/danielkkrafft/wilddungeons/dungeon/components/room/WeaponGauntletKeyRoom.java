@@ -33,12 +33,11 @@ public class WeaponGauntletKeyRoom extends DungeonRoom {
     private void setupRifts() {
         if (!setupRifts) {
             getTemplate().rifts().forEach(pos -> {
-
                 String destination = String.valueOf(getBranch().getFloor().getSession().generateDynamicFloor(getBranch().getFloor().getIndex(), DungeonFloorPoolRegistry.WEAPON_GAUNTLET_POOL));
 
-                GAUNTLET_RIFT.setRiftDestination(getBranch().getFloor().getSession().getFloors().getLast().getTemplate().name());
-                Offering rift = GAUNTLET_RIFT.asOffering(this.getBranch().getFloor().getLevel()).setOfferingId(destination).setSoundLoop(0);
-
+                Offering rift = GAUNTLET_RIFT.asOffering(this.getBranch().getFloor().getLevel()).setSoundLoop(0);
+                rift.setOfferingId(destination);
+                rift.setRiftDestination(destination);
                 Vec3 pos1 = StructureTemplate.transform(pos, this.getSettings().getMirror(), this.getSettings().getRotation(), TemplateHelper.EMPTY_BLOCK_POS).add(this.position.getX(), this.position.getY(), this.position.getZ());
                 WildDungeons.getLogger().info("ADDING RIFT AT {}", pos1);
                 rift.setPos(pos1);

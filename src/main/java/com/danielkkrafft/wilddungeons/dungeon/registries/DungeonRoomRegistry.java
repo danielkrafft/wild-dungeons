@@ -612,16 +612,16 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     // ------- GAUNTLETS -------
     public static final DungeonRoomTemplate BOSS_KEY_ROOM = createSimple("special/gauntlet/boss_key_room").setClazz(WeaponGauntletKeyRoom.class);
     // --- SCIFI
-    public static final DungeonRoomTemplate SCIFI_ARENA_LOOT_CHOICE_ROOM = createSimple("special/gauntlet/scifi_arena_loot_room").setClazz(LootChoiceRoom.class);
-    public static final DungeonRoomTemplate SCIFI_ARENA_COMBAT_ROOM = createCombat("special/gauntlet/scifi_arena_combat_room").set(DIFFICULTY_MODIFIER, 7.0).set(WAVE_SIZE, 10).set(ROOM_CLEAR_REWARD_POOL, OfferingTemplatePoolRegistry.SCIFI_WEAPONS_POOL);
+    public static final DungeonRoomTemplate SCIFI_ARENA_LOOT_CHOICE_ROOM = createSimple("special/gauntlet/scifi_arena_loot_room").setClazz(LootChoiceRoom.class).set(DESTRUCTION_RULE,DestructionRule.SHELL_CLEAR);
+    public static final DungeonRoomTemplate SCIFI_ARENA_COMBAT_ROOM = createCombat("special/gauntlet/scifi_arena_combat_room").set(DESTRUCTION_RULE,DestructionRule.SHELL_CLEAR).set(DIFFICULTY_MODIFIER, 7.0).set(WAVE_SIZE, 10).set(ROOM_CLEAR_REWARD_POOL, OfferingTemplatePoolRegistry.SCIFI_WEAPONS_POOL);
     public static final DungeonRoomTemplate SCIFI_ARENA_EXIT_ROOM = createSimple("special/gauntlet/scifi_arena_exit_room");
     // --- LAVA
-    public static final DungeonRoomTemplate TRIAL_ARENA_LOOT_CHOICE_ROOM = createSimple("special/gauntlet/trial_arena_loot_room").setClazz(LootChoiceRoom.class);
-    public static final DungeonRoomTemplate TRIAL_ARENA_COMBAT_ROOM = createCombat("special/gauntlet/trial_arena_combat_room").set(DIFFICULTY_MODIFIER, 7.0).set(WAVE_SIZE, 10).set(ROOM_CLEAR_REWARD_POOL, OfferingTemplatePoolRegistry.WIND_WEAPONS_POOL);
+    public static final DungeonRoomTemplate TRIAL_ARENA_LOOT_CHOICE_ROOM = createSimple("special/gauntlet/trial_arena_loot_room").setClazz(LootChoiceRoom.class).set(DESTRUCTION_RULE,DestructionRule.SHELL_CLEAR);
+    public static final DungeonRoomTemplate TRIAL_ARENA_COMBAT_ROOM = createCombat("special/gauntlet/trial_arena_combat_room").set(DESTRUCTION_RULE,DestructionRule.SHELL_CLEAR).set(DIFFICULTY_MODIFIER, 7.0).set(WAVE_SIZE, 10).set(ROOM_CLEAR_REWARD_POOL, OfferingTemplatePoolRegistry.WIND_WEAPONS_POOL);
     public static final DungeonRoomTemplate TRIAL_ARENA_EXIT_ROOM = createSimple("special/gauntlet/trial_arena_exit_room");
     // --- GENERAL
-    public static final DungeonRoomTemplate GENERAL_ARENA_LOOT_CHOICE_ROOM = createSimple("special/gauntlet/general_arena_loot_room").setClazz(LootChoiceRoom.class);
-    public static final DungeonRoomTemplate GENERAL_ARENA_COMBAT_ROOM = createCombat("special/gauntlet/general_arena_combat_room").set(DIFFICULTY_MODIFIER, 7.0).set(WAVE_SIZE, 10).set(ROOM_CLEAR_REWARD_POOL, OfferingTemplatePoolRegistry.GENERAL_WEAPONS_POOL);
+    public static final DungeonRoomTemplate GENERAL_ARENA_LOOT_CHOICE_ROOM = createSimple("special/gauntlet/general_arena_loot_room").setClazz(LootChoiceRoom.class).set(DESTRUCTION_RULE,DestructionRule.SHELL_CLEAR);
+    public static final DungeonRoomTemplate GENERAL_ARENA_COMBAT_ROOM = createCombat("special/gauntlet/general_arena_combat_room").set(DESTRUCTION_RULE,DestructionRule.SHELL_CLEAR).set(DIFFICULTY_MODIFIER, 7.0).set(WAVE_SIZE, 10).set(ROOM_CLEAR_REWARD_POOL, OfferingTemplatePoolRegistry.GENERAL_WEAPONS_POOL);
     public static final DungeonRoomTemplate GENERAL_ARENA_EXIT_ROOM = createSimple("special/gauntlet/general_arena_exit_room");
 
     public static DungeonRoomTemplate copyOf(DungeonRoomTemplate template, String name) {

@@ -14,7 +14,6 @@ public final class DungeonFloorTemplate implements DungeonRegistration.DungeonCo
     private DungeonRegistration.DungeonLayout<DungeonBranchTemplate> branchTemplates;
     private BlockPos origin = null;
     private LimitedRoomTracker limitedRooms = new LimitedRoomTracker();
-    private int returnFloorIndex = -1;
 
     public HashMap<HierarchicalProperty<?>, Object> PROPERTIES = new HashMap<>();
     public <T> DungeonFloorTemplate set(HierarchicalProperty<T> property, T value) { this.PROPERTIES.put(property, value); return this; }
@@ -24,32 +23,14 @@ public final class DungeonFloorTemplate implements DungeonRegistration.DungeonCo
         return new DungeonFloorTemplate().setName(name).set(HierarchicalProperty.DIFFICULTY_MODIFIER, 1.0);
     }
 
-    /**
-     * Sets the return floor index for any rifts on this floor.
-     *
-     * @param newReturnFloorIndex - the index of the floor to return to
-     */
-    public DungeonFloorTemplate setReturnFloorIndex(int newReturnFloorIndex) {
-        this.returnFloorIndex = newReturnFloorIndex;
-        return this;
-    }
-
-    /**
-     * Gets the return floor index for any rifts on this floor.
-     *
-     * @return - the return floor index
-     */
-    public int getReturnFloorIndex() {
-        return this.returnFloorIndex;
-    }
-
     public DungeonFloor calculateLayout(DungeonSession session, BlockPos position) {
         return new DungeonFloor(this.name, session.getSessionKey(), position);
     }
 
-    public DungeonFloor placeInWorld(DungeonSession session, BlockPos position) {
+    public DungeonFloor placeInWorld(DungeonSession session, BlockPos position, Integer returnFloorIndex) {
         WildDungeons.getLogger().info("PLACING FLOOR: {}", this.name());
         DungeonFloor newFloor = new DungeonFloor(this.name, session.getSessionKey(), position);
+        newFloor.setReturnFloorIndex(returnFloorIndex);
         newFloor.asyncGenerateBranches();
         return newFloor;
     }
