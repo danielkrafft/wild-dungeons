@@ -1,11 +1,11 @@
 package com.danielkkrafft.wilddungeons.dungeon.components;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.dungeon.components.helpers.LimitedRoomTracker;
 import com.danielkkrafft.wilddungeons.dungeon.components.process.PostProcessingStep;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonBranchTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonFloorTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
-import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateOrientation;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.network.ClientPacketHandler;
@@ -14,7 +14,6 @@ import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.danielkkrafft.wilddungeons.registry.WDDimensions;
 import com.danielkkrafft.wilddungeons.util.Serializer;
-import com.danielkkrafft.wilddungeons.world.dimension.EmptyGenerator;
 import com.danielkkrafft.wilddungeons.world.dimension.tools.InfiniverseAPI;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
@@ -71,6 +70,8 @@ public class DungeonFloor {
     private final List<WDPlayer> playersWaitingToEnter = new ArrayList<>();
     public static ResourceKey<Level> buildFloorLevelKey(DungeonFloor floor) { return ResourceKey.create(Registries.DIMENSION, WildDungeons.rl(DungeonSessionManager.buildDungeonSessionKey(floor.getSession().getEntranceUUID()) + "___" + floor.getTemplate().name() + "___" + floor.index)); }
     @Serializer.IgnoreSerialization public int failureCount = 0;
+    private LimitedRoomTracker limitedRooms = new LimitedRoomTracker();
+    public LimitedRoomTracker limitedRooms() {return this.limitedRooms;}
     public DungeonFloor(String templateKey, String sessionKey, BlockPos origin) {
         this.sessionKey = sessionKey;
         this.index = this.getSession().getFloors().size();
@@ -174,7 +175,7 @@ public class DungeonFloor {
      * Called upon initial Floor creation, and during validation. Creates a CompletableFuture which attempts to place branches until the amount required by DungeonLayout is met.
      */
     public void asyncGenerateBranches() {
-
+        this.limitedRooms.clone(this.getTemplate().limitedRooms());
         int totalBranchCount = getTemplate().branchTemplates().size();
         int currentBranchCount = this.dungeonBranches.size();
         int restartCount = 0;
@@ -187,7 +188,10 @@ public class DungeonFloor {
                 if (restartCount > 3) {
                     break;
                 }
-                dungeonBranches.forEach(DungeonBranch::destroyRooms);
+                for (DungeonBranch dungeonBranch : dungeonBranches) {
+                    this.limitedRooms.remove(dungeonBranch.limitedRooms());
+                    dungeonBranch.destroyRooms();
+                }
                 failureCount = 0;
                 this.dungeonBranches.clear();
                 currentBranchCount = 0;

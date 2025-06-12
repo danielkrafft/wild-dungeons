@@ -12,6 +12,7 @@ import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.danielkkrafft.wilddungeons.util.CommandUtil;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import com.danielkkrafft.wilddungeons.util.Serializer;
+import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 
@@ -19,7 +20,6 @@ import java.util.*;
 
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonBranchRegistry.DUNGEON_BRANCH_REGISTRY;
-import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomRegistry.BOSS_KEY_ROOM;
 
 public class DungeonBranch {
 
@@ -49,6 +49,8 @@ public class DungeonBranch {
     public void setIndex(int index) {this.index = index;}
     public boolean isFullyGenerated() {return this.fullyGenerated;}
     public boolean hasPlayerVisited(String uuid) {return this.playersInside.containsKey(uuid);}
+    private LimitedRoomTracker limitedRooms = new LimitedRoomTracker();
+    public LimitedRoomTracker limitedRooms() {return this.limitedRooms;}
 
     public DungeonBranch(String templateKey, DungeonFloor floor) {
         this.floor = floor;
@@ -117,10 +119,6 @@ public class DungeonBranch {
 
         if (nextRoom == null) {
             return false;
-        }
-
-        if (nextRoom == BOSS_KEY_ROOM) {
-            WildDungeons.getLogger().info("Spawning BOSS_KEY_ROOM");
         }
 
         if (openConnections < OPEN_CONNECTIONS_TARGET) {
@@ -205,32 +203,16 @@ public class DungeonBranch {
                 return entry.getKey();
             }
         }
+        WeightedPool<DungeonRoomTemplate> pool = getTemplate().roomTemplates().get(getRooms().size());
 
-        DungeonRoomTemplate nextRoom = getTemplate().roomTemplates().get(getRooms().size()).getRandom();
+        WeightedPool<DungeonRoomTemplate> strippedPool = new WeightedPool<>();
+        pool.getAllWithWeights(room -> {
+            return !((this.limitedRooms().contains(room) && this.limitedRooms().atMax(room)) || (this.getFloor().limitedRooms().contains(room) && this.getFloor().limitedRooms().atMax(room)));
+        }).forEach(entry -> strippedPool.add(entry.getFirst(), entry.getSecond()));
 
-        if (getTemplate().limitedRooms().containsKey(nextRoom) ||
-            this.floor.getTemplate().limitedRooms().contains(nextRoom)
-        ) {
-            final DungeonRoomTemplate limitedTemplate = nextRoom;
-            int placedRooms = getRooms().stream().filter(room -> room.getTemplate().equals(limitedTemplate)).toList().size();
-            //todo I can't comprehend this logic because there are two different limited room systems with the same name, one in the template and one in the floor
-            // the systems should be unified and simplified
-            if ((getTemplate().limitedRooms().containsKey(nextRoom) && placedRooms >= getTemplate().limitedRooms().get(nextRoom)) ||
-                    (this.floor.getTemplate().limitedRooms().contains(nextRoom) && this.floor.getTemplate().limitedRooms().atMax(nextRoom))) {
-                while (nextRoom == limitedTemplate) {
-                    nextRoom = getTemplate().roomTemplates().get(getRooms().size()).getRandom();
-                    if (getTemplate().roomTemplates().get(getRooms().size()).size() == 1) {
-                        return this.floor.getTemplate().limitedRooms()
-                                .getRoomContainer(nextRoom)
-                                .map(LimitedRoomTracker.RoomContainer::getFallbackTemplate)
-                                .orElse(null);
-                    }
-                }
-            }
-            else {
-                this.floor.getTemplate().limitedRooms().increment(nextRoom);
-            }
-        }
+        DungeonRoomTemplate nextRoom = strippedPool.size() > 0 ? strippedPool.getRandom() : pool.getRandom();
+        this.getFloor().limitedRooms().increment(nextRoom);
+        this.limitedRooms().increment(nextRoom);
 
         return nextRoom;
     }

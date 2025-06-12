@@ -5,6 +5,7 @@ import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.DungeonLayout;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
+import com.danielkkrafft.wilddungeons.dungeon.components.helpers.LimitedRoomTracker;
 import com.danielkkrafft.wilddungeons.dungeon.registries.DungeonBranchRegistry;
 
 import java.util.HashMap;
@@ -13,12 +14,13 @@ public final class DungeonBranchTemplate implements DungeonRegistration.DungeonC
     private String name;
     private DungeonLayout<DungeonRoomTemplate> roomTemplates;
     private HashMap<DungeonRoomTemplate, Integer> mandatoryRooms = new HashMap<>();
-    private HashMap<DungeonRoomTemplate, Integer> limitedRooms = new HashMap<>();
+    private LimitedRoomTracker limitedRooms = new LimitedRoomTracker();
     private int rootOriginBranchIndex = -1;
 
     public HashMap<HierarchicalProperty<?>, Object> PROPERTIES = new HashMap<>();
     public <T> DungeonBranchTemplate set(HierarchicalProperty<T> property, T value) { this.PROPERTIES.put(property, value); return this; }
     public <T> T get(HierarchicalProperty<T> property) { return (T) this.PROPERTIES.get(property); }
+    public LimitedRoomTracker limitedRooms() {return this.limitedRooms;}
 
     public static DungeonBranchTemplate create(String name) {
         return new DungeonBranchTemplate().setName(name).set(HierarchicalProperty.DIFFICULTY_MODIFIER, 1.0);
@@ -27,6 +29,7 @@ public final class DungeonBranchTemplate implements DungeonRegistration.DungeonC
 
     public DungeonBranch placeInWorld(DungeonFloor floor) {
         DungeonBranch newBranch = new DungeonBranch(this.name, floor);
+        newBranch.limitedRooms().clone(this.limitedRooms);
         int tries = 0;
         while (tries < 4) {
             try {
@@ -52,9 +55,6 @@ public final class DungeonBranchTemplate implements DungeonRegistration.DungeonC
     public HashMap<DungeonRoomTemplate, Integer> mandatoryRooms() {
         return mandatoryRooms;
     }
-    public HashMap<DungeonRoomTemplate, Integer> limitedRooms() {
-        return limitedRooms;
-    }
 
     public DungeonBranchTemplate setName(String name) {
         this.name = name;
@@ -71,8 +71,15 @@ public final class DungeonBranchTemplate implements DungeonRegistration.DungeonC
         return this;
     }
 
-    public DungeonBranchTemplate setLimitedRooms(HashMap<DungeonRoomTemplate, Integer> limitedRooms) {
-        this.limitedRooms = limitedRooms;
+    public DungeonBranchTemplate setLimitedRooms(LimitedRoomTracker roomsToClone) {
+        this.limitedRooms.reset();
+        this.limitedRooms.clone(roomsToClone);
+        return this;
+    }
+
+    public DungeonBranchTemplate addLimitedRoom(DungeonRoomTemplate template, Integer maxAmount) {
+
+        limitedRooms.add(template, maxAmount);
         return this;
     }
 
@@ -83,7 +90,7 @@ public final class DungeonBranchTemplate implements DungeonRegistration.DungeonC
                 .setName(newName)
                 .setRoomTemplates(template.roomTemplates)
                 .setMandatoryRooms(template.mandatoryRooms)
-                .setLimitedRooms(template.limitedRooms)
+                .setLimitedRooms(template.limitedRooms())
                 .setRootOriginBranchIndex(template.rootOriginBranchIndex)
                 .setProperties(new HashMap<>(template.PROPERTIES)));
         return DungeonBranchRegistry.DUNGEON_BRANCH_REGISTRY.get(newName);

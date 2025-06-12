@@ -9,17 +9,13 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonFloorTe
 import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.levelgen.Heightmap;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.PRIMARY_COLOR;
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.SECONDARY_COLOR;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonBranchRegistry.*;
-import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonBranchRegistry.GAUNTLET_GENERAL_EXIT_BRANCH;
-import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomRegistry.*;
+import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomRegistry.BOSS_KEY_ROOM;
 
 public class DungeonFloorRegistry {
     public static final DungeonRegistration.DungeonComponentRegistry<DungeonFloorTemplate> DUNGEON_FLOOR_REGISTRY = new DungeonRegistration.DungeonComponentRegistry<>();
@@ -106,7 +102,7 @@ public class DungeonFloorRegistry {
                             .addSimple(VILLAGE_MEDIUM_BRANCH)
                             .addSimple(VILLAGE_SMALL_BRANCH)
             )
-            .addLimitedRoom(BOSS_KEY_ROOM, VILLAGE_SEWER_CHESTCAP, 1)
+            .addLimitedRoom(BOSS_KEY_ROOM, 1)
             .set(HierarchicalProperty.PRE_ROOM_GEN_PROCESSING_STEPS, List.of(new AddBedrockShellStep()))
             .set(HierarchicalProperty.ENEMY_TABLE, EnemyTableRegistry.VILLAGE_ENEMY_TABLE)
             .set(HierarchicalProperty.SOUNDSCAPE, SoundscapeTemplateRegistry.VD_OVERFLOW)
@@ -130,6 +126,7 @@ public class DungeonFloorRegistry {
                             .addSimple(VILLAGE_SMALL_GAUNTLET_BRANCH)
                             .addSimple(VILLAGE_SMALL_GAUNTLET_BRANCH)
             )
+            .addLimitedRoom(BOSS_KEY_ROOM, 1)
             .set(HierarchicalProperty.PRE_ROOM_GEN_PROCESSING_STEPS, List.of(new AddBedrockShellStep()))
             .set(HierarchicalProperty.ENEMY_TABLE, EnemyTableRegistry.VILLAGE_ENEMY_TABLE)
             .set(HierarchicalProperty.SOUNDSCAPE, SoundscapeTemplateRegistry.VD_OVERFLOW)

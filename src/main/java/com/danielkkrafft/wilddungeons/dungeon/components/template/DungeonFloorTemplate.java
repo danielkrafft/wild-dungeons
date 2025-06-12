@@ -13,7 +13,7 @@ public final class DungeonFloorTemplate implements DungeonRegistration.DungeonCo
     private String name;
     private DungeonRegistration.DungeonLayout<DungeonBranchTemplate> branchTemplates;
     private BlockPos origin = null;
-    private LimitedRoomTracker limitedRooms = new LimitedRoomTracker();//todo because this is in the template, when we generate more dungeons, it will not reset the limited rooms
+    private LimitedRoomTracker limitedRooms = new LimitedRoomTracker();
     private int returnFloorIndex = -1;
 
     public HashMap<HierarchicalProperty<?>, Object> PROPERTIES = new HashMap<>();
@@ -74,9 +74,8 @@ public final class DungeonFloorTemplate implements DungeonRegistration.DungeonCo
         return this;
     }
 
-    public DungeonFloorTemplate addLimitedRoom(DungeonRoomTemplate template, DungeonRoomTemplate fallbackTemplate, Integer maxAmount) {
-
-        limitedRooms.add(template, fallbackTemplate, maxAmount);
+    public DungeonFloorTemplate addLimitedRoom(DungeonRoomTemplate template, Integer maxAmount) {
+        limitedRooms.add(template, maxAmount);
         return this;
     }
 

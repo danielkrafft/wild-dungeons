@@ -12,7 +12,9 @@ import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialPoolRegistry.*;
@@ -174,7 +176,6 @@ public class DungeonBranchRegistry {
     public static final DungeonBranchTemplate VILLAGE_SEWER_ALL = create("VILLAGE_SEWER_ALL")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .add(VILLAGE_SEWER_POOL,10)
-                    .addSimpleMaybe(BOSS_KEY_ROOM, 100)
                     .addSimple(VILLAGE_SEWER_PERK))
             .set(MATERIAL, VILLAGE_SEWER_MATERIAL_POOL)
             .set(HierarchicalProperty.ENEMY_TABLE, EnemyTableRegistry.BASIC_ENEMY_TABLE)
@@ -184,15 +185,6 @@ public class DungeonBranchRegistry {
             .set(FLOOR_DISTANCE_WEIGHT, 400)
             .set(HAS_BEDROCK_SHELL, true)
             .set(SOUNDSCAPE, SoundscapeTemplateRegistry.VD_OVERFLOW);
-
-    public static final DungeonBranchTemplate VILLAGE_SEWER_BOSS_KEY_BRANCH = create("VILLAGE_SEWER_BOSS_KEY_BRANCH")
-            .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
-                    .addSimple(BOSS_KEY_ROOM))
-            .setLimitedRooms(new HashMap<>(Map.of(BOSS_KEY_ROOM, 1)))
-            .set(MATERIAL, VILLAGE_SEWER_MATERIAL_POOL)
-            .set(HAS_BEDROCK_SHELL, true)
-            .set(SOUNDSCAPE, SoundscapeTemplateRegistry.VD_OVERFLOW)
-            .set(PLACE_ANYWHERE, true);
 
     public static final DungeonBranchTemplate VILLAGE_SEWER_ENDING_BRANCH = create("VILLAGE_SEWER_ENDING_BRANCH")
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
@@ -240,7 +232,7 @@ public class DungeonBranchRegistry {
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .add(VILLAGE_WIDE_PATH_POOL,28)
             )
-            .setLimitedRooms(new HashMap<>(Map.of(VILLAGE_METRO_WIDE_CROSSROADS, 2)))
+            .addLimitedRoom(VILLAGE_METRO_WIDE_CROSSROADS, 2)
             .set(MATERIAL, VILLAGE_MATERIAL_POOL)
             .set(BLOCKING_MATERIAL_INDEX, 2)
             .set(FLOOR_DISTANCE_WEIGHT, 0)
@@ -256,7 +248,7 @@ public class DungeonBranchRegistry {
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .add(VILLAGE_MEDIUM_PLOTS,80)
             )
-            .setLimitedRooms(new HashMap<>(Map.of(VILLAGE_METRO_WIDE_CROSSROADS, 2)))
+            .addLimitedRoom(VILLAGE_METRO_WIDE_CROSSROADS, 2)
             .set(MATERIAL, VILLAGE_MATERIAL_POOL)
             .set(BLOCKING_MATERIAL_INDEX, 2)
             .set(BRANCH_DISTANCE_WEIGHT, -50)
@@ -272,7 +264,7 @@ public class DungeonBranchRegistry {
             .setRoomTemplates(new DungeonLayout<DungeonRoomTemplate>()
                     .add(VILLAGE_SMALL_PLOTS,160)
             )
-            .setLimitedRooms(new HashMap<>(Map.of(VILLAGE_METRO_WIDE_CROSSROADS, 2)))
+            .addLimitedRoom(VILLAGE_METRO_WIDE_CROSSROADS, 2)
             .set(MATERIAL, VILLAGE_MATERIAL_POOL)
             .set(BLOCKING_MATERIAL_INDEX, 2)
             .set(BRANCH_DISTANCE_WEIGHT, -50)
@@ -300,15 +292,14 @@ public class DungeonBranchRegistry {
             )
             .set(MATERIAL, VILLAGE_MATERIAL_POOL)
             .set(LOOT_TABLE,METRO_LOOT_TABLE)
-            .setLimitedRooms(new HashMap<>(Map.of(
-                    VILLAGE_METRO_CHLTER121_TWR_CUBICLES,2,
-                    VILLAGE_METRO_CHLTER121_TWR_LIBRARY,2,
-                    VILLAGE_METRO_CHLTER121_TWR_SEVERANCE,2,
-                    VILLAGE_METRO_MOBFIA_TWR_OFFICE,2,
-                    VILLAGE_METRO_FLYINGNOKK_TWR_SEVERANCE_HALLS,2,
-                    VILLAGE_METRO_FLYINGNOKK_TWR_JAIL,2,
-                    VILLAGE_METRO_FLYINGNOKK_TWR_LOBBY,2,
-                    VILLAGE_METRO_FLYINGNOKK_TWR_VAULT,2)))
+            .addLimitedRoom(VILLAGE_METRO_CHLTER121_TWR_CUBICLES, 2)
+            .addLimitedRoom(VILLAGE_METRO_CHLTER121_TWR_LIBRARY, 2)
+            .addLimitedRoom(VILLAGE_METRO_CHLTER121_TWR_SEVERANCE, 2)
+            .addLimitedRoom(VILLAGE_METRO_MOBFIA_TWR_OFFICE, 2)
+            .addLimitedRoom(VILLAGE_METRO_FLYINGNOKK_TWR_SEVERANCE_HALLS, 2)
+            .addLimitedRoom(VILLAGE_METRO_FLYINGNOKK_TWR_JAIL, 2)
+            .addLimitedRoom(VILLAGE_METRO_FLYINGNOKK_TWR_LOBBY, 2)
+            .addLimitedRoom(VILLAGE_METRO_FLYINGNOKK_TWR_VAULT, 2)
             .set(SOUNDSCAPE, SoundscapeTemplateRegistry.VD_ANGEL_INVESTOR_SAFE)
             .setRootOriginBranchIndex(4);
 
@@ -336,15 +327,14 @@ public class DungeonBranchRegistry {
             )
             .set(MATERIAL, VILLAGE_MATERIAL_POOL)
             .set(LOOT_TABLE,METRO_LOOT_TABLE)
-            .setLimitedRooms(new HashMap<>(Map.of(
-                    VILLAGE_METRO_CHLTER121_TWR_CUBICLES,2,
-                    VILLAGE_METRO_CHLTER121_TWR_LIBRARY,2,
-                    VILLAGE_METRO_CHLTER121_TWR_SEVERANCE,2,
-                    VILLAGE_METRO_MOBFIA_TWR_OFFICE,2,
-                    VILLAGE_METRO_FLYINGNOKK_TWR_SEVERANCE_HALLS,2,
-                    VILLAGE_METRO_FLYINGNOKK_TWR_JAIL,2,
-                    VILLAGE_METRO_FLYINGNOKK_TWR_LOBBY,2,
-                    VILLAGE_METRO_FLYINGNOKK_TWR_VAULT,2)))
+            .addLimitedRoom(VILLAGE_METRO_CHLTER121_TWR_CUBICLES, 2)
+            .addLimitedRoom(VILLAGE_METRO_CHLTER121_TWR_LIBRARY, 2)
+            .addLimitedRoom(VILLAGE_METRO_CHLTER121_TWR_SEVERANCE, 2)
+            .addLimitedRoom(VILLAGE_METRO_MOBFIA_TWR_OFFICE, 2)
+            .addLimitedRoom(VILLAGE_METRO_FLYINGNOKK_TWR_SEVERANCE_HALLS, 2)
+            .addLimitedRoom(VILLAGE_METRO_FLYINGNOKK_TWR_JAIL, 2)
+            .addLimitedRoom(VILLAGE_METRO_FLYINGNOKK_TWR_LOBBY, 2)
+            .addLimitedRoom(VILLAGE_METRO_FLYINGNOKK_TWR_VAULT, 2)
             .set(SOUNDSCAPE, SoundscapeTemplateRegistry.VD_ANGEL_INVESTOR_SAFE)
             .setRootOriginBranchIndex(6);
     public static final DungeonBranchTemplate VILLAGE_METRO_STREETS_GAUNTLET_BRANCH = copyOf(VILLAGE_METRO_STREETS_BRANCH, "VILLAGE_METRO_STREETS_GAUNTLET_BRANCH")

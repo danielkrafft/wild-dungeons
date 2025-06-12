@@ -126,27 +126,24 @@ public class DungeonRoomPoolRegistry {
             .add(NETHER_FACTORY_SHOP_2, 1);
 
     public static final WeightedPool<DungeonRoomTemplate> VILLAGE_SEWER_POOL = create("VILLAGE_SEWER_POOL")
-            .add(VILLAGE_SEWER_1, 1)
-            .add(VILLAGE_SEWER_2, 1)
-            .add(VILLAGE_SEWER_3, 1)
-            .add(VILLAGE_SEWER_4, 1)
-            .add(VILLAGE_SEWER_5, 1)
-            .add(VILLAGE_SEWER_6, 1)
-            .add(VILLAGE_SEWER_7, 1)
-            .add(VILLAGE_SEWER_8, 1)
-            .add(VILLAGE_SEWER_9, 1)
-            .add(VILLAGE_SEWER_10, 1)
-            .add(VILLAGE_SEWER_11, 1)
-            .add(VILLAGE_SEWER_12, 1)
-            .add(VILLAGE_SEWER_13, 1)
-            .add(VILLAGE_SEWER_CHESTCAP, 1)
-            .add(VILLAGE_SEWER_ELEVATOR, 1)
-            .add(VILLAGE_SEWER_DEELEVATOR, 1)
-            .add(VILLAGE_SEWER_12_COMBAT, 2);
-
-    public static final WeightedPool<DungeonRoomTemplate> VILLAGE_BOSS_KEY_POOL = create("VILLAGE_BOSS_KEY_POOL")
-            .add(VILLAGE_SEWER_CHESTCAP, 1)
-            .add(BOSS_KEY_ROOM, 1);
+            .add(VILLAGE_SEWER_1, 10)
+            .add(VILLAGE_SEWER_2, 10)
+            .add(VILLAGE_SEWER_3, 10)
+            .add(VILLAGE_SEWER_4, 10)
+            .add(VILLAGE_SEWER_5, 10)
+            .add(VILLAGE_SEWER_6, 10)
+            .add(VILLAGE_SEWER_7, 10)
+            .add(VILLAGE_SEWER_8, 10)
+            .add(VILLAGE_SEWER_9, 10)
+            .add(VILLAGE_SEWER_10, 10)
+            .add(VILLAGE_SEWER_11, 10)
+            .add(VILLAGE_SEWER_12, 10)
+            .add(VILLAGE_SEWER_13, 10)
+            .add(VILLAGE_SEWER_CHESTCAP, 10)
+            .add(VILLAGE_SEWER_ELEVATOR, 10)
+            .add(VILLAGE_SEWER_DEELEVATOR, 10)
+            .add(VILLAGE_SEWER_12_COMBAT, 20)//180 points at time of writing
+            .add(BOSS_KEY_ROOM,2); //1/90 chance to spawn a boss key room, limited by floor generation to be no more than one per floor
 
     public static final WeightedPool<DungeonRoomTemplate> VILLAGE_WIDE_PATH_POOL = create("VILLAGE_WIDE_PATH_POOL")
             .add(VILLAGE_METRO_WIDE_CROSSROADS,2)

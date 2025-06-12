@@ -8,6 +8,7 @@ import net.minecraft.world.level.levelgen.synth.SimplexNoise;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class WeightedPool<T> implements DungeonRegistration.DungeonComponent {
 
@@ -83,6 +84,16 @@ public class WeightedPool<T> implements DungeonRegistration.DungeonComponent {
 
     public List<Pair<T, Integer>> getAllWithWeights() {
         return this.pool;
+    }
+
+    public List<Pair<T, Integer>> getAllWithWeights(Predicate<T> filter) {
+        List<Pair<T, Integer>> result = new ArrayList<>();
+        for (Pair<T, Integer> pair : this.pool) {
+            if (filter.test(pair.getFirst())) {
+                result.add(pair);
+            }
+        }
+        return result;
     }
 
     public void computeTotalWeight() {

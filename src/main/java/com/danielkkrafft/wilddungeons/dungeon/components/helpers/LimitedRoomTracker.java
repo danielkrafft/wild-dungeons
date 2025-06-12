@@ -10,28 +10,34 @@ import java.util.Optional;
 
 public class LimitedRoomTracker {
 
-    private List<RoomContainer> rooms = new ArrayList<>();
+    public List<RoomContainer> rooms = new ArrayList<>();
 
-    public void add(DungeonRoomTemplate template, DungeonRoomTemplate fallbackTemplate, int maxAllowed) {
-        rooms.add(new RoomContainer(template, fallbackTemplate, maxAllowed));
+    public void add(DungeonRoomTemplate template, int maxAllowed) {
+        rooms.add(new RoomContainer(template.name(), maxAllowed));
+//        WildDungeons.getLogger().debug("Rooms after add: {}", rooms);
     }
 
     public boolean contains(DungeonRoomTemplate template) {
-        return this.rooms.stream().anyMatch(entry -> entry.getRoomTemplate().equals(template));
+        return this.rooms.stream().anyMatch(entry -> entry.getRoomName().equals(template.name()));
     }
 
     public void increment(DungeonRoomTemplate template) {
         for (RoomContainer container : rooms) {
-            if (container.getRoomTemplate().equals(template)) {
+            if (container.getRoomName().equals(template.name())) {
+//                WildDungeons.getLogger().debug("Incrementing room count for template: {}", template.name());
                 container.increment();
                 return;
             }
         }
     }
 
-    public Optional<RoomContainer> getRoomContainer(DungeonRoomTemplate template) {
+    public void reset() {
+        rooms.forEach(RoomContainer::reset);
+    }
+
+    public Optional<RoomContainer> getRoomContainer(String otherName) {
         for (RoomContainer container : rooms) {
-            if (container.getRoomTemplate().equals(template)) {
+            if (container.getRoomName().equals(otherName)) {
                 return Optional.of(container);
             }
         }
@@ -39,7 +45,7 @@ public class LimitedRoomTracker {
     }
 
     public boolean atMax(DungeonRoomTemplate template) {
-        return getRoomContainer(template)
+        return getRoomContainer(template.name())
                 .map(c -> c.getCurrentCount() >= c.getMaxAllowed())
                 .orElseGet(() -> {
                     WildDungeons.getLogger().warn("RoomContainer not found for template: {}", template);
@@ -47,27 +53,42 @@ public class LimitedRoomTracker {
                 });
     }
 
+    public void clone(LimitedRoomTracker other) {
+        this.rooms.clear();
+        for (RoomContainer container : other.rooms) {
+            this.rooms.add(container.copy());
+        }
+    }
+
+    public void remove(LimitedRoomTracker other) {
+        for (RoomContainer container : other.rooms) {
+            getRoomContainer(container.getRoomName()).ifPresent(existingContainer -> {
+                existingContainer.subtract(container.getCurrentCount());
+            });
+        }
+    }
 
     public static class RoomContainer {
-        private DungeonRoomTemplate template;
-        private DungeonRoomTemplate fallbackTemplate;
+        private String template;
         private int maxAllowed;
         private int currentCount = 0;
 
-        public RoomContainer(DungeonRoomTemplate template, DungeonRoomTemplate fallbackTemplate, int max) {
-            this.template = template;
-            this.fallbackTemplate = fallbackTemplate;
+        public RoomContainer(String templateName, int max) {
+            this.template = templateName;
             this.maxAllowed = max;
         }
 
-        public DungeonRoomTemplate getRoomTemplate() { return template; }
+        public String getRoomName() { return template; }
         public int getMaxAllowed() { return maxAllowed; }
         public int getCurrentCount() { return currentCount; }
         public void increment(){
             this.currentCount++;
         }
+        public void reset() {this.currentCount = 0;}
+        public void subtract(int amount){
+            this.currentCount = Math.max(0, this.currentCount - amount);
+        }
 
-        public DungeonRoomTemplate getFallbackTemplate() { return fallbackTemplate; };
 
         @Override
         public int hashCode() {
@@ -79,6 +100,10 @@ public class LimitedRoomTracker {
             if (this == obj) return true;
             if (!(obj instanceof RoomContainer other)) return false;
             return Objects.equals(template, other.template); // null-safe
+        }
+
+        public RoomContainer copy() {
+            return new RoomContainer(template, maxAllowed);
         }
     }
 }

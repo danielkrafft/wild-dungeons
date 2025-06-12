@@ -62,17 +62,6 @@ public class DungeonRegistration {
             return this;
         }
 
-        // Adds a room if the chance is met or below. For example, chance = 30 means a 30% chance this room will spawn.
-        public DungeonLayout<T> addSimpleMaybe(T entry, int chance) {//todo this only runs once per session, not per generation
-            int roll = ThreadLocalRandom.current().nextInt(1, 101); // 1 to 100 inclusive
-            if (roll <= chance) {
-                WildDungeons.getLogger().info("addSimpleMaybe: roll: {}, chance: {}, adding entry: {}", roll, chance, entry);
-                this.addSimple(entry);
-            }
-            return this;
-        }
-
-
         public WeightedPool<T> get(int index) {return this.order.get(index);}
         public int size() {return this.order.size();}
         public WeightedPool<T> getFirst() {return this.order.getFirst();}

@@ -2,6 +2,7 @@ package com.danielkkrafft.wilddungeons.util;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.components.*;
+import com.danielkkrafft.wilddungeons.dungeon.components.helpers.LimitedRoomTracker;
 import com.danielkkrafft.wilddungeons.dungeon.components.perk.*;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.*;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateOrientation;
@@ -100,6 +101,8 @@ public class Serializer
         addCustom(AttackSpeedPerk.class);
         addCustom(PoisonImmunePerk.class);
         addCustom(StepHeightPerk.class);
+        addCustom(LimitedRoomTracker.class);
+        addCustom(LimitedRoomTracker.RoomContainer.class);
     }
 
     private static void addCustom(Class<?> clazz) {
