@@ -5,6 +5,7 @@ import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateOrientation;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
+import com.danielkkrafft.wilddungeons.registry.WDBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -123,7 +124,7 @@ public class LockableEventRoom extends DungeonRoom {
     public void processDataMarker(BlockPos pos, String metadata) {
         super.processDataMarker(pos, metadata);
         if (metadata.equals("wd_gate")) {
-            BlockState state = this.isClear() ? Blocks.AIR.defaultBlockState() : Blocks.REDSTONE_BLOCK.defaultBlockState();
+            BlockState state = this.isClear() ? Blocks.AIR.defaultBlockState() : WDBlocks.IRON_GRATE.get().defaultBlockState();
             this.getBranch().getFloor().getLevel().setBlock(pos, state, 130);
         }
     }
