@@ -10,8 +10,6 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -149,68 +147,66 @@ public class GrapplingHook extends ThrowableProjectile {
             return;
         }
 
-        Player p = getPlayerOwner(this.level());
-        ItemStack it = lookForStack(p);
+        Player playerOwner = getPlayerOwner(this.level());
+        ItemStack itemStack = lookForStack(playerOwner);
 
-        if (!p.level().equals(this.level())) {
-            Meathook.resetHook(p, it);
-            if (Meathook.getHookUUID(it) == null) {
+        if (!playerOwner.level().equals(this.level())) {
+            Meathook.resetHook(playerOwner, itemStack);
+            if (Meathook.getHookUUID(itemStack) == null) {
                 discard();
             }
         } else {
-            if (MathUtil.distance(p.position(), position()) > 100) {
-                Meathook.resetHook(p, it);
-                if (Meathook.getHookUUID(it) == null) {
+            float playerDistance = (float) MathUtil.distance(playerOwner.position(), position());
+            if (playerDistance > 100) {
+                Meathook.resetHook(playerOwner, itemStack);
+                if (Meathook.getHookUUID(itemStack) == null) {
                     discard();
                 }
             } else {
                 if (getHookDisp() != null) {
                     final double maxVel = 0.5;
-                    double vel = p.getDeltaMovement().length();
-                    if (vel > maxVel && (p.onGround() || p.horizontalCollision || p.verticalCollision)) {
-                        //Meathook.resetHook(p, it);
-                        if (Meathook.getHookUUID(it) == null) {
-                            p.setDeltaMovement(p.getDeltaMovement().multiply(0.1, 0, 0.1).add(0, 0.65, 0));
+                    double vel = playerOwner.getDeltaMovement().length();
+                    if (vel > maxVel && (playerOwner.onGround() || playerOwner.horizontalCollision || playerOwner.verticalCollision)) {
+                        //Meathook.resetHook(playerOwner, itemStack);
+                        if (Meathook.getHookUUID(itemStack) == null) {
+                            playerOwner.setDeltaMovement(playerOwner.getDeltaMovement().multiply(0.1, 0, 0.1).add(0, 0.65, 0));
                             //discard();
                         }
                     } else {
                         // Check if player is trying to release the hook (crouching is more reliable for server use)
-                        if (p.isShiftKeyDown()) {
-                            Meathook.resetHook(p, it);
-                            if (Meathook.getHookUUID(it) == null) {
+                        if (playerOwner.isShiftKeyDown()) {
+                            Meathook.resetHook(playerOwner, itemStack);
+                            if (Meathook.getHookUUID(itemStack) == null) {
                                 discard();
                             }
                         } else {
                             if (tickCount % 5 == 0)
                                 this.level().playSound(null, blockPosition(), reelSound(), SoundSource.NEUTRAL, 1f, 1f);
 
-                            float[] f = MathUtil.entitylookAtEntity(p, this);
+                            float[] f = MathUtil.entitylookAtEntity(playerOwner, this);
                             final double maxD = 0.12;
                             double delta = vel > 2 ? 0 : maxD;
-                            p.setDeltaMovement(p.getDeltaMovement().add(MathUtil.velocity3d(delta, f[0], f[1])));
+                            if (playerDistance > 3) {//stop pulling when too close to let the player kinda dangle a bit
 
-                            // Strafe movements based on player motion instead of direct key inputs
-                            // Look at player's sideways motion to determine if they're strafing
-                            float sidewaysMotion = p.zza; // Forward/backward input
-                            float forwardMotion = p.xxa; // Left/right input
-
-                            if (forwardMotion > 0) { // Moving left
-                                p.setDeltaMovement(p.getDeltaMovement().add(MathUtil.velocity3d(maxD, f[0] - 90, f[1])));
-                            }
-                            if (forwardMotion < 0) { // Moving right
-                                p.setDeltaMovement(p.getDeltaMovement().add(MathUtil.velocity3d(maxD, f[0] + 90, f[1])));
-                            }
-
-                            if (it != null) {
-                                if (MathUtil.distance(p.position(), position()) < (Math.max(vel, 1.1)) ||
-                                        MathUtil.distance(p.getEyePosition(), position()) < (Math.max(vel, 0.5))) {
-                                    Meathook.resetHook(p, it);
-                                    if (Meathook.getHookUUID(it) == null) {
-                                        p.setDeltaMovement(p.getDeltaMovement().multiply(0.1, 0, 0.1).add(0, 0.65, 0));
-                                        discard();
-                                    }
+                                // Calculate movement vector with yaw adjusted for strafing
+                                float adjustedYaw = f[0];
+                                float adjustedPitch = f[1];
+                                if (playerOwner.xxa > 0) {
+                                    adjustedYaw -= 25;
+                                } else if (playerOwner.xxa < 0) {
+                                    adjustedYaw += 25;
+                                } else if (playerOwner.zza > 0) {
+                                    adjustedPitch += 25;
+                                } else if (playerOwner.zza < 0) {
+                                    adjustedPitch -= 25;
                                 }
-                            } else discard();
+
+                                playerOwner.addDeltaMovement(MathUtil.velocity3d(delta, adjustedYaw, adjustedPitch));
+                            }
+
+                            if (itemStack == null) {
+                                discard();
+                            }
 
                             setDeltaMovement(Vec3.ZERO);
                             if (entity) {
@@ -219,8 +215,8 @@ public class GrapplingHook extends ThrowableProjectile {
                                         hook.level().equals(this.level())) {
                                     moveTo(hook.position().add(getHookDisp()));
                                 } else {
-                                    Meathook.resetHook(p, it);
-                                    if (Meathook.getHookUUID(it) == null) {
+                                    Meathook.resetHook(playerOwner, itemStack);
+                                    if (Meathook.getHookUUID(itemStack) == null) {
                                         discard();
                                     }
                                 }
