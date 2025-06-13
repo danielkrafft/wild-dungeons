@@ -143,7 +143,7 @@ public class DungeonRoomPoolRegistry {
             .add(VILLAGE_SEWER_ELEVATOR, 10)
             .add(VILLAGE_SEWER_DEELEVATOR, 10)
             .add(VILLAGE_SEWER_12_COMBAT, 20)//180 points at time of writing
-            .add(BOSS_KEY_ROOM,5); // 1/37 chance to spawn a boss key room, limited by floor generation to be no more than one per floor
+            .add(BOSS_KEY_ROOM,10); // 2/37 chance to spawn a boss key room, limited by floor generation to be no more than one per floor // DK - doubled chances
 
     public static final WeightedPool<DungeonRoomTemplate> VILLAGE_WIDE_PATH_POOL = create("VILLAGE_WIDE_PATH_POOL")
             .add(VILLAGE_METRO_WIDE_CROSSROADS,2)
