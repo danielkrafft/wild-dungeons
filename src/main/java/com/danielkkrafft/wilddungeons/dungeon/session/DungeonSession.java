@@ -85,12 +85,12 @@ public class DungeonSession {
      * @param index The index of the floor to be returned
      */
     public DungeonFloor generateOrGetFloor(int index) {
-        for (int i = floors.size(); i < index+1 ; i++) {
-            if (i > getTemplate().floorTemplates().size()-1){
+        for (int i = floors.size(); i <= index; i++) {
+            if (i >= getTemplate().floorTemplates().size()) {
                 DungeonFloorTemplate template = dynamicFloorInstances.get(index).getFirst();
-                template.placeInWorld(this, TemplateHelper.EMPTY_BLOCK_POS, dynamicFloorInstances.get(index).getSecond());
+                template.placeInWorld(this, TemplateHelper.EMPTY_BLOCK_POS, dynamicFloorInstances.get(i).getSecond());
             } else {
-                getTemplate().floorTemplates().get(index).getRandom().placeInWorld(this, TemplateHelper.EMPTY_BLOCK_POS, -1);
+                getTemplate().floorTemplates().get(i).getRandom().placeInWorld(this, TemplateHelper.EMPTY_BLOCK_POS, -1);
             }
         }
         return floors.get(index);

@@ -9,7 +9,6 @@ import com.danielkkrafft.wilddungeons.util.WeightedPool;
 
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonFloorPoolRegistry.OVERWORLD_FLOOR_POOL;
-import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonFloorPoolRegistry.VILLAGE_FLOOR_POOL;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonFloorRegistry.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialPoolRegistry.OVERWORLD_MATERIAL_POOL_0;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialPoolRegistry.VILLAGE_SEWER_MATERIAL_POOL;
@@ -86,7 +85,6 @@ public class DungeonRegistry {
 
     public static DungeonTemplate VILLAGE_DUNGEON = create("village_dungeon")
             .setFloorTemplates(new DungeonLayout<DungeonFloorTemplate>()
-                    .add(WeightedPool.of(VILLAGE_DUNGEON_FLOOR), 1)
                     .add(WeightedPool.of(VILLAGE_DUNGEON_FLOOR), 1)
             )
             .set(MATERIAL, VILLAGE_SEWER_MATERIAL_POOL)
