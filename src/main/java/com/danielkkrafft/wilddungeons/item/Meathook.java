@@ -54,9 +54,9 @@ public class Meathook extends WDWeapon {
                     if (Meathook.isCharging(itemStack)) {
                         Meathook.setCharging(itemStack, false);
                     }
-                    setAnimation(AnimationList.idle.toString(), itemStack, p, p.level());
+                    playAnimation(AnimationList.idle.toString(), itemStack, p, p.level());
                 } else if (!Meathook.isCharging(itemStack) && !Meathook.isCharged(itemStack))
-                    setAnimation(AnimationList.idle.toString(), itemStack, p, p.level());
+                    playAnimation(AnimationList.idle.toString(), itemStack, p, p.level());
             } else {
                 if (!world.isClientSide) {
                     MinecraftServer server = en.getServer();
@@ -80,7 +80,7 @@ public class Meathook extends WDWeapon {
     public boolean onDroppedByPlayer(ItemStack it, Player p) {
         if (!p.level().isClientSide) {
             resetHook(p, it);
-            setAnimation(AnimationList.idle.toString(), it, p, p.level());
+            playAnimation(AnimationList.idle.toString(), it, p, p.level());
             return super.onDroppedByPlayer(it, p);
         }
         return false;
@@ -121,7 +121,7 @@ public class Meathook extends WDWeapon {
             if (i == chargeSeconds * 20) {
                 level.playSound(null, livingEntity.blockPosition(), loadMeathook(), SoundSource.PLAYERS, 1f, 1f);
                 if (livingEntity instanceof Player)
-                    setAnimation(AnimationList.charge.toString(), itemStack, (Player) livingEntity, level);
+                    playAnimation(AnimationList.charge.toString(), itemStack, (Player) livingEntity, level);
             }
             setCharged(itemStack, true);
         } else {
@@ -130,7 +130,7 @@ public class Meathook extends WDWeapon {
                 level.playSound(null, livingEntity.blockPosition(), chargeMeathook(i), SoundSource.PLAYERS, 1f, 1f);
             if (i == 0) {
                 if (livingEntity instanceof Player)
-                    setAnimation(AnimationList.charge.toString(), itemStack, (Player) livingEntity, level);
+                    playAnimation(AnimationList.charge.toString(), itemStack, (Player) livingEntity, level);
             }
         }
     }
@@ -142,8 +142,8 @@ public class Meathook extends WDWeapon {
                 setCharging(it, false);
                 setCharged(it, false);
                 shoot(world, p2, it, p.getYRot(), p.getXRot());
-                setAnimation(AnimationList.fire.toString(), it, p2, world);
-            } else setAnimation(AnimationList.idle.toString(), it, p2, world);
+                playAnimation(AnimationList.fire.toString(), it, p2, world);
+            } else playAnimation(AnimationList.idle.toString(), it, p2, world);
         }
     }
 

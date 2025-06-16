@@ -1,8 +1,6 @@
 package com.danielkkrafft.wilddungeons.item;
 
 import com.danielkkrafft.wilddungeons.entity.WindChargeProjectile;
-import com.danielkkrafft.wilddungeons.entity.renderer.WindCannonRenderer;
-import com.danielkkrafft.wilddungeons.item.itemhelpers.WDItemBase;
 import com.danielkkrafft.wilddungeons.registry.WDDataComponents;
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
 import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
@@ -22,6 +20,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.WindChargeItem;
@@ -33,7 +32,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
-public class WindCannon extends WDItemBase {
+public class WindCannon extends WDWeapon {
 
     public static final String NAME = "wind_cannon";
     public static final String COMPRESS_DATA = "compress_data";
@@ -45,8 +44,7 @@ public class WindCannon extends WDItemBase {
     public WindCannon() {
         super(
                 NAME,
-                new WindCannonRenderer(),
-                new Properties()
+                new Item.Properties()
                         .rarity(Rarity.EPIC)
                         .durability(2000)
                         .stacksTo(1));
@@ -188,7 +186,7 @@ public class WindCannon extends WDItemBase {
                 server.playSound(null,player,WDSoundEvents.WIND_CANNON_RELOAD.value(), SoundSource.PLAYERS,1f,1+(0.5f*c/10f));
 
                 animator.playAnimation(this, AnimationList.compress.toString(), it, player, level);
-                animator.setAnimationSpeed(1+(c/10.*0.5));
+                animator.setAnimationSpeed((float) (1+(c/10.*0.5)),level);
 
                 addCompression(player.getItemInHand(hand));
             }

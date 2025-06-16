@@ -47,7 +47,7 @@ public class EmeraldStaffDep extends WDWeapon{
             return InteractionResultHolder.fail(player.getItemInHand(usedHand));
         }
 
-        this.setAnimation(AnimationList.summon.toString(), player.getItemInHand(usedHand), player, level);
+        this.playAnimation(AnimationList.summon.toString(), player.getItemInHand(usedHand), player, level);
         // Find an open space around the player with solid ground beneath
         BlockPos pos = player.blockPosition();
         for (int i = 0; i < 20; i++) { // Try up to 20 times

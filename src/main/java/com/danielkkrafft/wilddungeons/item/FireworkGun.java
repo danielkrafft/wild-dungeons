@@ -43,7 +43,7 @@ public class FireworkGun extends WDWeapon {
             for (int i = 0; i < inv.getContainerSize(); i++) {
                 ItemStack ammoStack = inv.getItem(i);
                 if (ammoStack.getItem().equals(Items.FIREWORK_ROCKET)) {
-                    setAnimation(AnimationList.rotate.toString(),stack,player,level);
+                    playAnimation(AnimationList.rotate.toString(),stack,player,level);
                     shoot(level,player,ammoStack,player.getYRot(),player.getXRot());
                     break;
                 }

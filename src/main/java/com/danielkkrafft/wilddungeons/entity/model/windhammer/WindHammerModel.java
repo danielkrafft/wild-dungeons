@@ -4,7 +4,7 @@ import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.entity.model.ClientModel;
 import com.danielkkrafft.wilddungeons.item.WindHammer;
 
-public class WindHammerModel extends ClientModel<WindHammer> {
+public class WindHammerModel extends ClientModel<WindHammer> {//todo remove this class
     public WindHammerModel() {
         super(
                 null,

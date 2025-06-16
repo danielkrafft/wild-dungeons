@@ -9,7 +9,7 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
-public class WindCannonRenderer extends GeoItemRenderer<WindCannon>
+public class WindCannonRenderer extends GeoItemRenderer<WindCannon>//todo remove this class and move the functionality to another class
 {
     public WindCannonRenderer()
     {

@@ -1,6 +1,8 @@
 package com.danielkkrafft.wilddungeons.entity;
 
 import com.danielkkrafft.wilddungeons.entity.BaseClasses.WDArrow;
+import com.danielkkrafft.wilddungeons.entity.model.ClientModel;
+import com.danielkkrafft.wilddungeons.item.itemhelpers.WDItemAnimator;
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
 import com.danielkkrafft.wilddungeons.sound.WindArrowSound;
 import net.minecraft.client.Minecraft;
@@ -19,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class WindArrow extends WDArrow {
 
-    private static final String NAME = "wind_arrow";
+    public static final String NAME = "wind_arrow";
     private static final int DEFAULT_SPAWN_DELAY = 8;
     private static final int DEFAULT_CHARGE_SIZE = 1;
     private static final EntityDataAccessor<Integer> SPAWN_DELAY = SynchedEntityData.defineId(WindArrow.class, EntityDataSerializers.INT);
@@ -33,6 +35,8 @@ public class WindArrow extends WDArrow {
 
     public WindArrow(Level level, LivingEntity livingEntity) {
         this(WDEntities.WIND_ARROW.value(), level);
+        this.animator = new WDItemAnimator(NAME, this);
+        this.model = new ClientModel<>(NAME, NAME, NAME);
 
         Vec3 position = livingEntity.position();
         this.setPos(position.x, livingEntity.getEyeY() - 0.1, position.z);

@@ -1,8 +1,8 @@
 package com.danielkkrafft.wilddungeons.entity.BaseClasses;
 
+import com.danielkkrafft.wilddungeons.entity.model.ClientModel;
 import com.danielkkrafft.wilddungeons.item.itemhelpers.WDItemAnimator;
-import com.danielkkrafft.wilddungeons.item.itemhelpers.WDItemBase;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.level.Level;
@@ -10,50 +10,44 @@ import net.minecraft.world.phys.EntityHitResult;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.SingletonGeoAnimatable;
-import software.bernie.geckolib.animatable.client.GeoRenderProvider;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
 
-import java.util.function.Consumer;
-
 public abstract class WDArrow extends Arrow implements GeoItem {
 
-    public String name = "default_arrow";
+    private static String NAME = "default_arrow";
 
-    protected WDItemAnimator animator;
+    protected WDItemAnimator animator = new WDItemAnimator(NAME, this);
+    protected ClientModel<WDArrow> model = new ClientModel<>((ResourceLocation) null, null, null);
+
     protected int ticksTillDed = 60;
 
     public WDArrow(EntityType<? extends WDArrow> entityType, Level level, String name) {
         super(entityType, level);
+        NAME = name;
 
-        animator = new WDItemAnimator(name, this);
         SingletonGeoAnimatable.registerSyncedAnimatable(this);
     }
 
     @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar registrar) {
-
-        animator.registerControllersFromAnimator(this, registrar);
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        animator.registerControllersFromAnimator(this, controllers);
     }
 
     @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
+    public AnimatableInstanceCache getAnimatableInstanceCache() {return animator.getCache();}
 
-        return animator.getCache();
-    }
-
-    @Override
-    public void createGeoRenderer(Consumer<GeoRenderProvider> consumer) {
-
-        consumer.accept(new GeoRenderProvider() {
-            private final BlockEntityWithoutLevelRenderer renderer = new WDItemBase.WDWeaponRenderer<>();
-
-            @Override
-            public BlockEntityWithoutLevelRenderer getGeoItemRenderer() {
-                return this.renderer;
-            }
-        });
-    }
+//    @Override
+//    public void createGeoRenderer(Consumer<GeoRenderProvider> consumer) {
+//        consumer.accept(new GeoRenderProvider() {
+//            private final BlockEntityWithoutLevelRenderer renderer = new WDWeapon.WDWeaponRenderer<>(model, false);
+//
+//            @Override
+//            public BlockEntityWithoutLevelRenderer getGeoItemRenderer() {
+//                return this.renderer;
+//            }
+//        });
+//    }
 
     @Override
     public void tick() {

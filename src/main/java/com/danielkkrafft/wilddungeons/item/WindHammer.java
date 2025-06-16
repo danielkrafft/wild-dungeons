@@ -2,19 +2,13 @@ package com.danielkkrafft.wilddungeons.item;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.entity.WindChargeProjectile;
-import com.danielkkrafft.wilddungeons.entity.renderer.WindHammerRenderer;
-import com.danielkkrafft.wilddungeons.item.itemhelpers.WDItemBase;
 import com.danielkkrafft.wilddungeons.registry.WDDataComponents;
 import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
 import com.danielkkrafft.wilddungeons.util.UtilityMethods;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
@@ -35,24 +29,14 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
-public class WindHammer extends WDItemBase {
+public class WindHammer extends WDWeapon {
 
-    public static final String NAME = "wind_mace";
+    public static final String NAME = "wind_hammer";
     public static final float MIN_SMASH_DISTANCE=1.5f;
 
     public WindHammer() {
-        super(
-                NAME,
-                new WindHammerRenderer(),
-                new Properties()
-                        .rarity(Rarity.EPIC)
-                        .durability(1000)
-                        .attributes(SwordItem.createAttributes(
-                                Tiers.DIAMOND,
-                                8.0f,
-                                -3.5f
-                        ))
-        );
+        super(NAME, new Properties().rarity(Rarity.EPIC).durability(1000).attributes(SwordItem.createAttributes(Tiers.DIAMOND, 8.0f, -3.5f)));
+
     }
 
     private enum SmashType {

@@ -3,25 +3,14 @@ package com.danielkkrafft.wilddungeons.entity.renderer;
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.entity.model.windhammer.*;
 import com.danielkkrafft.wilddungeons.item.WindHammer;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.core.Holder;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
-import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 
-public class WindHammerRenderer extends GeoItemRenderer<WindHammer>
+public class WindHammerRenderer extends GeoItemRenderer<WindHammer>//todo this should probably not be six models, but rather one model with different 1-frame animation states
 {
-    private final WindHammerModel DEF_MOD=new WindHammerModel();
+    private final WindHammerModel DEF_MOD=new WindHammerModel();//todo delete all these classes eventually
     private final WindHammerBreachModel BRE1_MOD=new WindHammerBreachModel();
     private final WindHammerBreach2Model BRE2_MOD=new WindHammerBreach2Model();
     private final WindHammerDensityModel DEN1_MOD=new WindHammerDensityModel();

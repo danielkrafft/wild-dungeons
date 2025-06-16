@@ -1,8 +1,6 @@
 package com.danielkkrafft.wilddungeons.item;
 
 import com.danielkkrafft.wilddungeons.entity.WindChargeProjectile;
-import com.danielkkrafft.wilddungeons.entity.renderer.WindMaceRenderer;
-import com.danielkkrafft.wilddungeons.item.itemhelpers.WDItemBase;
 import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
 import com.danielkkrafft.wilddungeons.util.CameraShakeUtil;
 import com.danielkkrafft.wilddungeons.util.UtilityMethods;
@@ -22,11 +20,12 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
 
-public class WindMace extends WDItemBase {
+public class WindMace extends WDWeapon {
 
     public static final String NAME = "wind_mace";
 
     private enum AnimationList {
+        idle,
         swing,
         slam
     }
@@ -34,17 +33,9 @@ public class WindMace extends WDItemBase {
     private static final int SHAKE_TICK=30, JITTER_TICK=60;
 
     public WindMace() {
-        super(
-                NAME,
-                new WindMaceRenderer(),
-                new Properties()
-                        .rarity(Rarity.EPIC)
-                        .durability(2000)
-                        .attributes(SwordItem.createAttributes(
-                                Tiers.DIAMOND, 0.f, 0.f
-                        ))
-        );
+        super(NAME, new Properties().rarity(Rarity.EPIC).durability(2000).attributes(SwordItem.createAttributes(Tiers.DIAMOND, 0.f, 0.f)));
 
+        animator.addAnimation(AnimationList.idle.toString());
         animator.addLoopingAnimation(AnimationList.swing.toString());
         animator.addAnimation(AnimationList.slam.toString());
     }
@@ -88,7 +79,7 @@ public class WindMace extends WDItemBase {
 
         if (!level.isClientSide()) {
             if (livingEntity instanceof Player player) {
-                animator.setAnimationSpeed(r);
+                animator.setAnimationSpeed(r, level);
 
                 // Swing Volume
                 final float BASE_VOLUME = 0.25f;
