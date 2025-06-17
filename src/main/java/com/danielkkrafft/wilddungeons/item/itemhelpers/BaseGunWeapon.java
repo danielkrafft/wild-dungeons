@@ -1,19 +1,18 @@
 package com.danielkkrafft.wilddungeons.item.itemhelpers;
 
 import com.danielkkrafft.wilddungeons.entity.BaseClasses.SelfGovernedEntity;
-import com.danielkkrafft.wilddungeons.item.itemhelpers.ItemData.GunWeaponData;
 import com.danielkkrafft.wilddungeons.item.itemhelpers.ItemData.AbstractProjectileParent;
+import com.danielkkrafft.wilddungeons.item.itemhelpers.ItemData.GunWeaponData;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ProjectileWeaponItem;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.Predicate;
+import static net.neoforged.neoforge.event.EventHooks.onArrowNock;
 
 public class BaseGunWeapon extends AbstractProjectileParent<BaseGunWeapon, GunWeaponData, BaseGunWeapon.GunFactoryModel> {
 
@@ -47,10 +46,10 @@ public class BaseGunWeapon extends AbstractProjectileParent<BaseGunWeapon, GunWe
         ItemStack stack = player.getItemInHand(hand);
         boolean hasAmmo = !player.getProjectile(stack).isEmpty();
 
-        InteractionResultHolder<ItemStack> ret = net.neoforged.neoforge.event.EventHooks.onArrowNock(stack, level, player, hand, hasAmmo);
+        InteractionResultHolder<ItemStack> ret = onArrowNock(stack, level, player, hand, hasAmmo);
         if (ret != null) return ret;
 
-        if (!player.getAbilities().instabuild && !hasAmmo) {
+        if (!player.isCreative() && !hasAmmo) {
             player.displayClientMessage(Component.literal("§cMissing 1x " + itemData.ammoDisplayName), true);
             return InteractionResultHolder.fail(stack);
         }
@@ -73,7 +72,8 @@ public class BaseGunWeapon extends AbstractProjectileParent<BaseGunWeapon, GunWe
                 itemData.spawnHeightOffset,
                 itemData.projectileSpeed,
                 projectile -> {
-                    projectile.setCustomName(Component.literal(itemData.projectileName));
+                    if (itemData.projectileName != null && !itemData.projectileName.isEmpty())
+                        projectile.setCustomName(Component.literal(itemData.projectileName));
                     if (projectile instanceof SelfGovernedEntity sG) {
                         sG.setFiredDirectionAndSpeed(player.getLookAngle(), itemData.projectileSpeed);
                     }

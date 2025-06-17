@@ -23,6 +23,8 @@ import java.util.List;
 import static com.danielkkrafft.wilddungeons.WildDungeons.makeGeoModelRL;
 import static com.danielkkrafft.wilddungeons.WildDungeons.makeItemTextureRL;
 import static net.minecraft.world.item.BowItem.getPowerForTime;
+import static net.neoforged.neoforge.event.EventHooks.onArrowLoose;
+import static net.neoforged.neoforge.event.EventHooks.onArrowNock;
 
 public class BaseBowWeapon extends AbstractProjectileParent<BaseBowWeapon, BowWeaponData, BaseBowWeapon.BowFactoryModel> {
 
@@ -81,7 +83,7 @@ public class BaseBowWeapon extends AbstractProjectileParent<BaseBowWeapon, BowWe
         ItemStack stack = player.getItemInHand(hand);
         boolean flag = !player.getProjectile(stack).isEmpty();
 
-        InteractionResultHolder<ItemStack> ret = net.neoforged.neoforge.event.EventHooks.onArrowNock(stack, level, player, hand, flag);
+        InteractionResultHolder<ItemStack> ret = onArrowNock(stack, level, player, hand, flag);
         if (ret != null) return ret;
 
         if (!player.getAbilities().instabuild && !flag){
@@ -109,7 +111,7 @@ public class BaseBowWeapon extends AbstractProjectileParent<BaseBowWeapon, BowWe
             ItemStack itemstack = player.getProjectile(stack);
             if (!itemstack.isEmpty()) {
                 lastUseDuration = this.getUseDuration(stack, livingEntity) - timeLeft;
-                lastUseDuration = net.neoforged.neoforge.event.EventHooks.onArrowLoose(stack, level, player, lastUseDuration, !itemstack.isEmpty());
+                lastUseDuration = onArrowLoose(stack, level, player, lastUseDuration, !itemstack.isEmpty());
                 if (lastUseDuration < 0) return;
                 float f = getPowerForTime(lastUseDuration);
 //                WildDungeons.getLogger().info("PowerForTime: {}", f);

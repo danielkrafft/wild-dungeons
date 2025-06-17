@@ -42,9 +42,9 @@ public class LaserSword extends WDWeapon {
         hasEmissive = true;
 
         ClientModel<WDWeapon> model = new ClientModel<>("laser_sword","laser_sword","laser_sword_working");
-        model.setWorkingModel("laser_sword_working","laser_sword_working");
+        model.setAltModel("laser_sword_working","laser_sword_working");
         this.model = model;
-        this.model.activateInventoryModel();
+        this.model.activateBaseModel();
 
         this.addLoopingAnimation(AnimationList.idle.toString());//default animation
         this.addAnimation(AnimationList.gun_transform.toString(), (float) 2 / warmUpSeconds);//2 seconds long
@@ -57,7 +57,7 @@ public class LaserSword extends WDWeapon {
     @Override
     @NotNull
     public InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
-        model.activateWorkingModel();
+        model.activateAltModel();
         player.startUsingItem(hand);
         playAnimation(AnimationList.gun_transform.toString(), player.getItemInHand(hand), player, player.level());
         return InteractionResultHolder.consume(player.getItemInHand(hand));
@@ -83,7 +83,7 @@ public class LaserSword extends WDWeapon {
     @Override
     public void releaseUsing(@NotNull ItemStack stack, @NotNull Level level, @NotNull LivingEntity livingEntity, int remainingUseDuration) {
 
-        model.activateInventoryModel();
+        model.activateBaseModel();
         if (!(livingEntity instanceof Player player)) return;
         int charge = getUseDuration(stack, player) - remainingUseDuration - warmUpSeconds * 20;
         if (charge <= 0) return;

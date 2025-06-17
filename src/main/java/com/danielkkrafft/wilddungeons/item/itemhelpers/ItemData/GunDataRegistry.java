@@ -53,7 +53,7 @@ public class GunDataRegistry {
                     "star_cannon",
                     BuiltInRegistries.SOUND_EVENT.wrapAsHolder(SoundEvents.BLAZE_SHOOT),
                     true,
-                    0,
+                    20,
                     2.0f,
                     0.0f,
                     3f,

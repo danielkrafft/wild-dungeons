@@ -10,14 +10,20 @@ import software.bernie.geckolib.renderer.GeoRenderer;
 
 public class ClientModel<T extends GeoAnimatable> extends GeoModel<T>
 {
-    protected ResourceLocation animation, model, texture, inventoryModel, inventoryTexture, workingModel, workingTexture;
+    protected ResourceLocation animation;
+    protected ResourceLocation model;
+    protected ResourceLocation texture;
+    protected ResourceLocation baseModel;
+    protected ResourceLocation baseTexture;
+    protected ResourceLocation altModel;
+    protected ResourceLocation altTexture;
 
     public ClientModel(ResourceLocation a, ResourceLocation m, ResourceLocation t) {
         animation = a;
         model = m;
         texture = t;
-        setInventoryModel(m, t);
-        setWorkingModel(m, t);
+        setBaseModel(m, t);
+        setAltModel(m, t);
     }
 
     public ClientModel(String a, String m, String t) {
@@ -36,34 +42,34 @@ public class ClientModel<T extends GeoAnimatable> extends GeoModel<T>
         texture = t;
     }
 
-    public void activateWorkingModel() {
-        this.setModel(workingModel);
-        this.setTex(workingTexture);
+    public void activateAltModel() {
+        this.setModel(altModel);
+        this.setTex(altTexture);
     }
 
-    public void activateInventoryModel() {
-        this.setModel(inventoryModel);
-        this.setTex(inventoryTexture);
+    public void activateBaseModel() {
+        this.setModel(baseModel);
+        this.setTex(baseTexture);
     }
 
-    public void setInventoryModel(ResourceLocation model, ResourceLocation texture) {
-        this.inventoryModel = model;
-        this.inventoryTexture = texture;
+    public void setBaseModel(ResourceLocation model, ResourceLocation texture) {
+        this.baseModel = model;
+        this.baseTexture = texture;
     }
 
-    public void setWorkingModel(ResourceLocation model, ResourceLocation texture) {
-        this.workingModel = model;
-        this.workingTexture = texture;
+    public void setAltModel(ResourceLocation model, ResourceLocation texture) {
+        this.altModel = model;
+        this.altTexture = texture;
     }
 
-    public void setInventoryModel(String model, String texture) {
-        this.inventoryModel = WildDungeons.makeGeoModelRL(model);
-        this.inventoryTexture = WildDungeons.makeItemTextureRL(texture);
+    public void setBaseModel(String model, String texture) {
+        this.baseModel = WildDungeons.makeGeoModelRL(model);
+        this.baseTexture = WildDungeons.makeItemTextureRL(texture);
     }
 
-    public void setWorkingModel(String model, String texture) {
-        this.workingModel = WildDungeons.makeGeoModelRL(model);
-        this.workingTexture = WildDungeons.makeItemTextureRL(texture);
+    public void setAltModel(String model, String texture) {
+        this.altModel = WildDungeons.makeGeoModelRL(model);
+        this.altTexture = WildDungeons.makeItemTextureRL(texture);
     }
 
     @Override

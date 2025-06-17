@@ -2,10 +2,8 @@ package com.danielkkrafft.wilddungeons.registry;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.item.*;
-import com.danielkkrafft.wilddungeons.item.itemhelpers.BaseBowWeapon;
 import com.danielkkrafft.wilddungeons.item.itemhelpers.ItemData.BowDataRegistry;
 import com.danielkkrafft.wilddungeons.item.itemhelpers.ItemData.GunDataRegistry;
-import com.danielkkrafft.wilddungeons.item.itemhelpers.ItemData.WindBow;
 import com.danielkkrafft.wilddungeons.util.debug.DebugItem;
 import net.minecraft.world.item.*;
 import net.neoforged.neoforge.registries.DeferredItem;
