@@ -18,7 +18,7 @@ public class GunDataRegistry {
                     1,
                     2000,
                     7200,
-                    itemStack -> itemStack.is(Items.EMERALD),
+                    Items.EMERALD,
                     50,
                     UseAnim.NONE,
                     WDEntities.FRIENDLY_EMERALD_WISP,
@@ -35,15 +35,14 @@ public class GunDataRegistry {
                     "Summoned Wisp",
                     true,
                     true,
-                    false,
-                    "Emerald"
+                    false
             ),
             new GunWeaponData(
                     "star_cannon",
                     1,
                     2000,
                     7200,
-                    itemStack -> itemStack.is(Items.NETHER_STAR),
+                    Items.NETHER_STAR,
                     50,
                     UseAnim.NONE,
                     WDEntities.BLACK_HOLE,
@@ -58,10 +57,9 @@ public class GunDataRegistry {
                     0.0f,
                     3f,
                     "Black Hole",
-                    false,
-                    false,
-                    false,
-                    "Nether Star"
+                    false,//todo
+                    false,//todo
+                    false//todo
             )
     );
 

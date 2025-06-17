@@ -1,16 +1,13 @@
 package com.danielkkrafft.wilddungeons.item.itemhelpers.ItemData;
 
-import com.danielkkrafft.wilddungeons.entity.EssenceOrb;
 import net.minecraft.core.Holder;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.UseAnim;
 import net.neoforged.neoforge.registries.DeferredHolder;
-
-import java.util.function.Predicate;
 
 public class GunWeaponData extends BaseProjectileData {
 
@@ -25,13 +22,12 @@ public class GunWeaponData extends BaseProjectileData {
 
     public GunWeaponData(
             String name, int stacksTo, int durability, int duration,
-            Predicate<ItemStack> ammoType, int projectileRange, UseAnim useAnim,
+            Item ammoType, int projectileRange, UseAnim useAnim,
             DeferredHolder<EntityType<?>, ? extends EntityType<? extends Entity>> projectileClass,
             Rarity rarity, String animations, String model, String texture,
             Holder<SoundEvent> fireSound, Boolean usesAmmo, int cooldown,
             float spawnDistanceOffset, float spawnHeightOffset, float projectileSpeed,
-            String projectileName, boolean hasIdle, boolean hasFire, boolean hasReload,
-            String ammoName
+            String projectileName, boolean hasIdle, boolean hasFire, boolean hasReload
     ) {
 
         this.name = name;
@@ -56,6 +52,5 @@ public class GunWeaponData extends BaseProjectileData {
         this.hasIdle = hasIdle;
         this.hasFire = hasFire;
         this.hasReload = hasReload;
-        this.ammoDisplayName = ammoName;
     }
 }

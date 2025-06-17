@@ -4,12 +4,10 @@ import net.minecraft.core.Holder;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.UseAnim;
 import net.neoforged.neoforge.registries.DeferredHolder;
-
-import java.util.function.Predicate;
 
 public class BowWeaponData extends BaseProjectileData {
 
@@ -19,7 +17,7 @@ public class BowWeaponData extends BaseProjectileData {
 
     public BowWeaponData(
             String name, int stacksTo, int durability, int useDuration,
-            Predicate<ItemStack> ammoType, int projectileRange, UseAnim useAnim,
+            Item ammoType, int projectileRange, UseAnim useAnim,
             DeferredHolder<EntityType<?>, ? extends EntityType<? extends Entity>> arrowClass,
             Rarity bowRarity, String bowAnimations, String bowModelStill, String bowModelCharged,
             String bowTextureStill, String bowTextureCharged, Holder<SoundEvent> bowDrawSound,
@@ -41,7 +39,6 @@ public class BowWeaponData extends BaseProjectileData {
         this.bowTextureCharged = bowTextureCharged;
         this.drawSound = bowDrawSound;
         this.hasIdle = hasIdle;
-        this.ammoDisplayName = ammoName;
     }
 }
 

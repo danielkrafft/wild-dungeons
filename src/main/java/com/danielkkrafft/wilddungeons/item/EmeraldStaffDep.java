@@ -1,6 +1,7 @@
 package com.danielkkrafft.wilddungeons.item;
 
 import com.danielkkrafft.wilddungeons.entity.EmeraldWisp;
+import com.danielkkrafft.wilddungeons.item.itemhelpers.WDWeapon;
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
@@ -19,14 +20,16 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class EmeraldStaffDep extends WDWeapon{
+@Deprecated(forRemoval = true)
+public class EmeraldStaffDep extends WDWeapon {
     public static final String NAME = "emerald_staff";
-    public enum AnimationList { idle, summon }
+
+    public enum AnimationList {idle, summon}
 
     public EmeraldStaffDep() {
         super(NAME);
-        this.addLoopingAnimation(AnimationList.idle.toString());
-        this.addAnimation(AnimationList.summon.toString());
+        this.animator.addLoopingAnimation(AnimationList.idle.toString());
+        this.animator.addAnimation(AnimationList.summon.toString());
     }
 
     @Override
@@ -47,7 +50,7 @@ public class EmeraldStaffDep extends WDWeapon{
             return InteractionResultHolder.fail(player.getItemInHand(usedHand));
         }
 
-        this.playAnimation(AnimationList.summon.toString(), player.getItemInHand(usedHand), player, level);
+        this.animator.playAnimation(this, AnimationList.summon.toString(), player.getItemInHand(usedHand), player, level);
         // Find an open space around the player with solid ground beneath
         BlockPos pos = player.blockPosition();
         for (int i = 0; i < 20; i++) { // Try up to 20 times

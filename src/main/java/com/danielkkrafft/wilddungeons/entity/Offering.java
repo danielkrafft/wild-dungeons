@@ -496,7 +496,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
 
                 return true;
             } else {
-                WildDungeons.getLogger().info("Not enough levels to purchase offering: {}. Cost: {}. Levels: {}", this.offerID, this.getCostAmount(), ownedCurrency);
+//                WildDungeons.getLogger().info("Not enough levels to purchase offering: {}. Cost: {}. Levels: {}", this.offerID, this.getCostAmount(), ownedCurrency);
                 switch (getOfferingCostType()) {
                     case OVERWORLD, NETHER, END -> {
                         player.getServerPlayer().sendSystemMessage(Component.translatable("wilddungeons.offering.not_enough_levels", this.getOfferingCostType().toString()),true);

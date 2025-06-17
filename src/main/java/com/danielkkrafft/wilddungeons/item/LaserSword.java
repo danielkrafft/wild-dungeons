@@ -2,6 +2,7 @@ package com.danielkkrafft.wilddungeons.item;
 
 import com.danielkkrafft.wilddungeons.entity.Laserbeam;
 import com.danielkkrafft.wilddungeons.entity.model.ClientModel;
+import com.danielkkrafft.wilddungeons.item.itemhelpers.WDWeapon;
 import com.danielkkrafft.wilddungeons.util.MathUtil;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
@@ -41,17 +42,17 @@ public class LaserSword extends WDWeapon {
         super(NAME, new Properties().rarity(Rarity.RARE).durability(200).attributes(SwordItem.createAttributes(Tiers.DIAMOND, 3, -2.4F)));
         hasEmissive = true;
 
-        ClientModel<WDWeapon> model = new ClientModel<>("laser_sword","laser_sword","laser_sword_working");
-        model.setAltModel("laser_sword_working","laser_sword_working");
+        ClientModel<WDWeapon> model = new ClientModel<>("laser_sword", "laser_sword", "laser_sword_working");
+        model.setAltModel("laser_sword_working", "laser_sword_working");
         this.model = model;
         this.model.activateBaseModel();
 
-        this.addLoopingAnimation(AnimationList.idle.toString());//default animation
-        this.addAnimation(AnimationList.gun_transform.toString(), (float) 2 / warmUpSeconds);//2 seconds long
-        this.addLoopingAnimation(AnimationList.charging_up.toString(), (float) 20 / (maxChargeSeconds + warmUpSeconds));//20 seconds long
-        this.addLoopingAnimation(AnimationList.fully_charged.toString());//20 seconds long
-        this.addAnimation(AnimationList.shoot.toString(), 1.5f / (cooldownSeconds * cooldownTransitionRatio));//1.5 seconds long
-        this.addAnimation(AnimationList.sword_transform.toString(), (float) 2 / (cooldownSeconds * (1 - cooldownTransitionRatio)));//2 seconds long
+        this.animator.addLoopingAnimation(AnimationList.idle.toString());//default animation
+        this.animator.addAnimation(AnimationList.gun_transform.toString(), (float) 2 / warmUpSeconds);//2 seconds long
+        this.animator.addLoopingAnimation(AnimationList.charging_up.toString(), (float) 20 / (maxChargeSeconds + warmUpSeconds));//20 seconds long
+        this.animator.addLoopingAnimation(AnimationList.fully_charged.toString());//20 seconds long
+        this.animator.addAnimation(AnimationList.shoot.toString(), 1.5f / (cooldownSeconds * cooldownTransitionRatio));//1.5 seconds long
+        this.animator.addAnimation(AnimationList.sword_transform.toString(), (float) 2 / (cooldownSeconds * (1 - cooldownTransitionRatio)));//2 seconds long
     }
 
     @Override
@@ -59,19 +60,19 @@ public class LaserSword extends WDWeapon {
     public InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
         model.activateAltModel();
         player.startUsingItem(hand);
-        playAnimation(AnimationList.gun_transform.toString(), player.getItemInHand(hand), player, player.level());
+        this.animator.playAnimation(this, AnimationList.gun_transform.toString(), player.getItemInHand(hand), player, player.level());
         return InteractionResultHolder.consume(player.getItemInHand(hand));
     }
 
     @Override
-    public void onUseTick(Level level, LivingEntity livingEntity, ItemStack stack, int remainingUseDuration) {
+    public void onUseTick(@NotNull Level level, @NotNull LivingEntity livingEntity, @NotNull ItemStack stack, int remainingUseDuration) {
         if (livingEntity instanceof Player player) {
             int charge = getUseDuration(stack, livingEntity) - remainingUseDuration;
-            if (charge == 0) playAnimation(AnimationList.gun_transform.toString(), stack, player, player.level());
+            if (charge == 0) this.animator.playAnimation(this, AnimationList.gun_transform.toString(), stack, player, player.level());
             if (charge == warmUpSeconds * 20)
-                playAnimation(AnimationList.charging_up.toString(), stack, player, player.level());
+                this.animator.playAnimation(this, AnimationList.charging_up.toString(), stack, player, player.level());
             if (charge == (maxChargeSeconds * 20) + (warmUpSeconds * 20))
-                playAnimation(AnimationList.fully_charged.toString(), stack, player, player.level());
+                this.animator.playAnimation(this, AnimationList.fully_charged.toString(), stack, player, player.level());
         }
     }
 
@@ -101,7 +102,7 @@ public class LaserSword extends WDWeapon {
         if (!player.isCreative()) stack.setDamageValue(stack.getDamageValue() + blastLevel * 10);//should this be hurtAndBreak?
         player.getCooldowns().addCooldown(this, cooldownSeconds * 20);
         shoot(blastLevel, level, player, damage, laserRadius, range, explosion, explosionRadius, debris);
-        playAnimation(AnimationList.shoot.toString(), stack, player, level);
+        this.animator.playAnimation(this, AnimationList.shoot.toString(), stack, player, level);
     }
 
     @Override
@@ -109,10 +110,10 @@ public class LaserSword extends WDWeapon {
 
         if (entity instanceof Player player && player.getCooldowns().isOnCooldown(this) && !player.isUsingItem()) {
             if (player.getCooldowns().getCooldownPercent(this, 0) <= 1 - cooldownTransitionRatio) {
-                playAnimation(AnimationList.sword_transform.toString(), itemStack, player, level);
+                this.animator.playAnimation(this, AnimationList.sword_transform.toString(), itemStack, player, level);
             }
         } else if (entity instanceof Player player && !player.getCooldowns().isOnCooldown(this) && !player.isUsingItem()) {
-            playAnimation(AnimationList.idle.toString(), itemStack, player, level);
+            this.animator.playAnimation(this, AnimationList.idle.toString(), itemStack, player, level);
         }
     }
 

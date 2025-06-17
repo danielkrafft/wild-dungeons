@@ -1,9 +1,11 @@
-package com.danielkkrafft.wilddungeons.item.itemhelpers.ItemData;
+package com.danielkkrafft.wilddungeons.item.itemhelpers;
 
 import com.danielkkrafft.wilddungeons.entity.BaseClasses.ArrowFactory;
 import com.danielkkrafft.wilddungeons.entity.BaseClasses.SelfGovernedEntity;
 import com.danielkkrafft.wilddungeons.entity.model.ClientModel;
-import com.danielkkrafft.wilddungeons.item.itemhelpers.WDItemAnimator;
+import com.danielkkrafft.wilddungeons.item.itemhelpers.ItemData.BaseProjectileData;
+import com.danielkkrafft.wilddungeons.item.itemhelpers.ItemData.BowWeaponData;
+import com.danielkkrafft.wilddungeons.item.itemhelpers.ItemData.GunWeaponData;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -33,6 +35,7 @@ import software.bernie.geckolib.animatable.client.GeoRenderProvider;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
+import software.bernie.geckolib.renderer.layer.AutoGlowingGeoLayer;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -43,45 +46,44 @@ import static net.minecraft.world.item.BowItem.getPowerForTime;
 import static net.neoforged.neoforge.event.EventHooks.onArrowLoose;
 import static net.neoforged.neoforge.event.EventHooks.onArrowNock;
 
-public class BaseProjectileWeapon extends ProjectileWeaponItem implements GeoAnimatable, GeoItem {
-
+public abstract class WDRangedWeapon extends ProjectileWeaponItem implements GeoAnimatable, GeoItem {
+    public String name = "default";
+    // Animations
+    protected WDItemAnimator animator;
+    protected boolean hasIdle = true;
     public static final String DRAW_ANIM = "draw";
     public static final String RELEASE_ANIM = "release";
     public static final String IDLE_ANIM = "idle";
     public static final String FIRE_ANIM = "fire";
     public static final String RELOAD_ANIM = "reload";
-
-    public String name = "default";
-    protected ClientModel<BaseProjectileWeapon> itemModel;
-    protected WDItemAnimator animator;
-    protected boolean hasIdle = false;
-    protected static final int PROJECTILE_RANGE = 15;
+    // Model
+    protected ClientModel<WDRangedWeapon> model;
+    protected boolean hasEmissive = false;
+    // Ranged Weapon Data
+    protected BaseProjectileData itemData;
+    // Bow-specific
     protected ArrowFactory arrowFactory = (level, shooter) -> new Arrow(EntityType.ARROW, level);
     protected int lastUseDuration = 0;
-
-    protected BaseProjectileData itemData;
-
     // Gun-specific
     protected boolean hasFire;
     protected boolean hasReload;
     protected boolean isGun;
 
-    public BaseProjectileWeapon(BaseProjectileData data) {
+    public WDRangedWeapon(BaseProjectileData data) {
         super(
                 buildProperties(data)
         );
-        this.name = data.name;
         this.itemData = data;
-        this.itemModel = new ClientModel<>(data.animations,data.baseModel,data.baseTexture);
-
-        animator = new WDItemAnimator(name, this);
+        this.name = data.name;
+        this.model = new ClientModel<>(data.animations,data.baseModel,data.baseTexture);
+        this.animator = new WDItemAnimator(name, this);
         SingletonGeoAnimatable.registerSyncedAnimatable(this);
 
         // Bow-specific
         if (data instanceof BowWeaponData bowData) {
-            this.itemModel.setAltModel(bowData.bowModelCharged,bowData.bowTextureCharged);
-            animator.addAnimation(DRAW_ANIM);
-            animator.addAnimation(RELEASE_ANIM);
+            this.model.setAltModel(bowData.bowModelCharged,bowData.bowTextureCharged);
+            this.animator.addAnimation(DRAW_ANIM);
+            this.animator.addAnimation(RELEASE_ANIM);
             this.arrowFactory = buildArrowFactory(bowData);
             this.isGun = false;
         }
@@ -97,20 +99,24 @@ public class BaseProjectileWeapon extends ProjectileWeaponItem implements GeoAni
         this.hasIdle = data.hasIdle;
     }
 
-    public static Item.Properties buildProperties(BaseProjectileData data) {
-        return new Item.Properties()
-                .stacksTo(data.stacksTo)
-                .rarity(data.rarity)
-                .durability(data.durability);
-    }
+    //region GeoAnimatable
+    public static class WDRangedWeaponRenderer<T extends WDRangedWeapon> extends GeoItemRenderer<T> {
+        public WDRangedWeaponRenderer(ClientModel<T> model, boolean hasEmissive) {
+            super(model);
 
-    private ArrowFactory buildArrowFactory(BowWeaponData data) {
-        return (level, livingEntity) -> {
-            @SuppressWarnings("unchecked")
-            EntityType<? extends AbstractArrow> type =
-                    (EntityType<? extends AbstractArrow>) data.projectileClass.get();
-            return type.create(level);
-        };
+            if (hasEmissive) this.addRenderLayer(new AutoGlowingGeoLayer<>(this));
+        }
+    }
+    @Override
+    public void createGeoRenderer(Consumer<GeoRenderProvider> consumer) {
+        consumer.accept(new GeoRenderProvider() {
+            private final GeoItemRenderer<?> renderer = new WDRangedWeaponRenderer<>(model, hasEmissive);
+
+            @Override
+            public BlockEntityWithoutLevelRenderer getGeoItemRenderer() {
+                return this.renderer;
+            }
+        });
     }
 
     @Override
@@ -122,21 +128,11 @@ public class BaseProjectileWeapon extends ProjectileWeaponItem implements GeoAni
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return animator.getCache();
     }
+    //endregion
 
+    //region Vanilla Item Overrides
     @Override
-    public void createGeoRenderer(Consumer<GeoRenderProvider> consumer) {
-        consumer.accept(new GeoRenderProvider() {
-            private final GeoItemRenderer<?> renderer = new GeoItemRenderer<>(itemModel);
-
-            @Override
-            public BlockEntityWithoutLevelRenderer getGeoItemRenderer() {
-                return this.renderer;
-            }
-        });
-    }
-
-    @Override
-    public int getUseDuration(ItemStack stack, LivingEntity livingEntity) {
+    public int getUseDuration(@NotNull ItemStack stack, @NotNull LivingEntity livingEntity) {
         return itemData.useDuration;
     }
 
@@ -158,7 +154,7 @@ public class BaseProjectileWeapon extends ProjectileWeaponItem implements GeoAni
 
     @Override
     public @NotNull Predicate<ItemStack> getAllSupportedProjectiles() {
-        return itemData.ammoType;
+        return itemStack -> itemStack.is(itemData.ammoType);
     }
 
     @Override
@@ -216,7 +212,7 @@ public class BaseProjectileWeapon extends ProjectileWeaponItem implements GeoAni
     @Override
     public void onStopUsing(@NotNull ItemStack stack, @NotNull LivingEntity entity, int count) {
         if (!isGun) {
-            itemModel.activateBaseModel();
+            model.activateBaseModel();
 
             if (entity instanceof Player player && player.level() instanceof ServerLevel serverLevel) {
                 animator.playAnimation(this, RELEASE_ANIM, stack, player, player.level());
@@ -237,7 +233,7 @@ public class BaseProjectileWeapon extends ProjectileWeaponItem implements GeoAni
             if (ret != null) return ret;
 
             if (!player.isCreative() && !hasAmmo) {
-                player.displayClientMessage(Component.literal("§cMissing 1x " + itemData.ammoDisplayName), true);
+                player.displayClientMessage(Component.translatable("wilddungeons.missing_ammo",this.itemData.ammoType.getDescription() ), true);
                 return InteractionResultHolder.fail(stack);
             }
 
@@ -252,7 +248,7 @@ public class BaseProjectileWeapon extends ProjectileWeaponItem implements GeoAni
             }
 
             GunWeaponData gunData = (GunWeaponData) itemData;
-            BaseProjectileWeapon.ProjectileFactory.spawnProjectile(
+            WDRangedWeapon.ProjectileFactory.spawnProjectile(
                     level,
                     gunData.projectileClass.get(),
                     player,
@@ -282,7 +278,7 @@ public class BaseProjectileWeapon extends ProjectileWeaponItem implements GeoAni
                 return InteractionResultHolder.fail(stack);
             }
             else {
-                itemModel.activateAltModel();
+                model.activateAltModel();
 
                 if (level instanceof ServerLevel serverLevel) {
                     BowWeaponData bowData = (BowWeaponData) itemData;
@@ -296,9 +292,9 @@ public class BaseProjectileWeapon extends ProjectileWeaponItem implements GeoAni
     }
 
     @Override
-    public void releaseUsing(ItemStack stack, Level level, LivingEntity livingEntity, int timeLeft) {
+    public void releaseUsing(@NotNull ItemStack stack, @NotNull Level level, @NotNull LivingEntity livingEntity, int timeLeft) {
         if (!isGun) {
-            itemModel.activateBaseModel();
+            model.activateBaseModel();
 
             if (livingEntity instanceof Player player) {
                 ItemStack itemstack = player.getProjectile(stack);
@@ -333,7 +329,7 @@ public class BaseProjectileWeapon extends ProjectileWeaponItem implements GeoAni
     }
 
     @Override
-    protected @NotNull Projectile createProjectile(Level level, LivingEntity shooter, ItemStack weapon, ItemStack ammo, boolean isCrit) {
+    protected @NotNull Projectile createProjectile(@NotNull Level level, @NotNull LivingEntity shooter, @NotNull ItemStack weapon, @NotNull ItemStack ammo, boolean isCrit) {
         AbstractArrow arrow = arrowFactory.create(level, shooter);
         arrow.setBaseDamage(2.5);
         arrow.setCritArrow(true);
@@ -343,6 +339,15 @@ public class BaseProjectileWeapon extends ProjectileWeaponItem implements GeoAni
         arrow.shootFromRotation(shooter, shooter.getXRot(), shooter.getYRot(), 0.0f, power * 3.0f, 1.0f);
 
         return this.customArrow(arrow, ammo, weapon);
+    }
+    //endregion
+
+
+    public static Item.Properties buildProperties(BaseProjectileData data) {
+        return new Item.Properties()
+                .stacksTo(data.stacksTo)
+                .rarity(data.rarity)
+                .durability(data.durability);
     }
 
     // Utility class for spawning any registered projectile entity (for guns)
@@ -387,4 +392,15 @@ public class BaseProjectileWeapon extends ProjectileWeaponItem implements GeoAni
             return projectile;
         }
     }
+
+    // Utility method to build the arrow factory for bow weapons
+    private static ArrowFactory buildArrowFactory(BowWeaponData data) {
+        return (level, livingEntity) -> {
+            @SuppressWarnings("unchecked")
+            EntityType<? extends AbstractArrow> type =
+                    (EntityType<? extends AbstractArrow>) data.projectileClass.get();
+            return type.create(level);
+        };
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.danielkkrafft.wilddungeons.item;
 
+import com.danielkkrafft.wilddungeons.item.itemhelpers.WDWeapon;
 import com.danielkkrafft.wilddungeons.util.MathUtil;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
@@ -20,31 +21,32 @@ import org.jetbrains.annotations.NotNull;
 public class FireworkGun extends WDWeapon {
 
     public static final String NAME = "firework_gun";
-    public enum AnimationList { idle, rotate }
+
+    public enum AnimationList {idle, rotate}
 
     public FireworkGun() {
         super(NAME);
-        this.addLoopingAnimation(AnimationList.idle.toString());
-        this.addLoopingAnimation(AnimationList.rotate.toString());
+        this.animator.addLoopingAnimation(AnimationList.idle.toString());
+        this.animator.addLoopingAnimation(AnimationList.rotate.toString());
     }
 
-    @Override @NotNull
-    public InteractionResultHolder<ItemStack> use(@NotNull Level level, Player p, @NotNull InteractionHand hand)
-    {
+    @Override
+    @NotNull
+    public InteractionResultHolder<ItemStack> use(@NotNull Level level, Player p, @NotNull InteractionHand hand) {
         p.startUsingItem(hand);
         return InteractionResultHolder.pass(p.getItemInHand(hand));
     }
 
     @Override
-    public void onUseTick(Level level, LivingEntity livingEntity, ItemStack stack, int remainingUseDuration) {
+    public void onUseTick(@NotNull Level level, @NotNull LivingEntity livingEntity, @NotNull ItemStack stack, int remainingUseDuration) {
         if (livingEntity instanceof Player player) {
             Inventory inv = player.getInventory();
             if (player.getCooldowns().isOnCooldown(this)) return;
             for (int i = 0; i < inv.getContainerSize(); i++) {
                 ItemStack ammoStack = inv.getItem(i);
                 if (ammoStack.getItem().equals(Items.FIREWORK_ROCKET)) {
-                    playAnimation(AnimationList.rotate.toString(),stack,player,level);
-                    shoot(level,player,ammoStack,player.getYRot(),player.getXRot());
+                    this.animator.playAnimation(this, AnimationList.rotate.toString(), stack, player, level);
+                    shoot(level, player, ammoStack, player.getYRot(), player.getXRot());
                     break;
                 }
             }
@@ -52,17 +54,16 @@ public class FireworkGun extends WDWeapon {
         super.onUseTick(level, livingEntity, stack, remainingUseDuration);
     }
 
-    public void shoot(Level level, Player player, ItemStack fireworks, float yaw, float pitch)
-    {
+    public void shoot(Level level, Player player, ItemStack fireworks, float yaw, float pitch) {
         level.playSound(null, player.blockPosition(), SoundEvents.CROSSBOW_LOADING_START.value(), SoundSource.PLAYERS, 0.8f, 0.7f);
-        Vec3 vec = MathUtil.displaceVector(0.5f,player.getEyePosition(),yaw,pitch);
-        FireworkRocketEntity firework=new FireworkRocketEntity(level,fireworks,player,vec.x,vec.y,vec.z,true);
-        firework.setDeltaMovement(MathUtil.velocity3d(2,yaw,pitch));
+        Vec3 vec = MathUtil.displaceVector(0.5f, player.getEyePosition(), yaw, pitch);
+        FireworkRocketEntity firework = new FireworkRocketEntity(level, fireworks, player, vec.x, vec.y, vec.z, true);
+        firework.setDeltaMovement(MathUtil.velocity3d(2, yaw, pitch));
         level.addFreshEntity(firework);
-        level.playSound(null,player.blockPosition(),SoundEvents.CROSSBOW_SHOOT, SoundSource.PLAYERS,0.8f,0.7f);
-        level.addAlwaysVisibleParticle(ParticleTypes.SMOKE,true,vec.x,vec.y,vec.z,0,0,0);
-        player.getCooldowns().addCooldown(this,4);
-        fireworks.setCount(fireworks.getCount()-1);
+        level.playSound(null, player.blockPosition(), SoundEvents.CROSSBOW_SHOOT, SoundSource.PLAYERS, 0.8f, 0.7f);
+        level.addAlwaysVisibleParticle(ParticleTypes.SMOKE, true, vec.x, vec.y, vec.z, 0, 0, 0);
+        player.getCooldowns().addCooldown(this, 4);
+        fireworks.setCount(fireworks.getCount() - 1);
     }
 
 

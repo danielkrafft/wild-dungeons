@@ -2,12 +2,11 @@ package com.danielkkrafft.wilddungeons.item.itemhelpers.ItemData;
 
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
 import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.UseAnim;
 
 import java.util.List;
-
-import static net.minecraft.world.item.ProjectileWeaponItem.ARROW_ONLY;
 
 public class BowDataRegistry {
     public static final List<BowWeaponData> BOWS = List.of(
@@ -16,8 +15,8 @@ public class BowDataRegistry {
                     1,
                     2000,
                     7200,
-                    ARROW_ONLY, // ammoType
-                    18,
+                    Items.ARROW, // ammoType
+                    18,//range
                     UseAnim.BOW,
                     WDEntities.WIND_ARROW,
                     Rarity.EPIC,

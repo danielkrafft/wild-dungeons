@@ -1,6 +1,7 @@
 package com.danielkkrafft.wilddungeons.item;
 
 import com.danielkkrafft.wilddungeons.entity.GrapplingHook;
+import com.danielkkrafft.wilddungeons.item.itemhelpers.WDWeapon;
 import com.danielkkrafft.wilddungeons.registry.WDDataComponents;
 import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
 import com.danielkkrafft.wilddungeons.util.MathUtil;
@@ -37,10 +38,10 @@ public class Meathook extends WDWeapon {
                 .rarity(Rarity.RARE)
                 .durability(1000)
         );
-        this.addLoopingAnimation(AnimationList.idle.toString());//0s long
-        this.addAnimation(AnimationList.charge.toString(), 2.13f / chargeSeconds);//2.13s long
-        this.addLoopingAnimation(AnimationList.hold.toString());//0s long
-        this.addAnimation(AnimationList.fire.toString());//0.25s long
+        this.animator.addLoopingAnimation(AnimationList.idle.toString());//0s long
+        this.animator.addAnimation(AnimationList.charge.toString(), 2.13f / chargeSeconds);//2.13s long
+        this.animator.addLoopingAnimation(AnimationList.hold.toString());//0s long
+        this.animator.addAnimation(AnimationList.fire.toString());//0.25s long
     }
 
     @Override
@@ -54,9 +55,9 @@ public class Meathook extends WDWeapon {
                     if (Meathook.isCharging(itemStack)) {
                         Meathook.setCharging(itemStack, false);
                     }
-                    playAnimation(AnimationList.idle.toString(), itemStack, p, p.level());
+                    this.animator.playAnimation(this, AnimationList.idle.toString(), itemStack, p, p.level());
                 } else if (!Meathook.isCharging(itemStack) && !Meathook.isCharged(itemStack))
-                    playAnimation(AnimationList.idle.toString(), itemStack, p, p.level());
+                    this.animator.playAnimation(this, AnimationList.idle.toString(), itemStack, p, p.level());
             } else {
                 if (!world.isClientSide) {
                     MinecraftServer server = en.getServer();
@@ -77,10 +78,10 @@ public class Meathook extends WDWeapon {
     }
 
     @Override
-    public boolean onDroppedByPlayer(ItemStack it, Player p) {
+    public boolean onDroppedByPlayer(@NotNull ItemStack it, Player p) {
         if (!p.level().isClientSide) {
             resetHook(p, it);
-            playAnimation(AnimationList.idle.toString(), it, p, p.level());
+            this.animator.playAnimation(this, AnimationList.idle.toString(), it, p, p.level());
             return super.onDroppedByPlayer(it, p);
         }
         return false;
@@ -106,22 +107,21 @@ public class Meathook extends WDWeapon {
         if (getHookUUID(it) == null) {
             p.startUsingItem(hand);
             return InteractionResultHolder.consume(it);
-        }
-        else {
+        } else {
             resetHook(p, it);
             return InteractionResultHolder.fail(it);
         }
     }
 
     @Override
-    public void onUseTick(Level level, LivingEntity livingEntity, ItemStack itemStack, int remainingUseDuration) {
+    public void onUseTick(@NotNull Level level, @NotNull LivingEntity livingEntity, @NotNull ItemStack itemStack, int remainingUseDuration) {
         int i = getUseDuration(itemStack, livingEntity) - remainingUseDuration;
 
         if (i >= chargeSeconds * 20) {
             if (i == chargeSeconds * 20) {
                 level.playSound(null, livingEntity.blockPosition(), loadMeathook(), SoundSource.PLAYERS, 1f, 1f);
                 if (livingEntity instanceof Player)
-                    playAnimation(AnimationList.charge.toString(), itemStack, (Player) livingEntity, level);
+                    this.animator.playAnimation(this, AnimationList.charge.toString(), itemStack, (Player) livingEntity, level);
             }
             setCharged(itemStack, true);
         } else {
@@ -130,20 +130,20 @@ public class Meathook extends WDWeapon {
                 level.playSound(null, livingEntity.blockPosition(), chargeMeathook(i), SoundSource.PLAYERS, 1f, 1f);
             if (i == 0) {
                 if (livingEntity instanceof Player)
-                    playAnimation(AnimationList.charge.toString(), itemStack, (Player) livingEntity, level);
+                    this.animator.playAnimation(this, AnimationList.charge.toString(), itemStack, (Player) livingEntity, level);
             }
         }
     }
 
     @Override
-    public void releaseUsing(ItemStack it, Level world, LivingEntity p, int count) {
+    public void releaseUsing(@NotNull ItemStack it, @NotNull Level world, @NotNull LivingEntity p, int count) {
         if (p instanceof Player p2) {
             if (isCharged(it)) {
                 setCharging(it, false);
                 setCharged(it, false);
                 shoot(world, p2, it, p.getYRot(), p.getXRot());
-                playAnimation(AnimationList.fire.toString(), it, p2, world);
-            } else playAnimation(AnimationList.idle.toString(), it, p2, world);
+                this.animator.playAnimation(this, AnimationList.fire.toString(), it, p2, world);
+            } else this.animator.playAnimation(this, AnimationList.idle.toString(), it, p2, world);
         }
     }
 
