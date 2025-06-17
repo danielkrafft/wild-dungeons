@@ -18,10 +18,9 @@ public class BowDataRegistry {
                     7200,
                     ARROW_ONLY, // ammoType
                     18,
-                    UseAnim.NONE,
+                    UseAnim.BOW,
                     WDEntities.WIND_ARROW,
                     Rarity.EPIC,
-                    //"WindBowRenderer",
                     "wind_bow",
                     "wind_bow",
                     "wind_bow_nocked",
