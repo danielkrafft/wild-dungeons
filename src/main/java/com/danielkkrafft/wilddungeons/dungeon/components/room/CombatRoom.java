@@ -11,8 +11,11 @@ import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.util.Mth;
+import net.minecraft.world.BossEvent;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -27,6 +30,8 @@ import static com.danielkkrafft.wilddungeons.dungeon.components.template.Hierarc
 
 public class CombatRoom extends TargetPurgeRoom {
 
+    public ServerBossEvent combatBar;
+
     public static final int SPAWN_INTERVAL = 200;
     public static final float QUANTITY_VARIANCE = 2f;
     public static final int BASE_DIFFICULTY = 10;
@@ -34,8 +39,10 @@ public class CombatRoom extends TargetPurgeRoom {
     public int spawnTimer = 0;
     public int groupSize = 2;
 
-    public int totalSpawns = 0;
+    public int currentSpawns = 0;
     public boolean helpingGlow = false;
+
+    private int totalSpawns = 0;
 
     public CombatRoom(DungeonBranch branch, String templateKey, BlockPos position, TemplateOrientation orientation) {
         super(branch, templateKey, position, orientation);
@@ -53,11 +60,20 @@ public class CombatRoom extends TargetPurgeRoom {
                 enemy.healthMultiplier = Math.max(this.getDifficulty() / 0.5, 1);
             }
             targets.add(enemy);
-            totalSpawns += 1;
+            currentSpawns += 1;
         });
+        totalSpawns = currentSpawns;
         this.getActivePlayers().forEach(player -> {
             player.setSoundScape(this.getProperty(SOUNDSCAPE), this.getProperty(INTENSITY)+1, false);
         });
+        this.combatBar = new ServerBossEvent(
+                Component.literal("Combat Room"),
+                BossEvent.BossBarColor.RED,
+                BossEvent.BossBarOverlay.PROGRESS
+        );
+        combatBar.setVisible(true);
+        combatBar.setProgress(1.0f);
+        this.getActivePlayers().forEach(wdPlayer -> combatBar.addPlayer(wdPlayer.getServerPlayer()));
         super.start();
     }
 
@@ -73,13 +89,13 @@ public class CombatRoom extends TargetPurgeRoom {
         WildDungeons.getLogger().info("SPAWNING A GROUP OF {}", Math.floor(groupSize * this.getDifficulty()));
 
         for (int i = 0; i < Math.floor(groupSize * this.getDifficulty()); i++) {
-            if (totalSpawns <= 0) return;
+            if (currentSpawns <= 0) return;
             Optional<DungeonTarget> target = targets.stream().filter(t -> !t.spawned).findFirst();
             if (target.isPresent()) {
                 target.get().spawn(this, this.getProperty(MOBS_FACE_PLAYER_ON_SPAWN));
-                totalSpawns--;
+                currentSpawns--;
             } else {
-                totalSpawns = 0;
+                currentSpawns = 0;
             }
         }
     }
@@ -88,7 +104,10 @@ public class CombatRoom extends TargetPurgeRoom {
     public void tick() {
         super.tick();
         if (!this.started || this.isClear() || this.getActivePlayers().isEmpty()) return;
-        if (spawnTimer == 0 || totalSpawns == targets.size()) {spawnNext(); spawnTimer = SPAWN_INTERVAL;}
+        if (combatBar.isVisible()) {
+            combatBar.setProgress((float) targets.size() / totalSpawns);
+        }
+        if (spawnTimer == 0 || currentSpawns == targets.size()) {spawnNext(); spawnTimer = SPAWN_INTERVAL;}
         spawnTimer -= 1;
         if (!helpingGlow && targets.stream().allMatch(target -> target.spawned) && (long) targets.size() <= 3 && !(this instanceof BossRoom)) {
             TriggerGlowingHelper();
@@ -108,12 +127,16 @@ public class CombatRoom extends TargetPurgeRoom {
     @Override
     public void reset() {
         super.reset();
-        totalSpawns = 0;
+        combatBar.removeAllPlayers();
+        combatBar.setVisible(false);
+        currentSpawns = 0;
     }
 
     @Override
     public void onClear() {
         super.onClear();
+        combatBar.removeAllPlayers();
+        combatBar.setVisible(false);
         this.getActivePlayers().forEach(player -> {
             player.setSoundScape(this.getProperty(SOUNDSCAPE), this.getProperty(INTENSITY), false);
         });
