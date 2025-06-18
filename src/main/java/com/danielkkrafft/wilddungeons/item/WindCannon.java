@@ -1,12 +1,14 @@
 package com.danielkkrafft.wilddungeons.item;
 
 import com.danielkkrafft.wilddungeons.entity.WindChargeProjectile;
+import com.danielkkrafft.wilddungeons.entity.renderer.WindCannonRenderer;
 import com.danielkkrafft.wilddungeons.item.itemhelpers.WDWeapon;
 import com.danielkkrafft.wilddungeons.registry.WDDataComponents;
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
 import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
 import com.danielkkrafft.wilddungeons.util.UtilityMethods;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
@@ -32,6 +34,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import software.bernie.geckolib.animatable.client.GeoRenderProvider;
+import software.bernie.geckolib.renderer.GeoItemRenderer;
+
+import java.util.function.Consumer;
 
 public class WindCannon extends WDWeapon {
 
@@ -51,6 +57,18 @@ public class WindCannon extends WDWeapon {
                         .stacksTo(1));
 
         animator.addAnimation(AnimationList.compress.toString());
+    }
+
+    @Override
+    public void createGeoRenderer(Consumer<GeoRenderProvider> consumer) {
+        consumer.accept(new GeoRenderProvider() {
+            private final GeoItemRenderer<?> renderer = new WindCannonRenderer();
+
+            @Override
+            public BlockEntityWithoutLevelRenderer getGeoItemRenderer() {
+                return this.renderer;
+            }
+        });
     }
 
     @Override

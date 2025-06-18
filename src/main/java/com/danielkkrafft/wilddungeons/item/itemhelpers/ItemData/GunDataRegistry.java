@@ -58,9 +58,9 @@ public class GunDataRegistry {
                     0.0f,
                     3f,
                     "Black Hole",
-                    false,//todo idle anim
+                    false,
                     true,
-                    false,//todo reload anim
+                    false,
                     true
             )
     );

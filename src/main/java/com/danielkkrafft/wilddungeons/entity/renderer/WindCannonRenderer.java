@@ -1,6 +1,7 @@
 package com.danielkkrafft.wilddungeons.entity.renderer;
 
-import com.danielkkrafft.wilddungeons.entity.model.WindCannonModel;
+import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.entity.model.ClientModel;
 import com.danielkkrafft.wilddungeons.item.WindCannon;
 import com.danielkkrafft.wilddungeons.util.UtilityMethods;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -9,11 +10,13 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
-public class WindCannonRenderer extends GeoItemRenderer<WindCannon>//todo remove this class and move the functionality to another class
+public class WindCannonRenderer extends GeoItemRenderer<WindCannon>
 {
     public WindCannonRenderer()
     {
-        super(new WindCannonModel());
+        super(new ClientModel<>(WildDungeons.rl("animations/wind_cannon.animation.json"),
+                WildDungeons.rl("geo/wind_cannon.geo.json"),
+                WildDungeons.rl("textures/item/wind_cannon.png")));
     }
 
     @Override
