@@ -19,10 +19,13 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-
-@Deprecated(forRemoval = true)
+/**
+ * This is the old version of the Emerald Staff. Kept for reference
+* */
+@Deprecated(forRemoval = false)
 public class EmeraldStaffDep extends WDWeapon {
     public static final String NAME = "emerald_staff";
+    
 
     public enum AnimationList {idle, summon}
 

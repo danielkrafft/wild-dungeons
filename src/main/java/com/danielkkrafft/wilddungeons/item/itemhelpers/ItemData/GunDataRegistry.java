@@ -35,6 +35,7 @@ public class GunDataRegistry {
                     "Summoned Wisp",
                     true,
                     true,
+                    false,
                     false
             ),
             new GunWeaponData(
@@ -57,9 +58,10 @@ public class GunDataRegistry {
                     0.0f,
                     3f,
                     "Black Hole",
-                    false,//todo
-                    false,//todo
-                    false//todo
+                    false,//todo idle anim
+                    false,//todo fire anim
+                    false,//todo reload anim
+                    true
             )
     );
 

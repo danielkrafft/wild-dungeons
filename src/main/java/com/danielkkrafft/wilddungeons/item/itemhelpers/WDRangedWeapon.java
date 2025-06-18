@@ -75,6 +75,7 @@ public abstract class WDRangedWeapon extends ProjectileWeaponItem implements Geo
         );
         this.itemData = data;
         this.name = data.name;
+        this.hasEmissive = data.hasEmissive;
         this.model = new ClientModel<>(data.animations,data.baseModel,data.baseTexture);
         this.animator = new WDItemAnimator(name, this);
         SingletonGeoAnimatable.registerSyncedAnimatable(this);

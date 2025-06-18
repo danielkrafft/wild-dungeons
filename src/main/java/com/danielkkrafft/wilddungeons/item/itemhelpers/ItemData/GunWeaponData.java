@@ -27,7 +27,7 @@ public class GunWeaponData extends BaseProjectileData {
             Rarity rarity, String animations, String model, String texture,
             Holder<SoundEvent> fireSound, Boolean usesAmmo, int cooldown,
             float spawnDistanceOffset, float spawnHeightOffset, float projectileSpeed,
-            String projectileName, boolean hasIdle, boolean hasFire, boolean hasReload
+            String projectileName, boolean hasIdle, boolean hasFire, boolean hasReload, boolean hasEmissive
     ) {
 
         this.name = name;
@@ -52,5 +52,6 @@ public class GunWeaponData extends BaseProjectileData {
         this.hasIdle = hasIdle;
         this.hasFire = hasFire;
         this.hasReload = hasReload;
+        this.hasEmissive = hasEmissive;
     }
 }

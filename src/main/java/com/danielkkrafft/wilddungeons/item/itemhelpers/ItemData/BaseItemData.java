@@ -15,4 +15,5 @@ public abstract class BaseItemData {
     public String baseModel = "";
     public String baseTexture = "";
     public boolean hasIdle = false;
+    public boolean hasEmissive = false;
 }
