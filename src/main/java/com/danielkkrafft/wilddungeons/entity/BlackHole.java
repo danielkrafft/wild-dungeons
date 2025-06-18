@@ -64,7 +64,7 @@ public class BlackHole extends SelfGovernedEntity {
     private static final int ENTITY_DAMAGE_COOLDOWN_TICKS = 10;             // Per-entity cooldown for repeated damage
     private static final int MIN_BLOCKS_DESTROYED = 10;                      // Minimum blocks randomly selected to destroy
     private static final int MAX_BLOCKS_DESTROYED = 100;                    // Maximum blocks randomly selected to destroy
-    private static final int BLOCK_DESTROY_SPREAD_TICKS = 3;                // Number of ticks to spread block destruction across
+    private static final int BLOCK_DESTROY_SPREAD_TICKS = 10;                // Number of ticks to spread block destruction across
     private Queue<BlockPos> pendingDestruction = new ArrayDeque<>();
     private int destructionSpreadTickCounter = 0;                           // Ticks remaining for this destruction round
     private final Map<Integer, Integer> damageCooldowns = new HashMap<>();  // Tracks cooldowns for entity damage
