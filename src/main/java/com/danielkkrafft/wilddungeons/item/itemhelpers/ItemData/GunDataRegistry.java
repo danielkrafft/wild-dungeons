@@ -48,10 +48,10 @@ public class GunDataRegistry {
                     UseAnim.NONE,
                     WDEntities.BLACK_HOLE,
                     Rarity.EPIC,
-                    "",
                     "star_cannon",
                     "star_cannon",
-                    BuiltInRegistries.SOUND_EVENT.wrapAsHolder(SoundEvents.BLAZE_SHOOT),
+                    "star_cannon",
+                    BuiltInRegistries.SOUND_EVENT.wrapAsHolder(SoundEvents.SHULKER_SHOOT),
                     true,
                     20,
                     2.0f,
@@ -59,7 +59,7 @@ public class GunDataRegistry {
                     3f,
                     "Black Hole",
                     false,//todo idle anim
-                    false,//todo fire anim
+                    true,
                     false,//todo reload anim
                     true
             )

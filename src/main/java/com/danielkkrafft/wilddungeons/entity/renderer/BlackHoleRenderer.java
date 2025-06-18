@@ -71,11 +71,6 @@ public class BlackHoleRenderer extends EntityRenderer<BlackHole> {
         poseStack.popPose();
     }
 
-
-    private static void extracted(PoseStack poseStack, float pulse) {
-        poseStack.scale(pulse, pulse, pulse);
-    }
-
     private void renderQuad(PoseStack poseStack, MultiBufferSource bufferSource, ResourceLocation texture, int light) {
         VertexConsumer builder = bufferSource.getBuffer(RenderType.entityTranslucent(texture));
         Matrix4f pose = poseStack.last().pose();
