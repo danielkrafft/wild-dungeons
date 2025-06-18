@@ -31,6 +31,9 @@ import java.util.*;
 
 public class BlackHole extends SelfGovernedEntity {
 
+    // How often the black hole updates its state. Every X ticks. Higher numbers mean less frequent updates, but more performance friendly.
+    // Makes the black hole feel bad when you make the number too high
+    private static final int PHYSICS_UPDATE_TICK_RATE = 2;
     // Core size logic
     private float mass = 1.0f;
     private static final float MIN_MASS = 0.1f;                             // Minimum black hole size before death
@@ -218,13 +221,14 @@ public class BlackHole extends SelfGovernedEntity {
             Vec3 invertedPreservedMotion = target.getDeltaMovement().scale(-momentumFactor);
 
             if (target instanceof Player){
-                target.addDeltaMovement(totalForce.scale(.5f));
+                target.addDeltaMovement(totalForce.scale(.25f));
             } else {
                 target.addDeltaMovement(totalForce);
                 target.addDeltaMovement(invertedPreservedMotion);
             }
             // Mark the entity as needing physics update
-            target.hurtMarked = true;//necessary or players wont move, and entities will appear jittery
+            if (tickCount % PHYSICS_UPDATE_TICK_RATE == 0)
+                target.hurtMarked = true;//necessary or players wont move, and entities will appear jittery
         }
     }
 
