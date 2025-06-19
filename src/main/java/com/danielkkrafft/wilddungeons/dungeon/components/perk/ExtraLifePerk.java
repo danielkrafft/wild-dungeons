@@ -1,8 +1,8 @@
 package com.danielkkrafft.wilddungeons.dungeon.components.perk;
 
 public class ExtraLifePerk extends DungeonPerk {
-    public ExtraLifePerk(String sessionKey) {
-        super(sessionKey);
+    public ExtraLifePerk(String sessionKey, String templateKey) {
+        super(sessionKey, templateKey);
     }
 
     @Override

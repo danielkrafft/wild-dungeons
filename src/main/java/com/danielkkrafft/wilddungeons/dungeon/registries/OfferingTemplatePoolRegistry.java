@@ -21,9 +21,14 @@ public class OfferingTemplatePoolRegistry {
             .add(FREE_MOVEMENT_SPEED, 1)
             .add(FREE_DIG_SPEED, 1)
             .add(FREE_BIG_ABSORPTION, 1)
-            .add(FREE_ATTACK_SPEED, 1)
             .add(FREE_POISON_IMMUNITY, 1)
-            .add(FREE_STEP_HEIGHT, 1);
+            .add(FREE_STEP_HEIGHT, 1)
+            .add(FREE_DODGE, 1)
+            .add(FREE_ONE_PUNCH_MAN, 1)
+            .add(FREE_EXPLOSION_IMMUNITY, 1)
+            .add(FREE_BIG_RED_BUTTON, 1)
+            .add(FREE_CRITICAL_HIT, 1)
+            ;
     public static final WeightedPool<OfferingTemplate> CHEAP_BASIC_POOL = create("CHEAP_BASIC_POOL")
             .add(ARROWS,1)
             .add(STEAKS,1)
@@ -105,14 +110,13 @@ public class OfferingTemplatePoolRegistry {
             .add(VILLAGE_MOVEMENT_SPEED,1)
             .add(VILLAGE_DIG_SPEED,1)
             .add(VILLAGE_BIG_ABSORPTION,1)
-            .add(VILLAGE_ATTACK_SPEED,1)
             .add(VILLAGE_POISON_IMMUNITY,1)
             .add(VILLAGE_STEP_HEIGHT,1)
-//            .add(VILLAGE_DODGE,1)//todo not implemented
-//            .add(VILLAGE_ONE_PUNCH_MAN,1)
-//            .add(VILLAGE_EXPLOSION_IMMUNITY,1)
-//            .add(VILLAGE_BIG_RED_BUTTON,1)
-//            .add(VILLAGE_CRITICAL_HIT,1)
+            .add(VILLAGE_DODGE,1)
+            .add(VILLAGE_ONE_PUNCH_MAN,1)
+            .add(VILLAGE_EXPLOSION_IMMUNITY,1)
+            .add(VILLAGE_BIG_RED_BUTTON,1)
+            .add(VILLAGE_CRITICAL_HIT,1)
             ;
 
     public static final WeightedPool<OfferingTemplate> WIND_WEAPONS_POOL = create("WIND_WEAPONS_POOL")

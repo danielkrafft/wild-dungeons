@@ -30,7 +30,11 @@ import static com.danielkkrafft.wilddungeons.dungeon.components.template.Hierarc
 
 public class CombatRoom extends TargetPurgeRoom {
 
-    public ServerBossEvent combatBar;
+    public ServerBossEvent combatBar = new ServerBossEvent(
+            Component.empty(),
+            BossEvent.BossBarColor.RED,
+            BossEvent.BossBarOverlay.PROGRESS
+    );
 
     public static final int SPAWN_INTERVAL = 200;
     public static final float QUANTITY_VARIANCE = 2f;
@@ -66,12 +70,7 @@ public class CombatRoom extends TargetPurgeRoom {
         this.getActivePlayers().forEach(player -> {
             player.setSoundScape(this.getProperty(SOUNDSCAPE), this.getProperty(INTENSITY)+1, false);
         });
-        this.combatBar = new ServerBossEvent(
-                Component.literal("Combat Room"),
-                BossEvent.BossBarColor.RED,
-                BossEvent.BossBarOverlay.PROGRESS
-        );
-        combatBar.setVisible(true);
+        combatBar.setVisible(!(this instanceof BossRoom));
         combatBar.setProgress(1.0f);
         this.getActivePlayers().forEach(wdPlayer -> combatBar.addPlayer(wdPlayer.getServerPlayer()));
         super.start();

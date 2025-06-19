@@ -65,6 +65,7 @@ public class DungeonSession {
     public boolean isMarkedForShutdown() {return this.markedForShutdown;}
     public List<DungeonPerk> getPerks() {return this.perks;}
     public DungeonPerk getPerkByClass(Class<? extends DungeonPerk> clazz) {return this.getPerks().stream().filter(perk -> perk.getClass().toString().equals(clazz.toString())).findAny().orElse(null);}
+    public DungeonPerk getPerkByName(String templateKey) {return this.getPerks().stream().filter(perk -> perk.templateKey.equals(templateKey)).findAny().orElse(null);}
     public String getSessionKey() {return DungeonSessionManager.buildDungeonSessionKey(this.entranceUUID);}
     public DungeonStats getStats(String uuid) {return this.playerStats.get(uuid);}
     public List<WDPlayer> getPlayers() { return this.playersInside.keySet().stream().map(uuid -> WDPlayerManager.getInstance().getOrCreateServerWDPlayer(uuid)).toList(); }
@@ -147,6 +148,8 @@ public class DungeonSession {
         wdPlayer.setRiftCooldown(100);
         wdPlayer.setSoundScape(null, 0, true);
         WDPlayerManager.syncAll(List.of(wdPlayer.getUUID()));
+        this.getPerks().forEach(perk -> perk.onDungeonLeave(wdPlayer));
+        //todo remove this when the perks handle their own status effects and the removal
         List<MobEffectInstance> effectInstances = new ArrayList<>();
         wdPlayer.getServerPlayer().getActiveEffects().forEach(effect -> {
             if (effect.isInfiniteDuration()) {
@@ -194,7 +197,7 @@ public class DungeonSession {
      * @param perkTemplate The perk to add
      */
     public void givePerk(DungeonPerkTemplate perkTemplate) {
-        DungeonPerk perk = this.getPerkByClass(perkTemplate.getClazz());
+        DungeonPerk perk = this.getPerkByName(perkTemplate.name());
         if (perk == null) perk = perkTemplate.asPerk(DungeonSessionManager.buildDungeonSessionKey(this.getEntranceUUID()));
 
         perk.count++;

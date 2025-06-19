@@ -1,32 +1,36 @@
 package com.danielkkrafft.wilddungeons.dungeon.registries;
 
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
-import com.danielkkrafft.wilddungeons.dungeon.components.perk.*;
+import com.danielkkrafft.wilddungeons.dungeon.components.perk.DungeonPerk;
+import com.danielkkrafft.wilddungeons.dungeon.components.perk.ExtraLifePerk;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonPerkTemplate;
+import com.danielkkrafft.wilddungeons.dungeon.mob_effects.WDMobEffects;
+import net.minecraft.core.Holder;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffects;
 import org.joml.Vector2i;
 
 public class PerkRegistry {
     public static final DungeonRegistration.DungeonComponentRegistry<DungeonPerkTemplate> DUNGEON_PERK_REGISTRY = new DungeonRegistration.DungeonComponentRegistry<>();
 
-    public static final DungeonPerkTemplate SWORD_DAMAGE = create(SwordDamagePerk.class, new Vector2i(0,0));
-    public static final DungeonPerkTemplate AXE_DAMAGE = create(AxeDamagePerk.class, new Vector2i(1,0));
-    public static final DungeonPerkTemplate BOW_DAMAGE = create(BowDamagePerk.class, new Vector2i(2,0));
-    public static final DungeonPerkTemplate EXTRA_LIFE = create(ExtraLifePerk.class, new Vector2i(3,0));
-    public static final DungeonPerkTemplate FIRE_RESIST = create(PermanentFireResistPerk.class, new Vector2i(0,1)).setUnique();
-    public static final DungeonPerkTemplate STRENGTH = create(PermanentStrengthPerk.class, new Vector2i(1,1));
-    public static final DungeonPerkTemplate NIGHT_VISION = create(PermanentNightVisionPerk.class, new Vector2i(2,1)).setUnique();
-    public static final DungeonPerkTemplate HEALTH_BOOST = create(PermanentHealthBoostPerk.class, new Vector2i(3,1));
-    public static final DungeonPerkTemplate MOVEMENT_SPEED = create(PermanentMovementSpeedPerk.class, new Vector2i(0, 2));
-    public static final DungeonPerkTemplate DIG_SPEED = create(PermanentDigSpeedPerk.class, new Vector2i(1, 2));
-    public static final DungeonPerkTemplate BIG_ABSORPTION = create(BigAbsorptionPerk.class, new Vector2i(2, 2));
-    public static final DungeonPerkTemplate ATTACK_SPEED = create(AttackSpeedPerk.class, new Vector2i(3,2));
-    public static final DungeonPerkTemplate POISON_IMMUNITY = create(PoisonImmunePerk.class, new Vector2i(0, 3)).setUnique();
-    public static final DungeonPerkTemplate STEP_HEIGHT = create(StepHeightPerk.class, new Vector2i(1, 3));
-    public static final DungeonPerkTemplate DODGE = create(DodgePerk.class, new Vector2i(2, 3)); // not implemented
-    public static final DungeonPerkTemplate ONE_PUNCH_MAN = create(OnePunchManPerk.class, new Vector2i(3, 3)); // not implemented
-    public static final DungeonPerkTemplate EXPLOSION_IMMUNITY = create(ExplosionImmunePerk.class, new Vector2i(0, 4)).setUnique(); // not implemented
-    public static final DungeonPerkTemplate BIG_RED_BUTTON = create(BigRedButtonPerk.class, new Vector2i(1, 4)); // not implemented
-    public static final DungeonPerkTemplate CRITICAL_HIT = create(CriticalHitPerk.class, new Vector2i(2, 4)); // not implemented
+    public static final DungeonPerkTemplate EXTRA_LIFE = create(ExtraLifePerk.class, new Vector2i(3, 0));
+    public static final DungeonPerkTemplate SWORD_DAMAGE = create(WDMobEffects.SWORD_DAMAGE, new Vector2i(0, 0), "SwordDamagePerk");
+    public static final DungeonPerkTemplate AXE_DAMAGE = create(WDMobEffects.AXE_DAMAGE, new Vector2i(1, 0), "AxeDamagePerk");
+    public static final DungeonPerkTemplate BOW_DAMAGE = create(WDMobEffects.BOW_DAMAGE, new Vector2i(2, 0), "BowDamagePerk");
+    public static final DungeonPerkTemplate FIRE_RESIST = create(MobEffects.FIRE_RESISTANCE, new Vector2i(0, 1), "PermanentFireResistPerk").setUnique();
+    public static final DungeonPerkTemplate STRENGTH = create(MobEffects.DAMAGE_BOOST, new Vector2i(1, 1), "PermanentStrengthPerk");
+    public static final DungeonPerkTemplate NIGHT_VISION = create(MobEffects.NIGHT_VISION, new Vector2i(2, 1), "PermanentNightVisionPerk").setUnique();
+    public static final DungeonPerkTemplate HEALTH_BOOST = create(MobEffects.HEALTH_BOOST, new Vector2i(3, 1), "PermanentHealthBoostPerk");
+    public static final DungeonPerkTemplate MOVEMENT_SPEED = create(MobEffects.MOVEMENT_SPEED, new Vector2i(0, 2), "PermanentMovementSpeedPerk");
+    public static final DungeonPerkTemplate HASTE = create(MobEffects.DIG_SPEED, new Vector2i(3, 2), "PermanentDigSpeedPerk");
+    public static final DungeonPerkTemplate BIG_ABSORPTION = create(MobEffects.ABSORPTION,20, new Vector2i(2, 2), "BigAbsorptionPerk");
+    public static final DungeonPerkTemplate POISON_IMMUNITY = create(WDMobEffects.POISON_RESISTANCE, new Vector2i(0, 3), "PoisonImmunePerk").setUnique();
+    public static final DungeonPerkTemplate STEP_HEIGHT = create(WDMobEffects.STEP_HEIGHT, new Vector2i(1, 3), "StepHeightPerk");
+    public static final DungeonPerkTemplate DODGE = create(WDMobEffects.EVASION, new Vector2i(2, 3), "DodgePerk");
+    public static final DungeonPerkTemplate EXPLOSION_IMMUNITY = create(WDMobEffects.EXPLOSION_RESISTANCE, new Vector2i(0, 4), "ExplosionImmunePerk").setUnique();
+    public static final DungeonPerkTemplate BIG_RED_BUTTON = create(WDMobEffects.BIG_RED_BUTTON, new Vector2i(1, 4), "BigRedButtonPerk");
+    public static final DungeonPerkTemplate CRITICAL_HIT = create(WDMobEffects.KEEN_EDGE, new Vector2i(2, 4), "CriticalHitPerk");
+    public static final DungeonPerkTemplate ONE_PUNCH_MAN = create(WDMobEffects.ONE_PUNCH_MAN, new Vector2i(3, 3), "OnePunchManPerk").setUnique();
     //Gills - you can breathe indefinitely underwater
     //XP Boost - XP and essence orbs grant +10% points
     //Overkill - Enemies that get one-shot drop 1.5x XP
@@ -87,10 +91,20 @@ public class PerkRegistry {
     //Midas Touch
 
 
-
-
-    public static DungeonPerkTemplate create(Class<? extends DungeonPerk> clazz, Vector2i position){
+    public static DungeonPerkTemplate create(Class<? extends DungeonPerk> clazz, Vector2i position) {
         DungeonPerkTemplate perk = new DungeonPerkTemplate(clazz, position);
+        DUNGEON_PERK_REGISTRY.add(perk);
+        return perk;
+    }
+
+    public static DungeonPerkTemplate create(Holder<MobEffect> effect, Vector2i position, String name) {
+        DungeonPerkTemplate perk = new DungeonPerkTemplate(effect, position).setName(name);
+        DUNGEON_PERK_REGISTRY.add(perk);
+        return perk;
+    }
+
+    public static DungeonPerkTemplate create(Holder<MobEffect> effect, int amplifier, Vector2i position, String name) {
+        DungeonPerkTemplate perk = new DungeonPerkTemplate(effect, amplifier, position).setName(name);
         DUNGEON_PERK_REGISTRY.add(perk);
         return perk;
     }

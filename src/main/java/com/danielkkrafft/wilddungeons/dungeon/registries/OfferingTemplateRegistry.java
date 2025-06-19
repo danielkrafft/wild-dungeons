@@ -80,9 +80,8 @@ public class OfferingTemplateRegistry {
     public static final OfferingTemplate VILLAGE_NIGHT_VISION = createPerk("VILLAGE_NIGHT_VISION", PerkRegistry.NIGHT_VISION, OVERWORLD, 20, 1.5f).setCostItem(Items.EMERALD,150);
     public static final OfferingTemplate VILLAGE_HEALTH_BOOST = createPerk("VILLAGE_HEALTH_BOOST", PerkRegistry.HEALTH_BOOST, OVERWORLD, 20, 1.5f).setCostItem(Items.EMERALD,150);
     public static final OfferingTemplate VILLAGE_MOVEMENT_SPEED = createPerk("VILLAGE_MOVEMENT_SPEED", PerkRegistry.MOVEMENT_SPEED, OVERWORLD, 20, 1.5f).setCostItem(Items.EMERALD,150);
-    public static final OfferingTemplate VILLAGE_DIG_SPEED = createPerk("VILLAGE_DIG_SPEED", PerkRegistry.DIG_SPEED, OVERWORLD, 20, 1.5f).setCostItem(Items.EMERALD,150);
+    public static final OfferingTemplate VILLAGE_DIG_SPEED = createPerk("VILLAGE_DIG_SPEED", PerkRegistry.HASTE, OVERWORLD, 20, 1.5f).setCostItem(Items.EMERALD,150);
     public static final OfferingTemplate VILLAGE_BIG_ABSORPTION = createPerk("VILLAGE_BIG_ABSORPTION", PerkRegistry.BIG_ABSORPTION, OVERWORLD, 20, 1.5f).setCostItem(Items.EMERALD,150);
-    public static final OfferingTemplate VILLAGE_ATTACK_SPEED = createPerk("VILLAGE_ATTACK_SPEED", PerkRegistry.ATTACK_SPEED, OVERWORLD, 20, 1.5f).setCostItem(Items.EMERALD,150);
     public static final OfferingTemplate VILLAGE_POISON_IMMUNITY = createPerk("VILLAGE_POISON_IMMUNITY", PerkRegistry.POISON_IMMUNITY, OVERWORLD, 20, 1.5f).setCostItem(Items.EMERALD,150);
     public static final OfferingTemplate VILLAGE_STEP_HEIGHT = createPerk("VILLAGE_STEP_HEIGHT", PerkRegistry.STEP_HEIGHT, OVERWORLD, 20, 1.5f).setCostItem(Items.EMERALD,150);
     public static final OfferingTemplate VILLAGE_DODGE = createPerk("VILLAGE_DODGE", PerkRegistry.DODGE, OVERWORLD, 20, 1.5f).setCostItem(Items.EMERALD,150);
@@ -111,11 +110,15 @@ public class OfferingTemplateRegistry {
     public static final OfferingTemplate FREE_NIGHT_VISION = createPerk("NIGHT_VISION", PerkRegistry.NIGHT_VISION, OVERWORLD, 0, 1);
     public static final OfferingTemplate FREE_HEALTH_BOOST = createPerk("FREE_HEALTH_BOOST", PerkRegistry.HEALTH_BOOST, OVERWORLD, 0, 1);
     public static final OfferingTemplate FREE_MOVEMENT_SPEED = createPerk("FREE_MOVEMENT_SPEED", PerkRegistry.MOVEMENT_SPEED, OVERWORLD, 0, 1);
-    public static final OfferingTemplate FREE_DIG_SPEED = createPerk("FREE_DIG_SPEED", PerkRegistry.DIG_SPEED, OVERWORLD, 0, 1);
+    public static final OfferingTemplate FREE_DIG_SPEED = createPerk("FREE_DIG_SPEED", PerkRegistry.HASTE, OVERWORLD, 0, 1);
     public static final OfferingTemplate FREE_BIG_ABSORPTION = createPerk("FREE_BIG_ABSORPTION", PerkRegistry.BIG_ABSORPTION, OVERWORLD, 0, 1);
-    public static final OfferingTemplate FREE_ATTACK_SPEED = createPerk("FREE_ATTACK_SPEED", PerkRegistry.ATTACK_SPEED, OVERWORLD, 0, 1);
     public static final OfferingTemplate FREE_POISON_IMMUNITY = createPerk("FREE_POISON_IMMUNITY", PerkRegistry.POISON_IMMUNITY, OVERWORLD, 0, 1);
     public static final OfferingTemplate FREE_STEP_HEIGHT = createPerk("FREE_STEP_HEIGHT", PerkRegistry.STEP_HEIGHT, OVERWORLD, 0, 1);
+    public static final OfferingTemplate FREE_DODGE = createPerk("FREE_DODGE", PerkRegistry.DODGE, OVERWORLD, 0, 1);
+    public static final OfferingTemplate FREE_ONE_PUNCH_MAN = createPerk("FREE_ONE_PUNCH", PerkRegistry.ONE_PUNCH_MAN, OVERWORLD, 0, 1);
+    public static final OfferingTemplate FREE_EXPLOSION_IMMUNITY = createPerk("FREE_EXPLOSION_IMMUNITY", PerkRegistry.EXPLOSION_IMMUNITY, OVERWORLD, 0, 1);
+    public static final OfferingTemplate FREE_BIG_RED_BUTTON = createPerk("FREE_BIG_RED_BUTTON", PerkRegistry.BIG_RED_BUTTON, OVERWORLD, 0, 1);
+    public static final OfferingTemplate FREE_CRITICAL_HIT = createPerk("FREE_CRITICAL_HIT", PerkRegistry.CRITICAL_HIT, OVERWORLD, 0, 1);
 
     public static final OfferingTemplate STRENGTH_NORMAL = createPerk("STRENGTH_NORMAL", PerkRegistry.STRENGTH, OVERWORLD, 20, 1.5f);
     public static final OfferingTemplate STRENGTH_NETHER = createPerk("STRENGTH_NETHER", PerkRegistry.STRENGTH, NETHER, 12, 1.5f);

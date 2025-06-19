@@ -1,6 +1,7 @@
 package com.danielkkrafft.wilddungeons;
 
 
+import com.danielkkrafft.wilddungeons.dungeon.mob_effects.WDMobEffects;
 import com.danielkkrafft.wilddungeons.enchantment.WDEnchantmentEffects;
 import com.danielkkrafft.wilddungeons.entity.*;
 import com.danielkkrafft.wilddungeons.entity.boss.BreezeGolem;
@@ -21,7 +22,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -35,7 +35,6 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
-import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.slf4j.Logger;
 
@@ -60,6 +59,7 @@ public class WildDungeons {
         WDDataComponents.DATA_COMPONENT_TYPES.register(modEventBus);
         WDEnchantmentEffects.ENTITY_ENCHANTMENT_EFFECTS.register(modEventBus);
         WDDamageTypes.DAMAGE_TYPES.register(modEventBus);
+        WDMobEffects.MOB_EFFECTS.register(modEventBus);
 
         modEventBus.register(WildDungeons.class);
         NeoForge.EVENT_BUS.register(WDEvents.class);

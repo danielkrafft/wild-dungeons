@@ -4,6 +4,7 @@
   "item.wilddungeons.star_cannon": "Star Cannon",
   "item.wilddungeons.breeze_golem_spawn_egg": "Breeze Golem Spawn Egg",
   "item.wilddungeons.debug_item": "Debug Item",
+  "item.wilddungeons.perk_tester": "Perk Tester",
   "item.wilddungeons.essence_bottle": "Essence Bottle",
   "item.wilddungeons.firework_gun": "Firework Gun",
   "item.wilddungeons.grappling_hook": "Grappling Hook",
@@ -29,11 +30,10 @@
   "item.wilddungeons.angel_investor_safe_music_disc": "Angel Investor 2",
   "item.wilddungeons.the_capital_music_disc": "The Capital",
   "item.wilddungeons.the_capital_safe_music_disc": "The Capital 2",
+  "item.wilddungeons.boss_key": "Boss Key",
 
   "enchantment.wilddungeons.wind_trail": "Wind Trail",
   "enchantment.wilddungeons.density_enchantment": "Density",
-
-  "item.wilddungeons.boss_key": "Boss Key",
 
   "block.wilddungeons.connection_block": "Connection Block",
   "block.wilddungeons.rift_block": "Rift Block",
@@ -103,9 +103,8 @@
   "dungeon.perk.PermanentNightVisionPerk": "Permanent Night Vision",
   "dungeon.perk.PermanentHealthBoostPerk": "Health Boost",
   "dungeon.perk.PermanentMovementSpeedPerk": "Movement Speed",
-  "dungeon.perk.PermanentDigSpeedPerk": "Dig Speed",
+  "dungeon.perk.PermanentDigSpeedPerk": "Haste",
   "dungeon.perk.BigAbsorptionPerk": "Reasonable Amount of Absorption",
-  "dungeon.perk.AttackSpeedPerk": "Attack Speed",
   "dungeon.perk.PoisonImmunePerk": "Poison Immunity",
   "dungeon.perk.StepHeightPerk": "Long Legs",
   "dungeon.perk.DodgePerk": "Evasion",
@@ -199,7 +198,20 @@
   "item.wilddungeons.instant_loadout_netherite": "Netherite Loadout",
   "item.wilddungeons.instant_loadout_gold": "Gold Loadout",
 
+  "effect.wilddungeons.step_height": "Long Legs",
+  "effect.wilddungeons.axe_damage": "Axe Damage",
+  "effect.wilddungeons.sword_damage": "Sword Damage",
+  "effect.wilddungeons.bow_damage": "Bow Damage",
+  "effect.wilddungeons.poison_resistance": "Poison Resistance",
+  "effect.wilddungeons.explosion_resistance": "Explosion Resistance",
+  "effect.wilddungeons.one_punch_man": "One Punch Man",
+  "effect.wilddungeons.big_red_button": "Big Red Button",
+  "effect.wilddungeons.keen_edge": "Keen Edge",
+  "effect.wilddungeons.evasion": "Evasion",
+
+
   "death.attack.blackhole": "%1$s was consumed by a black hole",
   "death.attack.blackhole.player": "%1$s was consumed by a black hole fired by %2$s",
+
   "wilddungeons.missing_ammo": "Missing %s"
 }

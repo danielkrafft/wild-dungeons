@@ -49,6 +49,7 @@ public class WDCreativeTabs {
                 output.accept(RIFT_ITEM.get());
                 output.accept(ROOM_EXPORT_WAND.get());
                 output.accept(DEBUG_ITEM.get());
+                output.accept(PERK_TESTER.get());
 
                 output.accept(INSTANT_LOADOUT_LEATHER.get());
                 output.accept(INSTANT_LOADOUT_IRON.get());
