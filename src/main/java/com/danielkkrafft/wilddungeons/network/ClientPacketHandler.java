@@ -55,8 +55,9 @@ public class ClientPacketHandler {
                 SoundEvent soundEvent = BuiltInRegistries.SOUND_EVENT.byId(data.getInt("soundEvent"));
                 SoundSource soundSource = SoundSource.valueOf(data.getString("soundSource"));
                 Entity entity = Minecraft.getInstance().level.getEntity(data.getInt("entityId"));
-                if (entity != null && (!data.getBoolean("loop") || !loopingSounds.contains(data.getInt("soundEvent")))) {//todo I think something is wrong here, the sounds are looping endlessly and stacking even though we hash the soundEvent id
+                if (entity != null && (!data.getBoolean("loop") || !loopingSounds.contains(data.getInt("soundEvent")))) {
                     DynamicPitchSound dynamicPitchSound = new DynamicPitchSound(soundEvent, soundSource, data.getFloat("volume"), data.getFloat("pitch"), entity, data.getBoolean("loop"));
+                    loopingSounds.add(data.getInt("soundEvent"));
                     Minecraft.getInstance().getSoundManager().play(dynamicPitchSound);
                 }
             }

@@ -3,10 +3,16 @@ package com.danielkkrafft.wilddungeons.entity;
 import com.danielkkrafft.wilddungeons.entity.BaseClasses.WDArrow;
 import com.danielkkrafft.wilddungeons.entity.model.ClientModel;
 import com.danielkkrafft.wilddungeons.item.itemhelpers.WDItemAnimator;
+import com.danielkkrafft.wilddungeons.network.ClientPacketHandler;
+import com.danielkkrafft.wilddungeons.network.SimplePacketManager;
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -14,7 +20,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
+
+import static com.danielkkrafft.wilddungeons.registry.WDSoundEvents.WIND_ARROW_FLYBY;
 
 public class WindArrow extends WDArrow {
 
@@ -79,13 +88,16 @@ public class WindArrow extends WDArrow {
         Level lvl=level();
         if(!isRemoved())
         {
-            if(lvl.isClientSide)
-            {
-//                if(arrowSound == null)
-//                {
-//                    arrowSound = new WindArrowSound(this);
-//                    Minecraft.getInstance().getSoundManager().play(arrowSound);
-//                }
+            if (this.level() instanceof ServerLevel serverLevel && this.tickCount % 10 == 0) {
+                CompoundTag payload = new CompoundTag();
+                payload.putString("packet", ClientPacketHandler.Packets.PLAY_DYNAMIC_SOUND.toString());
+                payload.putInt("soundEvent", BuiltInRegistries.SOUND_EVENT.getId(WIND_ARROW_FLYBY.value()));
+                payload.putString("soundSource", SoundSource.NEUTRAL.toString());
+                payload.putInt("entityId", this.getId());
+                payload.putBoolean("loop", true);
+                payload.putFloat("volume", 1.0f);
+                payload.putFloat("pitch", 1.0f);
+                PacketDistributor.sendToPlayersNear(serverLevel, null, this.getX(), this.getY(), this.getZ(), 50, new SimplePacketManager.ClientboundTagPacket(payload));
             }
             else
             {
