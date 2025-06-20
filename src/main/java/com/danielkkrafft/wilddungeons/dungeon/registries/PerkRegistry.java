@@ -22,7 +22,7 @@ public class PerkRegistry {
     public static final DungeonPerkTemplate HEALTH_BOOST = create(MobEffects.HEALTH_BOOST,  ResourceLocation.withDefaultNamespace("textures/mob_effect/health_boost.png"), "PermanentHealthBoostPerk");
     public static final DungeonPerkTemplate MOVEMENT_SPEED = create(MobEffects.MOVEMENT_SPEED, ResourceLocation.withDefaultNamespace("textures/mob_effect/speed.png"),  "PermanentMovementSpeedPerk");
     public static final DungeonPerkTemplate HASTE = create(MobEffects.DIG_SPEED, ResourceLocation.withDefaultNamespace("textures/mob_effect/haste.png"),"PermanentDigSpeedPerk");
-    public static final DungeonPerkTemplate BIG_ABSORPTION = create(MobEffects.ABSORPTION,20, ResourceLocation.withDefaultNamespace("textures/mob_effect/absorption.png"),"BigAbsorptionPerk");
+    public static final DungeonPerkTemplate BIG_ABSORPTION = create(MobEffects.ABSORPTION,19, ResourceLocation.withDefaultNamespace("textures/mob_effect/absorption.png"),"BigAbsorptionPerk");
 
     public static final DungeonPerkTemplate SWORD_DAMAGE = create(WDMobEffects.SWORD_DAMAGE, WildDungeons.rl("textures/mob_effect/sword_damage.png"),"SwordDamagePerk");
     public static final DungeonPerkTemplate AXE_DAMAGE = create(WDMobEffects.AXE_DAMAGE, WildDungeons.rl("textures/mob_effect/axe_damage.png"),"AxeDamagePerk");
