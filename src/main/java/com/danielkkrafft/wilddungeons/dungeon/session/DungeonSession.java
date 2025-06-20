@@ -56,6 +56,7 @@ public class DungeonSession {
     private int lives = 0;
     private boolean markedForShutdown = false;
     public boolean dirty = true;
+    @Serializer.IgnoreSerialization public boolean shouldUpgradeOnClose = false;
 
     public ServerLevel getEntranceLevel() {return DungeonSessionManager.getInstance().server.getLevel(this.entranceLevelKey);}
     public String getEntranceUUID() {return this.entranceUUID;}
@@ -210,31 +211,45 @@ public class DungeonSession {
      * Primarily sends clients a Post-Dungeon stat screen
      */
     public void win() {
+        HashMap<String, DungeonSkinDataHolder> playerSkins = new HashMap<>();
+        for (String uuid : this.playersInside.keySet()) {
+            GameProfileCache gameProfileCache = DungeonSessionManager.getInstance().server.getProfileCache();
+            if (gameProfileCache != null) {
+                gameProfileCache.get(UUID.fromString(uuid)).ifPresent(gameProfile -> {
+                    PropertyMap properties = gameProfile.getProperties();
+                    Property property = Iterables.getFirst(properties.get("textures"), null);
+                    if (property != null){
+                        DungeonSkinDataHolder dungeonSkinDataHolder = new DungeonSkinDataHolder(gameProfile.getName(), property.value(), property.signature());
+                        playerSkins.put(uuid, dungeonSkinDataHolder);
+                    }
+                });
+            }
+        }
+        List<DungeonStatsHolder> statsHolders = new ArrayList<>();
         for (WDPlayer wdPlayer : getPlayers()) {
             this.onExit(wdPlayer);
             wdPlayer.getServerPlayer().addItem(new ItemStack(Items.DIAMOND.asItem(), 1));
             wdPlayer.setLastGameMode(wdPlayer.getServerPlayer().gameMode.getGameModeForPlayer());
-            HashMap<String, DungeonSkinDataHolder> playerSkins = new HashMap<>();
-            for (String uuid : this.playersInside.keySet()) {
-                GameProfileCache gameProfileCache = DungeonSessionManager.getInstance().server.getProfileCache();
-                if (gameProfileCache != null) {
-                    gameProfileCache.get(UUID.fromString(uuid)).ifPresent(gameProfile -> {
-                        PropertyMap properties = gameProfile.getProperties();
-                        Property property = Iterables.getFirst(properties.get("textures"), null);
-                        if (property != null){
-                            DungeonSkinDataHolder dungeonSkinDataHolder = new DungeonSkinDataHolder(gameProfile.getName(), property.value(), property.signature());
-                            playerSkins.put(uuid, dungeonSkinDataHolder);
-                        }
-                    });
-                }
-            }
+
             DungeonStatsHolder holder = new DungeonStatsHolder(this.playerStats, playerSkins, this.getTemplate().get(HierarchicalProperty.DISPLAY_NAME), this.getTemplate().get(HierarchicalProperty.ICON), this.getTemplate().get(HierarchicalProperty.PRIMARY_COLOR), this.getTemplate().get(HierarchicalProperty.SECONDARY_COLOR), this.getTemplate().get(HierarchicalProperty.TARGET_TIME), this.getTemplate().get(HierarchicalProperty.TARGET_DEATHS), this.getTemplate().get(HierarchicalProperty.TARGET_SCORE));
+            statsHolders.add(holder);
             CompoundTag tag = new CompoundTag();
             tag.putString("packet", ClientPacketHandler.Packets.POST_DUNGEON_SCREEN.toString());
             tag.put("stats", Serializer.toCompoundTag(holder));
             PacketDistributor.sendToPlayer(wdPlayer.getServerPlayer(), new SimplePacketManager.ClientboundTagPacket(tag));
             wdPlayer.getServerPlayer().setGameMode(GameType.SPECTATOR);
         }
+
+        int targetTime = this.getTemplate().get(HierarchicalProperty.TARGET_TIME);
+        int targetDeaths = this.getTemplate().get(HierarchicalProperty.TARGET_DEATHS);
+        int targetScore = this.getTemplate().get(HierarchicalProperty.TARGET_SCORE);
+
+        int combinedDeaths = this.playerStats.values().stream().mapToInt(stats -> stats.deaths).sum();
+        int combinedScore = this.playerStats.values().stream().mapToInt(DungeonStats::getScore).sum();
+        int averageTime = this.playerStats.values().stream().mapToInt(stats -> stats.time).sum() / Math.max(1, this.playerStats.size());
+
+        this.shouldUpgradeOnClose = combinedDeaths <= targetDeaths && averageTime <= targetTime && combinedScore >= targetScore;
+
         triggerExitBehaviorDelay();
     }
 
@@ -285,12 +300,14 @@ public class DungeonSession {
                     Vec3 vec3 = offering.position();
                     offering.discard();
 
-                    Offering newOffering = this.getTemplate().get(HierarchicalProperty.NEXT_DUNGEON_OFFERING).getRandom().asOffering(level);
-                    DungeonTemplate template = DungeonRegistry.DUNGEON_REGISTRY.get(newOffering.getOfferingId().split("wd-")[1]);
-                    newOffering.setPrimaryColor(template.get(HierarchicalProperty.PRIMARY_COLOR));
-                    newOffering.setSecondaryColor(template.get(HierarchicalProperty.SECONDARY_COLOR));
-                    newOffering.setPos(vec3);
-                    level.addFreshEntity(newOffering);
+                    if (shouldUpgradeOnClose) {
+                        Offering newOffering = this.getTemplate().get(HierarchicalProperty.NEXT_DUNGEON_OFFERING).getRandom().asOffering(level);
+                        DungeonTemplate template = DungeonRegistry.DUNGEON_REGISTRY.get(newOffering.getOfferingId().split("wd-")[1]);
+                        newOffering.setPrimaryColor(template.get(HierarchicalProperty.PRIMARY_COLOR));
+                        newOffering.setSecondaryColor(template.get(HierarchicalProperty.SECONDARY_COLOR));
+                        newOffering.setPos(vec3);
+                        level.addFreshEntity(newOffering);
+                    }
                 }
             }
         }
