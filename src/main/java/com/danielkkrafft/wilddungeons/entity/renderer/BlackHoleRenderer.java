@@ -45,12 +45,12 @@ public class BlackHoleRenderer extends EntityRenderer<BlackHole> {
 
         float outerScale = size * pulse;
         poseStack.scale(outerScale,outerScale,outerScale);
-        renderQuad(poseStack, bufferSource, TEXTURE_OUTER, packedLight);
+        renderQuad(poseStack, bufferSource, TEXTURE_OUTER, packedLight, true);
 
         // Slight Z-forward for core, negate pulse so core stays crisp
         poseStack.translate(0.0, 0.0, 0.001f);
         poseStack.scale(1 / pulse, 1 / pulse, 1 / pulse); // Only size scale remains
-        renderQuad(poseStack, bufferSource, TEXTURE_CORE, packedLight);
+        renderQuad(poseStack, bufferSource, TEXTURE_CORE, packedLight, false);
 
         poseStack.popPose();
 
@@ -67,12 +67,16 @@ public class BlackHoleRenderer extends EntityRenderer<BlackHole> {
         // Fixed ring size
         poseStack.scale(size, size, size);
 
-        renderQuad(poseStack, bufferSource, TEXTURE_RING, packedLight);
+        renderQuad(poseStack, bufferSource, TEXTURE_RING, packedLight, true);
         poseStack.popPose();
     }
 
-    private void renderQuad(PoseStack poseStack, MultiBufferSource bufferSource, ResourceLocation texture, int light) {
-        VertexConsumer builder = bufferSource.getBuffer(RenderType.entityTranslucent(texture));
+    private void renderQuad(PoseStack poseStack, MultiBufferSource bufferSource, ResourceLocation texture, int light, boolean emissive) {
+        // Use the appropriate render type based on whether it's emissive or not
+        RenderType renderType = emissive
+                ? RenderType.entityTranslucentEmissive(texture)
+                : RenderType.entityTranslucent(texture);
+        VertexConsumer builder = bufferSource.getBuffer(renderType);
         Matrix4f pose = poseStack.last().pose();
         int color = 0xFFFFFFFF;
         int overlay = OverlayTexture.NO_OVERLAY;
