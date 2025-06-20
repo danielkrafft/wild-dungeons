@@ -11,7 +11,6 @@ import com.danielkkrafft.wilddungeons.ui.RoomExportScreen;
 import com.danielkkrafft.wilddungeons.ui.WDLoadingScreen;
 import com.danielkkrafft.wilddungeons.ui.WDPostDungeonScreen;
 import com.danielkkrafft.wilddungeons.util.Serializer;
-import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -56,7 +55,7 @@ public class ClientPacketHandler {
                 SoundEvent soundEvent = BuiltInRegistries.SOUND_EVENT.byId(data.getInt("soundEvent"));
                 SoundSource soundSource = SoundSource.valueOf(data.getString("soundSource"));
                 Entity entity = Minecraft.getInstance().level.getEntity(data.getInt("entityId"));
-                if (entity != null && (!data.getBoolean("loop") || !loopingSounds.contains(data.getInt("soundEvent")))) {
+                if (entity != null && (!data.getBoolean("loop") || !loopingSounds.contains(data.getInt("soundEvent")))) {//todo I think something is wrong here, the sounds are looping endlessly and stacking even though we hash the soundEvent id
                     DynamicPitchSound dynamicPitchSound = new DynamicPitchSound(soundEvent, soundSource, data.getFloat("volume"), data.getFloat("pitch"), entity, data.getBoolean("loop"));
                     Minecraft.getInstance().getSoundManager().play(dynamicPitchSound);
                 }

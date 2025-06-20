@@ -106,6 +106,7 @@ public class CombatRoom extends TargetPurgeRoom {
         if (!this.started || this.isClear() || this.getActivePlayers().isEmpty()) return;
         if (combatBar.isVisible()) {
             combatBar.setProgress((float) targets.size() / totalSpawns);
+            combatBar.setName(Component.translatable("wilddungeons.combat_bar", (int) ((1-combatBar.getProgress()) * 100)));
         }
         if (spawnTimer == 0 || currentSpawns == targets.size()) {spawnNext(); spawnTimer = SPAWN_INTERVAL;}
         spawnTimer -= 1;

@@ -213,5 +213,6 @@
   "death.attack.blackhole": "%1$s was consumed by a black hole",
   "death.attack.blackhole.player": "%1$s was consumed by a black hole fired by %2$s",
 
-  "wilddungeons.missing_ammo": "Missing %s"
+  "wilddungeons.missing_ammo": "Missing %s",
+  "wilddungeons.combat_bar": "Progress %s%%"
 }

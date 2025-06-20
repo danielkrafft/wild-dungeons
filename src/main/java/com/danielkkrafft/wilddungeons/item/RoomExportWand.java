@@ -5,7 +5,6 @@ import com.danielkkrafft.wilddungeons.dungeon.components.DungeonMaterial;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.registry.WDBlocks;
-import com.danielkkrafft.wilddungeons.ui.RoomExportScreen;
 import com.danielkkrafft.wilddungeons.world.structure.WDStructureTemplate;
 import com.danielkkrafft.wilddungeons.world.structure.WDStructureTemplateManager;
 import com.google.common.collect.ImmutableList;
@@ -74,7 +73,8 @@ public class RoomExportWand extends Item {
         if (level.isClientSide) {
             // Only open screen when right-clicking in air (not targeting a block)
             if (!player.isShiftKeyDown() && Minecraft.getInstance().hitResult.getType() == HitResult.Type.MISS) {
-                Minecraft.getInstance().setScreen(new RoomExportScreen(itemStack ,this.getDungeonMaterials(itemStack, level)));
+                //todo fix this so that this class can run on a server
+//                Minecraft.getInstance().setScreen(new RoomExportScreen(itemStack ,this.getDungeonMaterials(itemStack, level)));
                 return InteractionResultHolder.success(itemStack);
             }
         } else if (player instanceof ServerPlayer serverPlayer) {

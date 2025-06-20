@@ -4,9 +4,6 @@ import com.danielkkrafft.wilddungeons.entity.BaseClasses.WDArrow;
 import com.danielkkrafft.wilddungeons.entity.model.ClientModel;
 import com.danielkkrafft.wilddungeons.item.itemhelpers.WDItemAnimator;
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
-import com.danielkkrafft.wilddungeons.sound.WindArrowSound;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -27,7 +24,8 @@ public class WindArrow extends WDArrow {
     private static final EntityDataAccessor<Integer> SPAWN_DELAY = SynchedEntityData.defineId(WindArrow.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> CHARGE_SIZE = SynchedEntityData.defineId(WindArrow.class,EntityDataSerializers.INT);
 
-    private WindArrowSound arrowSound = null;
+    //todo does not work with the server-side. Must be handled in a packet or replaced with a regular sound event
+//    private WindArrowSound arrowSound = null;
 
     public WindArrow(EntityType<WindArrow> type, Level level) {
         super(type, level, NAME);
@@ -83,15 +81,11 @@ public class WindArrow extends WDArrow {
         {
             if(lvl.isClientSide)
             {
-                LocalPlayer player = Minecraft.getInstance().player;
-                if(player!=null)
-                {
-                    if(arrowSound == null)
-                    {
-                        arrowSound = new WindArrowSound(this,player);
-                        Minecraft.getInstance().getSoundManager().play(arrowSound);
-                    }
-                }
+//                if(arrowSound == null)
+//                {
+//                    arrowSound = new WindArrowSound(this);
+//                    Minecraft.getInstance().getSoundManager().play(arrowSound);
+//                }
             }
             else
             {

@@ -228,7 +228,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     @Override
     public void tick() {
         if (this.getSoundLoop() != 0) {
-            if (this.level() instanceof ServerLevel serverLevel && this.tickCount % 25 == 0) {
+            if (this.level() instanceof ServerLevel serverLevel && this.tickCount % 25 == 0) {//todo I think this is why the sounds are overlapping endlessly, every 25 ticks we send a new sound packet
                 CompoundTag payload = new CompoundTag();
                 payload.putString("packet", ClientPacketHandler.Packets.PLAY_DYNAMIC_SOUND.toString());
                 payload.putInt("soundEvent", this.getSoundLoop());
