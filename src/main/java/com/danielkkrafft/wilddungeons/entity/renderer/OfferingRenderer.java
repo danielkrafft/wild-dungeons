@@ -1,6 +1,7 @@
 package com.danielkkrafft.wilddungeons.entity.renderer;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
+import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonPerkTemplate;
 import com.danielkkrafft.wilddungeons.entity.EssenceOrb;
 import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
@@ -172,24 +173,17 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
 
             float halfSize = 0.3f;
 
+            DungeonPerkTemplate perk = entity.getPerk();
+            RenderType PERK_RENDERTYPE = RenderType.entityCutout(perk.getTextureLocation());
             VertexConsumer vertexconsumer = buffer.getBuffer(PERK_RENDERTYPE);
             PoseStack.Pose posestack$pose = poseStack.last();
 
-            Vector2i coords = entity.getPerk().getTexCoords();
-
-            float u1 = (float) (coords.x * 16) / PERKS_TEXTURE_RESOLUTION.x;
-            float u2 = (float) (coords.x * 16 + 16) / PERKS_TEXTURE_RESOLUTION.x;
-
-            float v1 = (float) (coords.y * 16) / PERKS_TEXTURE_RESOLUTION.y;
-            float v2 = (float) (coords.y * 16 + 16) / PERKS_TEXTURE_RESOLUTION.y;
-
-            vertex(vertexconsumer, posestack$pose, -halfSize, -halfSize, u1, v2, 0xF000F0, 1.0f);
-            vertex(vertexconsumer, posestack$pose, halfSize, -halfSize, u2, v2, 0xF000F0, 1.0f);
-            vertex(vertexconsumer, posestack$pose, halfSize, halfSize, u2, v1, 0xF000F0, 1.0f);
-            vertex(vertexconsumer, posestack$pose, -halfSize, halfSize, u1, v1, 0xF000F0, 1.0f);
+            vertex(vertexconsumer, posestack$pose, -halfSize, -halfSize, 0, 1, 0xF000F0, 1.0f);
+            vertex(vertexconsumer, posestack$pose, halfSize, -halfSize, 1, 1, 0xF000F0, 1.0f);
+            vertex(vertexconsumer, posestack$pose, halfSize, halfSize, 1, 0, 0xF000F0, 1.0f);
+            vertex(vertexconsumer, posestack$pose, -halfSize, halfSize, 0, 0, 0xF000F0, 1.0f);
 
             poseStack.popPose();
-
         }
 
     }

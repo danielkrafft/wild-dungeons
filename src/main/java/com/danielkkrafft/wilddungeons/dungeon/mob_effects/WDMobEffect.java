@@ -128,7 +128,7 @@ public class WDMobEffect extends MobEffect {
 
     private static void processEvasionPerk(LivingDamageEvent.Pre event) {
         MobEffectInstance evasionPerk = event.getEntity().getEffect(WDMobEffects.EVASION);
-        if (evasionPerk != null) {
+        if (evasionPerk != null && event.getEntity().level().random.nextFloat() < 0.1f * (evasionPerk.getAmplifier() + 1)) {
             event.setNewDamage(0.0f);
             if (event.getEntity() instanceof ServerPlayer player){
                 player.sendSystemMessage(Component.literal("Dodged!"), true);

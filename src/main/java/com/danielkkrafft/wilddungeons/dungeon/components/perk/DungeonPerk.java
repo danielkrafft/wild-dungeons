@@ -41,7 +41,9 @@ public class DungeonPerk {
         }
     }
     public void onPlayerRespawn(WDPlayer wdPlayer) {
-
+        if (getEffectHolder() != null) {
+            applyEffect(wdPlayer);
+        }
     }
     public void onDungeonLeave(WDPlayer wdPlayer) {
         if (getEffectHolder() != null) {

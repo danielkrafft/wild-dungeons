@@ -5,8 +5,8 @@ import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.components.perk.DungeonPerk;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.Holder;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
-import org.joml.Vector2i;
 
 import javax.annotation.Nullable;
 
@@ -14,25 +14,24 @@ public class DungeonPerkTemplate implements DungeonRegistration.DungeonComponent
 
     private String name;
     private final Class<? extends DungeonPerk> clazz;
-    private final Vector2i texCoords;
+    private final ResourceLocation texture;
     private boolean isUnique = false;
     private @Nullable Pair<Holder<MobEffect>, Integer> effectWithAmplifier; // Optional effect with amplifier, can be null
 
 
-    public DungeonPerkTemplate(Class<? extends DungeonPerk> clazz, Vector2i texCoords) {
+    public DungeonPerkTemplate(Class<? extends DungeonPerk> clazz, ResourceLocation texture) {
         this.name = clazz.getSimpleName();
         this.clazz = clazz;
-        this.texCoords = texCoords;
+        this.texture = texture;
     }
 
-    public DungeonPerkTemplate(Holder<MobEffect> effect, Vector2i texCoords) {
-        this(DungeonPerk.class, texCoords);
-        this.effectWithAmplifier = Pair.of(effect, -1);
-    }
-
-    public DungeonPerkTemplate(Holder<MobEffect> effect, int amplifier, Vector2i texCoords) {
-        this(DungeonPerk.class, texCoords);
+    public DungeonPerkTemplate(Holder<MobEffect> effect, int amplifier, ResourceLocation texture) {
+        this(DungeonPerk.class, texture);
         this.effectWithAmplifier = Pair.of(effect, amplifier);
+    }
+
+    public DungeonPerkTemplate(Holder<MobEffect> effect, ResourceLocation texture) {
+        this(effect, -1, texture);
     }
 
     public Class<? extends DungeonPerk> getClazz() {return this.clazz;}
@@ -53,8 +52,6 @@ public class DungeonPerkTemplate implements DungeonRegistration.DungeonComponent
             return null;
         }
     }
-
-    public Vector2i getTexCoords() {return texCoords;}
 
     @Nullable
     public Holder<MobEffect> getEffect() {
@@ -85,5 +82,9 @@ public class DungeonPerkTemplate implements DungeonRegistration.DungeonComponent
             return effectWithAmplifier.getSecond();
         }
         return -1;
+    }
+
+    public ResourceLocation getTextureLocation() {
+        return this.texture;
     }
 }
