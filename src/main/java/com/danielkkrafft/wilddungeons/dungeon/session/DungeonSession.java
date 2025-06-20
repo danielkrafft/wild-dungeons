@@ -130,8 +130,10 @@ public class DungeonSession {
         }
         this.playersInside.put(wdPlayer.getUUID(), true);
         playerStats.putIfAbsent(wdPlayer.getUUID(), new DungeonSession.DungeonStats());
+        boolean doPerkApply = !wdPlayer.isInsideDungeon();//calculated before the player is teleported, but perks added after the teleport because they rely on the player being in the correct dimension
         floor.attemptEnter(wdPlayer);
-        this.getPerks().forEach(perk -> perk.onDungeonEnter(wdPlayer));
+        if (doPerkApply)
+            this.getPerks().forEach(perk -> perk.onDungeonEnter(wdPlayer));//only apply perks when you first enter the dungeon, instead of every time you enter a floor
         shutdownTimer = SHUTDOWN_TIME;
     }
 

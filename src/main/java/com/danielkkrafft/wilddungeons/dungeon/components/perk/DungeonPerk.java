@@ -8,6 +8,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 
 import java.util.List;
 
@@ -29,21 +30,16 @@ public class DungeonPerk {
         List<WDPlayer> players = getSession().getPlayers();
         if (!silent) players.forEach(player -> {
             player.getServerPlayer().sendSystemMessage(Component.translatable("dungeon.perk." + this.getTemplate().name() + ".desc"), true);
+            this.applyEffect(player);
         });
-        if (getEffectHolder() != null) {
-            players.forEach(this::applyEffect);
-        }
     }
 
     public void onDungeonEnter(WDPlayer wdPlayer) {
-        if (getEffectHolder() != null) {
             applyEffect(wdPlayer);
-        }
     }
     public void onPlayerRespawn(WDPlayer wdPlayer) {
-        if (getEffectHolder() != null) {
+        if (this.getTemplate().getEffect()!=null && !this.getTemplate().getEffect().is(MobEffects.ABSORPTION.getKey()))//this is a hack to prevent the absorption effect from being reapplied on respawn and should be replaced with something better
             applyEffect(wdPlayer);
-        }
     }
     public void onDungeonLeave(WDPlayer wdPlayer) {
         if (getEffectHolder() != null) {
@@ -52,6 +48,14 @@ public class DungeonPerk {
     }
 
     private void applyEffect(WDPlayer player) {
+        if (getEffectHolder() == null) return;
+        if (player.getServerPlayer().hasEffect(getEffectHolder())) {
+            MobEffectInstance existingEffect = player.getServerPlayer().getEffect(getEffectHolder());
+            if (existingEffect != null && existingEffect.getAmplifier() >= getAmplifier() && existingEffect.isInfiniteDuration()) {
+                // Effect already applied with equal or higher amplifier, do not apply again
+                return;
+            }
+        }
         player.getServerPlayer().removeEffect(getEffectHolder());
         int amplifier = getAmplifier() >= 0 ? getAmplifier() : this.count-1;
         player.getServerPlayer().addEffect(new MobEffectInstance(getEffectHolder(), -1, amplifier));

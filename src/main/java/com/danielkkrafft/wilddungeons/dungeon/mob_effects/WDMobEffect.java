@@ -156,7 +156,7 @@ public class WDMobEffect extends MobEffect {
     }
 
     private static void processBigRedButton(LivingDamageEvent.Pre event) {
-        if (event.getNewDamage() < 0.5f) return;
+        if (event.getNewDamage() < 0.5f && event.getEntity().level().random.nextFloat() >= 0.25f) return;
         LivingEntity entity = event.getEntity();
         MobEffectInstance brbPerk = entity.getEffect(WDMobEffects.BIG_RED_BUTTON);
         if (brbPerk == null) return;
