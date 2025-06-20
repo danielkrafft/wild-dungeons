@@ -8,6 +8,7 @@ import com.danielkkrafft.wilddungeons.dungeon.components.DungeonTarget;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateOrientation;
 import com.danielkkrafft.wilddungeons.entity.Offering;
+import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import net.minecraft.core.BlockPos;
@@ -126,16 +127,14 @@ public class CombatRoom extends TargetPurgeRoom {
     @Override
     public void reset() {
         super.reset();
-        combatBar.removeAllPlayers();
-        combatBar.setVisible(false);
+        disableCombatBar();
         currentSpawns = 0;
     }
 
     @Override
     public void onClear() {
         super.onClear();
-        combatBar.removeAllPlayers();
-        combatBar.setVisible(false);
+        disableCombatBar();
         this.getActivePlayers().forEach(player -> {
             player.setSoundScape(this.getProperty(SOUNDSCAPE), this.getProperty(INTENSITY), false);
         });
@@ -151,4 +150,21 @@ public class CombatRoom extends TargetPurgeRoom {
     @Override public ResourceLocation getDecalTexture() {return ConnectionPoint.SWORD_TEXTURE;}
     @Override public int getDecalColor() {return 0xFFFF0000;}
 
+
+    @Override
+    public void destroy() {
+        disableCombatBar();
+        super.destroy();
+    }
+
+    private void disableCombatBar() {
+        combatBar.removeAllPlayers();
+        combatBar.setVisible(false);
+    }
+
+    @Override
+    public void onExit(WDPlayer wdPlayer) {
+        combatBar.removePlayer(wdPlayer.getServerPlayer());
+        super.onExit(wdPlayer);
+    }
 }
