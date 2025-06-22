@@ -1,5 +1,6 @@
 package com.danielkkrafft.wilddungeons.dungeon.components.perk;
 
+import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonPerkTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
@@ -24,12 +25,19 @@ public class DungeonPerk {
     public DungeonSession getSession() {return DungeonSessionManager.getInstance().getDungeonSession(this.sessionKey);}
     public DungeonPerkTemplate getTemplate() {return DUNGEON_PERK_REGISTRY.get(templateKey);}
     public Holder<MobEffect> getEffectHolder() {return this.getTemplate().getEffect();}
-    public int getAmplifier() {return this.getTemplate().getAmplifier();}
+    public int getAmplifier() {
+        int templateAmplifier = this.getTemplate().getAmplifier();
+        if (templateAmplifier >= 0) return templateAmplifier;
+        // If the template does not specify an amplifier, use the count as the amplifier
+        if (this.count <= 0) return 0; // Prevent negative amplifier
+        return this.count - 1; // Count starts at 1, so we subtract 1 to get the correct amplifier
+    }
 
     public void onCollect(boolean silent) {
         List<WDPlayer> players = getSession().getPlayers();
-        if (!silent) players.forEach(player -> {
-            player.getServerPlayer().sendSystemMessage(Component.translatable("dungeon.perk." + this.getTemplate().name() + ".desc"), true);
+        players.forEach(player -> {
+            if (!silent)
+                player.getServerPlayer().sendSystemMessage(Component.translatable("dungeon.perk." + this.getTemplate().name() + ".desc"), true);
             this.applyEffect(player);
         });
     }
@@ -48,16 +56,11 @@ public class DungeonPerk {
     }
 
     private void applyEffect(WDPlayer player) {
-        if (getEffectHolder() == null) return;
-        if (player.getServerPlayer().hasEffect(getEffectHolder())) {
-            MobEffectInstance existingEffect = player.getServerPlayer().getEffect(getEffectHolder());
-            if (existingEffect != null && existingEffect.getAmplifier() >= getAmplifier() && existingEffect.isInfiniteDuration()) {
-                // Effect already applied with equal or higher amplifier, do not apply again
-                return;
-            }
+        if (getEffectHolder() == null){
+            WildDungeons.getLogger().error("Tried to apply perk {} to player {}, but it has no effect defined.", getTemplate().name(), player.getServerPlayer().getName().getString());
+            return;
         }
-        player.getServerPlayer().removeEffect(getEffectHolder());
-        int amplifier = getAmplifier() >= 0 ? getAmplifier() : this.count-1;
-        player.getServerPlayer().addEffect(new MobEffectInstance(getEffectHolder(), -1, amplifier));
+        player.getServerPlayer().addEffect(new MobEffectInstance(getEffectHolder(), -1, getAmplifier()));
+        WildDungeons.getLogger().info("Applied perk {} to player {} at amplifier {}", getTemplate().name(), player.getServerPlayer().getName().getString(), getAmplifier());
     }
 }
