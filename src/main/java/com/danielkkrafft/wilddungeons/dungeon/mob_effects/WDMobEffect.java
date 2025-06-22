@@ -20,8 +20,6 @@ import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 
-import static net.neoforged.neoforge.event.entity.living.MobEffectEvent.Applicable.Result.DO_NOT_APPLY;
-
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME)
 public class WDMobEffect extends MobEffect {
     private boolean shouldApplyEffectTickThisTick = false;//this is what MobEffect.class says
@@ -86,11 +84,14 @@ public class WDMobEffect extends MobEffect {
         }
     }
     @SubscribeEvent
-    public static void onEffectAdded(MobEffectEvent.Applicable event) {
-        MobEffectInstance perk = event.getEntity().getEffect(WDMobEffects.POISON_RESISTANCE);
-        if (perk != null) {
-            event.setResult(DO_NOT_APPLY);
+    public static void onEffectAdded(MobEffectEvent.Added event) {
+        if (event.getEffectInstance().is(MobEffects.POISON)){
+            MobEffectInstance perk = event.getEntity().getEffect(WDMobEffects.POISON_RESISTANCE);
+            if (perk != null) {
+                event.getEntity().removeEffect(MobEffects.POISON);
+            }
         }
+
     }
 
     private static void processBowDamageBonus(LivingDamageEvent.Pre event, LivingEntity sourceEntity) {
