@@ -42,7 +42,6 @@ public class CombatRoom extends TargetPurgeRoom {
     public static final int BASE_DIFFICULTY = 10;
 
     public int spawnTimer = 0;
-    public int groupSize = 2;
 
     public int currentSpawns = 0;
     public boolean helpingGlow = false;
@@ -78,17 +77,15 @@ public class CombatRoom extends TargetPurgeRoom {
     }
 
     public List<DungeonRegistration.TargetTemplate> getTargetTemplates() {
-        float lowerWaveSize = this.getProperty(HierarchicalProperty.WAVE_SIZE) / QUANTITY_VARIANCE;
-        float upperWaveSize = this.getProperty(HierarchicalProperty.WAVE_SIZE) * QUANTITY_VARIANCE;
+        float lowerWaveSize = this.getProperty(WAVE_SIZE) / QUANTITY_VARIANCE;
+        float upperWaveSize = this.getProperty(WAVE_SIZE) * QUANTITY_VARIANCE;
         int quantity = Mth.ceil(RandomUtil.randFloatBetween(lowerWaveSize, upperWaveSize));
         int quality = (int) (BASE_DIFFICULTY * this.getDifficulty());
         return this.getProperty(HierarchicalProperty.ENEMY_TABLE).randomResults(quantity, quality, 2);
     }
 
     public void spawnNext() {
-        WildDungeons.getLogger().info("SPAWNING A GROUP OF {}", Math.floor(groupSize * this.getDifficulty()));
-
-        for (int i = 0; i < Math.floor(groupSize * this.getDifficulty()); i++) {
+        for (int i = 0; i < this.getProperty(COMBAT_GROUP_SIZE); i++) {
             if (currentSpawns <= 0) return;
             Optional<DungeonTarget> target = targets.stream().filter(t -> !t.spawned).findFirst();
             if (target.isPresent()) {

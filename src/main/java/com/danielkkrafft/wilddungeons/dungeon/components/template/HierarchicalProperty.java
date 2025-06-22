@@ -63,6 +63,7 @@ public class HierarchicalProperty<T> {
     public static final HierarchicalProperty<Integer> MIN_Y = new HierarchicalProperty<>(new TypeToken<>() {}, EmptyGenerator.MIN_Y + 1);
     public static final HierarchicalProperty<Integer> MAX_Y = new HierarchicalProperty<>(new TypeToken<>() {}, EmptyGenerator.GEN_DEPTH - 1);
     public static final HierarchicalProperty<Block> BLOCKING_BLOCK = new HierarchicalProperty<>(new TypeToken<>() {}, WDBlocks.IRON_GRATE.get());
+    public static final HierarchicalProperty<Integer> COMBAT_GROUP_SIZE = new HierarchicalProperty<>(new TypeToken<>() {}, 2);
 
 
     private final TypeToken<T> type;

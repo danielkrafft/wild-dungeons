@@ -72,6 +72,7 @@ public class InstantLoadout extends Item {
             }
             player.addItem(new ItemStack(Items.TORCH, 32));
             player.addItem(new ItemStack(Items.COOKED_BEEF, 16));
+            player.addItem(new ItemStack(Items.COBBLESTONE.asItem(), 64));
         }
         return InteractionResultHolder.consume(itemStack);
     }

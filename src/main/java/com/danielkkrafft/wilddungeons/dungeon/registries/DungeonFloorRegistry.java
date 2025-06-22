@@ -10,10 +10,10 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalPr
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import net.minecraft.core.BlockPos;
 
+import java.util.HashMap;
 import java.util.List;
 
-import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.PRIMARY_COLOR;
-import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.SECONDARY_COLOR;
+import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonBranchRegistry.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomRegistry.BOSS_KEY_ROOM;
 
@@ -102,7 +102,7 @@ public class DungeonFloorRegistry {
                             .addSimple(VILLAGE_MEDIUM_BRANCH)
                             .addSimple(VILLAGE_SMALL_BRANCH)
             )
-            .addLimitedRoom(BOSS_KEY_ROOM, 1)
+            .addLimitedRoom(BOSS_KEY_ROOM, 2)
             .set(HierarchicalProperty.PRE_ROOM_GEN_PROCESSING_STEPS, List.of(new AddBedrockShellStep()))
             .set(HierarchicalProperty.ENEMY_TABLE, EnemyTableRegistry.VILLAGE_ENEMY_TABLE)
             .set(HierarchicalProperty.SOUNDSCAPE, SoundscapeTemplateRegistry.VD_OVERFLOW)
@@ -145,6 +145,7 @@ public class DungeonFloorRegistry {
             .set(PRIMARY_COLOR, 0xFFde1616)
             .set(SECONDARY_COLOR, 0xFFb83f1a)
             .set(HierarchicalProperty.MATERIAL, DungeonMaterialPoolRegistry.SCIFI_GAUNTLET_MATERIAL_POOL)
+            .set(SOUNDSCAPE, SoundscapeTemplateRegistry.MOONLIGHT_SONATA_3RD)
             .set(HierarchicalProperty.PRE_ROOM_GEN_PROCESSING_STEPS, List.of(new AddBedrockShellStep()));
 
     public static DungeonFloorTemplate GAUNTLET_TRIAL_FLOOR = create("gauntlet_trial")
@@ -160,6 +161,7 @@ public class DungeonFloorRegistry {
             .set(PRIMARY_COLOR, 0xFFde1616)
             .set(SECONDARY_COLOR, 0xFFb83f1a)
             .set(HierarchicalProperty.MATERIAL, DungeonMaterialPoolRegistry.TRIAL_GAUNTLET_MATERIAL_POOL)
+            .set(SOUNDSCAPE, SoundscapeTemplateRegistry.MOONLIGHT_SONATA_3RD)
             .set(HierarchicalProperty.PRE_ROOM_GEN_PROCESSING_STEPS, List.of(new AddBedrockShellStep()));
 
     public static DungeonFloorTemplate GAUNTLET_GENERAL_FLOOR = create("gauntlet_general")
@@ -175,6 +177,7 @@ public class DungeonFloorRegistry {
             .set(PRIMARY_COLOR, 0xFFde1616)
             .set(SECONDARY_COLOR, 0xFFb83f1a)
             .set(HierarchicalProperty.MATERIAL, DungeonMaterialPoolRegistry.GENERAL_GAUNTLET_MATERIAL_POOL)
+            .set(SOUNDSCAPE, SoundscapeTemplateRegistry.MOONLIGHT_SONATA_3RD)
             .set(HierarchicalProperty.PRE_ROOM_GEN_PROCESSING_STEPS, List.of(new AddBedrockShellStep()));
 
     public static DungeonFloorTemplate copyOf(DungeonFloorTemplate floor, String name) {
