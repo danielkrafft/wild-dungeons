@@ -380,7 +380,7 @@ public class WDEvents {
         switch (rule) {
             case SHELL_CLEAR-> {
                 if (room.isClear()) return;
-                if (room.isPosInsideShell(pos))
+                if (!room.isPosInsideShell(pos))
                     event.setCanGrief(false);
             }
             case PROTECT_ALL, PROTECT_BREAK -> {
