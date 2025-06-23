@@ -1,7 +1,6 @@
 package com.danielkkrafft.wilddungeons.entity;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.entity.BaseClasses.SelfGovernedEntity;
 import com.danielkkrafft.wilddungeons.registry.WDDamageTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -29,17 +28,20 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.*;
 
-public class BlackHole extends SelfGovernedEntity {
+public class BlackHole extends Entity {
 
     // How often the black hole updates its state. Every X ticks. Higher numbers mean less frequent updates, but more performance friendly.
     // Makes the black hole feel bad when you make the number too high
     private static final int PHYSICS_UPDATE_TICK_RATE = 2;
     // Core size logic
     private float mass = 1.0f;
+    protected Vec3 firedDirection = Vec3.ZERO;
+    protected float initialSpeed = 0.0f;
+
     private static final float MIN_MASS = 0.1f;                             // Minimum black hole size before death
-    private static final float MAX_MASS = 5f;                               // Maximum black hole size before advanced decay begins
-    private static final float GROWTH_PER_CONSUME = 0.01f;                  // Mass increase when consuming blocks/entities
-    private static final float SHRINK_RATE = 0.001f;                        // Shrink per tick when moving or at max size
+    private static final float MAX_MASS = 50f;                               // Maximum black hole size before advanced decay begins
+    private static final float GROWTH_PER_CONSUME = 0.02f;                  // Mass increase when consuming blocks/entities
+    private static final float SHRINK_RATE = 0.999f;                        // Shrink per tick
     private static final float BASE_DECAY_RATE = 0.001f;                    // Base decay rate once max size is hit
     private static final float MAX_DECAY_MULTIPLIER = 1000f;                 // Max scaling of decay based on cooldown progress
     private static final int DECAY_GRACE_PERIOD_TICKS = 10;                 // Ticks before decay begins after hitting max size
@@ -70,7 +72,7 @@ public class BlackHole extends SelfGovernedEntity {
     private static final int BLOCK_DESTROY_SPREAD_TICKS = 10;                // Number of ticks to spread block destruction across
     private Queue<BlockPos> pendingDestruction = new ArrayDeque<>();
     private int destructionSpreadTickCounter = 0;                           // Ticks remaining for this destruction round
-    private final Map<Integer, Integer> damageCooldowns = new HashMap<>();  // Tracks cooldowns for entity damage
+    private Map<Integer, Integer> damageCooldowns = new HashMap<>();  // Tracks cooldowns for entity damage
 
     private static final EntityDataAccessor<Float> DATA_BLACK_HOLE_SIZE = SynchedEntityData.defineId(BlackHole.class, EntityDataSerializers.FLOAT);
     private boolean hasReachedMaxSize = false;
@@ -81,23 +83,21 @@ public class BlackHole extends SelfGovernedEntity {
 
     @Override
     public void tick() {
-        if (wasFired) {
-            if (!level().isClientSide) {
-                if (getMass() >= MAX_MASS) {
-                    hasReachedMaxSize = true;
-                    handleDecay();
-                } else {
-                    handleMoving();
-                }
-                handleEating();
-                handleFusion();
+        if (!level().isClientSide) {
+            if (getMass() >= MAX_MASS) {
+                hasReachedMaxSize = true;
+                handleDecay();
+            } else {
+                handleMoving();
+            }
+            handleEating();
+            handleFusion();
 
-                if (getMass() <= MIN_MASS) {
-                    triggerCollapseEffect();
-                    WildDungeons.getLogger().warn("BLACK HOLE DESTROYED!");
-                    discard();
-                    return;
-                }
+            if (getMass() <= MIN_MASS) {
+                triggerCollapseEffect();
+                WildDungeons.getLogger().warn("BLACK HOLE DESTROYED!");
+                discard();
+                return;
             }
         }
         super.tick();
@@ -105,13 +105,11 @@ public class BlackHole extends SelfGovernedEntity {
 
     private void handleMoving() {
         if (hasReachedMaxSize) {
-            mass = Mth.clamp(getMass() - SHRINK_RATE, MIN_MASS, MAX_MASS);
-            setMass(mass);
             setDeltaMovement(Vec3.ZERO);
             return;
         }
 
-        mass = Mth.clamp(getMass() - SHRINK_RATE, MIN_MASS, MAX_MASS);
+        mass = Mth.clamp(getMass() * SHRINK_RATE, MIN_MASS, MAX_MASS);
         setMass(mass);
 
         float baseSpeed = 0.25f;
@@ -227,7 +225,7 @@ public class BlackHole extends SelfGovernedEntity {
                 target.addDeltaMovement(invertedPreservedMotion);
             }
             // Mark the entity as needing physics update
-            if (tickCount % PHYSICS_UPDATE_TICK_RATE == 0)
+            if (tickCount % PHYSICS_UPDATE_TICK_RATE == 0 || target instanceof Player)
                 target.hurtMarked = true;//necessary or players wont move, and entities will appear jittery
         }
     }
@@ -334,9 +332,8 @@ public class BlackHole extends SelfGovernedEntity {
                 level().addParticle(ParticleTypes.CLOUD, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0, 0.1, 0);
             } else {
                 level().levelEvent(2001, pos, Block.getId(state));
-                FallingBlockEntity fallingBlock = FallingBlockEntity.fall(level(), pos, state);
+                FallingBlockEntity.fall(level(), pos, state);
                 level().destroyBlock(pos, false);
-//                onEatThing();
             }
         }
     }
@@ -388,7 +385,8 @@ public class BlackHole extends SelfGovernedEntity {
     }
 
     public void setFiredDirectionAndSpeed(Vec3 newDirection, float newSpeed) {
-        super.setFiredDirectionAndSpeed(newDirection, newSpeed);
+        firedDirection = newDirection;
+        initialSpeed = newSpeed;
         setDeltaMovement(firedDirection.scale(newSpeed * 0.2));
     }
 
@@ -398,10 +396,27 @@ public class BlackHole extends SelfGovernedEntity {
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag tag) {}
+    protected void readAdditionalSaveData(CompoundTag tag) {
+        this.mass = tag.contains("mass") ? tag.getFloat("mass") : 1.0f;
+        decayCooldownTicks = 0;
+        pendingDestruction = new ArrayDeque<>();
+        destructionSpreadTickCounter = 0;                           // Ticks remaining for this destruction round
+        damageCooldowns = new HashMap<>();  // Tracks cooldowns for entity damage
+        hasReachedMaxSize = tag.getBoolean("hasReachedMaxSize");
+        firedDirection = new Vec3(tag.getFloat("x"), tag.getFloat("y"), tag.getFloat("z"));
+        initialSpeed = tag.getFloat("initialSpeed");
+        setMass(mass);
+    }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag tag) {}
+    protected void addAdditionalSaveData(CompoundTag tag) {
+        tag.putFloat("mass", this.mass);
+        tag.putBoolean("hasReachedMaxSize", this.hasReachedMaxSize);
+        tag.putFloat("x", (float) this.firedDirection.x);
+        tag.putFloat("y", (float) this.firedDirection.y);
+        tag.putFloat("z", (float) this.firedDirection.z);
+        tag.putFloat("initialSpeed", this.initialSpeed);
+    }
 
     public float getMass() {
         return this.entityData.get(DATA_BLACK_HOLE_SIZE);

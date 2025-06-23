@@ -1,7 +1,7 @@
 package com.danielkkrafft.wilddungeons.item.itemhelpers;
 
 import com.danielkkrafft.wilddungeons.entity.BaseClasses.ArrowFactory;
-import com.danielkkrafft.wilddungeons.entity.BaseClasses.SelfGovernedEntity;
+import com.danielkkrafft.wilddungeons.entity.BlackHole;
 import com.danielkkrafft.wilddungeons.entity.model.ClientModel;
 import com.danielkkrafft.wilddungeons.item.itemhelpers.ItemData.BaseProjectileData;
 import com.danielkkrafft.wilddungeons.item.itemhelpers.ItemData.BowWeaponData;
@@ -259,8 +259,8 @@ public abstract class WDRangedWeapon extends ProjectileWeaponItem implements Geo
                     projectile -> {
                         if (gunData.projectileName != null && !gunData.projectileName.isEmpty())
                             projectile.setCustomName(Component.literal(gunData.projectileName));
-                        if (projectile instanceof SelfGovernedEntity sG) {
-                            sG.setFiredDirectionAndSpeed(player.getLookAngle(), gunData.projectileSpeed);
+                        if (projectile instanceof BlackHole blackHole) {
+                            blackHole.setFiredDirectionAndSpeed(player.getLookAngle(), gunData.projectileSpeed);
                         }
                     }
             );
