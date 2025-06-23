@@ -132,6 +132,7 @@ public class OfferingTemplatePoolRegistry {
             .add(FREE_AMOGUS_STAFF, 1)
             .add(FREE_LASER_SWORD, 1)
             .add(FREE_FIREWORK_GUN, 1)
+            .add(FREE_EMERALD_STAFF, 1)
             .add(FREE_MEATHOOK, 1);
 
     public static WeightedPool<OfferingTemplate> create(String name){

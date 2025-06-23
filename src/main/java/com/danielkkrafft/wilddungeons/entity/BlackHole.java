@@ -226,7 +226,7 @@ public class BlackHole extends Entity {
             }
             // Mark the entity as needing physics update
             if (tickCount % PHYSICS_UPDATE_TICK_RATE == 0 || target instanceof Player)
-                target.hurtMarked = true;//necessary or players wont move, and entities will appear jittery
+                target.hurtMarked = true;//necessary or players won't move, and entities will appear jittery
         }
     }
 

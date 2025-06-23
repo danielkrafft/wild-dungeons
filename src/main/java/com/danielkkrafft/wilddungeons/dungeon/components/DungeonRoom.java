@@ -27,6 +27,8 @@ import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Blocks;
@@ -39,6 +41,7 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.lighting.LevelLightEngine;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.function.TriFunction;
 import org.jetbrains.annotations.NotNull;
@@ -449,53 +452,54 @@ public class DungeonRoom {
     }
 
     public BlockPos getSpawnPoint(ServerLevel level) {
-        return this.spawnPoint == null ? this.sampleSpawnablePositions(level, 1, 1).getFirst() : this.spawnPoint;
+        return this.spawnPoint == null ? this.sampleSpawnablePositions(level, 1, EntityType.PLAYER).getFirst() : this.spawnPoint;
     }
 
-    public List<BlockPos> sampleSpawnablePositions(ServerLevel serverLevel, int count, EntityType<?> mobType) {
-        List<BlockPos> result = new ArrayList<>();
-        int tries = count * 4;
-        BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
-        while (result.size() < count && tries > 0) {
-            BoundingBox innerShell = this.boundingBoxes.get(RandomUtil.randIntBetween(0, this.boundingBoxes.size() - 1));
-            int randX = RandomUtil.randIntBetween(innerShell.minX(), innerShell.maxX());
-            int randZ = RandomUtil.randIntBetween(innerShell.minZ(), innerShell.maxZ());
-            for (int y = innerShell.minY(); y < innerShell.maxY(); y++) {
-                if (serverLevel.noCollision(mobType.getSpawnAABB(randX, y, randZ))) {
-                    BlockPos blockpos = BlockPos.containing(randX, y, randZ);
-                    result.add(blockpos);
-                    break;
-                }
-            }
-            tries--;
-        }
-        return result.isEmpty() ? spawnPoint == null ? Collections.singletonList(this.boundingBoxes.getFirst().getCenter()) : Collections.singletonList(spawnPoint) : result;
-    }
-
-    public List<BlockPos> sampleSpawnablePositions(ServerLevel level, int count, int deflation) {
+    public List<BlockPos> sampleSpawnablePositions(ServerLevel level, int count, EntityType<?> mobType) {
         List<BlockPos> result = new ArrayList<>();
         int tries = count * 4;
         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
         while (result.size() < count && tries > 0) {
             BoundingBox randomBox = this.boundingBoxes.get(RandomUtil.randIntBetween(0, this.boundingBoxes.size() - 1));
-            deflation = Math.min(deflation, randomBox.getXSpan() / 2 - 1);
-            deflation = Math.min(deflation, randomBox.getYSpan() / 2 - 1);
-            deflation = Math.min(deflation, randomBox.getZSpan() / 2 - 1);
-            BoundingBox innerShell = randomBox.inflatedBy(-deflation); //TODO cheating
 
-            int randX = RandomUtil.randIntBetween(innerShell.minX(), innerShell.maxX());
-            int randZ = RandomUtil.randIntBetween(innerShell.minZ(), innerShell.maxZ());
+            int randX = RandomUtil.randIntBetween(randomBox.minX(), randomBox.maxX());
+            int randZ = RandomUtil.randIntBetween(randomBox.minZ(), randomBox.maxZ());
 
-            for (int y = innerShell.minY(); y < innerShell.maxY(); y++) {
-                mutableBlockPos.set(randX, y, randZ);
-                if (level.getBlockState(mutableBlockPos) == Blocks.AIR.defaultBlockState()) {
-                    mutableBlockPos.set(randX, y + 1, randZ);
-                    if (level.getBlockState(mutableBlockPos) == Blocks.AIR.defaultBlockState()) {
-                        result.add(mutableBlockPos.below());
+            if (RandomUtil.sample(0.8f)) {
+                for (int y = randomBox.minY(); y < randomBox.maxY(); y++) {
+                    mutableBlockPos.set(randX, y, randZ);
+                    if (!SpawnPlacements.checkSpawnRules(mobType, level, MobSpawnType.SPAWNER, mutableBlockPos, level.getRandom())) continue;
+
+                    if (level.getFluidState(mutableBlockPos).is(Fluids.LAVA)) continue;
+                    mutableBlockPos.set(randX, y - 1, randZ);
+                    if (level.getFluidState(mutableBlockPos).is(Fluids.LAVA)) continue;
+                    if (level.getBlockState(mutableBlockPos).is(Blocks.AIR)) continue;
+
+                    if (level.noCollision(mobType.getSpawnAABB(randX, y, randZ))) {
+                        BlockPos blockpos = BlockPos.containing(randX, y, randZ);
+                        result.add(blockpos);
+                        break;
+                    }
+                }
+            } else {
+                for (int y = randomBox.maxY(); y > randomBox.minY(); y--) {
+                    mutableBlockPos.set(randX, y, randZ);
+                    if (!SpawnPlacements.checkSpawnRules(mobType, level, MobSpawnType.SPAWNER, mutableBlockPos, level.getRandom())) continue;
+
+                    if (level.getFluidState(mutableBlockPos).is(Fluids.LAVA)) continue;
+                    mutableBlockPos.set(randX, y - 1, randZ);
+                    if (level.getFluidState(mutableBlockPos).is(Fluids.LAVA)) continue;
+
+                    if (level.noCollision(mobType.getSpawnAABB(randX, y, randZ))) {
+                        BlockPos blockpos = BlockPos.containing(randX, y, randZ);
+                        result.add(blockpos);
                         break;
                     }
                 }
             }
+
+
+
             tries--;
         }
         return result.isEmpty() ? spawnPoint == null ? Collections.singletonList(this.boundingBoxes.getFirst().getCenter()) : Collections.singletonList(spawnPoint) : result;

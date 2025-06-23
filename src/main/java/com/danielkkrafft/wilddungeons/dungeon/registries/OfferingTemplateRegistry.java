@@ -44,10 +44,11 @@ public class OfferingTemplateRegistry {
     public static final OfferingTemplate DIAMOND_AXE = createItem("DIAMOND_AXE", ItemTemplateRegistry.DIAMOND_AXE, OVERWORLD, 16, 1.5f);
     public static final OfferingTemplate RAW_IRON = createItem("RAW_IRON", ItemTemplateRegistry.IRON_RAW, OVERWORLD, 5, 1.5f);
 
-    public static final OfferingTemplate FREE_AMOGUS_STAFF = createItem("FREE_AMOGUS_STAFF", ItemTemplateRegistry.AMOGUS_STAFF, OVERWORLD, 0, 1.0f).setRenderScale(2.0f);
-    public static final OfferingTemplate FREE_LASER_SWORD = createItem("FREE_LASER_SWORD", ItemTemplateRegistry.LASER_SWORD, OVERWORLD, 0, 1.0f).setRenderScale(2.0f);
-    public static final OfferingTemplate FREE_FIREWORK_GUN = createItem("FREE_FIREWORK_GUN", ItemTemplateRegistry.FIREWORK_GUN, OVERWORLD, 0, 1.0f).setRenderScale(2.0f);
-    public static final OfferingTemplate FREE_MEATHOOK = createItem("FREE_MEATHOOK", ItemTemplateRegistry.MEATHOOK, OVERWORLD, 0, 1.0f).setRenderScale(2.0f);
+    public static final OfferingTemplate FREE_AMOGUS_STAFF = createItem("FREE_AMOGUS_STAFF", ItemTemplateRegistry.AMOGUS_STAFF, OVERWORLD, 0, 1.0f).setRenderScale(2.0f).setSoundLoop(WDSoundEvents.SHIMMER.value());
+    public static final OfferingTemplate FREE_EMERALD_STAFF = createItem("FREE_EMERALD_STAFF", ItemTemplateRegistry.EMERALD_STAFF, OVERWORLD, 0, 1.0f).setRenderScale(2.0f).setSoundLoop(WDSoundEvents.SHIMMER.value());
+    public static final OfferingTemplate FREE_LASER_SWORD = createItem("FREE_LASER_SWORD", ItemTemplateRegistry.LASER_SWORD, OVERWORLD, 0, 1.0f).setRenderScale(2.0f).setSoundLoop(WDSoundEvents.SHIMMER.value());
+    public static final OfferingTemplate FREE_FIREWORK_GUN = createItem("FREE_FIREWORK_GUN", ItemTemplateRegistry.FIREWORK_GUN, OVERWORLD, 0, 1.0f).setRenderScale(2.0f).setSoundLoop(WDSoundEvents.SHIMMER.value());
+    public static final OfferingTemplate FREE_MEATHOOK = createItem("FREE_MEATHOOK", ItemTemplateRegistry.MEATHOOK, OVERWORLD, 0, 1.0f).setRenderScale(2.0f).setSoundLoop(WDSoundEvents.SHIMMER.value());
     public static final OfferingTemplate DUNGEON_KEY = createItem("DUNGEON_KEY", ItemTemplateRegistry.DUNGEON_KEY, OVERWORLD, 0, 1.0f).setRenderScale(2.0f).setShowRing(true).setSoundLoop(WDSoundEvents.SHIMMER.value());
 
     //region Village
@@ -92,13 +93,13 @@ public class OfferingTemplateRegistry {
     //endregion
 
     // ----- WIND WEAPONS FOR TRIAL GAUNTLET
-    public static final OfferingTemplate FREE_WIND_BOW = createItem("FREE_WIND_BOW", ItemTemplateRegistry.WIND_BOW, OVERWORLD, 0, 1);
-    public static final OfferingTemplate FREE_WIND_MACE = createItem("FREE_WIND_MACE", ItemTemplateRegistry.WIND_MACE, OVERWORLD, 0, 1);
-    public static final OfferingTemplate FREE_WIND_HAMMER = createItem("FREE_WIND_HAMMER", ItemTemplateRegistry.WIND_HAMMER, OVERWORLD, 0, 1);
-    public static final OfferingTemplate FREE_WIND_CANNON = createItem("FREE_WIND_CANNON", ItemTemplateRegistry.WIND_CANNON, OVERWORLD, 0, 1);
+    public static final OfferingTemplate FREE_WIND_BOW = createItem("FREE_WIND_BOW", ItemTemplateRegistry.WIND_BOW, OVERWORLD, 0, 1).setSoundLoop(WDSoundEvents.SHIMMER.value());
+    public static final OfferingTemplate FREE_WIND_MACE = createItem("FREE_WIND_MACE", ItemTemplateRegistry.WIND_MACE, OVERWORLD, 0, 1).setSoundLoop(WDSoundEvents.SHIMMER.value());
+    public static final OfferingTemplate FREE_WIND_HAMMER = createItem("FREE_WIND_HAMMER", ItemTemplateRegistry.WIND_HAMMER, OVERWORLD, 0, 1).setSoundLoop(WDSoundEvents.SHIMMER.value());
+    public static final OfferingTemplate FREE_WIND_CANNON = createItem("FREE_WIND_CANNON", ItemTemplateRegistry.WIND_CANNON, OVERWORLD, 0, 1).setSoundLoop(WDSoundEvents.SHIMMER.value());
 
     // ----- STAR WEAPONS FOR SCIFI GAUNTLET
-    public static final OfferingTemplate FREE_STAR_CANNON = createItem("FREE_STAR_CANNON", ItemTemplateRegistry.STAR_CANNON, OVERWORLD, 0, 1);
+    public static final OfferingTemplate FREE_STAR_CANNON = createItem("FREE_STAR_CANNON", ItemTemplateRegistry.STAR_CANNON, OVERWORLD, 0, 1).setSoundLoop(WDSoundEvents.SHIMMER.value());
 
 
     public static final OfferingTemplate FREE_SWORD_DAMAGE = createPerk("FREE_SWORD_DAMAGE", PerkRegistry.SWORD_DAMAGE, OVERWORLD, 0, 1);

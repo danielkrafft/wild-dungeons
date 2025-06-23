@@ -104,7 +104,7 @@ public class DungeonTarget {
 
         if (type.equals(Type.SPAWNER.toString()))
         {
-            List<BlockPos> validPoints = room.sampleSpawnablePositions(room.getBranch().getFloor().getLevel(), 3, 1);
+            List<BlockPos> validPoints = room.sampleSpawnablePositions(room.getBranch().getFloor().getLevel(), 3, EntityType.byString(this.entityTypeKey).get());
             BlockPos finalPos = room.calculateFurthestPoint(validPoints, 20);
 
             ServerLevel level = room.getBranch().getFloor().getLevel();

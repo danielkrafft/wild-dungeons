@@ -9,6 +9,7 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalPr
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateOrientation;
 import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
+import com.danielkkrafft.wilddungeons.registry.WDEntities;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import net.minecraft.core.BlockPos;
@@ -139,7 +140,7 @@ public class CombatRoom extends TargetPurgeRoom {
         WeightedPool<DungeonRegistration.OfferingTemplate> offeringTemplate = getProperty(HierarchicalProperty.ROOM_CLEAR_REWARD_POOL);
         if (offeringTemplate == null) return;
         Offering offering = offeringTemplate.getRandom().asOffering(this.getBranch().getFloor().getLevel());
-        List<BlockPos> validPoints = sampleSpawnablePositions(getBranch().getFloor().getLevel(), 5, Mth.ceil(Math.max(offering.getBoundingBox().getXsize(), offering.getBoundingBox().getZsize())));
+        List<BlockPos> validPoints = sampleSpawnablePositions(getBranch().getFloor().getLevel(), 5, WDEntities.OFFERING.get());
         BlockPos finalPos = calculateClosestPoint(validPoints,5);
         offering.setPos(Vec3.atCenterOf(finalPos));
         this.getBranch().getFloor().getLevel().addFreshEntity(offering);
