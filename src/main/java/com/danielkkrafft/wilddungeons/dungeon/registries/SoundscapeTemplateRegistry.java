@@ -37,6 +37,9 @@ public class SoundscapeTemplateRegistry {
             .addSound(WDSoundEvents.CAVE_02, 0)
             .addSound(WDSoundEvents.JAZZ, 1);
 
+    public static final SoundscapeTemplate HEARTBEAT = create("HEARTBEAT")
+            .addSound(WDSoundEvents.HEARTBEAT, 0);
+
     public static final SoundscapeTemplate MOONLIGHT_SONATA_1ST = create("MOONLIGHT_SONATA_1ST")
             .addSound(WDSoundEvents.CAVE_02, 0)
             .addSound(WDSoundEvents.MOONLIGHT_SONATA_1ST, 1);

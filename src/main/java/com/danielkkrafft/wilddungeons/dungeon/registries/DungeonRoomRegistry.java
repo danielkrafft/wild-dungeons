@@ -610,7 +610,7 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
             .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(1)));
 
     // ------- GAUNTLETS -------
-    public static final DungeonRoomTemplate BOSS_KEY_ROOM = createSimple("special/gauntlet/boss_key_room").setClazz(WeaponGauntletKeyRoom.class);
+    public static final DungeonRoomTemplate BOSS_KEY_ROOM = createSimple("special/gauntlet/boss_key_room").setClazz(WeaponGauntletKeyRoom.class).set(SOUNDSCAPE, SoundscapeTemplateRegistry.HEARTBEAT);
     // --- SCIFI
     public static final DungeonRoomTemplate SCIFI_ARENA_LOOT_CHOICE_ROOM = createSimple("special/gauntlet/scifi_arena_loot_room").setClazz(LootChoiceRoom.class).set(DESTRUCTION_RULE,DestructionRule.SHELL_CLEAR);
     public static final DungeonRoomTemplate SCIFI_ARENA_COMBAT_ROOM = createCombat("special/gauntlet/scifi_arena_combat_room").set(DESTRUCTION_RULE,DestructionRule.SHELL_CLEAR).set(DIFFICULTY_MODIFIER, 20.0).set(WAVE_SIZE, 40).set(COMBAT_GROUP_SIZE, 5).set(ROOM_CLEAR_REWARD_POOL, OfferingTemplatePoolRegistry.SCIFI_WEAPONS_POOL);

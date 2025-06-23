@@ -307,6 +307,11 @@
       {"name": "wilddungeons:soundscape/ambient/cave_02"}
     ]
   },
+  "soundscape.ambient.heartbeat": {
+    "sounds": [
+      {"name": "wilddungeons:soundscape/ambient/heartbeat"}
+    ]
+  },
   "soundscape.music.mega_dungeon_melody": {
     "sounds": [
       {"name": "wilddungeons:soundscape/music/mega_dungeon_melody",

@@ -62,6 +62,7 @@ public class WDSoundEvents {
     public static final Holder<SoundEvent> NETHER_DRAGON_BASS = SOUND_EVENTS.register("soundscape.music.nether_dragon_bass", SoundEvent::createVariableRangeEvent);
 
     public static final Holder<SoundEvent> JAZZ = SOUND_EVENTS.register("soundscape.music.jazz", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> HEARTBEAT = SOUND_EVENTS.register("soundscape.ambient.heartbeat", SoundEvent::createVariableRangeEvent);
     public static final Holder<SoundEvent> MOONLIGHT_SONATA_1ST = SOUND_EVENTS.register("soundscape.music.moonlight_sonata_1st", SoundEvent::createVariableRangeEvent);
     public static final Holder<SoundEvent> MOONLIGHT_SONATA_3RD = SOUND_EVENTS.register("soundscape.music.moonlight_sonata_3rd", SoundEvent::createVariableRangeEvent);
 
