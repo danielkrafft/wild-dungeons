@@ -15,6 +15,7 @@ import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
+import com.danielkkrafft.wilddungeons.registry.WDEntities;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import com.danielkkrafft.wilddungeons.util.Serializer;
 import com.mojang.datafixers.util.Pair;
@@ -465,10 +466,10 @@ public class DungeonRoom {
             int randX = RandomUtil.randIntBetween(randomBox.minX(), randomBox.maxX());
             int randZ = RandomUtil.randIntBetween(randomBox.minZ(), randomBox.maxZ());
 
-            if (RandomUtil.sample(0.8f)) {
+            if (RandomUtil.sample(0.8f) || mobType == WDEntities.OFFERING.get()) {
                 for (int y = randomBox.minY(); y < randomBox.maxY(); y++) {
                     mutableBlockPos.set(randX, y, randZ);
-                    if (!SpawnPlacements.checkSpawnRules(mobType, level, MobSpawnType.SPAWNER, mutableBlockPos, level.getRandom())) continue;
+                    if (!SpawnPlacements.checkSpawnRules(mobType, level, MobSpawnType.REINFORCEMENT, mutableBlockPos, level.getRandom())) continue;
 
                     if (level.getFluidState(mutableBlockPos).is(Fluids.LAVA)) continue;
                     mutableBlockPos.set(randX, y - 1, randZ);
@@ -482,9 +483,9 @@ public class DungeonRoom {
                     }
                 }
             } else {
-                for (int y = randomBox.maxY(); y > randomBox.minY(); y--) {
+                for (int y = randomBox.maxY()-1; y > randomBox.minY(); y--) {
                     mutableBlockPos.set(randX, y, randZ);
-                    if (!SpawnPlacements.checkSpawnRules(mobType, level, MobSpawnType.SPAWNER, mutableBlockPos, level.getRandom())) continue;
+                    if (!SpawnPlacements.checkSpawnRules(mobType, level, MobSpawnType.REINFORCEMENT, mutableBlockPos, level.getRandom())) continue;
 
                     if (level.getFluidState(mutableBlockPos).is(Fluids.LAVA)) continue;
                     mutableBlockPos.set(randX, y - 1, randZ);

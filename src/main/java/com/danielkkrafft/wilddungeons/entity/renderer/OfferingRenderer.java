@@ -88,7 +88,7 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
 
         poseStack.pushPose();
         poseStack.scale(entity.getRenderScale(), entity.getRenderScale(), entity.getRenderScale());
-        poseStack.translate(0.0f, 0.5f, 0.0f);
+        if (entity.getRenderScale() <= 1) poseStack.translate(0.0f, 0.5f, 0.0f);
 
         switch (entity.getOfferingType()) {
             case ITEM -> renderItemModel(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
