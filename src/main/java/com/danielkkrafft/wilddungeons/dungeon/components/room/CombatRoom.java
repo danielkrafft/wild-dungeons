@@ -11,6 +11,7 @@ import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
+import com.danielkkrafft.wilddungeons.util.Serializer;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -32,6 +33,7 @@ import static com.danielkkrafft.wilddungeons.dungeon.components.template.Hierarc
 
 public class CombatRoom extends TargetPurgeRoom {
 
+    @Serializer.IgnoreSerialization
     public ServerBossEvent combatBar = new ServerBossEvent(
             Component.empty(),
             BossEvent.BossBarColor.RED,
@@ -71,6 +73,11 @@ public class CombatRoom extends TargetPurgeRoom {
         this.getActivePlayers().forEach(player -> {
             player.setSoundScape(this.getProperty(SOUNDSCAPE), this.getProperty(INTENSITY)+1, false);
         });
+        combatBar = new ServerBossEvent(
+                Component.empty(),
+                BossEvent.BossBarColor.RED,
+                BossEvent.BossBarOverlay.PROGRESS
+        );
         combatBar.setVisible(!(this instanceof BossRoom));
         combatBar.setProgress(1.0f);
         this.getActivePlayers().forEach(wdPlayer -> combatBar.addPlayer(wdPlayer.getServerPlayer()));
@@ -102,7 +109,7 @@ public class CombatRoom extends TargetPurgeRoom {
     public void tick() {
         super.tick();
         if (!this.started || this.isClear() || this.getActivePlayers().isEmpty()) return;
-        if (combatBar.isVisible()) {
+        if (combatBar != null && combatBar.isVisible()) {
             combatBar.setProgress((float) targets.size() / totalSpawns);
             combatBar.setName(Component.translatable("wilddungeons.combat_bar", (int) ((1-combatBar.getProgress()) * 100)));
         }
@@ -157,13 +164,16 @@ public class CombatRoom extends TargetPurgeRoom {
     }
 
     private void disableCombatBar() {
-        combatBar.removeAllPlayers();
-        combatBar.setVisible(false);
+        if (combatBar != null) {
+            combatBar.removeAllPlayers();
+            combatBar.setVisible(false);
+        }
     }
 
     @Override
     public void onExit(WDPlayer wdPlayer) {
-        combatBar.removePlayer(wdPlayer.getServerPlayer());
+        if (combatBar != null && combatBar.isVisible())
+            combatBar.removePlayer(wdPlayer.getServerPlayer());
         super.onExit(wdPlayer);
     }
 }
