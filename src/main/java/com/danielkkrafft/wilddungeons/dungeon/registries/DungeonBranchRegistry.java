@@ -185,7 +185,6 @@ public class DungeonBranchRegistry {
             .set(MAX_Y, 100)
             .set(FLOOR_DISTANCE_WEIGHT, 400)
             .set(HAS_BEDROCK_SHELL, true)
-            .setMandatoryRooms(new HashMap<>() {{put(BOSS_KEY_ROOM, 1);}})
             .set(SOUNDSCAPE, SoundscapeTemplateRegistry.VD_OVERFLOW);
 
     public static final DungeonBranchTemplate VILLAGE_SEWER_ENDING_BRANCH = create("VILLAGE_SEWER_ENDING_BRANCH")

@@ -102,7 +102,7 @@ public class DungeonFloorRegistry {
                             .addSimple(VILLAGE_MEDIUM_BRANCH)
                             .addSimple(VILLAGE_SMALL_BRANCH)
             )
-            .addLimitedRoom(BOSS_KEY_ROOM, 2)
+            .addLimitedRoom(BOSS_KEY_ROOM, 1)
             .set(HierarchicalProperty.PRE_ROOM_GEN_PROCESSING_STEPS, List.of(new AddBedrockShellStep()))
             .set(HierarchicalProperty.ENEMY_TABLE, EnemyTableRegistry.VILLAGE_ENEMY_TABLE)
             .set(HierarchicalProperty.SOUNDSCAPE, SoundscapeTemplateRegistry.VD_OVERFLOW)
