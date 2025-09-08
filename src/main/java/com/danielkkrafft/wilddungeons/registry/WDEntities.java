@@ -138,4 +138,10 @@ public class WDEntities {
                     .updateInterval(1)
                     .clientTrackingRange(80)
                     .build(WildDungeons.rl("black_hole").toString()));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<Spiderling>> SPIDERLING = ENTITIES.register("spiderling", () -> EntityType.Builder
+            .of(Spiderling::new, MobCategory.MONSTER)
+            .sized(0.65F, 0.4F)
+            .eyeHeight(0.2F)
+            .build(WildDungeons.rl("spiderling").toString()));
 }

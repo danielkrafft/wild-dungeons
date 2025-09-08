@@ -106,6 +106,7 @@ public class WildDungeons {
         e.put(WDEntities.FRIENDLY_EMERALD_WISP.get(), FriendlyEmeraldWisp.createAttributes().build());
         e.put(WDEntities.FRIENDLY_LARGE_EMERALD_WISP.get(), FriendlyLargeEmeraldWisp.createAttributes().build());
         e.put(WDEntities.BUSINESS_CEO.get(), BusinessCEO.setAttributes());
+        e.put(WDEntities.SPIDERLING.get(), Spiderling.createSpiderling().build());
     }
 
     public static ResourceLocation rl(String path) {

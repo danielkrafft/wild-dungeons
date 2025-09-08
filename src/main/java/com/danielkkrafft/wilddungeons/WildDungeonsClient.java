@@ -59,6 +59,7 @@ public class WildDungeonsClient {
         event.registerEntityRenderer(WDEntities.EMERALD_PROJECTILE.get(), context -> new ThrownItemRenderer<>(context, 2f, false));
         event.registerEntityRenderer(WDEntities.WIND_ARROW.get(), ctx -> new WDArrowRenderer<>(ctx, new WindArrowModel()));
         event.registerEntityRenderer(WDEntities.BLACK_HOLE.get(), BlackHoleRenderer::new);
+        event.registerEntityRenderer(WDEntities.SPIDERLING.get(), SpiderlingRenderer::new);
     }
 
     @SubscribeEvent
