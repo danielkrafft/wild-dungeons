@@ -15,6 +15,7 @@
   "item.wilddungeons.wd_wind_charge_item": "Wind Charge",
   "item.wilddungeons.wind_hammer": "Wind Hammer",
   "item.wilddungeons.life_liquid_bucket": "Life Liquid Bucket",
+  "item.wilddungeons.toxic_sludge_bucket": "Toxic Sludge Bucket",
   "item.wilddungeons.meathook": "Grappling Hook",
   "item.wilddungeons.mutant_bogged_spawn_egg": "Mutant Bogged Spawn Egg",
   "item.wilddungeons.nether_dragon_spawn_egg": "Nether Dragon Spawn Egg",
@@ -86,6 +87,7 @@
   "entity.wilddungeons.large_friendly_emerald_wisp": "Large Emerald Wisp",
   "entity.wilddungeons.offering": "Offering",
   "entity.wilddungeons.piercing_arrow": "Piercing Arrow",
+  "entity.wilddungeons.spiderling": "Spiderling",
 
   "connection_block.unblocked_label": "Unblocked Blockstate:",
   "connection_block.entrance_label": "Entrance",
