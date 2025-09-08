@@ -18,7 +18,7 @@ public class Spiderling extends Spider implements GeoEntity {
     private final AnimationController<Spiderling> mainController = new AnimationController<>(this, spiderling_controller, 5, spiderlingPredicate());
 
     private AnimationController.AnimationStateHandler<Spiderling> spiderlingPredicate() {
-        return (state) -> PlayState.STOP;//todo animation logic
+        return (state) -> PlayState.STOP;
     }
 
     public Spiderling(EntityType<? extends Spiderling> entityType, Level level) {
@@ -30,6 +30,7 @@ public class Spiderling extends Spider implements GeoEntity {
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        //todo animation logic
     }
 
 

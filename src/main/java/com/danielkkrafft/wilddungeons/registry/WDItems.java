@@ -28,6 +28,7 @@ public class WDItems {
     public static final DeferredItem<Item> WIND_HAMMER_ITEM = ITEMS.register("wind_hammer", WindHammer::new);
     public static final DeferredItem<Item> FIREWORK_GUN_ITEM = ITEMS.register("firework_gun", FireworkGun::new);
     public static final DeferredItem<Item> LIFE_LIQUID_BUCKET = ITEMS.register("life_liquid_bucket", () -> new BucketItem(WDFluids.LIFE_LIQUID.get(), (new Item.Properties()).craftRemainder(Items.BUCKET).stacksTo(1)));
+    public static final DeferredItem<Item> TOXIC_SLUDGE_BUCKET = ITEMS.register("toxic_sludge_bucket", () -> new BucketItem(WDFluids.TOXIC_SLUDGE.get(), (new Item.Properties()).craftRemainder(Items.BUCKET).stacksTo(1)));
     public static final DeferredItem<Item> BREEZE_GOLEM_SPAWN_EGG = ITEMS.register("breeze_golem_spawn_egg", () -> new SpawnEggItem(WDEntities.BREEZE_GOLEM.get(), new Color(115, 124, 255).getRGB(), new Color(0, 255, 233).getRGB(), new Item.Properties()));
     public static final DeferredItem<Item> MUTANT_BOGGED_SPAWN_EGG = ITEMS.register("mutant_bogged_spawn_egg", () -> new SpawnEggItem(WDEntities.MUTANT_BOGGED.get(), new Color(62, 162, 0).getRGB(), new Color(110, 71, 56).getRGB(), new Item.Properties()));
     public static final DeferredItem<Item> NETHER_DRAGON_SPAWN_EGG = ITEMS.register("nether_dragon_spawn_egg", () -> new SpawnEggItem(WDEntities.NETHER_DRAGON.get(), new Color(134, 0, 19).getRGB(), new Color(255, 136, 0).getRGB(), new Item.Properties()));

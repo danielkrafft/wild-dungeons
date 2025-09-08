@@ -38,6 +38,7 @@ public class WDCreativeTabs {
                 output.accept(EssenceBottleItem.setEssenceType(new ItemStack(ESSENCE_BOTTLE.get()), EssenceOrb.Type.END));
                 output.accept(WD_DUNGEON_KEY.get());
                 output.accept(LIFE_LIQUID_BUCKET.get());
+                output.accept(TOXIC_SLUDGE_BUCKET.get());
 
                 output.accept(BREEZE_GOLEM_SPAWN_EGG.get());
                 output.accept(MUTANT_BOGGED_SPAWN_EGG.get());

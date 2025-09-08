@@ -22,6 +22,8 @@ import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtension
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
+import java.awt.*;
+
 import static com.danielkkrafft.KeyBindings.TOGGLE_ESSENCE_TYPE;
 
 @EventBusSubscriber(modid = "wilddungeons", bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
@@ -95,6 +97,34 @@ public class WildDungeonsClient {
 
         ItemBlockRenderTypes.setRenderLayer(WDFluids.LIFE_LIQUID.get(), RenderType.translucent());
         ItemBlockRenderTypes.setRenderLayer(WDFluids.FLOWING_LIFE_LIQUID.get(), RenderType.translucent());
+
+        event.registerFluidType(new IClientFluidTypeExtensions() {
+
+            private static final ResourceLocation TOXIC_UNDERWATER = rl("textures/block/toxic_underwater.png");
+            private static final ResourceLocation TOXIC_STILL = rl("block/toxic_still");
+            private static final ResourceLocation TOXIC_FLOW = rl("block/toxic_flow");
+
+            @Override
+            public int getTintColor() {
+                return new Color(151, 255, 0).getRGB();
+            }
+
+            @Override
+            public ResourceLocation getStillTexture() {
+                return TOXIC_STILL;
+            }
+
+            @Override
+            public ResourceLocation getFlowingTexture() {
+                return TOXIC_FLOW;
+            }
+
+            @Override
+            public ResourceLocation getRenderOverlayTexture(Minecraft mc) {
+                return TOXIC_UNDERWATER;
+            }
+
+        }, WDFluids.TOXIC_SLUDGE_TYPE);
     }
 
     @SubscribeEvent

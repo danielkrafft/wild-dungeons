@@ -10,6 +10,7 @@ public class WDTags {
 
     public static class Fluids {
         public static final TagKey<Fluid> LIFE_LIQUID = create(WildDungeons.rl("fluid"));
+        public static final TagKey<Fluid> TOXIC_SLUDGE = create(WildDungeons.rl("toxic_sludge"));
 
         public static TagKey<Fluid> create(final ResourceLocation name) {
             return TagKey.create(Registries.FLUID, name);

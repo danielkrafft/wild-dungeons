@@ -23,6 +23,7 @@ public class WDBlocks {
     public static final DeferredBlock<Block> CONNECTION_BLOCK = registerWithItem("connection_block", () -> new ConnectionBlock(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).requiresCorrectToolForDrops().strength(-1.0F, 3600000.0F)));
     public static final DeferredBlock<Block> SPAWN_BLOCK = registerWithItem("spawn_block", () -> new Block(BlockBehaviour.Properties.of().destroyTime(-1).noCollission()));
     public static final DeferredBlock<Block> LIFE_LIQUID = BLOCKS.register("life_liquid", () -> new LifeLiquidBlock(WDFluids.LIFE_LIQUID.get(), BlockBehaviour.Properties.ofFullCopy(Blocks.WATER)));
+    public static final DeferredBlock<Block> TOXIC_SLUDGE = BLOCKS.register("toxic_sludge", () -> new ToxicSludgeBlock(WDFluids.TOXIC_SLUDGE.get(), BlockBehaviour.Properties.ofFullCopy(Blocks.WATER).liquid()));
     public static final DeferredBlock<Block> ROTTEN_MOSS = registerWithItem("rotten_moss", RottenMossBlock::new);
     public static final DeferredBlock<Block> HEAVY_RUNE = registerWithItem("heavy_rune", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.DEEPSLATE)
             .instrument(NoteBlockInstrument.BASEDRUM)
