@@ -1,0 +1,124 @@
+package com.danielkkrafft.wilddungeons.block;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Explosion;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.function.BiConsumer;
+
+public class ToxicGasBlock extends Block {
+    public ToxicGasBlock(Properties properties) {
+        super(properties);
+    }
+
+    private static final int TICKS_PER_SPREAD = 20; // Spread every 20 ticks (1 second)
+
+    @Override
+    protected void onExplosionHit(BlockState state, Level level, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> dropConsumer) {
+        Explode(level, pos);
+    }
+
+    private void Explode(Level level, BlockPos pos) {
+        level.removeBlock(pos, false);
+        level.explode(null, pos.getX(), pos.getY(), pos.getZ(), 1.1f, Level.ExplosionInteraction.MOB);
+    }
+
+    @Override
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        //igniting with flint and steel or fire charge should cause an explosion
+        if (stack.is(Items.FLINT_AND_STEEL)){
+            Explode(level, pos);
+            return ItemInteractionResult.sidedSuccess(level.isClientSide);
+        }
+        return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
+    }
+
+    @Override
+    public void onCaughtFire(BlockState state, Level level, BlockPos pos, @Nullable Direction direction, @Nullable LivingEntity igniter) {
+        Explode(level, pos);
+    }
+
+    @Override
+    protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
+        //schedule the first tick
+        if (!level.isClientSide()) {
+            level.scheduleTick(pos, this, TICKS_PER_SPREAD);
+        }
+        super.onPlace(state, level, pos, oldState, movedByPiston);
+    }
+
+    @Override
+    protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+        super.tick(state, level, pos, random);
+        HandleSpread(level, pos, random);
+        //schedule the next tick
+        level.scheduleTick(pos, this, TICKS_PER_SPREAD + random.nextInt(TICKS_PER_SPREAD/2)-TICKS_PER_SPREAD );
+    }
+
+    public void HandleSpread(Level level, BlockPos pos, RandomSource random) {
+        //check the block above to see if its air, if it is, spread upwards
+        BlockPos above = pos.above();
+        BlockState aboveState = level.getBlockState(above);
+        if (aboveState.isAir()) {
+            level.setBlockAndUpdate(above, this.defaultBlockState());
+            //remove the current block
+            level.removeBlock(pos, false);
+        } else {
+            //check the blocks to the sides, if any are air, spread to them
+            ArrayList<BlockPos> sides = new ArrayList<>();
+            sides.add(pos.north());
+            sides.add(pos.south());
+            sides.add(pos.east());
+            sides.add(pos.west());
+            //shuffle the list
+            java.util.Collections.shuffle(sides);
+
+            for (BlockPos side : sides) {
+                BlockState sideState = level.getBlockState(side);
+                if (sideState.isAir()) {
+                    level.setBlockAndUpdate(side, this.defaultBlockState());
+                    //remove the current block
+                    level.removeBlock(pos, false);
+                    break;
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+        super.entityInside(state, level, pos, entity);
+        if (entity instanceof LivingEntity livingEntity) {
+            if (!livingEntity.hasEffect(MobEffects.POISON)) {
+                livingEntity.addEffect(new MobEffectInstance(MobEffects.POISON, 100, 4));
+            }
+        }
+    }
+
+    @Override
+    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        if (context.isHoldingItem(Items.FLINT_AND_STEEL)) return Shapes.block();
+        return Shapes.empty();
+    }
+}

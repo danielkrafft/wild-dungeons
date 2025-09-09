@@ -32,6 +32,7 @@ public class WDCreativeTabs {
                 output.accept(STAR_CANNON.get());
 
                 output.accept(ROTTEN_MOSS.get());
+                output.accept(TOXIC_GAS.get());
                 output.accept(HEAVY_RUNE.get());
 
                 output.accept(EssenceBottleItem.setEssenceType(new ItemStack(ESSENCE_BOTTLE.get()), EssenceOrb.Type.NETHER));

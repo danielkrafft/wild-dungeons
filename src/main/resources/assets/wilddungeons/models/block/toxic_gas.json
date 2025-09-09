@@ -1,0 +1,7 @@
+﻿{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "wilddungeons:block/toxic_gas"
+  },
+    "render_type": "translucent"
+}
