@@ -154,4 +154,14 @@ public class WDEntities {
             .eyeHeight(0.2F)
             .build(WildDungeons.rl("skelepede_segment").toString()));
 
+    public static final DeferredHolder<EntityType<?>, EntityType<ToxicWisp>> SMALL_TOXIC_WISP = ENTITIES.register("small_toxic_wisp", () -> EntityType.Builder
+            .of(ToxicWisp::new, MobCategory.MONSTER)
+            .sized(0.3f, 0.8f)
+            .build(WildDungeons.rl("small_toxic_wisp").toString()));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<LargeToxicWisp>> LARGE_TOXIC_WISP = ENTITIES.register("large_toxic_wisp", () -> EntityType.Builder
+            .of(LargeToxicWisp::new, MobCategory.MONSTER)
+            .sized(0.8f, 1f)
+            .build(WildDungeons.rl("large_toxic_wisp").toString()));
+
 }

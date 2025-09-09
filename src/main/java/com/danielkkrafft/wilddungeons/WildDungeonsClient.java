@@ -64,6 +64,8 @@ public class WildDungeonsClient {
         event.registerEntityRenderer(WDEntities.SPIDERLING.get(), SpiderlingRenderer::new);
         event.registerEntityRenderer(WDEntities.SKELEPEDE.get(), SkelepedeMainRenderer::new);
         event.registerEntityRenderer(WDEntities.SKELEPEDE_SEGMENT.get(), SkelepedeSegmentRenderer::new);
+        event.registerEntityRenderer(WDEntities.SMALL_TOXIC_WISP.get(),  (EntityRendererProvider.Context context) -> new ToxicWispRenderer(context, false));
+        event.registerEntityRenderer(WDEntities.LARGE_TOXIC_WISP.get(),  (EntityRendererProvider.Context context) -> new ToxicWispRenderer(context, true));
     }
 
     @SubscribeEvent
@@ -136,6 +138,9 @@ public class WildDungeonsClient {
         event.registerLayerDefinition(BusinessIllagerModel.LAYER_LOCATION, BusinessIllagerModel::createBodyLayer);
         event.registerLayerDefinition(EmeraldWispModel.SMALL_LAYER_LOCATION, () -> EmeraldWispModel.createBodyLayer(false));
         event.registerLayerDefinition(EmeraldWispModel.LARGE_LAYER_LOCATION, () -> EmeraldWispModel.createBodyLayer(true));
+        event.registerLayerDefinition(ToxicWispModel.SMALL_LAYER_LOCATION, () -> ToxicWispModel.createBodyLayer(false));
+        event.registerLayerDefinition(ToxicWispModel.LARGE_LAYER_LOCATION, () -> ToxicWispModel.createBodyLayer(true));
+
     }
 
     @SubscribeEvent
