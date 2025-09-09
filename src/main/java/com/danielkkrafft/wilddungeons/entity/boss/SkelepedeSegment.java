@@ -13,10 +13,10 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class SkelepedeSegment extends Monster implements GeoEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    private static final String spiderling_controller = "MOBNAME_controller";
-    private final AnimationController<SkelepedeSegment> mainController = new AnimationController<>(this, spiderling_controller, 5, animationPredicate());
+    private static final String SKELEPEDE_SEGMENT_CONTROLLER = "skelepede_segment_controller";
+    private final AnimationController<SkelepedeSegment> mainController = new AnimationController<>(this, SKELEPEDE_SEGMENT_CONTROLLER, 5, animationPredicate());
 
-    protected SkelepedeSegment(EntityType<? extends Monster> entityType, Level level) {
+    public SkelepedeSegment(EntityType<? extends Monster> entityType, Level level) {
         super(entityType, level);
     }
 

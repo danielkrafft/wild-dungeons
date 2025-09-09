@@ -1,0 +1,63 @@
+{
+	"format_version": "1.12.0",
+	"minecraft:geometry": [
+		{
+			"description": {
+				"identifier": "geometry.skelepede",
+				"texture_width": 128,
+				"texture_height": 128,
+				"visible_bounds_width": 4,
+				"visible_bounds_height": 2.5,
+				"visible_bounds_offset": [0, 0.75, 0]
+			},
+			"bones": [
+				{
+					"name": "segment",
+					"pivot": [0, 6.98289, 4.26105],
+					"cubes": [
+						{"origin": [-5.5, 4, -4], "size": [11, 4, 8], "pivot": [0, 6, 0], "rotation": [-7.5, 0, 0], "uv": [44, 28]},
+						{"origin": [0, 8, -4], "size": [0, 4, 8], "pivot": [0, 6, 0], "rotation": [-7.5, 0, 0], "uv": [44, 40]}
+					]
+				},
+				{
+					"name": "legL",
+					"parent": "segment",
+					"pivot": [-5.5, 4, 0],
+					"rotation": [0, 0, 40],
+					"cubes": [
+						{"origin": [-11.5, 4, -0.95], "size": [6, 2, 1.9], "uv": [53, 1]}
+					]
+				},
+				{
+					"name": "lowerL",
+					"parent": "legL",
+					"pivot": [-11.5, 6, 0],
+					"rotation": [0, 0, -87.5],
+					"cubes": [
+						{"origin": [-19.5, 4, -1], "size": [8, 2, 2], "uv": [50, 4]},
+						{"origin": [-27.5, 2, 0], "size": [8, 6, 0], "pivot": [-19.5, 6, 0], "rotation": [0, 0, -27.5], "uv": [0, 52]}
+					]
+				},
+				{
+					"name": "legL3",
+					"parent": "segment",
+					"pivot": [5.5, 4, 0],
+					"rotation": [0, 0, -40],
+					"cubes": [
+						{"origin": [5.5, 4, -0.95], "size": [6, 2, 1.9], "uv": [53, 1], "mirror": true}
+					]
+				},
+				{
+					"name": "lowerL3",
+					"parent": "legL3",
+					"pivot": [11.5, 6, 0],
+					"rotation": [0, 0, 87.5],
+					"cubes": [
+						{"origin": [11.5, 4, -1], "size": [8, 2, 2], "uv": [50, 4], "mirror": true},
+						{"origin": [19.5, 2, 0], "size": [8, 6, 0], "pivot": [19.5, 6, 0], "rotation": [0, 0, 27.5], "uv": [0, 52], "mirror": true}
+					]
+				}
+			]
+		}
+	]
+}

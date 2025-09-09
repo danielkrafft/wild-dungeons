@@ -2,10 +2,7 @@ package com.danielkkrafft.wilddungeons.registry;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.entity.*;
-import com.danielkkrafft.wilddungeons.entity.boss.BreezeGolem;
-import com.danielkkrafft.wilddungeons.entity.boss.BusinessCEO;
-import com.danielkkrafft.wilddungeons.entity.boss.MutantBogged;
-import com.danielkkrafft.wilddungeons.entity.boss.NetherDragonEntity;
+import com.danielkkrafft.wilddungeons.entity.boss.*;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -144,4 +141,17 @@ public class WDEntities {
             .sized(0.65F, 0.4F)
             .eyeHeight(0.2F)
             .build(WildDungeons.rl("spiderling").toString()));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<SkelepedeMain>> SKELEPEDE = ENTITIES.register("skelepede_main", () -> EntityType.Builder
+            .of(SkelepedeMain::new, MobCategory.MONSTER)
+            .sized(1, 0.6F)
+            .eyeHeight(0.2F)
+            .build(WildDungeons.rl("skelepede_main").toString()));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<SkelepedeSegment>> SKELEPEDE_SEGMENT = ENTITIES.register("skelepede_segment", () -> EntityType.Builder
+            .of(SkelepedeSegment::new, MobCategory.MONSTER)
+            .sized(1, 0.6F)
+            .eyeHeight(0.2F)
+            .build(WildDungeons.rl("skelepede_segment").toString()));
+
 }

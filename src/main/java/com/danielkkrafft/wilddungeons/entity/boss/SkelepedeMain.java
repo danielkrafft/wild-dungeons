@@ -11,12 +11,16 @@ import software.bernie.geckolib.animation.AnimationController;
 import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import java.util.ArrayList;
+
 public class SkelepedeMain extends Monster implements GeoEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private static final String SKELEPEDE_HEAD_CONTROLLER = "skelepede_head_controller";
     private final AnimationController<SkelepedeMain> mainController = new AnimationController<>(this, SKELEPEDE_HEAD_CONTROLLER, 5, animationPredicate());
 
-    protected SkelepedeMain(EntityType<? extends Monster> entityType, Level level) {
+    private ArrayList<SkelepedeSegment> segments = new ArrayList<>();
+
+    public SkelepedeMain(EntityType<? extends Monster> entityType, Level level) {
         super(entityType, level);
     }
 

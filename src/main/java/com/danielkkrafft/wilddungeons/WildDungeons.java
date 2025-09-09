@@ -4,10 +4,7 @@ package com.danielkkrafft.wilddungeons;
 import com.danielkkrafft.wilddungeons.dungeon.mob_effects.WDMobEffects;
 import com.danielkkrafft.wilddungeons.enchantment.WDEnchantmentEffects;
 import com.danielkkrafft.wilddungeons.entity.*;
-import com.danielkkrafft.wilddungeons.entity.boss.BreezeGolem;
-import com.danielkkrafft.wilddungeons.entity.boss.BusinessCEO;
-import com.danielkkrafft.wilddungeons.entity.boss.MutantBogged;
-import com.danielkkrafft.wilddungeons.entity.boss.NetherDragonEntity;
+import com.danielkkrafft.wilddungeons.entity.boss.*;
 import com.danielkkrafft.wilddungeons.network.SimplePacketManager;
 import com.danielkkrafft.wilddungeons.registry.*;
 import com.danielkkrafft.wilddungeons.util.FileUtil;
@@ -107,6 +104,8 @@ public class WildDungeons {
         e.put(WDEntities.FRIENDLY_LARGE_EMERALD_WISP.get(), FriendlyLargeEmeraldWisp.createAttributes().build());
         e.put(WDEntities.BUSINESS_CEO.get(), BusinessCEO.setAttributes());
         e.put(WDEntities.SPIDERLING.get(), Spiderling.createSpiderling().build());
+        e.put(WDEntities.SKELEPEDE.get(), SkelepedeMain.createMobAttributes().build());
+        e.put(WDEntities.SKELEPEDE_SEGMENT.get(), SkelepedeSegment.createMobAttributes().build());
     }
 
     public static ResourceLocation rl(String path) {

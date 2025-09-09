@@ -1,6 +1,7 @@
 package com.danielkkrafft.wilddungeons.entity.renderer;
 
 import com.danielkkrafft.wilddungeons.entity.boss.SkelepedeMain;
+import com.danielkkrafft.wilddungeons.entity.model.SkelepedeMainModel;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;

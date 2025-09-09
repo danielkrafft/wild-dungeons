@@ -62,6 +62,8 @@ public class WildDungeonsClient {
         event.registerEntityRenderer(WDEntities.WIND_ARROW.get(), ctx -> new WDArrowRenderer<>(ctx, new WindArrowModel()));
         event.registerEntityRenderer(WDEntities.BLACK_HOLE.get(), BlackHoleRenderer::new);
         event.registerEntityRenderer(WDEntities.SPIDERLING.get(), SpiderlingRenderer::new);
+        event.registerEntityRenderer(WDEntities.SKELEPEDE.get(), SkelepedeMainRenderer::new);
+        event.registerEntityRenderer(WDEntities.SKELEPEDE_SEGMENT.get(), SkelepedeSegmentRenderer::new);
     }
 
     @SubscribeEvent
