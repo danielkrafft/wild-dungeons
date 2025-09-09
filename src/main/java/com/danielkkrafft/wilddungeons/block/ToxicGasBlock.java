@@ -90,6 +90,7 @@ public class ToxicGasBlock extends Block {
         for (BlockPos checkPos : surrounding) {
             BlockState checkState = level.getBlockState(checkPos);
             if (checkState.getBlock() instanceof ChangeOverTimeBlock changeBlock) {
+//                WildDungeons.getLogger().debug("Toxic Gas at "+pos+" is affecting ChangeOverTimeBlock at "+checkPos);
                 changeBlock.changeOverTime(checkState, level, checkPos, random);
             }
         }

@@ -5,6 +5,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
@@ -12,6 +14,9 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
+import org.jetbrains.annotations.Nullable;
+
+import static net.minecraft.world.effect.MobEffects.POISON;
 
 public class ToxicWisp extends EmeraldWisp{
     public ToxicWisp(EntityType<? extends PathfinderMob> entityType, Level level) {
@@ -47,6 +52,14 @@ public class ToxicWisp extends EmeraldWisp{
             this.level().playSound(this,this.blockPosition(), SoundEvents.BEE_STING,this.getSoundSource(), 1.0F, 1.0F);
         }
         super.onDamageTaken(damageContainer);
+    }
+
+    @Override
+    public boolean addEffect(MobEffectInstance effectInstance, @Nullable Entity entity) {
+        if (effectInstance.is(POISON)) {
+            return false;
+        }
+        return super.addEffect(effectInstance, entity);
     }
 
     public static AttributeSupplier.Builder createAttributes() {
