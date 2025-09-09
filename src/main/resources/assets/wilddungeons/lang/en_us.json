@@ -89,6 +89,8 @@
   "entity.wilddungeons.offering": "Offering",
   "entity.wilddungeons.piercing_arrow": "Piercing Arrow",
   "entity.wilddungeons.spiderling": "Spiderling",
+  "entity.wilddungeons.skelepede_main": "Skelepede",
+  "entity.wilddungeons.skelepede_segment": "Skelepede Segment",
 
   "connection_block.unblocked_label": "Unblocked Blockstate:",
   "connection_block.entrance_label": "Entrance",
