@@ -35,7 +35,7 @@ public class ToxicWispModel<T extends ToxicWisp> extends EntityModel<ToxicWisp> 
             body.addOrReplaceChild("leftWing", CubeListBuilder.create().texOffs(6, 15).addBox(-6.0F, -2.5f, 0, 6, 5F, 0, new CubeDeformation(0.0F)), PartPose.offset(-4.5f, 1, 0));
         } else {
             body = partdefinition.addOrReplaceChild("body", CubeListBuilder.create().texOffs(0, 0).addBox(-1.5F, 8.0F, -1.5F, 3.0F, 6.0F, 3.0F, new CubeDeformation(0.0F))
-                    .texOffs(0, 9).addBox(-1.5F, 2.0F, -1.5F, 3.0F, 6.0F, 3.0F, new CubeDeformation(0.0F)), PartPose.offset(-0.5F, -2.0F, 0.5F));
+                    .texOffs(0, 9).addBox(-1.5F, 2.0F, -1.5F, 3.0F, 6.0F, 3.0F, new CubeDeformation(0.0F)), PartPose.offset(-0.5F, 10.0F, 0.5F));
 
             PartDefinition leftWing = body.addOrReplaceChild("leftWing", CubeListBuilder.create().texOffs(12, 0).addBox(0.0F, -2.5F, 0.0F, 6.0F, 5.0F, 0.0F, new CubeDeformation(0.0F)), PartPose.offset(1.5F, 5.5F, 0.5F));
 

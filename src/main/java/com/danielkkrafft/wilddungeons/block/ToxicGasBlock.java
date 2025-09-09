@@ -17,6 +17,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.ChangeOverTimeBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -72,8 +73,26 @@ public class ToxicGasBlock extends Block {
     protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         super.tick(state, level, pos, random);
         HandleSpread(level, pos, random);
+        CheckForChangeOverTimeBlocks(level, pos, random);
         //schedule the next tick
         level.scheduleTick(pos, this, TICKS_PER_SPREAD + random.nextInt(TICKS_PER_SPREAD/2)-TICKS_PER_SPREAD );
+    }
+
+    private void CheckForChangeOverTimeBlocks(ServerLevel level, BlockPos pos, RandomSource random) {
+        //check the surrounding blocks for ChangeOverTimeBlocks, if any are found, 10% chance to advance that blocks age
+        ArrayList<BlockPos> surrounding = new ArrayList<>();
+        surrounding.add(pos.north());
+        surrounding.add(pos.south());
+        surrounding.add(pos.east());
+        surrounding.add(pos.west());
+        surrounding.add(pos.above());
+        surrounding.add(pos.below());
+        for (BlockPos checkPos : surrounding) {
+            BlockState checkState = level.getBlockState(checkPos);
+            if (checkState.getBlock() instanceof ChangeOverTimeBlock changeBlock) {
+                changeBlock.changeOverTime(checkState, level, checkPos, random);
+            }
+        }
     }
 
     public void HandleSpread(Level level, BlockPos pos, RandomSource random) {
@@ -85,6 +104,11 @@ public class ToxicGasBlock extends Block {
             //remove the current block
             level.removeBlock(pos, false);
         } else {
+            if (pos.getY()>= level.getMaxBuildHeight()-1){
+                //if we are at the top of the world, just remove the block
+                level.removeBlock(pos, false);
+                return;
+            }
             //check the blocks to the sides, if any are air, spread to them
             ArrayList<BlockPos> sides = new ArrayList<>();
             sides.add(pos.north());
