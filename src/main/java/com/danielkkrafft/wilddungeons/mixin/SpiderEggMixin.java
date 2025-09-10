@@ -4,6 +4,7 @@ package com.danielkkrafft.wilddungeons.mixin;
 import com.danielkkrafft.wilddungeons.entity.Spiderling;
 import com.danielkkrafft.wilddungeons.registry.WDBlocks;
 import net.minecraft.core.BlockPos;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.monster.Spider;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -31,6 +32,7 @@ public class SpiderEggMixin {
 
             // Check if the block below is replaceable
             if (level.isEmptyBlock(posBelow) && eggBlock.canSurvive(level, posBelow)) {
+                level.playSound(spider,posBelow, SoundEvents.SLIME_SQUISH, spider.getSoundSource(), 0.5F, 1.0F);
                 level.setBlock(posBelow, eggBlock, 3);
             }
         }

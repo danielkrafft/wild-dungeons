@@ -2,6 +2,7 @@ package com.danielkkrafft.wilddungeons.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
@@ -67,6 +68,16 @@ public class ToxicGasBlock extends Block {
             level.scheduleTick(pos, this, TICKS_PER_SPREAD);
         }
         super.onPlace(state, level, pos, oldState, movedByPiston);
+    }
+
+    @Override
+    public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
+        //spawn green particles
+            double x = pos.getX() + 0.5 + (random.nextDouble() - 0.5);
+            double y = pos.getY() + 0.5 + (random.nextDouble() - 0.5);
+            double z = pos.getZ() + 0.5 + (random.nextDouble() - 0.5);
+            level.addParticle(ParticleTypes.DUST_PLUME, x, y, z, 0.0, 0.1, 0.0);
+        super.animateTick(state, level, pos, random);
     }
 
     @Override

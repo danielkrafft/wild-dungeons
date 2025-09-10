@@ -97,7 +97,7 @@ public class SkelepedeSegment extends Monster implements GeoEntity {
     @Override
     public void tick() {
         // Random chance to place an egg block
-        if (!level().isClientSide && level().random.nextInt(1000) == 0) { // 1/1000 chance per tick
+        if (!level().isClientSide && level().random.nextInt(5000) == 0) { // 1/5000 chance per tick because there are a lot more of them
             BlockPos posBelow = blockPosition();
             BlockState eggBlock = WDBlocks.SPIDER_EGG.get().defaultBlockState();
             int eggs = level().random.nextInt(8);
@@ -105,6 +105,7 @@ public class SkelepedeSegment extends Monster implements GeoEntity {
 
             // Check if the block below is replaceable
             if (level().isEmptyBlock(posBelow) && eggBlock.canSurvive(level(), posBelow)) {
+                level().playSound(this,posBelow, SoundEvents.SLIME_SQUISH, this.getSoundSource(), 0.5F, 1.0F);
                 level().setBlock(posBelow, eggBlock, 3);
             }
         }

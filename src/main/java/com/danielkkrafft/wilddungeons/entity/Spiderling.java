@@ -21,6 +21,12 @@ public class Spiderling extends Spider implements GeoEntity {
         return (state) -> PlayState.STOP;
     }
 
+    @Override
+    protected void registerGoals() {
+        super.registerGoals();
+    }
+
+
     public Spiderling(EntityType<? extends Spiderling> entityType, Level level) {
         super(entityType, level);
     }

@@ -117,8 +117,13 @@ public class SkelepedeMain extends Monster implements GeoEntity {
         }
         segments.removeAll(segments.stream().filter(Objects::isNull).toList());
 
-        // Add current position to history
-        previousPositions.addFirst(this.position());
+        // Add current position to history if has moved
+        if (previousPositions.isEmpty())
+            previousPositions.addFirst(this.position());
+        Vec3 previousPos = previousPositions.peekFirst();
+        if (previousPos != null && !this.position().closerThan(previousPos, 0.1f)) {
+            previousPositions.addFirst(this.position());
+        }
         previousRotations.addFirst(this.getYRot());
         // Limit history size
         int maxHistory = (int)(NUM_SEGMENTS * SEGMENT_SPACING * POSITION_HISTORY_MULTIPLIER);
