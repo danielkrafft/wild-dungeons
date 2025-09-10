@@ -10,15 +10,31 @@ import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.animation.AnimationController;
 import software.bernie.geckolib.animation.PlayState;
+import software.bernie.geckolib.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class Spiderling extends Spider implements GeoEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private static final String spiderling_controller = "spiderling_controller";
-    private final AnimationController<Spiderling> mainController = new AnimationController<>(this, spiderling_controller, 5, spiderlingPredicate());
-
+    private static final String
+            idle = "animation.blackstone_spiderling.idle",
+            walk = "animation.blackstone_spiderling.walk";
+    private static final RawAnimation
+            idleAnim = RawAnimation.begin().thenLoop(idle),
+            walkAnim = RawAnimation.begin().thenLoop(walk);
+    private final AnimationController<Spiderling> mainController = new AnimationController<>(this, spiderling_controller, 0, spiderlingPredicate())
+            .triggerableAnim(idle, idleAnim)
+            .triggerableAnim(walk, walkAnim);
     private AnimationController.AnimationStateHandler<Spiderling> spiderlingPredicate() {
-        return (state) -> PlayState.STOP;
+        return state -> {
+            if (this.getDeltaMovement().lengthSqr() > 0.01) {
+                state.setAndContinue(walkAnim);
+            }
+            else {
+                state.setAndContinue(idleAnim);
+            }
+            return PlayState.CONTINUE;
+        };
     }
 
     @Override
@@ -36,7 +52,7 @@ public class Spiderling extends Spider implements GeoEntity {
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        //todo animation logic
+        controllers.add(mainController);
     }
 
 
