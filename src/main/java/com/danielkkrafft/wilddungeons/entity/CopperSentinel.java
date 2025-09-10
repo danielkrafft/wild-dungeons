@@ -48,7 +48,7 @@ public class CopperSentinel extends Monster implements GeoEntity {
             .triggerableAnim(idle, idleAnim);
     private static final String
             idle = "idle",
-            startup = "transform",
+            startup = "animation.model.transform",
             walk = "walk",
             shoot = "shoot",
             slash = "slash";
@@ -59,7 +59,7 @@ public class CopperSentinel extends Monster implements GeoEntity {
             shootAnim = RawAnimation.begin().thenPlay(shoot).thenLoop(idle),
             slashAnim = RawAnimation.begin().thenPlay(slash).thenLoop(idle);
     private static final EntityDataAccessor<Integer> TICKS_INVULNERABLE = SynchedEntityData.defineId(CopperSentinel.class, EntityDataSerializers.INT);
-    private static final int SUMMON_TICKS = 70;
+    private static final int SUMMON_TICKS = 80;
 
     public CopperSentinel(EntityType<? extends Monster> entityType, Level level) {
         super(entityType, level);
@@ -202,8 +202,7 @@ public class CopperSentinel extends Monster implements GeoEntity {
             }
             CopperSentinel.this.playSound(SoundEvents.GENERIC_EXPLODE.value(), 2f, 0.8f);
             UtilityMethods.sendParticles((ServerLevel) CopperSentinel.this.level(), ParticleTypes.EXPLOSION_EMITTER, true, 1, pos.x, pos.y, pos.z, 0, 0, 0, 0);
-            UtilityMethods.sendParticles((ServerLevel) CopperSentinel.this.level(), ParticleTypes.ENCHANT, true, 200, pos.x, pos.y, pos.z, 1, 2, 1, 0.06f);
-            UtilityMethods.sendParticles((ServerLevel) CopperSentinel.this.level(), ParticleTypes.COMPOSTER, true, 400, pos.x, pos.y, pos.z, 1, 2, 1, 0.08f);
+            UtilityMethods.sendParticles((ServerLevel) CopperSentinel.this.level(), ParticleTypes.LAVA, true, 200, pos.x, pos.y, pos.z, 1, 2, 1, 0.06f);
             CopperSentinel.this.setInvulnerable(false);
             CopperSentinel.this.triggerAnim(COPPER_SENTINEL_CONTROLLER, idle);
         }
