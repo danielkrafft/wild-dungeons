@@ -30,7 +30,7 @@ public class GasBlockRenderer implements BlockEntityRenderer<GasBlockEntity> {
         poseStack.translate(0.5F, 0, 0.5F);
 
         float time = (float)(System.currentTimeMillis() % 10000L) / 1000.0f;
-        int layers = 4;
+        int layers = 8;
         for (int i = 0; i < layers; i++) {
             poseStack.pushPose();
             // Make layer face the camera
