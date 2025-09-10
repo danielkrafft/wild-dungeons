@@ -49,6 +49,20 @@ public class ToxicWisp extends EmeraldWisp{
     }
 
     @Override
+    public void tick() {
+        super.tick();
+        if (!level().isClientSide) {
+            for (Entity entity : level().getEntities(this, this.getBoundingBox())) {
+                if (entity instanceof CopperSentinel copperSentinel) {
+                    explodeWisp();
+                    copperSentinel.hurt(this.damageSources().explosion(this,this),100);
+                    break;
+                }
+            }
+        }
+    }
+
+    @Override
     public void onDamageTaken(DamageContainer damageContainer) {
         if (damageContainer.getSource().is(DamageTypes.PLAYER_ATTACK)){
             //fly off in the direction the player hit it from

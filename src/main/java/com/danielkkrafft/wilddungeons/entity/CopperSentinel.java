@@ -38,7 +38,7 @@ import java.util.List;
 public class CopperSentinel extends Monster implements GeoEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private final ServerBossEvent bossEvent = new ServerBossEvent(getDisplayName(), BossEvent.BossBarColor.YELLOW, BossEvent.BossBarOverlay.NOTCHED_6);
- private static final String COPPER_SENTINEL_CONTROLLER = "copper_sentinel_controller";
+    private static final String COPPER_SENTINEL_CONTROLLER = "copper_sentinel_controller";
     private final AnimationController<CopperSentinel> mainController = new AnimationController<>(this, COPPER_SENTINEL_CONTROLLER, 5,
             state -> state.setAndContinue(idleAnim))
             .triggerableAnim(startup, startupAnim)
@@ -126,7 +126,7 @@ public class CopperSentinel extends Monster implements GeoEntity {
     }
 
     public static AttributeSupplier.Builder createMobAttributes() {
-        return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 175)
+        return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 1000)
                 .add(Attributes.MOVEMENT_SPEED, 0.5)
                 .add(Attributes.FOLLOW_RANGE, 50)
                 .add(Attributes.ATTACK_DAMAGE, 8)
@@ -153,6 +153,7 @@ public class CopperSentinel extends Monster implements GeoEntity {
     public int getTicksInvulnerable() {
         return this.entityData.get(TICKS_INVULNERABLE);
     }
+
     public boolean isInvulnerable() {
         return getTicksInvulnerable() <= SUMMON_TICKS;
     }
@@ -163,6 +164,7 @@ public class CopperSentinel extends Monster implements GeoEntity {
     }
 
     public class SummonGoal extends Goal {//todo time this to the animation
+
         public SummonGoal(@NotNull Mob mob) {
             this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.JUMP, Goal.Flag.LOOK, Goal.Flag.TARGET));
         }
@@ -207,5 +209,11 @@ public class CopperSentinel extends Monster implements GeoEntity {
             CopperSentinel.this.triggerAnim(COPPER_SENTINEL_CONTROLLER, idle);
         }
     }
-
+    @Override
+    public boolean hurt(DamageSource source, float amount) {
+        if ((source.getEntity() instanceof ToxicWisp)) {
+            return super.hurt(source, 100);
+        }
+        return false;
+    }
 }
