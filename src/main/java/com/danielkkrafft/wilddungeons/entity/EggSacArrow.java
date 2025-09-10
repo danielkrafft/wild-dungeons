@@ -14,7 +14,9 @@ import org.jetbrains.annotations.Nullable;
 public class EggSacArrow extends Arrow {
     public EggSacArrow(EntityType<? extends Arrow> entityType, Level level) {
         super(entityType, level);
-        this.setPickupItemStack(WDItems.EGG_SAC_ARROWS.toStack());
+        ItemStack pickupItemStack = WDItems.EGG_SAC_ARROWS.toStack();
+        pickupItemStack.setCount(1);
+        this.setPickupItemStack(pickupItemStack);
     }
 
     public EggSacArrow(Level level, double x, double y, double z, ItemStack pickupItemStack, @Nullable ItemStack firedFromWeapon) {
