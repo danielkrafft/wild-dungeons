@@ -166,7 +166,7 @@ public class WDEntities {
 
     public static final DeferredHolder<EntityType<?>, EntityType<CopperSentinel>> COPPER_SENTINEL = ENTITIES.register("copper_sentinel", () -> EntityType.Builder
             .of(CopperSentinel::new, MobCategory.MONSTER)
-            .sized(3, 8)
+            .sized(3, 5)
             .build(WildDungeons.rl("copper_sentinel").toString()));
 
     public static final DeferredHolder<EntityType<?>, EntityType<EggSacArrow>> EGG_SAC_ARROW = ENTITIES.register("egg_sac_arrow",

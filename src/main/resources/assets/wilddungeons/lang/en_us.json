@@ -95,6 +95,8 @@
   "entity.wilddungeons.skelepede_segment": "Skelepede Segment",
   "entity.wilddungeons.small_toxic_wisp": "Toxic Wisp",
   "entity.wilddungeons.large_toxic_wisp": "Large Toxic Wisp",
+  "entity.wilddungeons.copper_sentinel": "Copper Sentinel",
+  "entity.wilddungeons.egg_sac_arrow": "Egg Sac Arrow",
 
   "connection_block.unblocked_label": "Unblocked Blockstate:",
   "connection_block.entrance_label": "Entrance",
