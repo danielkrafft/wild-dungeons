@@ -1,5 +1,6 @@
 package com.danielkkrafft.wilddungeons.block;
 
+import com.danielkkrafft.wilddungeons.entity.blockentity.GasBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -19,6 +20,8 @@ import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ChangeOverTimeBlock;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -29,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.function.BiConsumer;
 
-public class ToxicGasBlock extends Block {
+public class ToxicGasBlock extends Block implements EntityBlock {
     public ToxicGasBlock(Properties properties) {
         super(properties);
     }
@@ -43,7 +46,7 @@ public class ToxicGasBlock extends Block {
 
     private void Explode(Level level, BlockPos pos) {
         level.removeBlock(pos, false);
-        level.explode(null, pos.getX(), pos.getY(), pos.getZ(), 1.1f, Level.ExplosionInteraction.MOB);
+        level.explode(null,pos.getX(), pos.getY(), pos.getZ(), 1.1f, Level.ExplosionInteraction.MOB);
     }
 
     @Override
@@ -156,5 +159,11 @@ public class ToxicGasBlock extends Block {
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         if (context.isHoldingItem(Items.FLINT_AND_STEEL)) return Shapes.block();
         return Shapes.empty();
+    }
+
+
+    @Override
+    public @Nullable BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
+        return new GasBlockEntity(blockPos, blockState);
     }
 }

@@ -1,5 +1,5 @@
 ﻿{
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:builtin/entity",
   "textures": {
     "all": "wilddungeons:block/toxic_gas"
   },

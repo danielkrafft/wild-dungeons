@@ -2,6 +2,7 @@ package com.danielkkrafft.wilddungeons.registry;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.entity.blockentity.ConnectionBlockEntity;
+import com.danielkkrafft.wilddungeons.entity.blockentity.GasBlockEntity;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -14,4 +15,8 @@ public class WDBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ConnectionBlockEntity>> CONNECTION_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
             "connection_block_entity",
             () -> BlockEntityType.Builder.of(ConnectionBlockEntity::new, WDBlocks.CONNECTION_BLOCK.get()).build(null));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<GasBlockEntity>> TOXIC_GAS_ENTITY = BLOCK_ENTITY_TYPES.register(
+            "toxic_gas_entity",
+            () -> BlockEntityType.Builder.of(GasBlockEntity::new, WDBlocks.TOXIC_GAS.get()).build(null));
 }
