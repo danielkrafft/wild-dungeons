@@ -164,4 +164,8 @@ public class WDEntities {
             .sized(0.8f, 1f)
             .build(WildDungeons.rl("large_toxic_wisp").toString()));
 
+    public static final DeferredHolder<EntityType<?>, EntityType<CopperSentinel>> COPPER_SENTINEL = ENTITIES.register("copper_sentinel", () -> EntityType.Builder
+            .of(CopperSentinel::new, MobCategory.MONSTER)
+            .sized(3, 8)
+            .build(WildDungeons.rl("copper_sentinel").toString()));
 }

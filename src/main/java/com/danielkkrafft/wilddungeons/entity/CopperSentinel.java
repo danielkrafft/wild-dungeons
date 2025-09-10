@@ -11,16 +11,16 @@ import software.bernie.geckolib.animation.AnimationController;
 import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class TemplateEntity extends Monster implements GeoEntity {
+public class CopperSentinel extends Monster implements GeoEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    private static final String MOBNAME_CONTROLLER = "MOBNAME_controller";
-    private final AnimationController<TemplateEntity> mainController = new AnimationController<>(this, MOBNAME_CONTROLLER, 5, animationPredicate());
+    private static final String COPPER_SENTINEL_CONTROLLER = "copper_sentinel_controller";
+    private final AnimationController<CopperSentinel> mainController = new AnimationController<>(this, COPPER_SENTINEL_CONTROLLER, 5, animationPredicate());
 
-    public TemplateEntity(EntityType<? extends Monster> entityType, Level level) {
+    public CopperSentinel(EntityType<? extends Monster> entityType, Level level) {
         super(entityType, level);
     }
 
-    private AnimationController.AnimationStateHandler<TemplateEntity> animationPredicate() {
+    private AnimationController.AnimationStateHandler<CopperSentinel> animationPredicate() {
         return (state) -> PlayState.STOP;
     }
 
@@ -30,7 +30,7 @@ public class TemplateEntity extends Monster implements GeoEntity {
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        // animation logic here
+        controllers.add(mainController);
     }
 
 

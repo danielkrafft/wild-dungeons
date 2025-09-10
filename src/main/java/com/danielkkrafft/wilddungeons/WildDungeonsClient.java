@@ -66,6 +66,7 @@ public class WildDungeonsClient {
         event.registerEntityRenderer(WDEntities.SKELEPEDE_SEGMENT.get(), SkelepedeSegmentRenderer::new);
         event.registerEntityRenderer(WDEntities.SMALL_TOXIC_WISP.get(),  (EntityRendererProvider.Context context) -> new ToxicWispRenderer(context, false));
         event.registerEntityRenderer(WDEntities.LARGE_TOXIC_WISP.get(),  (EntityRendererProvider.Context context) -> new ToxicWispRenderer(context, true));
+        event.registerEntityRenderer(WDEntities.COPPER_SENTINEL.get(),  CopperSentinelRenderer::new);
     }
 
     @SubscribeEvent
