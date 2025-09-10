@@ -4,6 +4,7 @@ import com.danielkkrafft.wilddungeons.entity.Spiderling;
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
@@ -41,11 +42,12 @@ public class SpiderEggSacBlock extends TransparentBlock {
 
     @Override
     public @Nullable BlockState getStateForPlacement(BlockPlaceContext context) {
-        //random eggs 0-7
-        int eggs = context.getLevel().random.nextInt(8);
-        BlockState state = this.defaultBlockState().setValue(EGGS, eggs);
+        BlockState state = this.defaultBlockState();
         Direction playerDirection = context.getHorizontalDirection().getOpposite();
         state = state.setValue(FACING, playerDirection);
+        if (context.getLevel().isClientSide) return state;
+        int eggs = context.getLevel().random.nextInt(8);
+        state = state.setValue(EGGS, eggs);
         return state;
     }
 
@@ -57,16 +59,23 @@ public class SpiderEggSacBlock extends TransparentBlock {
         }
         if (state.getValue(EGGS)==0){
             level.removeBlock(pos, false);
-            int amount = 1 + level.random.nextInt(3);
-            for (int i = 0; i < amount; i++) {
-                Spiderling spiderling = WDEntities.SPIDERLING.get().create(level);
-                if (spiderling != null) {
-                    spiderling.moveTo(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, level.random.nextFloat() * 360F, 0);
-                    level.addFreshEntity(spiderling);
-                }
-            }
+            //play sound
+            level.playSound(entity, pos, SoundEvents.SLIME_SQUISH, net.minecraft.sounds.SoundSource.BLOCKS, 1.0F, 1.0F);
+            SpawnSpiders(level, pos);
         }
         super.entityInside(state, level, pos, entity);
+    }
+
+    private void SpawnSpiders(Level level, BlockPos pos) {
+        int amount = 1 + level.random.nextInt(3);
+        for (int i = 0; i < amount; i++) {
+            Spiderling spiderling = WDEntities.SPIDERLING.get().create(level);
+            if (spiderling != null) {
+                BlockPos spawnPos = pos.offset(level.random.nextInt(3)-1, 0, level.random.nextInt(3)-1);
+                spiderling.moveTo(spawnPos, level.random.nextFloat() * 360F, 0);
+                level.addFreshEntity(spiderling);
+            }
+        }
     }
 
     protected @NotNull BlockState rotate(BlockState state, Rotation rotation) {
@@ -106,14 +115,7 @@ public class SpiderEggSacBlock extends TransparentBlock {
     @Override
     public boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
         if (willHarvest) {
-            int count = state.getValue(EGGS);
-            for (int i = 0; i < count; i++) {
-                Spiderling spiderling = WDEntities.SPIDERLING.get().create(level);
-                if (spiderling != null) {
-                    spiderling.moveTo(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, level.random.nextFloat() * 360F, 0);
-                    level.addFreshEntity(spiderling);
-                }
-            }
+            SpawnSpiders(level, pos);
         }
         return super.onDestroyedByPlayer(state, level, pos, player, willHarvest, fluid);
     }

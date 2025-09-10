@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "wilddungeons.refmap.json",
   "mixins": [
+    "SpiderEggMixin"
   ],
   "client": [
   ],

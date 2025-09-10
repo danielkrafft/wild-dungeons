@@ -1,5 +1,6 @@
 package com.danielkkrafft.wilddungeons.entity.boss;
 
+import com.danielkkrafft.wilddungeons.registry.WDBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -23,6 +24,7 @@ import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import static com.danielkkrafft.wilddungeons.block.SpiderEggSacBlock.EGGS;
 import static net.minecraft.world.effect.MobEffects.POISON;
 
 public class SkelepedeSegment extends Monster implements GeoEntity {
@@ -57,7 +59,7 @@ public class SkelepedeSegment extends Monster implements GeoEntity {
         return cache;
     }
 
-    // Set the segment's position and rotation to follow the main entity
+    // Set the segment' position and rotation to follow the main entity
     public void setSegmentPosition(Vec3 pos, float yRot) {
         this.moveTo(pos.x, pos.y, pos.z);
         this.setYRot(yRot);
@@ -90,5 +92,22 @@ public class SkelepedeSegment extends Monster implements GeoEntity {
     public boolean addEffect(MobEffectInstance effectInstance, @Nullable Entity entity) {
         if (effectInstance.is(POISON)) return false;
         return super.addEffect(effectInstance, entity);
+    }
+
+    @Override
+    public void tick() {
+        // Random chance to place an egg block
+        if (!level().isClientSide && level().random.nextInt(1000) == 0) { // 1/1000 chance per tick
+            BlockPos posBelow = blockPosition();
+            BlockState eggBlock = WDBlocks.SPIDER_EGG.get().defaultBlockState();
+            int eggs = level().random.nextInt(8);
+            eggBlock = eggBlock.setValue(EGGS, eggs);
+
+            // Check if the block below is replaceable
+            if (level().isEmptyBlock(posBelow) && eggBlock.canSurvive(level(), posBelow)) {
+                level().setBlock(posBelow, eggBlock, 3);
+            }
+        }
+        super.tick();
     }
 }
