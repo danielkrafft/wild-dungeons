@@ -13,6 +13,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -43,6 +44,8 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.*;
 
+import static net.minecraft.world.effect.MobEffects.POISON;
+
 public class SkelepedeMain extends Monster implements GeoEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private static final String SKELEPEDE_HEAD_CONTROLLER = "skelepede_head_controller";
@@ -53,7 +56,6 @@ public class SkelepedeMain extends Monster implements GeoEntity {
     private final ServerBossEvent bossEvent = new ServerBossEvent(getDisplayName(), BossEvent.BossBarColor.WHITE, BossEvent.BossBarOverlay.NOTCHED_20);
 
     private ArrayList<SkelepedeSegment> segments = new ArrayList<>();
-    private ArrayList<UUID> segmentUUIDs = new ArrayList<>();
 
     // Number of segments and spacing between them
     private static final int NUM_SEGMENTS = 25;
@@ -106,8 +108,10 @@ public class SkelepedeMain extends Monster implements GeoEntity {
     public void tick() {
         super.tick();
         if (!hasSetupSegments){
-            if (!level().isClientSide() && shouldScanForSegments){
+            bossEvent.setVisible(false);
+            if (shouldScanForSegments){
                 ScanForSegments();
+                bossEvent.setVisible(true);
             }
             return;
         }
@@ -133,7 +137,6 @@ public class SkelepedeMain extends Monster implements GeoEntity {
 
         ProcessPossibleSplits();
 
-        segmentUUIDs.removeAll(segmentUUIDs.stream().filter(uuid -> segments.stream().noneMatch(segment -> segment.getUUID().equals(uuid))).toList());
 
         float totalHealth = 0;
         float totalMaxHealth = 0;
@@ -151,6 +154,7 @@ public class SkelepedeMain extends Monster implements GeoEntity {
                 totalMaxHealth += segment.getMaxHealth();
             }
         }
+
         if (level().isClientSide){
             if (this.random.nextFloat() < 0.1f) {
                 Vec3 offset = new Vec3((this.random.nextFloat() - 0.5) * this.getBbWidth(), 0, (this.random.nextFloat() - 0.5) * this.getBbWidth());
@@ -158,7 +162,8 @@ public class SkelepedeMain extends Monster implements GeoEntity {
             }
         } else {
             // Update boss health bar
-            this.setHealth(totalHealth);
+            if (!segments.isEmpty())
+                this.setHealth(totalHealth);
             bossEvent.setProgress(totalHealth / totalMaxHealth);
         }
     }
@@ -201,14 +206,11 @@ public class SkelepedeMain extends Monster implements GeoEntity {
         newSegments.sort(Comparator.comparingDouble(segment -> segment.position().distanceTo(this.position())));
         // Add segments to the list
         this.segments.addAll(newSegments);
-        this.segmentUUIDs.addAll(newSegments.stream().map(Entity::getUUID).toList());
         this.hasSetupSegments = true;
     }
 
     @Override
     public @Nullable SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
-        bossEvent.setVisible(true);
-
         // Setup segments if not already done
         if (!hasSetupSegments) {
             // Initialize segments
@@ -230,7 +232,7 @@ public class SkelepedeMain extends Monster implements GeoEntity {
             }
             this.hasSetupSegments = true;
         }
-
+        bossEvent.setVisible(true);
         return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
     }
     private boolean shouldScanForSegments = false;
@@ -245,12 +247,6 @@ public class SkelepedeMain extends Monster implements GeoEntity {
         shouldScanForSegments = true;
         //load segments
         segmentCount = compound.getInt("SegmentCount");
-        segmentUUIDs.clear();
-        for (int i = 0; i < segmentCount; i++) {
-            if (compound.hasUUID("SegmentUUID_" + i)) {
-                segmentUUIDs.add(compound.getUUID("SegmentUUID_" + i));
-            }
-        }
     }
 
     public void ScanForSegments(){//when this happens and there are multiple skelepedes, they will all scan for segments and may pick up segments from other skelepedes.
@@ -341,5 +337,11 @@ public class SkelepedeMain extends Monster implements GeoEntity {
     @Override
     public boolean canDrownInFluidType(FluidType type) {
         return false;
+    }
+
+    @Override
+    public boolean addEffect(MobEffectInstance effectInstance, @Nullable Entity entity) {
+        if (effectInstance.is(POISON)) return false;
+        return super.addEffect(effectInstance, entity);
     }
 }
