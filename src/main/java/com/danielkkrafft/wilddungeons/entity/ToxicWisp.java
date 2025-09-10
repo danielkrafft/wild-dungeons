@@ -2,6 +2,7 @@ package com.danielkkrafft.wilddungeons.entity;
 
 import com.danielkkrafft.wilddungeons.registry.WDBlocks;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -31,6 +32,10 @@ public class ToxicWisp extends EmeraldWisp{
             this.discard();
             //play sound
             this.playSound(SoundEvents.GENERIC_EXPLODE.value(), 1.0F, 1.0F);
+            //particles
+            serverLevel.sendParticles(ParticleTypes.ASH, this.getX(), this.getY(), this.getZ(), 20, 0.5, 0.5, 0.5, 0.1);
+            serverLevel.sendParticles(ParticleTypes.POOF, this.getX(), this.getY(), this.getZ(), 10, 0.5, 0.5, 0.5, 0.1);
+            serverLevel.sendParticles(ParticleTypes.SMOKE, this.getX(), this.getY(), this.getZ(), 10, 0.5, 0.5, 0.5, 0.1);
             //spawn toxic gas blocks
             int amount = 3 + this.random.nextInt(5);
             for (int i = 0; i < amount; i++) {

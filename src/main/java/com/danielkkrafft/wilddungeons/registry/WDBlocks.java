@@ -65,6 +65,7 @@ public class WDBlocks {
     public static final DeferredBlock<Block> WD_LOCKABLE = registerWithItem("wd_lockable", () -> new LockableBlock(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).requiresCorrectToolForDrops().strength(-1.0F, 3600000.0F).noOcclusion().noLootTable()));
 
     public static final DeferredBlock<Block> EMERALD_PILE = registerWithItem("emerald_pile", () -> new EmeraldPileBlock(BlockBehaviour.Properties.of().mapColor(MapColor.EMERALD).strength(1.5F, 6.0F).noOcclusion().instabreak().sound(SoundType.AMETHYST)));
+    public static final DeferredBlock<Block> SPIDER_EGG = registerWithItem("spider_egg", () -> new SpiderEggSacBlock(BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_ORANGE).noCollission().strength(1.5F, 6.0F).noOcclusion().instabreak().sound(SoundType.COBWEB)));
 
     public static final DeferredBlock<Block> IRON_GRATE = registerWithItem("iron_grate", () -> new WaterloggedTransparentBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.COPPER_GRATE).mapColor(MapColor.TERRACOTTA_LIGHT_GRAY)));
 

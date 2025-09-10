@@ -1,0 +1,124 @@
+{
+  "variants": {
+    "egg=0,facing=south": {
+      "model": "wilddungeons:block/spider_egg_0"
+    },
+    "egg=1,facing=south": {
+      "model": "wilddungeons:block/spider_egg_1"
+    },
+    "egg=2,facing=south": {
+      "model": "wilddungeons:block/spider_egg_2"
+    },
+    "egg=3,facing=south": {
+      "model": "wilddungeons:block/spider_egg_3"
+    },
+    "egg=4,facing=south": {
+      "model": "wilddungeons:block/spider_egg_4"
+    },
+    "egg=5,facing=south": {
+      "model": "wilddungeons:block/spider_egg_5"
+    },
+    "egg=6,facing=south": {
+      "model": "wilddungeons:block/spider_egg_6"
+    },
+    "egg=7,facing=south": {
+      "model": "wilddungeons:block/spider_egg_7"
+    },
+    "egg=0,facing=west": {
+      "model": "wilddungeons:block/spider_egg_0",
+      "y": 90
+    },
+    "egg=1,facing=west": {
+      "model": "wilddungeons:block/spider_egg_1",
+      "y": 90
+    },
+    "egg=2,facing=west": {
+      "model": "wilddungeons:block/spider_egg_2",
+      "y": 90
+    },
+    "egg=3,facing=west": {
+      "model": "wilddungeons:block/spider_egg_3",
+      "y": 90
+    },
+    "egg=4,facing=west": {
+      "model": "wilddungeons:block/spider_egg_4",
+      "y": 90
+    },
+    "egg=5,facing=west": {
+      "model": "wilddungeons:block/spider_egg_5",
+      "y": 90
+    },
+    "egg=6,facing=west": {
+      "model": "wilddungeons:block/spider_egg_6",
+      "y": 90
+    },
+    "egg=7,facing=west": {
+      "model": "wilddungeons:block/spider_egg_7",
+      "y": 90
+    },
+    "egg=0,facing=north": {
+      "model": "wilddungeons:block/spider_egg_0",
+      "y": 180
+    },
+    "egg=1,facing=north": {
+      "model": "wilddungeons:block/spider_egg_1",
+      "y": 180
+    },
+    "egg=2,facing=north": {
+      "model": "wilddungeons:block/spider_egg_2",
+      "y": 180
+    },
+    "egg=3,facing=north": {
+      "model": "wilddungeons:block/spider_egg_3",
+      "y": 180
+    },
+    "egg=4,facing=north": {
+      "model": "wilddungeons:block/spider_egg_4",
+      "y": 180
+    },
+    "egg=5,facing=north": {
+      "model": "wilddungeons:block/spider_egg_5",
+      "y": 180
+    },
+    "egg=6,facing=north": {
+      "model": "wilddungeons:block/spider_egg_6",
+      "y": 180
+    },
+    "egg=7,facing=north": {
+      "model": "wilddungeons:block/spider_egg_7",
+      "y": 180
+    },
+    "egg=0,facing=east": {
+      "model": "wilddungeons:block/spider_egg_0",
+      "y": 270
+    },
+    "egg=1,facing=east": {
+      "model": "wilddungeons:block/spider_egg_1",
+      "y": 270
+    },
+    "egg=2,facing=east": {
+      "model": "wilddungeons:block/spider_egg_2",
+      "y": 270
+    },
+    "egg=3,facing=east": {
+      "model": "wilddungeons:block/spider_egg_3",
+      "y": 270
+    },
+    "egg=4,facing=east": {
+      "model": "wilddungeons:block/spider_egg_4",
+      "y": 270
+    },
+    "egg=5,facing=east": {
+      "model": "wilddungeons:block/spider_egg_5",
+      "y": 270
+    },
+    "egg=6,facing=east": {
+      "model": "wilddungeons:block/spider_egg_6",
+      "y": 270
+    },
+    "egg=7,facing=east": {
+      "model": "wilddungeons:block/spider_egg_7",
+      "y": 270
+    }
+  }
+}

@@ -33,6 +33,7 @@ public class WDCreativeTabs {
 
                 output.accept(ROTTEN_MOSS.get());
                 output.accept(TOXIC_GAS.get());
+                output.accept(SPIDER_EGG.get());
                 output.accept(HEAVY_RUNE.get());
 
                 output.accept(EssenceBottleItem.setEssenceType(new ItemStack(ESSENCE_BOTTLE.get()), EssenceOrb.Type.NETHER));

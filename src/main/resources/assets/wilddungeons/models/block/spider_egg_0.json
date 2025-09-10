@@ -1,0 +1,59 @@
+{
+	"format_version": "1.21.6",
+	"credit": "Made with Blockbench",
+	"texture_size": [32, 32],
+	"textures": {
+		"0": "wilddungeons:block/spider_egg",
+		"particle": "wilddungeons:block/spider_egg"
+	},
+	"elements": [
+		{
+			"from": [8, 0.05, 5],
+			"to": [10, 2.05, 7],
+			"rotation": {"angle": 0, "axis": "y", "origin": [9, 1.05, 6]},
+			"faces": {
+				"north": {"uv": [3, 15, 4, 16], "texture": "#0"},
+				"east": {"uv": [3, 15, 4, 16], "texture": "#0"},
+				"south": {"uv": [3, 15, 4, 16], "texture": "#0"},
+				"west": {"uv": [3, 15, 4, 16], "texture": "#0"},
+				"up": {"uv": [4, 16, 3, 15], "texture": "#0"},
+				"down": {"uv": [4, 15, 3, 16], "texture": "#0"}
+			}
+		},
+		{
+			"from": [10, 0.05, 9],
+			"to": [12, 2.05, 11],
+			"rotation": {"angle": 0, "axis": "y", "origin": [11, 1.05, 10]},
+			"faces": {
+				"north": {"uv": [3, 15, 4, 16], "texture": "#0"},
+				"east": {"uv": [3, 15, 4, 16], "texture": "#0"},
+				"south": {"uv": [3, 15, 4, 16], "texture": "#0"},
+				"west": {"uv": [3, 15, 4, 16], "texture": "#0"},
+				"up": {"uv": [4, 16, 3, 15], "texture": "#0"},
+				"down": {"uv": [4, 15, 3, 16], "texture": "#0"}
+			}
+		},
+		{
+			"from": [4, 0.05, 7],
+			"to": [6, 2.05, 9],
+			"rotation": {"angle": 0, "axis": "y", "origin": [5, 1.05, 8]},
+			"faces": {
+				"north": {"uv": [3, 15, 4, 16], "texture": "#0"},
+				"east": {"uv": [3, 15, 4, 16], "texture": "#0"},
+				"south": {"uv": [3, 15, 4, 16], "texture": "#0"},
+				"west": {"uv": [3, 15, 4, 16], "texture": "#0"},
+				"up": {"uv": [4, 16, 3, 15], "texture": "#0"},
+				"down": {"uv": [4, 15, 3, 16], "texture": "#0"}
+			}
+		}
+	],
+	"groups": [
+		{
+			"name": "tiny",
+			"origin": [8.33333, 1.05, 8],
+			"color": 0,
+			"children": [0, 1, 2]
+		}
+	],
+  "render_type": "minecraft:cutout"
+}

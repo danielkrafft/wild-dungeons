@@ -1,0 +1,33 @@
+{
+	"format_version": "1.21.6",
+	"credit": "Made with Blockbench",
+	"texture_size": [32, 32],
+	"textures": {
+		"0": "wilddungeons:block/spider_egg",
+		"particle": "wilddungeons:block/spider_egg"
+	},
+	"elements": [
+		{
+			"from": [5, 0, 5],
+			"to": [11, 8, 11],
+			"rotation": {"angle": 0, "axis": "y", "origin": [6, 0, 6]},
+			"faces": {
+				"north": {"uv": [0, 12, 3, 16], "texture": "#0"},
+				"east": {"uv": [0, 12, 3, 16], "texture": "#0"},
+				"south": {"uv": [0, 12, 3, 16], "texture": "#0"},
+				"west": {"uv": [0, 12, 3, 16], "texture": "#0"},
+				"up": {"uv": [6, 15, 3, 12], "texture": "#0"},
+				"down": {"uv": [9, 12, 6, 15], "texture": "#0"}
+			}
+		}
+	],
+	"groups": [
+		{
+			"name": "medium",
+			"origin": [5, 0, 5],
+			"color": 0,
+			"children": [0]
+		}
+	],
+  "render_type": "minecraft:cutout"
+}

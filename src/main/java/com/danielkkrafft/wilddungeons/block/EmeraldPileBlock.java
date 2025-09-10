@@ -189,4 +189,11 @@ public class EmeraldPileBlock extends Block {
         int model = getModel(count);
         return WDBlocks.EMERALD_PILE.get().defaultBlockState().setValue(EMERALD_COUNT,count).setValue(MODEL,model);
     }
+
+    @Override
+    protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
+        BlockPos blockpos = pos.below();
+        BlockState blockstate = level.getBlockState(blockpos);
+        return blockstate.isFaceSturdy(level, blockpos, Direction.UP);
+    }
 }
