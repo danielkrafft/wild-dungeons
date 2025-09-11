@@ -163,7 +163,7 @@ public class CopperSentinel extends Monster implements GeoEntity {
         return cache;
     }
 
-    public class SummonGoal extends Goal {//todo time this to the animation
+    public class SummonGoal extends Goal {
 
         public SummonGoal(@NotNull Mob mob) {
             this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.JUMP, Goal.Flag.LOOK, Goal.Flag.TARGET));

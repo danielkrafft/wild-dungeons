@@ -1,6 +1,8 @@
 package com.danielkkrafft.wilddungeons.block;
 
 import com.danielkkrafft.wilddungeons.entity.blockentity.GasBlockEntity;
+import com.danielkkrafft.wilddungeons.registry.WDBlockEntities;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -18,10 +20,11 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.ChangeOverTimeBlock;
-import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -32,9 +35,15 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.function.BiConsumer;
 
-public class ToxicGasBlock extends Block implements EntityBlock {
+public class ToxicGasBlock extends BaseEntityBlock {
     public ToxicGasBlock(Properties properties) {
         super(properties);
+    }
+    public static final MapCodec<ToxicGasBlock> CODEC = simpleCodec(ToxicGasBlock::new);
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
     }
 
     private static final int TICKS_PER_SPREAD = 20; // Spread every 20 ticks (1 second)
@@ -115,9 +124,8 @@ public class ToxicGasBlock extends Block implements EntityBlock {
         BlockPos above = pos.above();
         BlockState aboveState = level.getBlockState(above);
         if (aboveState.isAir()) {
-            level.setBlockAndUpdate(above, this.defaultBlockState());
-            //remove the current block
             level.removeBlock(pos, false);
+            level.setBlockAndUpdate(above, this.defaultBlockState());
         } else {
             if (pos.getY()>= level.getMaxBuildHeight()-1){
                 //if we are at the top of the world, just remove the block
@@ -165,5 +173,10 @@ public class ToxicGasBlock extends Block implements EntityBlock {
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
         return new GasBlockEntity(blockPos, blockState);
+    }
+
+    @Override
+    public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
+        return createTickerHelper(blockEntityType, WDBlockEntities.TOXIC_GAS_ENTITY.get(), GasBlockEntity::tick);
     }
 }

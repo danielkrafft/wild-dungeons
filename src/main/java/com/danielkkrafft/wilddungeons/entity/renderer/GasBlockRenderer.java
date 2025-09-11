@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -28,6 +29,13 @@ public class GasBlockRenderer implements BlockEntityRenderer<GasBlockEntity> {
     public void render(GasBlockEntity gasBlockEntity, float partialTicks, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
         poseStack.pushPose();
         poseStack.translate(0.5F, 0, 0.5F);
+
+        BlockState aboveState = gasBlockEntity.getLevel().getBlockState(gasBlockEntity.getBlockPos().above());
+        if (aboveState.isAir()) {
+            int tickAge = gasBlockEntity.getTickAge();
+            float yOffset = tickAge * 0.04f;
+            poseStack.translate(0.0f, yOffset, 0.0f);
+        }
 
         float time = (float)(System.currentTimeMillis() % 10000L) / 1000.0f;
         int layers = 8;
@@ -57,7 +65,7 @@ public class GasBlockRenderer implements BlockEntityRenderer<GasBlockEntity> {
             if (i % 2 == 0) {
                 color = new float[]{0.7f, 1.0f, 0.4f, 0.3f}; // yellowish
             } else {
-                color = new float[]{0.3f, 1.0f, 0.5f, 0.3f}; // greenish
+                color = new float[]{0.3f, 0.5f, 0.5f, 0.3f}; // greenish
             }
 
             VertexConsumer vertexconsumer = bufferSource.getBuffer(RENDER_TYPE);
