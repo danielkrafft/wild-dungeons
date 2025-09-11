@@ -39,7 +39,7 @@ public class GasBlockRenderer implements BlockEntityRenderer<GasBlockEntity> {
             poseStack.translate(0.0f, yOffset, 0.0f);
         }
 
-        float time = (float)(System.currentTimeMillis() % 10000L) / 1000.0f;
+        float time = ((System.currentTimeMillis() % 10000L) / 1000.0f) + partialTicks * 0.05f;
         int layers = 8;
         for (int i = 0; i < layers; i++) {
             poseStack.pushPose();
@@ -48,12 +48,11 @@ public class GasBlockRenderer implements BlockEntityRenderer<GasBlockEntity> {
             // random slight translation for each layer
             float offsetX = (float)(Math.sin(time + i * 1.5) * .2);
             float offsetY = (float)(Math.cos(time + i * 1.5) * 0.2);
-            float offsetZ = (float)(Math.sin(time + i * 1.5 + Math.PI / 2) * 0.2);
-            poseStack.translate(offsetX, offsetY, offsetZ);
+            poseStack.translate(offsetX, offsetY, 0);
 
 
             // Z offset to prevent z-fighting
-            float zOffset = 0.001f * i;
+            float zOffset = 0.01f * i;
             poseStack.translate(0.0f, 0.0f, zOffset);
 
             poseStack.scale(2, 2, 2);
@@ -67,7 +66,7 @@ public class GasBlockRenderer implements BlockEntityRenderer<GasBlockEntity> {
             if (i % 2 == 0) {
                 color = new float[]{0.7f, 1.0f, 0.4f, 0.3f}; // yellowish
             } else {
-                color = new float[]{0.3f, 0.5f, 0.5f, 0.3f}; // greenish
+                color = new float[]{0.3f, 0.7f, 0.5f, 0.3f}; // greenish
             }
 
             VertexConsumer vertexconsumer = bufferSource.getBuffer(RENDER_TYPE);
