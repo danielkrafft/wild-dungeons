@@ -172,7 +172,9 @@ public class ToxicGasBlock extends BaseEntityBlock {
 
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
-        return new GasBlockEntity(blockPos, blockState);
+        GasBlockEntity gasBlockEntity = new GasBlockEntity(blockPos, blockState);
+        gasBlockEntity.setTickAge(0);
+        return gasBlockEntity;
     }
 
     @Override

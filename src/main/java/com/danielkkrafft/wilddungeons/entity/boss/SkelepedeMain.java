@@ -293,7 +293,7 @@ public class SkelepedeMain extends Monster implements GeoEntity {
         ArrayList<UUID> segmentUUIDs = new ArrayList<>();
         for (SkelepedeSegment segment : segments) {
             if (segment != null && !segment.isRemoved() && segment.isAlive()) {
-                segmentUUIDs.add(segment.getUUID());
+                segmentUUIDs.add(segment.getUUID());// uuids aren't retained on world reload and this should be fixed by adding some kind of persistent id to the segments and main entity and then linking them here
             }
         }
 

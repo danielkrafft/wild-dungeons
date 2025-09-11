@@ -2,6 +2,7 @@ package com.danielkkrafft.wilddungeons.entity.renderer;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.entity.blockentity.GasBlockEntity;
+import com.danielkkrafft.wilddungeons.registry.WDBlocks;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -31,9 +32,10 @@ public class GasBlockRenderer implements BlockEntityRenderer<GasBlockEntity> {
         poseStack.translate(0.5F, 0, 0.5F);
 
         BlockState aboveState = gasBlockEntity.getLevel().getBlockState(gasBlockEntity.getBlockPos().above());
-        if (aboveState.isAir()) {
+        if (aboveState.isAir() || aboveState.is(WDBlocks.TOXIC_GAS.get())) {
             int tickAge = gasBlockEntity.getTickAge();
-            float yOffset = tickAge * 0.04f;
+            tickAge = Math.min(tickAge, 20);
+            float yOffset = tickAge * 0.05f;
             poseStack.translate(0.0f, yOffset, 0.0f);
         }
 
