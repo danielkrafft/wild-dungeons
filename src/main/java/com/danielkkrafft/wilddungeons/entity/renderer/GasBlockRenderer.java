@@ -3,6 +3,7 @@ package com.danielkkrafft.wilddungeons.entity.renderer;
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.entity.blockentity.GasBlockEntity;
 import com.danielkkrafft.wilddungeons.registry.WDBlocks;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -29,7 +30,7 @@ public class GasBlockRenderer implements BlockEntityRenderer<GasBlockEntity> {
     public void render(GasBlockEntity gasBlockEntity, float partialTicks, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
         poseStack.pushPose();
         poseStack.translate(0.5F, 0, 0.5F);
-
+        RenderSystem.enableBlend();
         BlockState aboveState = gasBlockEntity.getLevel().getBlockState(gasBlockEntity.getBlockPos().above());
         if (aboveState.isAir() || aboveState.is(WDBlocks.TOXIC_GAS.get())) {
             int tickAge = gasBlockEntity.getTickAge();
@@ -39,13 +40,13 @@ public class GasBlockRenderer implements BlockEntityRenderer<GasBlockEntity> {
         }
 
         float time = ((System.currentTimeMillis() % 10000L) / 1000.0f) + partialTicks * 0.05f;
-        int layers = 3;
+        int layers = 4;
         for (int i = 0; i < layers; i++) {
             poseStack.pushPose();
             // Make layer face the camera
             poseStack.mulPose(entityRenderDispatcher.cameraOrientation());
             // random slight translation for each layer
-            float offsetX = (float)(Math.sin(time + i * 1.5) * .1);
+            float offsetX = (float)(Math.sin(time + i * 1.5) * 0.1);
             float offsetY = (float)(Math.cos(time + i * 1.5) * 0.1);
             poseStack.translate(offsetX, offsetY, 0);
 
@@ -54,7 +55,8 @@ public class GasBlockRenderer implements BlockEntityRenderer<GasBlockEntity> {
             float zOffset = 0.1f * i;
             poseStack.translate(0.0f, 0.0f, zOffset);
 
-            poseStack.scale(2, 2, 2);
+            float scale = 2.0f + (i * 0.2f) + (float)(Math.sin(time + i) * 0.1f);
+            poseStack.scale(scale, scale, scale);
 
             // Rotation
 //            float angle = time * 40f + i * 90f;
@@ -79,6 +81,7 @@ public class GasBlockRenderer implements BlockEntityRenderer<GasBlockEntity> {
         }
 
         poseStack.popPose();
+        RenderSystem.disableBlend();
     }
 
     @Override
