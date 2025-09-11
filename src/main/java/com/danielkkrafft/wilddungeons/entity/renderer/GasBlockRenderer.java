@@ -19,7 +19,6 @@ import net.minecraft.world.phys.Vec3;
 
 public class GasBlockRenderer implements BlockEntityRenderer<GasBlockEntity> {
     private static final ResourceLocation GAS_TEXTURE = WildDungeons.rl("textures/entity/gas.png");
-    private static final RenderType RENDER_TYPE = RenderType.entityTranslucent(GAS_TEXTURE);
     private EntityRenderDispatcher entityRenderDispatcher;
 
     public GasBlockRenderer(BlockEntityRendererProvider.Context context) {
@@ -69,7 +68,7 @@ public class GasBlockRenderer implements BlockEntityRenderer<GasBlockEntity> {
                 color = new float[]{0.3f, 0.7f, 0.5f, 0.3f}; // greenish
             }
 
-            VertexConsumer vertexconsumer = bufferSource.getBuffer(RENDER_TYPE);
+            VertexConsumer vertexconsumer = bufferSource.getBuffer(RenderType.entityTranslucentCull(GAS_TEXTURE));
             PoseStack.Pose posestack$pose = poseStack.last();
             vertexColored(vertexconsumer, posestack$pose, -0.5F, -0.25F, 0.0f, 1.0f, packedLight, color);
             vertexColored(vertexconsumer, posestack$pose, 0.5F, -0.25F, 1.0f, 1.0f, packedLight, color);
