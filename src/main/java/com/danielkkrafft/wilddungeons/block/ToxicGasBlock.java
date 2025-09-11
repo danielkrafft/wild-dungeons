@@ -7,6 +7,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
@@ -55,7 +57,33 @@ public class ToxicGasBlock extends BaseEntityBlock {
 
     private void Explode(Level level, BlockPos pos) {
         level.removeBlock(pos, false);
-        level.explode(null,pos.getX(), pos.getY(), pos.getZ(), 1.1f, Level.ExplosionInteraction.MOB);
+        level.addParticle(ParticleTypes.EXPLOSION, pos.getX()+0.5, pos.getY()+0.5, pos.getZ()+0.5, 1.0, 0.0, 0.0);
+        if (level instanceof ServerLevel serverLevel) {
+            //chance to play a sound
+            boolean playSound = serverLevel.random.nextFloat() < 0.1f;
+            if (playSound)
+                serverLevel.playSound(null, pos, SoundEvents.GENERIC_EXPLODE.value(), SoundSource.NEUTRAL);
+        }
+        //trigger this in nearby toxic gas blocks too
+        ArrayList<BlockPos> surrounding = GetSurroundingBlocks(pos);
+        for (BlockPos checkPos : surrounding) {
+            BlockState checkState = level.getBlockState(checkPos);
+            if (checkState.is(this)) {
+                ToxicGasBlock gasBlock = (ToxicGasBlock) checkState.getBlock();
+                gasBlock.Explode(level, checkPos);
+            }
+        }
+    }
+
+    private ArrayList<BlockPos> GetSurroundingBlocks(BlockPos pos) {
+        ArrayList<BlockPos> surrounding = new ArrayList<>();
+        surrounding.add(pos.north());
+        surrounding.add(pos.south());
+        surrounding.add(pos.east());
+        surrounding.add(pos.west());
+        surrounding.add(pos.above());
+        surrounding.add(pos.below());
+        return surrounding;
     }
 
     @Override
@@ -103,13 +131,7 @@ public class ToxicGasBlock extends BaseEntityBlock {
 
     private void CheckForChangeOverTimeBlocks(ServerLevel level, BlockPos pos, RandomSource random) {
         //check the surrounding blocks for ChangeOverTimeBlocks, if any are found, 10% chance to advance that blocks age
-        ArrayList<BlockPos> surrounding = new ArrayList<>();
-        surrounding.add(pos.north());
-        surrounding.add(pos.south());
-        surrounding.add(pos.east());
-        surrounding.add(pos.west());
-        surrounding.add(pos.above());
-        surrounding.add(pos.below());
+        ArrayList<BlockPos> surrounding = GetSurroundingBlocks(pos);
         for (BlockPos checkPos : surrounding) {
             BlockState checkState = level.getBlockState(checkPos);
             if (checkState.getBlock() instanceof ChangeOverTimeBlock changeBlock) {

@@ -19,7 +19,7 @@ import net.minecraft.world.phys.Vec3;
 
 public class GasBlockRenderer implements BlockEntityRenderer<GasBlockEntity> {
     private static final ResourceLocation GAS_TEXTURE = WildDungeons.rl("textures/entity/gas.png");
-    private static final RenderType RENDER_TYPE = RenderType.itemEntityTranslucentCull(GAS_TEXTURE);
+    private static final RenderType RENDER_TYPE = RenderType.entityTranslucent(GAS_TEXTURE);
     private EntityRenderDispatcher entityRenderDispatcher;
 
     public GasBlockRenderer(BlockEntityRendererProvider.Context context) {
@@ -106,6 +106,7 @@ public class GasBlockRenderer implements BlockEntityRenderer<GasBlockEntity> {
     private static void vertexColored(VertexConsumer consumer, PoseStack.Pose pose, float x, float y, float u, float v, int packedLight, float[] color) {
         consumer.addVertex(pose, x, y, 0.0F)
                 .setColor(color[0], color[1], color[2], color[3])
+                .setLight(packedLight)
                 .setUv(u, v)
                 .setOverlay(OverlayTexture.NO_OVERLAY)
                 .setLight(0xF000F0)
