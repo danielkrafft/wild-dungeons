@@ -40,19 +40,19 @@ public class GasBlockRenderer implements BlockEntityRenderer<GasBlockEntity> {
         }
 
         float time = ((System.currentTimeMillis() % 10000L) / 1000.0f) + partialTicks * 0.05f;
-        int layers = 8;
+        int layers = 3;
         for (int i = 0; i < layers; i++) {
             poseStack.pushPose();
             // Make layer face the camera
             poseStack.mulPose(entityRenderDispatcher.cameraOrientation());
             // random slight translation for each layer
-            float offsetX = (float)(Math.sin(time + i * 1.5) * .2);
-            float offsetY = (float)(Math.cos(time + i * 1.5) * 0.2);
+            float offsetX = (float)(Math.sin(time + i * 1.5) * .1);
+            float offsetY = (float)(Math.cos(time + i * 1.5) * 0.1);
             poseStack.translate(offsetX, offsetY, 0);
 
 
             // Z offset to prevent z-fighting
-            float zOffset = 0.01f * i;
+            float zOffset = 0.1f * i;
             poseStack.translate(0.0f, 0.0f, zOffset);
 
             poseStack.scale(2, 2, 2);
