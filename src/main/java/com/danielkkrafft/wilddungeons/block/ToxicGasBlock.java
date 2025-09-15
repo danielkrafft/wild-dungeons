@@ -55,7 +55,7 @@ public class ToxicGasBlock extends BaseEntityBlock {
         Explode(level, pos);
     }
 
-    private void Explode(Level level, BlockPos pos) {
+    public void Explode(Level level, BlockPos pos) {
         level.removeBlock(pos, false);
         level.addParticle(ParticleTypes.EXPLOSION, pos.getX()+0.5, pos.getY()+0.5, pos.getZ()+0.5, 1.0, 0.0, 0.0);
         if (level instanceof ServerLevel serverLevel) {

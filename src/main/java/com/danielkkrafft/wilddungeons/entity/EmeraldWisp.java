@@ -58,7 +58,7 @@ public class EmeraldWisp extends PathfinderMob implements TraceableEntity {
         this.goalSelector.addGoal(9, new LookAtPlayerGoal(this, Player.class, 3.0F, 1.0F));
         this.goalSelector.addGoal(10, new LookAtPlayerGoal(this, Mob.class, 8.0F));
         this.goalSelector.addGoal(11, new RandomLookAroundGoal(this));
-        this.targetSelector.addGoal(2, new HurtByTargetGoal(this));
+        this.targetSelector.addGoal(2, new HurtByTargetGoal(this, CopperSentinel.class));
         registerSpecificGoals();
     }
 

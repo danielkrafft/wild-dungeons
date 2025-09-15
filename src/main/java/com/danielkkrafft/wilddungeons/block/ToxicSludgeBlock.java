@@ -21,15 +21,15 @@ public class ToxicSludgeBlock extends LiquidBlock {
         super(fluid, properties);
     }
 
-    private static final int TICKS_BETWEEN_WISP_SPAWNS = 200;
+    private static final int TICKS_BETWEEN_WISP_SPAWNS = 400;
     private static final int TICKS_RANDOM_OFFSET = 200;
-    private static final float SPAWN_CHANCE = 0.5f; // 50% chance to spawn a wisp when a player is nearby
+    private static final float SPAWN_CHANCE = 0.05f;
 
     @Override
     protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean isMoving) {
         super.onPlace(state, level, pos, oldState, isMoving);
         if (!level.isClientSide()) {
-            level.scheduleTick(pos, this, TICKS_BETWEEN_WISP_SPAWNS + level.random.nextInt(TICKS_RANDOM_OFFSET));
+            level.scheduleTick(pos, this,  level.random.nextInt(TICKS_BETWEEN_WISP_SPAWNS) + level.random.nextInt(TICKS_RANDOM_OFFSET));
         }
     }
 
