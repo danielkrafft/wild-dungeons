@@ -2,7 +2,6 @@ package com.danielkkrafft.wilddungeons.entity.boss;
 
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerBossEvent;
@@ -80,7 +79,9 @@ public class SkelepedeMain extends Monster implements GeoEntity {
         this.goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.0, true));
         this.goalSelector.addGoal(5, new RandomStrollGoal(this, .5,10));
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
-        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, false));
+        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, 0, false, false,
+                player -> !((Player) player).isCreative() && !((Player) player).isSpectator()));
+        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 0, false, false, li -> !(li instanceof SkelepedeSegment) && !(li instanceof SkelepedeMain)));
     }
     protected PathNavigation createNavigation(Level level) {
         return new GroundPathNavigation(this, level);
@@ -109,6 +110,8 @@ public class SkelepedeMain extends Monster implements GeoEntity {
     @Override
     public void tick() {
         super.tick();
+        if (level().isClientSide()) return;
+
         if (!hasSetupSegments){
             bossEvent.setVisible(false);
             if (shouldScanForSegments){
@@ -161,59 +164,64 @@ public class SkelepedeMain extends Monster implements GeoEntity {
             }
         }
 
-        if (level().isClientSide){
-            if (this.random.nextFloat() < 0.1f) {
-                Vec3 offset = new Vec3((this.random.nextFloat() - 0.5) * this.getBbWidth(), 0, (this.random.nextFloat() - 0.5) * this.getBbWidth());
-                this.level().addParticle(ParticleTypes.SMOKE, this.getX() + offset.x, this.getY() + 1.0 + offset.y, this.getZ() + offset.z, 0.0, 0.05, 0.0);
-            }
-        } else {
-            // Update boss health bar
-            if (!segments.isEmpty())
-                this.setHealth(totalHealth);
-            bossEvent.setProgress(totalHealth / totalMaxHealth);
-        }
+        // Update boss health bar
+        if (!segments.isEmpty())
+            this.setHealth(totalHealth);
+        bossEvent.setProgress(totalHealth / totalMaxHealth);
 
         if (getTarget()!=null){
             this.getLookControl().setLookAt(getTarget(), 10.0F, (float)this.getMaxHeadXRot());
-            // Ensure the body also rotates towards the target
-            double deltaX = getTarget().getX() - this.getX();
-            double deltaZ = getTarget().getZ() - this.getZ();
-            float targetYaw = (float)(Math.atan2(deltaZ, deltaX) * (180.0 / Math.PI)) - 90.0F;
-            this.setYRot(this.getYRot() + Mth.clamp(Mth.wrapDegrees(targetYaw - this.getYRot()), -5.0F, 5.0F));
-            this.yBodyRot = this.getYRot();
+            //body faces movement delta
+            Vec3 moveDelta = this.getDeltaMovement();
+            if (moveDelta.x != 0 || moveDelta.z != 0) {
+                float targetYaw = (float) (Mth.atan2(moveDelta.z, moveDelta.x) * (180D / Math.PI)) - 90F;
+                this.setYRot(targetYaw);
+                this.yBodyRot = targetYaw;
+            }
         }
     }
 
     private void ProcessPossibleSplits() {
-        //trigger a new head segment to be spawned, move all following segments to the new head segment
-        int newHeadAtIndex = -1;
+        // Find any dead segment
         for (int i = 0; i < segments.size(); i++) {
             SkelepedeSegment segment = segments.get(i);
-            if (segment == null) continue;
-            if (segment.isRemoved() || !segment.isAlive()){
-                newHeadAtIndex = i;
-                break;
+            if (segment == null || segment.isRemoved() || !segment.isAlive()) {
+                // Split at this segment
+                int splitIndex = i;
+                // Segments after the dead one
+                ArrayList<SkelepedeSegment> splitSegments = new ArrayList<>();
+                for (int j = splitIndex + 1; j < segments.size(); j++) {
+                    SkelepedeSegment seg = segments.get(j);
+                    if (seg != null && seg.isAlive() && !seg.isRemoved()) {
+                        splitSegments.add(seg);
+                    }
+                }
+                // Remove dead segment from world and from list
+                if (segment != null && !segment.isRemoved()) {
+                    segment.kill();
+                }
+                // Remove all segments after splitIndex from this main
+                for (int j = segments.size() - 1; j > splitIndex; j--) {
+                    segments.remove(j);
+                }
+                // Spawn new SkelepedeMain for splitSegments
+                if (!splitSegments.isEmpty() && level() instanceof ServerLevel serverLevel) {
+                    SkelepedeMain newMain = WDEntities.SKELEPEDE.get().create(serverLevel);
+                    if (newMain != null) {
+                        newMain.moveTo(splitSegments.get(0).position());
+                        newMain.setYRot(splitSegments.get(0).getYRot());
+                        serverLevel.addFreshEntity(newMain);
+                        newMain.addSegments(splitSegments);
+                        // Set parent key for split segments
+                        String newMainID = newMain.getUniqueID();
+                        for (SkelepedeSegment seg : splitSegments) {
+                            seg.setSkelepedeParentKey(newMainID);
+                        }
+                    }
+                }
+                break; // Only process one split per tick
             }
         }
-        if (newHeadAtIndex == -1) return;//no segments are dead, no split needed
-        segments.removeAll(segments.stream().filter(Objects::isNull).toList());
-        if (segments.isEmpty()) {
-            this.kill();
-            return;
-        }
-        ArrayList<SkelepedeSegment> lowerHalf = new ArrayList<>(segments.subList(newHeadAtIndex + 1, segments.size()));
-        segments = new ArrayList<>(segments.subList(0, newHeadAtIndex));
-        if (segments.isEmpty()){
-            this.kill();
-        }
-        if (lowerHalf.isEmpty()){
-            return;
-        }
-        SkelepedeMain newHead = WDEntities.SKELEPEDE.get().create(this.level());
-        newHead.moveTo(lowerHalf.get(0).position());
-        newHead.setYRot(this.getYRot());
-        newHead.addSegments(lowerHalf);
-        this.level().addFreshEntity(newHead);
     }
 
     public void addSegments(ArrayList<SkelepedeSegment> newSegments) {
