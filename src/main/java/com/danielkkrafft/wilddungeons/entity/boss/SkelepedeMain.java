@@ -10,6 +10,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.Mth;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
@@ -65,7 +66,9 @@ public class SkelepedeMain extends Monster implements GeoEntity {
     // Store previous positions for segment following
     private final LinkedList<Vec3> previousPositions = new LinkedList<>();
     // store previous rotations for segment following
-     private final LinkedList<Float> previousRotations = new LinkedList<>();
+    private final LinkedList<Float> previousRotations = new LinkedList<>();
+
+    private String uniqueID = "";
 
     public SkelepedeMain(EntityType<? extends Monster> entityType, Level level) {
         super(entityType, level);
@@ -75,7 +78,6 @@ public class SkelepedeMain extends Monster implements GeoEntity {
         this.goalSelector.addGoal(1, new FloatGoal(this));
         this.goalSelector.addGoal(2, new LeapAtTargetGoal(this, .5f));
         this.goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.0, true));
-//        this.goalSelector.addGoal(4, new Spider.SpiderAttackGoal(this));//todo mimic this attack goal to allow the boss to disengage randomly
         this.goalSelector.addGoal(5, new RandomStrollGoal(this, .5,10));
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
         this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, false));
@@ -142,7 +144,6 @@ public class SkelepedeMain extends Monster implements GeoEntity {
 
         ProcessPossibleSplits();
 
-
         float totalHealth = 0;
         float totalMaxHealth = 0;
 
@@ -170,6 +171,16 @@ public class SkelepedeMain extends Monster implements GeoEntity {
             if (!segments.isEmpty())
                 this.setHealth(totalHealth);
             bossEvent.setProgress(totalHealth / totalMaxHealth);
+        }
+
+        if (getTarget()!=null){
+            this.getLookControl().setLookAt(getTarget(), 10.0F, (float)this.getMaxHeadXRot());
+            // Ensure the body also rotates towards the target
+            double deltaX = getTarget().getX() - this.getX();
+            double deltaZ = getTarget().getZ() - this.getZ();
+            float targetYaw = (float)(Math.atan2(deltaZ, deltaX) * (180.0 / Math.PI)) - 90.0F;
+            this.setYRot(this.getYRot() + Mth.clamp(Mth.wrapDegrees(targetYaw - this.getYRot()), -5.0F, 5.0F));
+            this.yBodyRot = this.getYRot();
         }
     }
 
@@ -224,6 +235,7 @@ public class SkelepedeMain extends Monster implements GeoEntity {
                 segment.finalizeSpawn(level, difficulty, spawnType, null);
                 level.addFreshEntity(segment);
                 segment.setSegmentPosition(this.position().add(0, 0, -SEGMENT_SPACING * (i + 1)), this.getYRot());
+                segment.setSkelepedeParentKey(this.getUniqueID());
                 segments.add(segment);
             }
             //initialize position history
@@ -240,69 +252,73 @@ public class SkelepedeMain extends Monster implements GeoEntity {
         bossEvent.setVisible(true);
         return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
     }
+
     private boolean shouldScanForSegments = false;
     private int segmentCount = 0;
     private ArrayList<SkelepedeSegment> foundSegments = new ArrayList<>();
+    private ArrayList<String> segmentUIDs = new ArrayList<>();
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         if (hasCustomName()) {
             bossEvent.setName(getDisplayName());
         }
-        shouldScanForSegments = true;
         //load segments
         segmentCount = compound.getInt("SegmentCount");
+        shouldScanForSegments = segmentCount > 0;
+        for (int i = 0; i < segmentCount; i++) {
+            String segmentUID = compound.getString("SegmentUID_" + i);
+            if (!segmentUID.isEmpty()) {
+                segmentUIDs.add(segmentUID);
+            }
+        }
     }
 
     public void ScanForSegments(){//when this happens and there are multiple skelepedes, they will all scan for segments and may pick up segments from other skelepedes.
         if (!shouldScanForSegments) return;
         shouldScanForSegments = false;
         foundSegments.clear();
-//        WildDungeons.getLogger().debug("Loading Skelepede with " + segmentCount + " segments.");
-        if (level() instanceof ServerLevel serverLevel) {
-            serverLevel.getEntitiesOfClass(SkelepedeSegment.class, new AABB(this.blockPosition()).inflate(100), Entity::isAlive)
-                    .forEach(entity -> {
-                        if (entity != null && !entity.isRemoved() && entity.isAlive()) {
-                            foundSegments.add(entity);
+        if (!(level() instanceof ServerLevel serverLevel)) return;
+        List<SkelepedeSegment> segmentsInWorld = serverLevel.getEntitiesOfClass(SkelepedeSegment.class, new AABB(this.blockPosition()).inflate(100));
+        if (segmentCount > 0 && !segmentsInWorld.isEmpty()) {
+            for (int i = 0; i < segmentCount; i++) {
+                String segmentUID = segmentUIDs.get(i);
+                if (!segmentUID.isEmpty()) {
+                    // Search for the segment entity in the world by its unique ID
+                    for (SkelepedeSegment segment : segmentsInWorld) {
+                        if (segment.getUniqueID().equals(segmentUID) && !segment.isRemoved() && segment.isAlive()) {
+                            foundSegments.add(segment);
+                            break;
                         }
-                    });
-            serverLevel.getEntitiesOfClass(SkelepedeMain.class, new AABB(this.blockPosition()).inflate(100), Entity::isAlive)
-                    .forEach(entity -> {
-                        if (entity != null && !entity.isRemoved() && entity.isAlive() && !entity.getUUID().equals(this.getUUID())) {
-                            entity.segments.removeAll(entity.segments.stream().filter(Objects::isNull).toList());
-                            foundSegments.removeAll(entity.segments);
-                        }
-                    });
-        }
-//        WildDungeons.getLogger().debug("Found " + foundSegments.size() + " segments in the vicinity.");
-        if (foundSegments.size() != segmentCount) {
-            //sort them by distance to the main entity
-            foundSegments.sort(Comparator.comparingDouble(segment -> segment.position().distanceTo(this.position())));
-            //trim the list to the expected count
-            if (foundSegments.size() > segmentCount) {
-                foundSegments = new ArrayList<>(foundSegments.subList(0, segmentCount));
+                    }
+                }
             }
         }
-        addSegments(foundSegments);
+        if (!foundSegments.isEmpty()) {
+            this.addSegments(foundSegments);
+        } else {
+            // If no segments were found, consider the SkelepedeMain invalid and remove it
+            this.kill();
+        }
     }
 
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
 
         //save segments
-        ArrayList<UUID> segmentUUIDs = new ArrayList<>();
+        ArrayList<String> segmentUIDs = new ArrayList<>();
         for (SkelepedeSegment segment : segments) {
             if (segment != null && !segment.isRemoved() && segment.isAlive()) {
-                segmentUUIDs.add(segment.getUUID());
+                segmentUIDs.add(segment.getUniqueID());
                 // uuids aren't retained on world reload and this should be fixed by adding some kind of persistent id to the segments and main entity and then linking them here
                 //then remove the scanning system
             }
         }
 
-        compound.putInt("SegmentCount", segmentUUIDs.size());
+        compound.putInt("SegmentCount", segmentUIDs.size());
 //        WildDungeons.getLogger().debug("Saving Skelepede with " + segmentUUIDs.size() + " segments.");
-        for (int i = 0; i < segmentUUIDs.size(); i++) {
-            compound.putUUID("SegmentUUID_" + i, segmentUUIDs.get(i));
+        for (int i = 0; i < segmentUIDs.size(); i++) {
+            compound.putString("SegmentUID_" + i, segmentUIDs.get(i));
         }
         super.addAdditionalSaveData(compound);
     }
@@ -350,5 +366,12 @@ public class SkelepedeMain extends Monster implements GeoEntity {
     public boolean addEffect(MobEffectInstance effectInstance, @Nullable Entity entity) {
         if (effectInstance.is(POISON)) return false;
         return super.addEffect(effectInstance, entity);
+    }
+
+    public String getUniqueID() {
+        if (uniqueID.isEmpty()) {
+            uniqueID = this.getStringUUID();
+        }
+        return uniqueID;
     }
 }

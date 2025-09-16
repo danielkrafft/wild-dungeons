@@ -2,6 +2,7 @@ package com.danielkkrafft.wilddungeons.entity.boss;
 
 import com.danielkkrafft.wilddungeons.registry.WDBlocks;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
@@ -15,6 +16,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.fluids.FluidType;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
@@ -31,7 +33,8 @@ public class SkelepedeSegment extends Monster implements GeoEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private static final String SKELEPEDE_SEGMENT_CONTROLLER = "skelepede_segment_controller";
     private final AnimationController<SkelepedeSegment> mainController = new AnimationController<>(this, SKELEPEDE_SEGMENT_CONTROLLER, 5, animationPredicate());
-
+    private String skelepedeParentKey = "";
+    private String uniqueID = "";
 
     public SkelepedeSegment(EntityType<? extends Monster> entityType, Level level) {
         super(entityType, level);
@@ -110,5 +113,34 @@ public class SkelepedeSegment extends Monster implements GeoEntity {
             }
         }
         super.tick();
+    }
+
+    public void setSkelepedeParentKey(String skelepedeParentKey) {
+        this.skelepedeParentKey = skelepedeParentKey;
+    }
+
+    public String getUniqueID() {
+        if (uniqueID.isEmpty()) {
+            uniqueID = this.getStringUUID();
+        }
+        return uniqueID;
+    }
+
+    @Override
+    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
+        super.addAdditionalSaveData(compound);
+        compound.putString("skelepedeParentKey", skelepedeParentKey);
+        compound.putString("uniqueID", uniqueID);
+    }
+
+    @Override
+    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
+        super.readAdditionalSaveData(compound);
+        if (compound.contains("skelepedeParentKey")) {
+            skelepedeParentKey = compound.getString("skelepedeParentKey");
+        }
+        if (compound.contains("uniqueID")) {
+            uniqueID = compound.getString("uniqueID");
+        }
     }
 }
