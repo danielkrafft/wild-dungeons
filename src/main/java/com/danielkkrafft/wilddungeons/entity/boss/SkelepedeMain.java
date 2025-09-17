@@ -86,12 +86,13 @@ public class SkelepedeMain extends Monster implements GeoEntity {
         this.goalSelector.addGoal(1, new FloatGoal(this));
         this.goalSelector.addGoal(2, new LeapAtTargetGoal(this, .5f));
         this.goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.0, true));
-        this.goalSelector.addGoal(5, new RandomStrollGoal(this, .5,10));
+        this.goalSelector.addGoal(5, new RandomStrollGoal(this, .5, 10));
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
         this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, 0, false, true,
                 player -> !((Player) player).isCreative() && !((Player) player).isSpectator()));
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 0, false, true, li -> !(li instanceof SkelepedeSegment) && !(li instanceof SkelepedeMain)));
     }
+
     protected PathNavigation createNavigation(Level level) {
         return new GroundPathNavigation(this, level);
     }
@@ -101,7 +102,7 @@ public class SkelepedeMain extends Monster implements GeoEntity {
     }
 
     public static AttributeSupplier.Builder createMobAttributes() {
-        return Monster.createMonsterAttributes().add(Attributes.STEP_HEIGHT, 2).add(Attributes.MAX_HEALTH,NUM_SEGMENTS * 20);
+        return Monster.createMonsterAttributes().add(Attributes.STEP_HEIGHT, 2).add(Attributes.MAX_HEALTH, NUM_SEGMENTS * 20);
     }
 
     @Override
@@ -116,6 +117,7 @@ public class SkelepedeMain extends Monster implements GeoEntity {
     }
 
     private boolean hasSetupSegments = false;//should this be a synced data parameter?
+
     @Override
     public void tick() {
         super.tick();
@@ -124,14 +126,14 @@ public class SkelepedeMain extends Monster implements GeoEntity {
         float clientBossProgress = this.entityData.get(SYNCED_BOSS_PROGRESS);
         this.setHealth(clientHealth);
         bossEvent.setProgress(clientBossProgress);
-        if (level().isClientSide()){
+        if (level().isClientSide()) {
             WildDungeons.getLogger().debug("Client SkelepedeMain tick - health: " + getHealth());
             return;
         }
 
-        if (!hasSetupSegments){
+        if (!hasSetupSegments) {
             bossEvent.setVisible(false);
-            if (shouldScanForSegments){
+            if (shouldScanForSegments) {
                 ScanForSegments();
                 bossEvent.setVisible(true);
             }
@@ -148,7 +150,7 @@ public class SkelepedeMain extends Monster implements GeoEntity {
         }
         previousRotations.addFirst(this.getYRot());
         // Limit history size
-        int maxHistory = (int)(NUM_SEGMENTS * SEGMENT_SPACING * POSITION_HISTORY_MULTIPLIER);
+        int maxHistory = (int) (NUM_SEGMENTS * SEGMENT_SPACING * POSITION_HISTORY_MULTIPLIER);
         while (previousPositions.size() > maxHistory) {
             previousPositions.removeLast();
         }
@@ -158,7 +160,7 @@ public class SkelepedeMain extends Monster implements GeoEntity {
 
         ProcessPossibleSplits();
 
-        if (segments.isEmpty()){
+        if (segments.isEmpty()) {
             // No segments to update
             this.kill();
             return;
@@ -169,7 +171,7 @@ public class SkelepedeMain extends Monster implements GeoEntity {
 
         // Update each segment's position to follow the main entity
         for (int i = 0; i < segments.size(); i++) {
-            int index = (int)((i + 1) * SEGMENT_SPACING * 2);
+            int index = (int) ((i + 1) * SEGMENT_SPACING * 2);
             if (index < previousPositions.size()) {
                 Vec3 targetPos = previousPositions.get(index);
                 SkelepedeSegment segment = segments.get(i);
@@ -185,8 +187,8 @@ public class SkelepedeMain extends Monster implements GeoEntity {
         this.entityData.set(SYNCED_HEALTH, totalHealth);
         this.entityData.set(SYNCED_BOSS_PROGRESS, totalMaxHealth == 0 ? 0.0f : totalHealth / totalMaxHealth);
 
-        if (getTarget()!=null){
-            this.getLookControl().setLookAt(getTarget(), 10.0F, (float)this.getMaxHeadXRot());
+        if (getTarget() != null) {
+            this.getLookControl().setLookAt(getTarget(), 10.0F, (float) this.getMaxHeadXRot());
         }
         //body faces movement delta
         Vec3 moveDelta = this.getDeltaMovement();
@@ -265,7 +267,7 @@ public class SkelepedeMain extends Monster implements GeoEntity {
             //initialize position history
             previousPositions.clear();
             for (int i = 0; i < NUM_SEGMENTS * SEGMENT_SPACING * POSITION_HISTORY_MULTIPLIER; i++) {
-                previousPositions.add(this.position().add(0, 0, SEGMENT_SPACING * i/2) );
+                previousPositions.add(this.position().add(0, 0, SEGMENT_SPACING * i / 2));
             }
             previousRotations.clear();
             for (int i = 0; i < NUM_SEGMENTS * SEGMENT_SPACING * POSITION_HISTORY_MULTIPLIER; i++) {
@@ -281,6 +283,7 @@ public class SkelepedeMain extends Monster implements GeoEntity {
     private int segmentCount = 0;
     private ArrayList<SkelepedeSegment> foundSegments = new ArrayList<>();
     private ArrayList<String> segmentUIDs = new ArrayList<>();
+
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
@@ -298,7 +301,7 @@ public class SkelepedeMain extends Monster implements GeoEntity {
         }
     }
 
-    public void ScanForSegments(){//when this happens and there are multiple skelepedes, they will all scan for segments and may pick up segments from other skelepedes.
+    public void ScanForSegments() {//when this happens and there are multiple skelepedes, they will all scan for segments and may pick up segments from other skelepedes.
         if (!shouldScanForSegments) return;
         shouldScanForSegments = false;
         foundSegments.clear();
@@ -378,6 +381,7 @@ public class SkelepedeMain extends Monster implements GeoEntity {
     protected void playStepSound(BlockPos pos, BlockState state) {
         this.playSound(SoundEvents.SPIDER_STEP, .25f, 1.0F);
     }
+
     @Override
     protected int calculateFallDamage(float fallDistance, float damageMultiplier) {
         return 0;
@@ -407,5 +411,16 @@ public class SkelepedeMain extends Monster implements GeoEntity {
         //set the health to 0 so clients know it's dead
         this.entityData.set(SYNCED_HEALTH, 0f);
         this.entityData.set(SYNCED_BOSS_PROGRESS, 0f);
+    }
+
+    @Override
+    protected void dropAllDeathLoot(ServerLevel p_level, DamageSource damageSource) {
+        if (level() instanceof ServerLevel serverLevel) {
+            List<SkelepedeMain> mainsInWorld = serverLevel.getEntitiesOfClass(SkelepedeMain.class, new AABB(this.blockPosition()).inflate(100));
+            boolean otherMainsExist = mainsInWorld.stream().anyMatch(main -> main != this && !main.isRemoved() && main.isAlive());
+            if (!otherMainsExist) {
+                super.dropAllDeathLoot(p_level, damageSource);
+            }
+        }
     }
 }
