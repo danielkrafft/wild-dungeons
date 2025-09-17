@@ -1,8 +1,11 @@
 package com.danielkkrafft.wilddungeons.entity.boss;
 
+import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerLevel;
@@ -69,6 +72,12 @@ public class SkelepedeMain extends Monster implements GeoEntity {
 
     private String uniqueID = "";
 
+    // Synced data accessors
+    private static final EntityDataAccessor<Float> SYNCED_HEALTH =
+            SynchedEntityData.defineId(SkelepedeMain.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> SYNCED_BOSS_PROGRESS =
+            SynchedEntityData.defineId(SkelepedeMain.class, EntityDataSerializers.FLOAT);
+
     public SkelepedeMain(EntityType<? extends Monster> entityType, Level level) {
         super(entityType, level);
     }
@@ -79,9 +88,9 @@ public class SkelepedeMain extends Monster implements GeoEntity {
         this.goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.0, true));
         this.goalSelector.addGoal(5, new RandomStrollGoal(this, .5,10));
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
-        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, 0, false, false,
+        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, 0, false, true,
                 player -> !((Player) player).isCreative() && !((Player) player).isSpectator()));
-        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 0, false, false, li -> !(li instanceof SkelepedeSegment) && !(li instanceof SkelepedeMain)));
+        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 0, false, true, li -> !(li instanceof SkelepedeSegment) && !(li instanceof SkelepedeMain)));
     }
     protected PathNavigation createNavigation(Level level) {
         return new GroundPathNavigation(this, level);
@@ -92,7 +101,7 @@ public class SkelepedeMain extends Monster implements GeoEntity {
     }
 
     public static AttributeSupplier.Builder createMobAttributes() {
-        return Monster.createMonsterAttributes().add(Attributes.STEP_HEIGHT, 2);
+        return Monster.createMonsterAttributes().add(Attributes.STEP_HEIGHT, 2).add(Attributes.MAX_HEALTH,NUM_SEGMENTS * 20);
     }
 
     @Override
@@ -110,7 +119,15 @@ public class SkelepedeMain extends Monster implements GeoEntity {
     @Override
     public void tick() {
         super.tick();
-        if (level().isClientSide()) return;
+        // Update boss health bar
+        float clientHealth = this.entityData.get(SYNCED_HEALTH);
+        float clientBossProgress = this.entityData.get(SYNCED_BOSS_PROGRESS);
+        this.setHealth(clientHealth);
+        bossEvent.setProgress(clientBossProgress);
+        if (level().isClientSide()){
+            WildDungeons.getLogger().debug("Client SkelepedeMain tick - health: " + getHealth());
+            return;
+        }
 
         if (!hasSetupSegments){
             bossEvent.setVisible(false);
@@ -139,13 +156,13 @@ public class SkelepedeMain extends Monster implements GeoEntity {
             previousRotations.removeLast();
         }
 
+        ProcessPossibleSplits();
+
         if (segments.isEmpty()){
             // No segments to update
             this.kill();
             return;
         }
-
-        ProcessPossibleSplits();
 
         float totalHealth = 0;
         float totalMaxHealth = 0;
@@ -163,21 +180,20 @@ public class SkelepedeMain extends Monster implements GeoEntity {
                 totalMaxHealth += segment.getMaxHealth();
             }
         }
-
-        // Update boss health bar
-        if (!segments.isEmpty())
-            this.setHealth(totalHealth);
-        bossEvent.setProgress(totalHealth / totalMaxHealth);
+        WildDungeons.getLogger().debug("Server SkelepedeMain tick - health: " + getHealth() + " , segments: " + segments.size());
+        // Update synced data floats
+        this.entityData.set(SYNCED_HEALTH, totalHealth);
+        this.entityData.set(SYNCED_BOSS_PROGRESS, totalMaxHealth == 0 ? 0.0f : totalHealth / totalMaxHealth);
 
         if (getTarget()!=null){
             this.getLookControl().setLookAt(getTarget(), 10.0F, (float)this.getMaxHeadXRot());
-            //body faces movement delta
-            Vec3 moveDelta = this.getDeltaMovement();
-            if (moveDelta.x != 0 || moveDelta.z != 0) {
-                float targetYaw = (float) (Mth.atan2(moveDelta.z, moveDelta.x) * (180D / Math.PI)) - 90F;
-                this.setYRot(targetYaw);
-                this.yBodyRot = targetYaw;
-            }
+        }
+        //body faces movement delta
+        Vec3 moveDelta = this.getDeltaMovement();
+        if (moveDelta.x != 0 || moveDelta.z != 0) {
+            float targetYaw = (float) (Mth.atan2(moveDelta.z, moveDelta.x) * (180D / Math.PI)) - 90F;
+            this.setYRot(targetYaw);
+            this.yBodyRot = targetYaw;
         }
     }
 
@@ -210,13 +226,13 @@ public class SkelepedeMain extends Monster implements GeoEntity {
                     if (newMain != null) {
                         newMain.moveTo(splitSegments.get(0).position());
                         newMain.setYRot(splitSegments.get(0).getYRot());
-                        serverLevel.addFreshEntity(newMain);
-                        newMain.addSegments(splitSegments);
                         // Set parent key for split segments
                         String newMainID = newMain.getUniqueID();
                         for (SkelepedeSegment seg : splitSegments) {
                             seg.setSkelepedeParentKey(newMainID);
                         }
+                        newMain.addSegments(splitSegments);
+                        serverLevel.addFreshEntity(newMain);
                     }
                 }
                 break; // Only process one split per tick
@@ -344,6 +360,8 @@ public class SkelepedeMain extends Monster implements GeoEntity {
     @Override
     protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
         super.defineSynchedData(builder);
+        builder.define(SYNCED_HEALTH, 100f);
+        builder.define(SYNCED_BOSS_PROGRESS, 1f);
     }
 
     @Override
@@ -381,5 +399,13 @@ public class SkelepedeMain extends Monster implements GeoEntity {
             uniqueID = this.getStringUUID();
         }
         return uniqueID;
+    }
+
+    @Override
+    public void kill() {
+        super.kill();
+        //set the health to 0 so clients know it's dead
+        this.entityData.set(SYNCED_HEALTH, 0f);
+        this.entityData.set(SYNCED_BOSS_PROGRESS, 0f);
     }
 }
