@@ -46,6 +46,10 @@ public class WDCreativeTabs {
                 output.accept(BREEZE_GOLEM_SPAWN_EGG.get());
                 output.accept(MUTANT_BOGGED_SPAWN_EGG.get());
                 output.accept(NETHER_DRAGON_SPAWN_EGG.get());
+                output.accept(SKELEPEDE_SPAWN_EGG.get());
+                output.accept(SPIDERLING_SPAWN_EGG.get());
+                output.accept(COPPER_SENTINEL_SPAWN_EGG.get());
+                output.accept(TOXIC_WISP_SPAWN_EGG.get());
 
                 output.accept(CONNECTION_BLOCK.get());
                 output.accept(SPAWN_BLOCK.get());
