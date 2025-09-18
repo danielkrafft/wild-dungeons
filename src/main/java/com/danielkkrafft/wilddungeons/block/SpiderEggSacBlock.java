@@ -7,6 +7,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -61,12 +62,12 @@ public class SpiderEggSacBlock extends TransparentBlock {
             level.removeBlock(pos, false);
             //play sound
             level.playSound(entity, pos, SoundEvents.SLIME_SQUISH, net.minecraft.sounds.SoundSource.BLOCKS, 1.0F, 1.0F);
-            SpawnSpiders(level, pos);
+            SpawnSpiders(level, pos, entity);
         }
         super.entityInside(state, level, pos, entity);
     }
 
-    private void SpawnSpiders(Level level, BlockPos pos) {
+    private void SpawnSpiders(Level level, BlockPos pos, Entity entity) {
         int amount = 1 + level.random.nextInt(3);
         for (int i = 0; i < amount; i++) {
             Spiderling spiderling = WDEntities.SPIDERLING.get().create(level);
@@ -74,6 +75,8 @@ public class SpiderEggSacBlock extends TransparentBlock {
                 BlockPos spawnPos = pos.offset(level.random.nextInt(3)-1, 0, level.random.nextInt(3)-1);
                 spiderling.moveTo(spawnPos, level.random.nextFloat() * 360F, 0);
                 level.addFreshEntity(spiderling);
+                if (entity instanceof LivingEntity livingEntity)
+                   spiderling.setTarget(livingEntity);
             }
         }
     }
@@ -115,7 +118,7 @@ public class SpiderEggSacBlock extends TransparentBlock {
     @Override
     public boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
         if (willHarvest) {
-            SpawnSpiders(level, pos);
+            SpawnSpiders(level, pos, player);
         }
         return super.onDestroyedByPlayer(state, level, pos, player, willHarvest, fluid);
     }
