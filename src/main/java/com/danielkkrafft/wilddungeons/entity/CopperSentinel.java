@@ -176,7 +176,7 @@ public class CopperSentinel extends Monster implements GeoEntity , RangedAttackM
         return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 1000)
                 .add(Attributes.MOVEMENT_SPEED, 0.5)
                 .add(Attributes.FOLLOW_RANGE, 50)
-                .add(Attributes.ATTACK_DAMAGE, 8)
+                .add(Attributes.ATTACK_DAMAGE, 12)
                 .add(Attributes.ATTACK_KNOCKBACK, 2)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 0.4)
                 .add(Attributes.EXPLOSION_KNOCKBACK_RESISTANCE, 0.2);
@@ -215,6 +215,7 @@ public class CopperSentinel extends Monster implements GeoEntity , RangedAttackM
             if (this.isAlive() && !this.isInvulnerable()) {
                 ItemStack arrowStack = new ItemStack(Items.ARROW,1);
                 Arrow arrow = new Arrow(this.level(), this, arrowStack, null);
+                arrow.setBaseDamage(8.0);
                 Vec3 viewVec = this.getViewVector(1.0f);
                 Vec3 rightVec = viewVec.cross(new Vec3(0,1,0)).normalize();
                 Vec3 upVec = viewVec.cross(rightVec).normalize();
