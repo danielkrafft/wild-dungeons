@@ -30,6 +30,6 @@ public class GasBlockEntity extends BlockEntity{
 
     public float getRenderRandomness() {
         BlockPos pos = this.getBlockPos();
-        return (pos.atY(0).asLong() % 10);
+        return (pos.atY(0).asLong() % 10);//we want Ypos 0 so that it doesnt jump around as it moves upwards
     }
 }

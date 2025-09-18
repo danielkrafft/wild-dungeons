@@ -3,6 +3,7 @@ package com.danielkkrafft.wilddungeons.entity.boss;
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -18,6 +19,7 @@ import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
@@ -48,6 +50,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import java.util.*;
 
 import static net.minecraft.world.effect.MobEffects.POISON;
+import static net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE;
 
 public class SkelepedeMain extends Monster implements GeoEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
@@ -102,7 +105,7 @@ public class SkelepedeMain extends Monster implements GeoEntity {
     }
 
     public static AttributeSupplier.Builder createMobAttributes() {
-        return Monster.createMonsterAttributes().add(Attributes.STEP_HEIGHT, 2).add(Attributes.MAX_HEALTH, NUM_SEGMENTS * 20);
+        return Monster.createMonsterAttributes().add(Attributes.STEP_HEIGHT, 2).add(Attributes.MAX_HEALTH, NUM_SEGMENTS * 20).add(ATTACK_DAMAGE, 2f);
     }
 
     @Override
@@ -430,5 +433,14 @@ public class SkelepedeMain extends Monster implements GeoEntity {
                 super.dropAllDeathLoot(p_level, damageSource);
             }
         }
+    }
+
+    @Override
+    public double getAttributeValue(Holder<Attribute> attribute) {
+        if (attribute.is(ATTACK_DAMAGE.getKey())){
+            double baseDamage = super.getAttributeValue(attribute);
+            return Math.max(0.5f, baseDamage * segments.size() / 5.0); //minimum 0.5 damage
+        }
+        return super.getAttributeValue(attribute);
     }
 }
