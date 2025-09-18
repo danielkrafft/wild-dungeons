@@ -127,7 +127,7 @@ public class SkelepedeMain extends Monster implements GeoEntity {
         this.setHealth(clientHealth);
         bossEvent.setProgress(clientBossProgress);
         if (level().isClientSide()) {
-            WildDungeons.getLogger().debug("Client SkelepedeMain tick - health: " + getHealth());
+//            WildDungeons.getLogger().debug("Client SkelepedeMain tick - health: " + getHealth());
             return;
         }
 
@@ -160,6 +160,15 @@ public class SkelepedeMain extends Monster implements GeoEntity {
 
         ProcessPossibleSplits();
 
+        List<SkelepedeSegment> list = new ArrayList<>();
+        for (SkelepedeSegment skelepedeSegment : segments) {
+            if (skelepedeSegment.isRemoved() || !skelepedeSegment.isAlive()) {
+                list.add(skelepedeSegment);
+            }
+        }
+        segments.removeAll(list);
+
+
         if (segments.isEmpty()) {
             // No segments to update
             this.kill();
@@ -182,7 +191,11 @@ public class SkelepedeMain extends Monster implements GeoEntity {
                 totalMaxHealth += segment.getMaxHealth();
             }
         }
-        WildDungeons.getLogger().debug("Server SkelepedeMain tick - health: " + getHealth() + " , segments: " + segments.size());
+        if (!segments.isEmpty() && totalHealth <=0){
+            //this happens when a new head is created from a split, because we are halfway through a tick when we do the split and the client hasn't synced the new head's health yet.
+            totalHealth = 1;
+        }
+//        WildDungeons.getLogger().debug("Server SkelepedeMain tick - health: " + totalHealth + " , segments: " + segments.size());
         // Update synced data floats
         this.entityData.set(SYNCED_HEALTH, totalHealth);
         this.entityData.set(SYNCED_BOSS_PROGRESS, totalMaxHealth == 0 ? 0.0f : totalHealth / totalMaxHealth);
@@ -213,10 +226,6 @@ public class SkelepedeMain extends Monster implements GeoEntity {
                     if (seg != null && seg.isAlive() && !seg.isRemoved()) {
                         splitSegments.add(seg);
                     }
-                }
-                // Remove dead segment from world and from list
-                if (segment != null && !segment.isRemoved()) {
-                    segment.kill();
                 }
                 // Remove all segments after splitIndex from this main
                 for (int j = segments.size() - 1; j > splitIndex; j--) {
@@ -325,6 +334,7 @@ public class SkelepedeMain extends Monster implements GeoEntity {
             this.addSegments(foundSegments);
         } else {
             // If no segments were found, consider the SkelepedeMain invalid and remove it
+            WildDungeons.getLogger().error("SkelepedeMain at " + this.blockPosition() + " found no segments and will be removed.");
             this.kill();
         }
     }
@@ -337,8 +347,6 @@ public class SkelepedeMain extends Monster implements GeoEntity {
         for (SkelepedeSegment segment : segments) {
             if (segment != null && !segment.isRemoved() && segment.isAlive()) {
                 segmentUIDs.add(segment.getUniqueID());
-                // uuids aren't retained on world reload and this should be fixed by adding some kind of persistent id to the segments and main entity and then linking them here
-                //then remove the scanning system
             }
         }
 
