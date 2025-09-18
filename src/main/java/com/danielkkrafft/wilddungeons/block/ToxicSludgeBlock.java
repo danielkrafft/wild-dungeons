@@ -1,6 +1,7 @@
 package com.danielkkrafft.wilddungeons.block;
 
 import com.danielkkrafft.wilddungeons.entity.ToxicWisp;
+import com.danielkkrafft.wilddungeons.registry.WDBlocks;
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -49,6 +50,7 @@ public class ToxicSludgeBlock extends LiquidBlock {
     protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         super.tick(state, level, pos, random);
         spawnWispIfPlayerNearby(level, pos);
+        spawnGasBlockRandomly(level, pos);
         level.scheduleTick(pos, this, TICKS_BETWEEN_WISP_SPAWNS + level.random.nextInt(TICKS_RANDOM_OFFSET));
 
     }
@@ -65,6 +67,13 @@ public class ToxicSludgeBlock extends LiquidBlock {
             ToxicWisp wisp = WDEntities.SMALL_TOXIC_WISP.get().create(level);
             wisp.setPos(above.getX() + 0.5, above.getY() + 0.5, above.getZ() + 0.5);
             level.addFreshEntity(wisp);
+        }
+    }
+
+    private void spawnGasBlockRandomly(Level level, BlockPos pos) {
+        BlockPos above = pos.above();
+        if (level.isEmptyBlock(above) && level.random.nextFloat() < 0.1f) {
+            level.setBlockAndUpdate(above, WDBlocks.TOXIC_GAS.get().defaultBlockState());
         }
     }
 }
