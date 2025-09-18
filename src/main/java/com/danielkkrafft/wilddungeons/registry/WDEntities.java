@@ -150,7 +150,7 @@ public class WDEntities {
 
     public static final DeferredHolder<EntityType<?>, EntityType<SkelepedeSegment>> SKELEPEDE_SEGMENT = ENTITIES.register("skelepede_segment", () -> EntityType.Builder
             .of(SkelepedeSegment::new, MobCategory.MONSTER)
-            .sized(1, 0.6F)
+            .sized(1.3f, 0.8F)
             .eyeHeight(0.2F)
             .build(WildDungeons.rl("skelepede_segment").toString()));
 

@@ -6,44 +6,50 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "wilddungeons:boss_key",
+          "name": "wilddungeons:egg_sac_arrow",
           "functions": [
             {
               "function": "minecraft:set_count",
-              "count": 1
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "rolls": 1.0,
-      "entries": [
-        {
-          "type": "minecraft:item",
-          "name": "wilddungeons:toxic_sludge_bucket",
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": 1
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "rolls": 1.0,
-      "entries": [
-        {
-          "type": "minecraft:item",
-          "name": "minecraft:copper_ingot",
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
+              "count":  {
                 "type": "minecraft:uniform",
-                "max": 64.0,
-                "min": 16.0
+                "max": 4.0,
+                "min": 0.0
+              }
+            }
+          ]
+        }
+      ]
+    },{
+      "rolls": 1.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:gold_ingot",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count":  {
+                "type": "minecraft:uniform",
+                "max": 1.0,
+                "min": 0.0
+              }
+            }
+          ]
+        }
+      ]
+    },{
+      "rolls": 1.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:bone",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count":  {
+                "type": "minecraft:uniform",
+                "max": 4.0,
+                "min": 1.0
               }
             }
           ]
@@ -51,5 +57,5 @@
       ]
     }
   ],
-  "random_sequence": "wilddungeons:entities/skelepede_main"
+  "random_sequence": "wilddungeons:entities/skelepede_segment"
 }
