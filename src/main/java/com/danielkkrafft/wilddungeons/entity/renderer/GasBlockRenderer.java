@@ -39,7 +39,7 @@ public class GasBlockRenderer implements BlockEntityRenderer<GasBlockEntity> {
             poseStack.translate(0.0f, yOffset, 0.0f);
         }
 
-        float time = ((System.currentTimeMillis() % 10000L) / 1000.0f) + partialTicks * 0.05f;
+        float time = ((System.currentTimeMillis() % 10000L) / 1000.0f) + partialTicks * 0.05f + gasBlockEntity.getRenderRandomness();
         int layers = 4;
         for (int i = 0; i < layers; i++) {
             poseStack.pushPose();

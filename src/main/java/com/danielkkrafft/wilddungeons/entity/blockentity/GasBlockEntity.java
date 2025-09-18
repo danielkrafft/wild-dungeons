@@ -27,4 +27,9 @@ public class GasBlockEntity extends BlockEntity{
     public void setTickAge(int i) {
      this.tickAge = i;
     }
+
+    public float getRenderRandomness() {
+        BlockPos pos = this.getBlockPos();
+        return (pos.atY(0).asLong() % 10);
+    }
 }
