@@ -104,6 +104,7 @@ public class WildDungeons {
         e.put(WDEntities.FRIENDLY_LARGE_EMERALD_WISP.get(), FriendlyLargeEmeraldWisp.createAttributes().build());
         e.put(WDEntities.BUSINESS_CEO.get(), BusinessCEO.setAttributes());
         e.put(WDEntities.SPIDERLING.get(), Spiderling.createSpiderling().build());
+        e.put(WDEntities.FRIENDLY_SPIDERLING.get(), FriendlySpiderling.createSpiderling().build());
         e.put(WDEntities.SKELEPEDE.get(), SkelepedeMain.createMobAttributes().build());
         e.put(WDEntities.SKELEPEDE_SEGMENT.get(), SkelepedeSegment.createMobAttributes().build());
         e.put(WDEntities.SMALL_TOXIC_WISP.get(), ToxicWisp.createAttributes().build());

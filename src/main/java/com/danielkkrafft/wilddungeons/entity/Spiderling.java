@@ -37,11 +37,6 @@ public class Spiderling extends Spider implements GeoEntity {
         };
     }
 
-    @Override
-    protected void registerGoals() {
-        super.registerGoals();
-    }
-
 
     public Spiderling(EntityType<? extends Spiderling> entityType, Level level) {
         super(entityType, level);

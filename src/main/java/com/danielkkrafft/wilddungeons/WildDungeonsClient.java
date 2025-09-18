@@ -63,6 +63,7 @@ public class WildDungeonsClient {
         event.registerEntityRenderer(WDEntities.WIND_ARROW.get(), ctx -> new WDArrowRenderer<>(ctx, new WindArrowModel()));
         event.registerEntityRenderer(WDEntities.BLACK_HOLE.get(), BlackHoleRenderer::new);
         event.registerEntityRenderer(WDEntities.SPIDERLING.get(), SpiderlingRenderer::new);
+        event.registerEntityRenderer(WDEntities.FRIENDLY_SPIDERLING.get(), SpiderlingRenderer::new);
         event.registerEntityRenderer(WDEntities.SKELEPEDE.get(), SkelepedeMainRenderer::new);
         event.registerEntityRenderer(WDEntities.SKELEPEDE_SEGMENT.get(), SkelepedeSegmentRenderer::new);
         event.registerEntityRenderer(WDEntities.SMALL_TOXIC_WISP.get(),  (EntityRendererProvider.Context context) -> new ToxicWispRenderer(context, false));

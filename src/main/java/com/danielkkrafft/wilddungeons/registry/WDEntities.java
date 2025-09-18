@@ -142,6 +142,12 @@ public class WDEntities {
             .eyeHeight(0.2F)
             .build(WildDungeons.rl("spiderling").toString()));
 
+    public static final DeferredHolder<EntityType<?>, EntityType<FriendlySpiderling>> FRIENDLY_SPIDERLING = ENTITIES.register("friendly_spiderling", () -> EntityType.Builder
+            .of(FriendlySpiderling::new, MobCategory.MONSTER)
+            .sized(0.65F, 0.4F)
+            .eyeHeight(0.2F)
+            .build(WildDungeons.rl("friendly_spiderling").toString()));
+
     public static final DeferredHolder<EntityType<?>, EntityType<SkelepedeMain>> SKELEPEDE = ENTITIES.register("skelepede_main", () -> EntityType.Builder
             .of(SkelepedeMain::new, MobCategory.MONSTER)
             .sized(1, 0.6F)

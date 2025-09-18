@@ -32,9 +32,10 @@ public class EggSacArrow extends Arrow {
         //summon 1-3 spiderlings that wander around
         int count = 1 + this.random.nextInt(3);
         for (int i = 0; i < count; i++) {
-            Spiderling spiderling = WDEntities.SPIDERLING.get().create(this.level());
+            FriendlySpiderling spiderling = WDEntities.FRIENDLY_SPIDERLING.get().create(this.level());
             if (spiderling != null) {
                 spiderling.moveTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), 0);
+                spiderling.setOwner(this.getOwner());
             }
             this.level().addFreshEntity(spiderling);
         }
@@ -51,10 +52,11 @@ public class EggSacArrow extends Arrow {
         //summon 1-3 spiderlings that attack the hit entity
         int count = 1 + this.random.nextInt(3);
         for (int i = 0; i < count; i++) {
-            Spiderling spiderling = WDEntities.SPIDERLING.get().create(this.level());
+            FriendlySpiderling spiderling = WDEntities.FRIENDLY_SPIDERLING.get().create(this.level());
             if (spiderling != null) {
                 spiderling.moveTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), 0);
                 spiderling.setTarget((LivingEntity) result.getEntity());
+                spiderling.setOwner(this.getOwner());
             }
             this.level().addFreshEntity(spiderling);
         }
