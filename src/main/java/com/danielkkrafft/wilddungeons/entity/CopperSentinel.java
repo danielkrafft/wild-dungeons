@@ -532,4 +532,9 @@ public class CopperSentinel extends Monster implements GeoEntity , RangedAttackM
             this.stop();
         }
     }
+
+    @Override
+    public boolean fireImmune() {
+        return true;
+    }
 }
