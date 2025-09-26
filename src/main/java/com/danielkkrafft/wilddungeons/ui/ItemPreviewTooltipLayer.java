@@ -42,7 +42,10 @@ public class ItemPreviewTooltipLayer implements LayeredDraw.Layer {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null || player.jumpableVehicle() != null) return;
 
-        if (previewEntity instanceof Offering offering && offering.isLookingAtMe(player, 1.2)) {
+        Entity entityAtCursor = Minecraft.getInstance().crosshairPickEntity; //This reference the current entity you are focusing your crosshair on
+        if (entityAtCursor == null) return;
+
+        if (entityAtCursor instanceof Offering offering) {
             renderTooltip(guiGraphics, offering, player);
             renderCursor(guiGraphics, offering);
         } else {
