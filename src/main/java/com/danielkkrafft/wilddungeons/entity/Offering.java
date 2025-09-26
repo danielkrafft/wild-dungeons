@@ -178,7 +178,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     }
 
     public boolean isLookingAtMe(Player player, double dotFactor) {
-        Vec3 vec3 = player.getViewVector(1.0F).normalize();
+        Vec3 vec3 = player.getViewVector(1.0F).normalize(); //Prevent using Vec3 when doing actions eachFrame since Vec3 creates alot of unintentional objects
         Vec3 vec31 = new Vec3(this.getX() - player.getX(), this.getY()+0.5 - player.getEyeY(), this.getZ() - player.getZ());
         double length = vec31.length();
         vec31 = vec31.normalize();
