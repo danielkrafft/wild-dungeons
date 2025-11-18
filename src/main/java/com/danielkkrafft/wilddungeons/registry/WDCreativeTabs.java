@@ -32,6 +32,18 @@ public class WDCreativeTabs {
                 output.accept(STAR_CANNON.get());
                 output.accept(EGG_SAC_ARROWS.get());
 
+                output.accept(WOODEN_WAR_SPEAR.get());
+                output.accept(STONE_WAR_SPEAR.get());
+                output.accept(IRON_WAR_SPEAR.get());
+                output.accept(GOLD_WAR_SPEAR.get());
+                output.accept(DIAMOND_WAR_SPEAR.get());
+                output.accept(NETHERITE_WAR_SPEAR.get());
+                output.accept(HEAVY_WAR_SPEAR.get());
+
+                output.accept(NAUTILUS_SHIELD.get());
+
+                //output.accept(WOODEN_WAR_SPEAR.get());
+
                 output.accept(ROTTEN_MOSS.get());
                 output.accept(TOXIC_GAS.get());
                 output.accept(SPIDER_EGG.get());

@@ -1,0 +1,12 @@
+{
+  "loader": "neoforge:separate_transforms",
+  "base": {
+    "parent": "wilddungeons:item/nautilus_shield_inhand"
+  },
+  "gui_light": "front",
+  "perspectives": {
+    "gui": {
+      "parent": "wilddungeons:item/nautilus_shield_inv"
+    }
+  }
+}

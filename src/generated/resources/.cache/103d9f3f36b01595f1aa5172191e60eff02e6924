@@ -1,2 +1,4 @@
-// 1.21.1	2025-05-22T12:52:12.0834417	Registries
+// 1.21.1	2025-11-13T16:33:21.9672516	Registries
 1a81610e8f098c2968dd77213ab87a05a7f05d46 data/wilddungeons/enchantment/density_enchantment.json
+b5da40cebc205f40663304b3d8dd8338ab1c28a3 data/wilddungeons/enchantment/homing_enchantment.json
+c9b8c055304aa946587d236c64ad60f8775e6138 data/wilddungeons/enchantment/lunge_enchantment.json

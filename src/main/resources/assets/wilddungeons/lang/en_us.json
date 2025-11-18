@@ -38,8 +38,22 @@
   "item.wilddungeons.boss_key": "Boss Key",
   "item.wilddungeons.egg_sac_arrow": "Egg Sac Arrow",
 
+  "item.wilddungeons.wooden_war_spear": "Wooden War Spear",
+  "item.wilddungeons.stone_war_spear": "Stone War Spear",
+  "item.wilddungeons.iron_war_spear": "Iron War Spear",
+  "item.wilddungeons.gold_war_spear": "Gold War Spear",
+  "item.wilddungeons.diamond_war_spear": "Diamond War Spear",
+  "item.wilddungeons.netherite_war_spear": "Netherite War Spear",
+  "item.wilddungeons.heavy_war_spear": "Heavy War Spear",
+
+  "item.wilddungeons.nautilus_shield": "Nautilus Shield",
+
+
+
   "enchantment.wilddungeons.wind_trail": "Wind Trail",
   "enchantment.wilddungeons.density_enchantment": "Density",
+  "enchantment.wilddungeons.lunge_enchantment": "Lunge",
+  "enchantment.wilddungeons.homing_enchantment": "Homing",
 
   "block.wilddungeons.connection_block": "Connection Block",
   "block.wilddungeons.rift_block": "Rift Block",
