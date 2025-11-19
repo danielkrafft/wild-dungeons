@@ -1,6 +1,9 @@
 {
   "replace": false,
   "values": [
-    "wilddungeons:density_enchantment"
+    "wilddungeons:density_enchantment",
+    "wilddungeons:lunge_enchantment",
+    "wilddungeons:homing_enchantment"
+
   ]
 }

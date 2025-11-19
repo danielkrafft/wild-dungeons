@@ -2,6 +2,7 @@ package com.danielkkrafft.wilddungeons.enchantment;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.enchantment.custom.DensityEnchantmentEffect;
+import com.danielkkrafft.wilddungeons.enchantment.custom.HomingEnchantmentEffect;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
@@ -17,4 +18,8 @@ public class WDEnchantmentEffects {
     public static final Holder<MapCodec<? extends EnchantmentEntityEffect>> DENSITY =
             ENTITY_ENCHANTMENT_EFFECTS.register("density_effect",
                     ()-> DensityEnchantmentEffect.CODEC);
+
+    public static final Holder<MapCodec<? extends EnchantmentEntityEffect>> HOMING =
+            ENTITY_ENCHANTMENT_EFFECTS.register("homing_effect",
+                    ()-> HomingEnchantmentEffect.CODEC);
 }

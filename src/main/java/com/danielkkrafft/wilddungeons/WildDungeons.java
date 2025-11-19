@@ -57,6 +57,7 @@ public class WildDungeons {
         WDEnchantmentEffects.ENTITY_ENCHANTMENT_EFFECTS.register(modEventBus);
         WDDamageTypes.DAMAGE_TYPES.register(modEventBus);
         WDMobEffects.MOB_EFFECTS.register(modEventBus);
+        WDAttachmentTypes.ATTACHMENT_TYPES.register(modEventBus);
 
         modEventBus.register(WildDungeons.class);
         NeoForge.EVENT_BUS.register(WDEvents.class);

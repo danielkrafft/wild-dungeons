@@ -53,6 +53,17 @@ public class WDItems {
     public static final DeferredItem<Item> STAR_CANNON = ITEMS.register("star_cannon", () -> new StarCannon(GunDataRegistry.find("star_cannon")));
     public static final DeferredItem<Item> EGG_SAC_ARROWS = ITEMS.register("egg_sac_arrow", () -> new EggSacArrowItem(new Item.Properties().rarity(Rarity.UNCOMMON)));
 
+    //------- WAR SPEAR ITEMS -------//
+    public static final DeferredItem<Item> WOODEN_WAR_SPEAR = ITEMS.register("wooden_war_spear", () -> new WarSpearItem(WarSpearItem.SpearType.WOOD,new Item.Properties().rarity(Rarity.COMMON).rarity(Rarity.EPIC).durability(500).attributes(SwordItem.createAttributes(Tiers.WOOD, 0.2f, 2.5f))));
+    public static final DeferredItem<Item> STONE_WAR_SPEAR = ITEMS.register("stone_war_spear", () -> new WarSpearItem(WarSpearItem.SpearType.STONE,new Item.Properties().rarity(Rarity.COMMON).durability(500).attributes(SwordItem.createAttributes(Tiers.STONE, 0.5f, 0.5f))));
+    public static final DeferredItem<Item> IRON_WAR_SPEAR = ITEMS.register("iron_war_spear", () -> new WarSpearItem(WarSpearItem.SpearType.IRON,new Item.Properties().rarity(Rarity.UNCOMMON).durability(700).attributes(SwordItem.createAttributes(Tiers.IRON, 1.2f, -0.8f))));
+    public static final DeferredItem<Item> GOLD_WAR_SPEAR = ITEMS.register("gold_war_spear", () -> new WarSpearItem(WarSpearItem.SpearType.GOLD,new Item.Properties().rarity(Rarity.RARE).durability(300).attributes(SwordItem.createAttributes(Tiers.GOLD, 1.5f, 0.f))));
+    public static final DeferredItem<Item> DIAMOND_WAR_SPEAR = ITEMS.register("diamond_war_spear", () -> new WarSpearItem(WarSpearItem.SpearType.DIAMOND,new Item.Properties().rarity(Rarity.RARE).durability(900).attributes(SwordItem.createAttributes(Tiers.DIAMOND, 2.2f, -2f))));
+    public static final DeferredItem<Item> NETHERITE_WAR_SPEAR = ITEMS.register("netherite_war_spear", () -> new WarSpearItem(WarSpearItem.SpearType.NETHERITE,new Item.Properties().rarity(Rarity.RARE).durability(1100).attributes(SwordItem.createAttributes(Tiers.NETHERITE, 3.f, -2.5f))));
+    public static final DeferredItem<Item> HEAVY_WAR_SPEAR = ITEMS.register("heavy_war_spear", () -> new WarSpearItem(WarSpearItem.SpearType.HEAVY,new Item.Properties().rarity(Rarity.EPIC).durability(1200).attributes(SwordItem.createAttributes(Tiers.DIAMOND, 5f, -3.5f))));
+
+    public static final DeferredItem<Item> NAUTILUS_SHIELD = ITEMS.register("nautilus_shield", () -> new NautilusShieldItem(new Item.Properties().rarity(Rarity.EPIC).durability(1200)));
+
 
     public static final DeferredItem<Item> BREEZE_GOLEM_SPAWN_EGG = ITEMS.register("breeze_golem_spawn_egg", () -> new SpawnEggItem(WDEntities.BREEZE_GOLEM.get(), new Color(115, 124, 255).getRGB(), new Color(0, 255, 233).getRGB(), new Item.Properties()));
     public static final DeferredItem<Item> MUTANT_BOGGED_SPAWN_EGG = ITEMS.register("mutant_bogged_spawn_egg", () -> new SpawnEggItem(WDEntities.MUTANT_BOGGED.get(), new Color(62, 162, 0).getRGB(), new Color(110, 71, 56).getRGB(), new Item.Properties()));

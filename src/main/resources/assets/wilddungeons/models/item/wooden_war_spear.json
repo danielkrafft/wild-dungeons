@@ -1,0 +1,15 @@
+{
+  "loader": "neoforge:separate_transforms",
+  "base": {
+    "parent": "wilddungeons:item/war_spear_inhand"
+  },
+  "gui_light": "front",
+  "perspectives": {
+    "gui": {
+      "parent": "wilddungeons:item/wooden_war_spear_inv"
+    },
+    "ground": {
+      "parent": "wilddungeons:item/wooden_war_spear_inv"
+    }
+  }
+}

@@ -179,4 +179,11 @@ public class WDEntities {
             () -> EntityType.Builder.<EggSacArrow>of(EggSacArrow::new, MobCategory.MISC)
                     .sized(0.5F, 0.5F)
                     .build("egg_sac_arrow"));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<ThrownNautilusShield>> THROWN_NAUTILUS_SHIELD = ENTITIES.register("thrown_nautilus_shield",
+            () -> EntityType.Builder.<ThrownNautilusShield>of(ThrownNautilusShield::new, MobCategory.MISC)
+                    .sized(1.1F, 0.2F)
+                    .clientTrackingRange(64)
+                    .updateInterval(1)
+                    .build("thrown_nautilus_shield"));
 }

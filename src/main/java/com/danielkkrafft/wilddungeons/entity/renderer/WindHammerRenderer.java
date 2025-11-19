@@ -9,12 +9,12 @@ import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 
 public class WindHammerRenderer extends GeoItemRenderer<WindHammer> {
-    private final ClientModel<WindHammer> DEF_MOD = new ClientModel<>(null, WildDungeons.rl("geo/wind_hammer.geo.json"), WildDungeons.rl("textures/item/wind_hammer.png"));
-    private final ClientModel<WindHammer> BRE1_MOD = new ClientModel<>(null, WildDungeons.rl("geo/wind_hammer.breaching.geo.json"), WildDungeons.rl("textures/item/wind_hammer_breaching.png"));
-    private final ClientModel<WindHammer> BRE2_MOD =  new ClientModel<>(null, WildDungeons.rl("geo/wind_hammer.breaching.geo.json"), WildDungeons.rl("textures/item/wind_hammer_breaching.png"));
-    private final ClientModel<WindHammer> DEN1_MOD = new ClientModel<>(null, WildDungeons.rl("geo/wind_hammer.density.geo.json"), WildDungeons.rl("textures/item/wind_hammer_density.png"));
-    private final ClientModel<WindHammer> DEN2_MOD = new ClientModel<>(null, WildDungeons.rl("geo/wind_hammer.density.2.geo.json"), WildDungeons.rl("textures/item/wind_hammer_density_2.png"));
-    private final ClientModel<WindHammer> WIND_MOD = new ClientModel<>(null, WildDungeons.rl("geo/wind_hammer.windcharge.geo.json"), WildDungeons.rl("textures/item/wind_hammer_wind_charge.png"));
+    private final ClientModel<WindHammer> DEF_MOD = new ClientModel<>(null, WildDungeons.rl("geo/windhammer/wind_hammer.geo.json"), WildDungeons.rl("textures/item/wind_hammer.png"));
+    private final ClientModel<WindHammer> BRE1_MOD = new ClientModel<>(null, WildDungeons.rl("geo/windhammer/wind_hammer.breaching.geo.json"), WildDungeons.rl("textures/item/wind_hammer_breaching.png"));
+    private final ClientModel<WindHammer> BRE2_MOD =  new ClientModel<>(null, WildDungeons.rl("geo/windhammer/wind_hammer.breaching.geo.json"), WildDungeons.rl("textures/item/wind_hammer_breaching.png"));
+    private final ClientModel<WindHammer> DEN1_MOD = new ClientModel<>(null, WildDungeons.rl("geo/windhammer/wind_hammer.density.geo.json"), WildDungeons.rl("textures/item/wind_hammer_density.png"));
+    private final ClientModel<WindHammer> DEN2_MOD = new ClientModel<>(null, WildDungeons.rl("geo/windhammer/wind_hammer.density.2.geo.json"), WildDungeons.rl("textures/item/wind_hammer_density_2.png"));
+    private final ClientModel<WindHammer> WIND_MOD = new ClientModel<>(null, WildDungeons.rl("geo/windhammer/wind_hammer.windcharge.geo.json"), WildDungeons.rl("textures/item/wind_hammer_wind_charge.png"));
 
     public WindHammerRenderer() {
         super( new ClientModel<>(null, WildDungeons.rl("geo/wind_hammer.geo.json"), WildDungeons.rl("textures/item/wind_hammer.png")));
