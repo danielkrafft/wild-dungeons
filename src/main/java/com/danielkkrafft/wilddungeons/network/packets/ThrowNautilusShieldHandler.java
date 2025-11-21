@@ -18,7 +18,7 @@ public class ThrowNautilusShieldHandler {
 
 
             ThrownNautilusShield shield = new ThrownNautilusShield(player.level(), data.isLoyal(), data.canTrack(), player,stack.copy());
-            shield.setPos(player.position().add(player.getLookAngle().scale(1.2)).add(0,0.5f,0));
+            shield.setPos(player.position().add(player.getLookAngle().scale(1.2)).add(0,1.2f,0));
 
             stack.shrink(1);
             player.level().addFreshEntity(shield);

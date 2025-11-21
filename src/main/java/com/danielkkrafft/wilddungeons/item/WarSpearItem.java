@@ -55,6 +55,7 @@ public class WarSpearItem extends WDWeapon {
                 case 2 : scale = 1.f;
                 case 3 : scale = 1.5f;
             }
+            player.causeFoodExhaustion(0.5f);
             player.addDeltaMovement(player.getLookAngle().scale(scale).multiply(1f,0f,1f));
             player.getCooldowns().addCooldown(this,40);
         }

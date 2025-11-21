@@ -29,9 +29,9 @@ public class ThrownNautilusShieldRenderer extends EntityRenderer<ThrownNautilusS
             float completedTick = p_entity.tickCount + partialTick;
             poseStack.pushPose();
             poseStack.translate(0, -0.1, 0);
-            if (p_entity.shouldSpin()) {
-                poseStack.mulPose(Axis.YP.rotationDegrees((p_entity.spinTicks + partialTick) * 20));
-            }
+
+            poseStack.mulPose(Axis.YP.rotationDegrees((completedTick) * 40));
+
             poseStack.mulPose(Axis.ZP.rotationDegrees((float) (Math.sin(completedTick * 0.5) * 5f)));
             poseStack.mulPose(Axis.XP.rotationDegrees((float) (Math.cos(completedTick * 0.5) * 5f)));
             poseStack.translate(0, 0.4, 0);

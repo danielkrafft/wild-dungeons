@@ -24,6 +24,9 @@ public class WDEnchantments {
     public static final ResourceKey<Enchantment> HOMING =
             ResourceKey.create(Registries.ENCHANTMENT, WildDungeons.rl("homing_enchantment"));
 
+    public static final ResourceKey<Enchantment> RANGE =
+            ResourceKey.create(Registries.ENCHANTMENT, WildDungeons.rl("range_enchantment"));
+
     public static void bootstrap(BootstrapContext<Enchantment> context) {
         var enchantments = context.lookup(Registries.ENCHANTMENT);
         var items = context.lookup(Registries.ITEM);
@@ -45,6 +48,16 @@ public class WDEnchantments {
                         items.getOrThrow(ItemTags.WEAPON_ENCHANTABLE),
                         5,
                         3,
+                        Enchantment.dynamicCost(5, 8),
+                        Enchantment.dynamicCost(25, 8),
+                        2,
+                        EquipmentSlotGroup.MAINHAND))
+                .exclusiveWith(enchantments.getOrThrow(EnchantmentTags.DAMAGE_EXCLUSIVE)));
+
+        register(context, RANGE, Enchantment.enchantment(Enchantment.definition(
+                        items.getOrThrow(ItemTags.WEAPON_ENCHANTABLE),
+                        5,
+                        5,
                         Enchantment.dynamicCost(5, 8),
                         Enchantment.dynamicCost(25, 8),
                         2,
