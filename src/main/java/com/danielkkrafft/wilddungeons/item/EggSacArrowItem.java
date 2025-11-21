@@ -19,7 +19,7 @@ public class EggSacArrowItem extends ArrowItem {
     }
 
     public AbstractArrow createArrow(Level level, ItemStack ammo, LivingEntity shooter, @Nullable ItemStack weapon) {
-        EggSacArrow arrow = new EggSacArrow(WDEntities.EGG_SAC_ARROW.get(), level);
+        EggSacArrow arrow = new EggSacArrow(level,shooter, ammo, weapon);
         arrow.setPos(shooter.getX(), shooter.getEyeY() - (double)0.1F, shooter.getZ());
         arrow.pickup = AbstractArrow.Pickup.DISALLOWED;
         return arrow;

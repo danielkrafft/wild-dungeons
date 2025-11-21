@@ -54,6 +54,7 @@
   "enchantment.wilddungeons.density_enchantment": "Density",
   "enchantment.wilddungeons.lunge_enchantment": "Lunge",
   "enchantment.wilddungeons.homing_enchantment": "Homing",
+  "enchantment.wilddungeons.range_enchantment": "Range",
 
   "block.wilddungeons.connection_block": "Connection Block",
   "block.wilddungeons.rift_block": "Rift Block",
