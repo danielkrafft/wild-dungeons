@@ -3,6 +3,7 @@ package com.danielkkrafft.wilddungeons.item.events;
 import com.danielkkrafft.wilddungeons.entity.ThrownNautilusShield;
 import com.danielkkrafft.wilddungeons.item.NautilusShieldItem;
 import com.danielkkrafft.wilddungeons.network.packets.ThrowNautilusShieldPayload;
+import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.InteractionHand;
@@ -34,6 +35,7 @@ public class InteractionEvents {
                 if (stack.getItem() instanceof NautilusShieldItem) {
                     System.out.println("IS THROWN");
                     boolean loyal = false, cantrack = false;
+                    player.playSound(WDSoundEvents.NAUTILUS_SHIELD_THROW.value());
                     player.connection.send(new ThrowNautilusShieldPayload(loyal,cantrack,
                             player.getUsedItemHand() == InteractionHand.OFF_HAND));
                 }

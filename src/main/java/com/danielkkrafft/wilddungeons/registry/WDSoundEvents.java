@@ -123,6 +123,12 @@ public class WDSoundEvents {
     public static final Holder<SoundEvent> WIND_CANNON_RUMBLE = SOUND_EVENTS.register("item.wind_cannon.rumble", SoundEvent::createVariableRangeEvent);
     public static final Holder<SoundEvent> WIND_CANNON_SHOOT = SOUND_EVENTS.register("item.wind_cannon.shoot", SoundEvent::createVariableRangeEvent);
 
+    //------- NAUTILUS SHIELD -------//
+    public static final Holder<SoundEvent> NAUTILUS_SHIELD_THROW = SOUND_EVENTS.register("item.nautilus_shield.throw", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> NAUTILUS_SHIELD_THROWN = SOUND_EVENTS.register("item.nautilus_shield.thrown", SoundEvent::createVariableRangeEvent);
+    public static final Holder<SoundEvent> NAUTILUS_SHIELD_HIT = SOUND_EVENTS.register("item.nautilus_shield.hit", SoundEvent::createVariableRangeEvent);
+
+
     public static ResourceKey<JukeboxSong> CreateMusicDiscKey(String name) {
         return ResourceKey.create(Registries.JUKEBOX_SONG, ResourceLocation.fromNamespaceAndPath(WildDungeons.MODID, name));
     }

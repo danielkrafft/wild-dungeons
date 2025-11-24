@@ -236,6 +236,21 @@
       {"name": "wilddungeons:item/wind_cannon/wind_cannon_shoot"}
     ]
   },
+  "item.nautilus_shield.throw": {
+    "sounds": [
+      {"name": "wilddungeons:item/nautilus_shield/nautilus_shield_throw"}
+    ]
+  },
+  "item.nautilus_shield.thrown": {
+    "sounds": [
+      {"name": "wilddungeons:item/nautilus_shield/nautilus_shield_thrown"}
+    ]
+  },
+  "item.nautilus_shield.hit": {
+    "sounds": [
+      {"name": "wilddungeons:item/nautilus_shield/nautilus_shield_hit"}
+    ]
+  },
   "soundscape.music.nether_dragon_bass": {
     "sounds": [
       {

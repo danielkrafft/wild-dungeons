@@ -1,5 +1,5 @@
 {
-	"format_version": "1.12.0",
+	"format_version": "1.21.0",
 	"minecraft:geometry": [
 		{
 			"description": {
@@ -22,9 +22,9 @@
 							"uv": {
 								"north": {"uv": [48, 1], "uv_size": [2, 16]},
 								"east": {"uv": [64, 1], "uv_size": [-16, 16]},
-								"south": {"uv": [62, 2], "uv_size": [2, 16]},
+								"south": {"uv": [64, 1], "uv_size": [-2, 16]},
 								"west": {"uv": [49, 1], "uv_size": [15, 16]},
-								"up": {"uv": [63, 0], "uv_size": [-15, 2], "uv_rotation": 90},
+								"up": {"uv": [64, 2], "uv_size": [-15, -2], "uv_rotation": 90},
 								"down": {"uv": [48, 18], "uv_size": [16, -2], "uv_rotation": 90}
 							}
 						},
@@ -34,7 +34,7 @@
 							"uv": {
 								"north": {"uv": [54, 2], "uv_size": [10, 2], "uv_rotation": 90},
 								"east": {"uv": [20, 9], "uv_size": [9, 10]},
-								"south": {"uv": [64, 3], "uv_size": [-2, 10]},
+								"south": {"uv": [62, 3], "uv_size": [2, 10]},
 								"west": {"uv": [52, 4], "uv_size": [9, 10]},
 								"up": {"uv": [52, 1], "uv_size": [9, 2], "uv_rotation": 90},
 								"down": {"uv": [52, 17], "uv_size": [9, -2], "uv_rotation": 90}

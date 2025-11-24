@@ -3,6 +3,7 @@ package com.danielkkrafft.wilddungeons.entity;
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.enchantment.WDEnchantments;
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
+import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -113,7 +114,7 @@ public class ThrownNautilusShield extends Entity {
                 case EAST, WEST -> vel = new Vec3(-vel.x, vel.y, vel.z);
                 case NORTH, SOUTH -> vel = new Vec3(vel.x, vel.y, -vel.z);
             }
-            vel = vel.scale(0.75);
+            vel = vel.scale(1f);
         }else {
             LivingEntity target = findNearestTarget(20);
 
@@ -133,10 +134,12 @@ public class ThrownNautilusShield extends Entity {
         this.initialVelocity = newInit;
         this.entityData.set(INITIAL_VEL, newInit);
 
+        float pitch = 0.8f + (this.random.nextFloat() * 0.5f);
+
         this.level().playSound(null,
                 hit.getLocation().x, hit.getLocation().y, hit.getLocation().z,
-                SoundEvents.ANVIL_LAND, SoundSource.PLAYERS, 1.0f,
-                0.9f + this.level().random.nextFloat() * 0.2f
+                WDSoundEvents.NAUTILUS_SHIELD_HIT, SoundSource.PLAYERS, 1.0f,
+                pitch
         );
 
 
