@@ -3,6 +3,7 @@ package com.danielkkrafft.wilddungeons.entity;
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.enchantment.WDEnchantments;
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
+import com.danielkkrafft.wilddungeons.registry.WDParticleTypes;
 import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -143,15 +144,36 @@ public class ThrownNautilusShield extends Entity {
         );
 
 
-        for (int i = 0; i < 8; i++) { // This thingy is for the euuh particle on bounce
-            double posX = hit.getLocation().x + (this.random.nextDouble() - 0.5) * 0.4;
-            double posY = hit.getLocation().y + (this.random.nextDouble()) * 0.4;
-            double posZ = hit.getLocation().z + (this.random.nextDouble() - 0.5) * 0.4;
-            double velocityX = (this.random.nextDouble() - 0.5) * 0.2;
-            double velocityY = this.random.nextDouble() * 0.2;
-            double velocityZ = (this.random.nextDouble() - 0.5) * 0.2;
-            this.level().addParticle(ParticleTypes.CRIT,
-                    posX, posY, posZ, velocityX, velocityY, velocityZ);
+        Vec3 incoming = newPos.subtract(oldPos).normalize();
+        Vec3 outgoing = vel.normalize();
+
+
+        double tBase = incoming.dot(outgoing); // -1 to 1 range
+
+        for (int i = 0; i < 15; i++) {
+
+            double t = this.random.nextDouble() * 0.6 + 0.2;
+            Vec3 dir = incoming.scale(1.0 - t).add(outgoing.scale(t)).normalize();
+
+            dir = dir.add(
+                    (this.random.nextDouble() - 0.5) * 0.3,
+                    (this.random.nextDouble() - 0.5) * 0.3,
+                    (this.random.nextDouble() - 0.5) * 0.3
+            ).normalize();
+
+            double speed = 0.2 + this.random.nextDouble() * 0.2;
+
+            Vec3 sparkVel = dir.scale(speed);
+
+            double posX = hit.getLocation().x + (this.random.nextDouble() - 0.5) * 0.2;
+            double posY = hit.getLocation().y + (this.random.nextDouble() - 0.5) * 0.2;
+            double posZ = hit.getLocation().z + (this.random.nextDouble() - 0.5) * 0.2;
+
+            this.level().addParticle(
+                    WDParticleTypes.SPARK_PARTICLE.get(),
+                    posX, posY, posZ,
+                    sparkVel.x, sparkVel.y, sparkVel.z
+            );
         }
     }
 
@@ -335,7 +357,7 @@ public class ThrownNautilusShield extends Entity {
                     double velocityX = (this.random.nextDouble() - 0.5) * 0.1;
                     double velocityY = (this.random.nextDouble() - 0.5) * 0.1;
                     double velocityZ = (this.random.nextDouble() - 0.5) * 0.1;
-                    this.level().addParticle(ParticleTypes.CRIT,
+                    this.level().addParticle(WDParticleTypes.SPARK_PARTICLE.get(),
                             posX,
                             posY,
                             posZ,
