@@ -332,17 +332,14 @@ public class ThrownNautilusShield extends Entity {
                 for (LivingEntity living : livingList) {
                     if (living instanceof Player player) {
                         Vec3 vec3 = player.getDeltaMovement();
-                        if (vec3.y < (double) -0.58F) {
-                            //System.out.println(vec3.y + " Y ");
-                            player.addDeltaMovement(vec3.multiply(0, -2, 0));
+                        player.setDeltaMovement(player.getDeltaMovement().x,1.2f,player.getDeltaMovement().z);
+                        player.hurt(this.damageSources().sting(player),2f);
+                        if (!stack.isEmpty()) {
+                            if (!this.owner.addItem(stack)) {
+                                this.level().addFreshEntity(new ItemEntity(level(), this.owner.getX(), this.owner.getY(), this.owner.getZ(), stack));
+                            }
                         }
-                        if (Math.abs(vec3.x) > (double) 0.58F) {
-                            //System.out.println(vec3.x + " X ");
-                            player.addDeltaMovement(new Vec3(0,Math.abs(vec3.x) * 0.5,0));
-                        } else if (Math.abs(vec3.z) > (double) 0.58F) {
-                            //System.out.println(vec3.z + " Z ");
-                            player.addDeltaMovement(new Vec3(0,Math.abs(vec3.z) * 0.5,0));
-                        }
+                        this.remove(RemovalReason.DISCARDED);
                     }
                 }
             }

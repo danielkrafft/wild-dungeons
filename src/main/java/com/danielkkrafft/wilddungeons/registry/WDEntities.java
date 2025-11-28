@@ -175,6 +175,16 @@ public class WDEntities {
             .sized(2.5f, 4.5f)
             .build(WildDungeons.rl("copper_sentinel").toString()));
 
+    public static final DeferredHolder<EntityType<?>, EntityType<PrimalCreeper>> PRIMAL_CREEPER = ENTITIES.register("primal_creeper", () -> EntityType.Builder
+            .of(PrimalCreeper::new, MobCategory.MONSTER)
+            .sized(2.5f, 4.5f)
+            .build(WildDungeons.rl("primal_creeper").toString()));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<CopperSentinel>> CONDEMNED_GUARDIAN = ENTITIES.register("condemned_guardian", () -> EntityType.Builder
+            .of(CopperSentinel::new, MobCategory.MONSTER)
+            .sized(2.5f, 4.5f)
+            .build(WildDungeons.rl("condemned_guardian").toString()));
+
     public static final DeferredHolder<EntityType<?>, EntityType<EggSacArrow>> EGG_SAC_ARROW = ENTITIES.register("egg_sac_arrow",
             () -> EntityType.Builder.<EggSacArrow>of(EggSacArrow::new, MobCategory.MISC)
                     .sized(0.5F, 0.5F)

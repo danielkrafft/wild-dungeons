@@ -112,6 +112,9 @@ public class WildDungeons {
         e.put(WDEntities.SMALL_TOXIC_WISP.get(), ToxicWisp.createAttributes().build());
         e.put(WDEntities.LARGE_TOXIC_WISP.get(), LargeToxicWisp.createAttributes().build());
         e.put(WDEntities.COPPER_SENTINEL.get(), CopperSentinel.createMobAttributes().build());
+        e.put(WDEntities.PRIMAL_CREEPER.get(), PrimalCreeper.createMobAttributes().build());
+        e.put(WDEntities.CONDEMNED_GUARDIAN.get(), CondemnedGuardian.createMobAttributes().build());
+
     }
 
     public static ResourceLocation rl(String path) {
