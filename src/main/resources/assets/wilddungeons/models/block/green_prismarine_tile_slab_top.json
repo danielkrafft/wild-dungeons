@@ -1,0 +1,8 @@
+﻿{
+  "parent": "minecraft:block/slab_top",
+  "textures": {
+    "bottom": "wilddungeons:block/green_prismarine_tile",
+    "side": "wilddungeons:block/green_prismarine_tile",
+    "top": "wilddungeons:block/green_prismarine_tile"
+  }
+}

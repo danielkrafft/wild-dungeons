@@ -1,0 +1,8 @@
+﻿{
+  "parent": "minecraft:block/inner_stairs",
+  "textures": {
+    "bottom": "wilddungeons:block/lime_prismarine_tile",
+    "side": "wilddungeons:block/lime_prismarine_tile",
+    "top": "wilddungeons:block/lime_prismarine_tile"
+  }
+}

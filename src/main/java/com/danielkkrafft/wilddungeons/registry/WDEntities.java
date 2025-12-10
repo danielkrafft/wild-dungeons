@@ -177,7 +177,7 @@ public class WDEntities {
 
     public static final DeferredHolder<EntityType<?>, EntityType<PrimalCreeper>> PRIMAL_CREEPER = ENTITIES.register("primal_creeper", () -> EntityType.Builder
             .of(PrimalCreeper::new, MobCategory.MONSTER)
-            .sized(2.5f, 4.5f)
+            .sized(1.f, 2.2f)
             .build(WildDungeons.rl("primal_creeper").toString()));
 
     public static final DeferredHolder<EntityType<?>, EntityType<CopperSentinel>> CONDEMNED_GUARDIAN = ENTITIES.register("condemned_guardian", () -> EntityType.Builder

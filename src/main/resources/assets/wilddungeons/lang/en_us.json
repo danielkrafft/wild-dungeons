@@ -92,6 +92,9 @@
   "block.wilddungeons.iron_grate": "Iron Grate",
   "block.wilddungeons.toxic_gas": "Toxic Gas",
   "block.wilddungeons.spider_egg": "Egg Sac",
+  "block.wilddungeons.prismarine_tile": "Prismarine Tiles",
+  "block.wilddungeons.prismarine_tile_slab": "Prismarine Tiles Slab",
+  "block.wilddungeons.prismarine_tile_stairs": "Prismarine Tiles Stairs",
 
   "entity.wilddungeons.amogus": "Imposter",
   "entity.wilddungeons.breeze_golem": "Breeze Golem",

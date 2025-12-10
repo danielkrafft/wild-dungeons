@@ -325,7 +325,7 @@ public class ThrownNautilusShield extends Entity {
                     }
                 }
             }
-            if (this.shouldSpin()) {
+            if (this.tickCount >= 5 && this.tickCount <= timeB) {
                 List<LivingEntity> livingList = level().getEntitiesOfClass(
                         LivingEntity.class, this.getBoundingBox().inflate(0.2, 1.5, 0.2)
                 );

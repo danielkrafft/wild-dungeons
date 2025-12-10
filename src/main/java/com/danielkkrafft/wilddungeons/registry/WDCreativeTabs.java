@@ -89,6 +89,88 @@ public class WDCreativeTabs {
                 output.accept(IRON_GRATE.get());
 
                 output.accept(BOSS_KEY.get());
+
+                output.accept(PRISMARINE_TILE.get());
+                output.accept(PRISMARINE_TILE_SLAB.get());
+                output.accept(PRISMARINE_TILE_STAIRS.get());
+
+                output.accept(PRISMARINE_SMALL_TILE.get());
+                output.accept(PRISMARINE_SMALL_TILE_SLAB.get());
+                output.accept(PRISMARINE_SMALL_TILE_STAIRS.get());
+
+                output.accept(BROWN_PRISMARINE_TILE.get());
+                output.accept(BROWN_PRISMARINE_TILE_SLAB.get());
+                output.accept(BROWN_PRISMARINE_TILE_STAIRS.get());
+
+                output.accept(BROWN_PRISMARINE_SMALL_TILE.get());
+                output.accept(BROWN_PRISMARINE_SMALL_TILE_SLAB.get());
+                output.accept(BROWN_PRISMARINE_SMALL_TILE_STAIRS.get());
+
+                output.accept(GREEN_PRISMARINE_TILE.get());
+                output.accept(GREEN_PRISMARINE_TILE_SLAB.get());
+                output.accept(GREEN_PRISMARINE_TILE_STAIRS.get());
+
+                output.accept(GREEN_PRISMARINE_SMALL_TILE.get());
+                output.accept(GREEN_PRISMARINE_SMALL_TILE_SLAB.get());
+                output.accept(GREEN_PRISMARINE_SMALL_TILE_STAIRS.get());
+
+                output.accept(LIME_PRISMARINE_TILE.get());
+                output.accept(LIME_PRISMARINE_TILE_SLAB.get());
+                output.accept(LIME_PRISMARINE_TILE_STAIRS.get());
+
+                output.accept(LIME_PRISMARINE_SMALL_TILE.get());
+                output.accept(LIME_PRISMARINE_SMALL_TILE_SLAB.get());
+                output.accept(LIME_PRISMARINE_SMALL_TILE_STAIRS.get());
+
+                output.accept(YELLOW_PRISMARINE_TILE.get());
+                output.accept(YELLOW_PRISMARINE_TILE_SLAB.get());
+                output.accept(YELLOW_PRISMARINE_TILE_STAIRS.get());
+
+                output.accept(YELLOW_PRISMARINE_SMALL_TILE.get());
+                output.accept(YELLOW_PRISMARINE_SMALL_TILE_SLAB.get());
+                output.accept(YELLOW_PRISMARINE_SMALL_TILE_STAIRS.get());
+
+                output.accept(ORANGE_PRISMARINE_TILE.get());
+                output.accept(ORANGE_PRISMARINE_TILE_SLAB.get());
+                output.accept(ORANGE_PRISMARINE_TILE_STAIRS.get());
+
+                output.accept(ORANGE_PRISMARINE_SMALL_TILE.get());
+                output.accept(ORANGE_PRISMARINE_SMALL_TILE_SLAB.get());
+                output.accept(ORANGE_PRISMARINE_SMALL_TILE_STAIRS.get());
+
+                output.accept(RED_PRISMARINE_TILE.get());
+                output.accept(RED_PRISMARINE_TILE_SLAB.get());
+                output.accept(RED_PRISMARINE_TILE_STAIRS.get());
+
+                output.accept(RED_PRISMARINE_SMALL_TILE.get());
+                output.accept(RED_PRISMARINE_SMALL_TILE_SLAB.get());
+                output.accept(RED_PRISMARINE_SMALL_TILE_STAIRS.get());
+
+                output.accept(PINK_PRISMARINE_TILE.get());
+                output.accept(PINK_PRISMARINE_TILE_SLAB.get());
+                output.accept(PINK_PRISMARINE_TILE_STAIRS.get());
+
+                output.accept(PINK_PRISMARINE_SMALL_TILE.get());
+                output.accept(PINK_PRISMARINE_SMALL_TILE_SLAB.get());
+                output.accept(PINK_PRISMARINE_SMALL_TILE_STAIRS.get());
+
+                output.accept(MAGENTA_PRISMARINE_TILE.get());
+                output.accept(MAGENTA_PRISMARINE_TILE_SLAB.get());
+                output.accept(MAGENTA_PRISMARINE_TILE_STAIRS.get());
+
+                output.accept(MAGENTA_PRISMARINE_SMALL_TILE.get());
+                output.accept(MAGENTA_PRISMARINE_SMALL_TILE_SLAB.get());
+                output.accept(MAGENTA_PRISMARINE_SMALL_TILE_STAIRS.get());
+
+                output.accept(PURPLE_PRISMARINE_TILE.get());
+                output.accept(PURPLE_PRISMARINE_TILE_SLAB.get());
+                output.accept(PURPLE_PRISMARINE_TILE_STAIRS.get());
+
+                output.accept(PURPLE_PRISMARINE_SMALL_TILE.get());
+                output.accept(PURPLE_PRISMARINE_SMALL_TILE_SLAB.get());
+                output.accept(PURPLE_PRISMARINE_SMALL_TILE_STAIRS.get());
+
+
             })
             .build()
     );
