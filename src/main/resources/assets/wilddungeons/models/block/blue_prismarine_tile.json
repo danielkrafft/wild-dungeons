@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "wilddungeons:block/blue_prismarine_tile"
+  }
+}

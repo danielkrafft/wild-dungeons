@@ -92,9 +92,137 @@
   "block.wilddungeons.iron_grate": "Iron Grate",
   "block.wilddungeons.toxic_gas": "Toxic Gas",
   "block.wilddungeons.spider_egg": "Egg Sac",
+
   "block.wilddungeons.prismarine_tile": "Prismarine Tiles",
   "block.wilddungeons.prismarine_tile_slab": "Prismarine Tiles Slab",
   "block.wilddungeons.prismarine_tile_stairs": "Prismarine Tiles Stairs",
+
+  "block.wilddungeons.prismarine_small_tile": "Prismarine Small Tiles",
+  "block.wilddungeons.prismarine_small_tile_slab": "Prismarine Small Tiles Slab",
+  "block.wilddungeons.prismarine_small_tile_stairs": "Prismarine Small Tiles Stairs",
+
+  "block.wilddungeons.white_prismarine_tile": "White Prismarine Tiles",
+  "block.wilddungeons.white_prismarine_tile_slab": "White Prismarine Tiles Slab",
+  "block.wilddungeons.white_prismarine_tile_stairs": "White Prismarine Tiles Stairs",
+
+  "block.wilddungeons.white_prismarine_small_tile": "White Prismarine Small Tiles",
+  "block.wilddungeons.white_prismarine_small_tile_slab": "White Prismarine Small Tiles Slab",
+  "block.wilddungeons.white_prismarine_small_tile_stairs": "White Prismarine Small Tiles Stairs",
+
+
+  "block.wilddungeons.light_gray_prismarine_tile": "Light Gray Prismarine Tiles",
+  "block.wilddungeons.light_gray_prismarine_tile_slab": "Light Gray Prismarine Tiles Slab",
+  "block.wilddungeons.light_gray_prismarine_tile_stairs": "Light Gray Prismarine Tiles Stairs",
+
+  "block.wilddungeons.light_gray_prismarine_small_tile": "Light Gray Prismarine Small Tiles",
+  "block.wilddungeons.light_gray_prismarine_small_tile_slab": "Light Gray Prismarine Small Tiles Slab",
+  "block.wilddungeons.light_gray_prismarine_small_tile_stairs": "Light Gray Prismarine Small Tiles Stairs",
+
+
+  "block.wilddungeons.gray_prismarine_tile": "Gray Prismarine Tiles",
+  "block.wilddungeons.gray_prismarine_tile_slab": "Gray Prismarine Tiles Slab",
+  "block.wilddungeons.gray_prismarine_tile_stairs": "Gray Prismarine Tiles Stairs",
+
+  "block.wilddungeons.gray_prismarine_small_tile": "Gray Prismarine Small Tiles",
+  "block.wilddungeons.gray_prismarine_small_tile_slab": "Gray Prismarine Small Tiles Slab",
+  "block.wilddungeons.gray_prismarine_small_tile_stairs": "Gray Prismarine Small Tiles Stairs",
+
+  "block.wilddungeons.dark_gray_prismarine_tile": "Dark Gray Prismarine Tiles",
+  "block.wilddungeons.dark_gray_prismarine_tile_slab": "Dark Gray Prismarine Tiles Slab",
+  "block.wilddungeons.dark_gray_prismarine_tile_stairs": "Dark Gray Prismarine Tiles Stairs",
+
+  "block.wilddungeons.dark_gray_prismarine_small_tile": "Dark Gray Prismarine Small Tiles",
+  "block.wilddungeons.dark_gray_prismarine_small_tile_slab": "Dark Gray Prismarine Small Tiles Slab",
+  "block.wilddungeons.dark_gray_prismarine_small_tile_stairs": "Dark Gray Prismarine Small Tiles Stairs",
+
+  "block.wilddungeons.black_prismarine_tile": "Black Prismarine Tiles",
+  "block.wilddungeons.black_prismarine_tile_slab": "Black Prismarine Tiles Slab",
+  "block.wilddungeons.black_prismarine_tile_stairs": "Black Prismarine Tiles Stairs",
+
+  "block.wilddungeons.black_prismarine_small_tile": "Black Prismarine Small Tiles",
+  "block.wilddungeons.black_prismarine_small_tile_slab": "Black Prismarine Small Tiles Slab",
+  "block.wilddungeons.black_prismarine_small_tile_stairs": "Black Prismarine Small Tiles Stairs",
+
+  "block.wilddungeons.blue_prismarine_tile": "Blue Prismarine Tiles",
+  "block.wilddungeons.blue_prismarine_tile_slab": "Blue Prismarine Tiles Slab",
+  "block.wilddungeons.blue_prismarine_tile_stairs": "Blue Prismarine Tiles Stairs",
+
+  "block.wilddungeons.blue_prismarine_small_tile": "Blue Prismarine Small Tiles",
+  "block.wilddungeons.blue_prismarine_small_tile_slab": "Blue Prismarine Small Tiles Slab",
+  "block.wilddungeons.blue_prismarine_small_tile_stairs": "Blue Prismarine Small Tiles Stairs",
+
+  "block.wilddungeons.purple_prismarine_tile": "Purple Prismarine Tiles",
+  "block.wilddungeons.purple_prismarine_tile_slab": "Purple Prismarine Tiles Slab",
+  "block.wilddungeons.purple_prismarine_tile_stairs": "Purple Prismarine Tiles Stairs",
+
+  "block.wilddungeons.purple_prismarine_small_tile": "Purple Prismarine Small Tiles",
+  "block.wilddungeons.purple_prismarine_small_tile_slab": "Purple Prismarine Small Tiles Slab",
+  "block.wilddungeons.purple_prismarine_small_tile_stairs": "Purple Prismarine Small Tiles Stairs",
+
+  "block.wilddungeons.magenta_prismarine_tile": "Magenta Prismarine Tiles",
+  "block.wilddungeons.magenta_prismarine_tile_slab": "Magenta Prismarine Tiles Slab",
+  "block.wilddungeons.magenta_prismarine_tile_stairs": "Magenta Prismarine Tiles Stairs",
+
+  "block.wilddungeons.magenta_prismarine_small_tile": "Magenta Prismarine Small Tiles",
+  "block.wilddungeons.magenta_prismarine_small_tile_slab": "Magenta Prismarine Small Tiles Slab",
+  "block.wilddungeons.magenta_prismarine_small_tile_stairs": "Magenta Prismarine Small Tiles Stairs",
+
+  "block.wilddungeons.pink_prismarine_tile": "Pink Prismarine Tiles",
+  "block.wilddungeons.pink_prismarine_tile_slab": "Pink Prismarine Tiles Slab",
+  "block.wilddungeons.pink_prismarine_tile_stairs": "Pink Prismarine Tiles Stairs",
+
+  "block.wilddungeons.pink_prismarine_small_tile": "Pink Prismarine Small Tiles",
+  "block.wilddungeons.pink_prismarine_small_tile_slab": "Pink Prismarine Small Tiles Slab",
+  "block.wilddungeons.pink_prismarine_small_tile_stairs": "Pink Prismarine Small Tiles Stairs",
+
+  "block.wilddungeons.red_prismarine_tile": "Red Prismarine Tiles",
+  "block.wilddungeons.red_prismarine_tile_slab": "Red Prismarine Tiles Slab",
+  "block.wilddungeons.red_prismarine_tile_stairs": "Red Prismarine Tiles Stairs",
+
+  "block.wilddungeons.red_prismarine_small_tile": "Red Prismarine Small Tiles",
+  "block.wilddungeons.red_prismarine_small_tile_slab": "Red Prismarine Small Tiles Slab",
+  "block.wilddungeons.red_prismarine_small_tile_stairs": "Red Prismarine Small Tiles Stairs",
+
+  "block.wilddungeons.orange_prismarine_tile": "Orange Prismarine Tiles",
+  "block.wilddungeons.orange_prismarine_tile_slab": "Orange Prismarine Tiles Slab",
+  "block.wilddungeons.orange_prismarine_tile_stairs": "Orange Prismarine Tiles Stairs",
+
+  "block.wilddungeons.orange_prismarine_small_tile": "Orange Prismarine Small Tiles",
+  "block.wilddungeons.orange_prismarine_small_tile_slab": "Orange Prismarine Small Tiles Slab",
+  "block.wilddungeons.orange_prismarine_small_tile_stairs": "Orange Prismarine Small Tiles Stairs",
+
+  "block.wilddungeons.yellow_prismarine_tile": "Yellow Prismarine Tiles",
+  "block.wilddungeons.yellow_prismarine_tile_slab": "Yellow Prismarine Tiles Slab",
+  "block.wilddungeons.yellow_prismarine_tile_stairs": "Yellow Prismarine Tiles Stairs",
+
+  "block.wilddungeons.yellow_prismarine_small_tile": "Yellow Prismarine Small Tiles",
+  "block.wilddungeons.yellow_prismarine_small_tile_slab": "Yellow Prismarine Small Tiles Slab",
+  "block.wilddungeons.yellow_prismarine_small_tile_stairs": "Yellow Prismarine Small Tiles Stairs",
+
+  "block.wilddungeons.lime_prismarine_tile": "Lime Prismarine Tiles",
+  "block.wilddungeons.lime_prismarine_tile_slab": "Lime Prismarine Tiles Slab",
+  "block.wilddungeons.lime_prismarine_tile_stairs": "Lime Prismarine Tiles Stairs",
+
+  "block.wilddungeons.lime_prismarine_small_tile": "Lime Prismarine Small Tiles",
+  "block.wilddungeons.lime_prismarine_small_tile_slab": "Lime Prismarine Small Tiles Slab",
+  "block.wilddungeons.lime_prismarine_small_tile_stairs": "Lime Prismarine Small Tiles Stairs",
+
+  "block.wilddungeons.green_prismarine_tile": "Green Prismarine Tiles",
+  "block.wilddungeons.green_prismarine_tile_slab": "Green Prismarine Tiles Slab",
+  "block.wilddungeons.green_prismarine_tile_stairs": "Green Prismarine Tiles Stairs",
+
+  "block.wilddungeons.green_prismarine_small_tile": "Green Prismarine Small Tiles",
+  "block.wilddungeons.green_prismarine_small_tile_slab": "Green Prismarine Small Tiles Slab",
+  "block.wilddungeons.green_prismarine_small_tile_stairs": "Green Prismarine Small Tiles Stairs",
+
+  "block.wilddungeons.brown_prismarine_tile": "Brown Prismarine Tiles",
+  "block.wilddungeons.brown_prismarine_tile_slab": "Brown Prismarine Tiles Slab",
+  "block.wilddungeons.brown_prismarine_tile_stairs": "Brown Prismarine Tiles Stairs",
+
+  "block.wilddungeons.brown_prismarine_small_tile": "Brown Prismarine Small Tiles",
+  "block.wilddungeons.brown_prismarine_small_tile_slab": "Brown Prismarine Small Tiles Slab",
+  "block.wilddungeons.brown_prismarine_small_tile_stairs": "Brown Prismarine Small Tiles Stairs",
+
 
   "entity.wilddungeons.amogus": "Imposter",
   "entity.wilddungeons.breeze_golem": "Breeze Golem",

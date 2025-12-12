@@ -1,0 +1,8 @@
+﻿{
+  "parent": "minecraft:block/outer_stairs",
+  "textures": {
+    "bottom": "wilddungeons:block/gray_prismarine_tile",
+    "side": "wilddungeons:block/gray_prismarine_tile",
+    "top": "wilddungeons:block/gray_prismarine_tile"
+  }
+}

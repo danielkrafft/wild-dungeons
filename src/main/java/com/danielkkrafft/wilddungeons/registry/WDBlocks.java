@@ -150,6 +150,54 @@ public class WDBlocks {
     public static final DeferredBlock<Block> MAGENTA_PRISMARINE_SMALL_TILE_STAIRS = registerWithItem("magenta_prismarine_small_tile_stairs", () -> new StairBlock(MAGENTA_PRISMARINE_SMALL_TILE.get().defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(MAGENTA_PRISMARINE_SMALL_TILE.get())));
     public static final DeferredBlock<Block> MAGENTA_PRISMARINE_SMALL_TILE_SLAB = registerWithItem("magenta_prismarine_small_tile_slab", () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(MAGENTA_PRISMARINE_SMALL_TILE.get())));
 
+    public static final DeferredBlock<Block> BLUE_PRISMARINE_TILE = registerWithItem("blue_prismarine_tile", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).requiresCorrectToolForDrops().strength(1.5F, 6.0F)));
+    public static final DeferredBlock<Block> BLUE_PRISMARINE_TILE_STAIRS = registerWithItem("blue_prismarine_tile_stairs", () -> new StairBlock(BLUE_PRISMARINE_TILE.get().defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(MAGENTA_PRISMARINE_TILE.get())));
+    public static final DeferredBlock<Block> BLUE_PRISMARINE_TILE_SLAB = registerWithItem("blue_prismarine_tile_slab", () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(BLUE_PRISMARINE_TILE.get())));
+
+    public static final DeferredBlock<Block> BLUE_PRISMARINE_SMALL_TILE = registerWithItem("blue_prismarine_small_tile", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).requiresCorrectToolForDrops().strength(1.5F, 6.0F)));
+    public static final DeferredBlock<Block> BLUE_PRISMARINE_SMALL_TILE_STAIRS = registerWithItem("blue_prismarine_small_tile_stairs", () -> new StairBlock(BLUE_PRISMARINE_SMALL_TILE.get().defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(MAGENTA_PRISMARINE_SMALL_TILE.get())));
+    public static final DeferredBlock<Block> BLUE_PRISMARINE_SMALL_TILE_SLAB = registerWithItem("blue_prismarine_small_tile_slab", () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(BLUE_PRISMARINE_SMALL_TILE.get())));
+
+    public static final DeferredBlock<Block> WHITE_PRISMARINE_TILE = registerWithItem("white_prismarine_tile", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).requiresCorrectToolForDrops().strength(1.5F, 6.0F)));
+    public static final DeferredBlock<Block> WHITE_PRISMARINE_TILE_STAIRS = registerWithItem("white_prismarine_tile_stairs", () -> new StairBlock(WHITE_PRISMARINE_TILE.get().defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(WHITE_PRISMARINE_TILE.get())));
+    public static final DeferredBlock<Block> WHITE_PRISMARINE_TILE_SLAB = registerWithItem("white_prismarine_tile_slab", () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(WHITE_PRISMARINE_TILE.get())));
+
+    public static final DeferredBlock<Block> WHITE_PRISMARINE_SMALL_TILE = registerWithItem("white_prismarine_small_tile", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).requiresCorrectToolForDrops().strength(1.5F, 6.0F)));
+    public static final DeferredBlock<Block> WHITE_PRISMARINE_SMALL_TILE_STAIRS = registerWithItem("white_prismarine_small_tile_stairs", () -> new StairBlock(WHITE_PRISMARINE_SMALL_TILE.get().defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(WHITE_PRISMARINE_SMALL_TILE.get())));
+    public static final DeferredBlock<Block> WHITE_PRISMARINE_SMALL_TILE_SLAB = registerWithItem("white_prismarine_small_tile_slab", () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(WHITE_PRISMARINE_SMALL_TILE.get())));
+
+    public static final DeferredBlock<Block> LIGHT_GRAY_PRISMARINE_TILE = registerWithItem("light_gray_prismarine_tile", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).requiresCorrectToolForDrops().strength(1.5F, 6.0F)));
+    public static final DeferredBlock<Block> LIGHT_GRAY_PRISMARINE_TILE_STAIRS = registerWithItem("light_gray_prismarine_tile_stairs", () -> new StairBlock(LIGHT_GRAY_PRISMARINE_TILE.get().defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(LIGHT_GRAY_PRISMARINE_TILE.get())));
+    public static final DeferredBlock<Block> LIGHT_GRAY_PRISMARINE_TILE_SLAB = registerWithItem("light_gray_prismarine_tile_slab", () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(LIGHT_GRAY_PRISMARINE_TILE.get())));
+
+    public static final DeferredBlock<Block> LIGHT_GRAY_PRISMARINE_SMALL_TILE = registerWithItem("light_gray_prismarine_small_tile", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).requiresCorrectToolForDrops().strength(1.5F, 6.0F)));
+    public static final DeferredBlock<Block> LIGHT_GRAY_PRISMARINE_SMALL_TILE_STAIRS = registerWithItem("light_gray_prismarine_small_tile_stairs", () -> new StairBlock(LIGHT_GRAY_PRISMARINE_SMALL_TILE.get().defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(LIGHT_GRAY_PRISMARINE_SMALL_TILE.get())));
+    public static final DeferredBlock<Block> LIGHT_GRAY_PRISMARINE_SMALL_TILE_SLAB = registerWithItem("light_gray_prismarine_small_tile_slab", () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(LIGHT_GRAY_PRISMARINE_SMALL_TILE.get())));
+
+    public static final DeferredBlock<Block> GRAY_PRISMARINE_TILE = registerWithItem("gray_prismarine_tile", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).requiresCorrectToolForDrops().strength(1.5F, 6.0F)));
+    public static final DeferredBlock<Block> GRAY_PRISMARINE_TILE_STAIRS = registerWithItem("gray_prismarine_tile_stairs", () -> new StairBlock(GRAY_PRISMARINE_TILE.get().defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(GRAY_PRISMARINE_TILE.get())));
+    public static final DeferredBlock<Block> GRAY_PRISMARINE_TILE_SLAB = registerWithItem("gray_prismarine_tile_slab", () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(GRAY_PRISMARINE_TILE.get())));
+
+    public static final DeferredBlock<Block> GRAY_PRISMARINE_SMALL_TILE = registerWithItem("gray_prismarine_small_tile", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).requiresCorrectToolForDrops().strength(1.5F, 6.0F)));
+    public static final DeferredBlock<Block> GRAY_PRISMARINE_SMALL_TILE_STAIRS = registerWithItem("gray_prismarine_small_tile_stairs", () -> new StairBlock(GRAY_PRISMARINE_SMALL_TILE.get().defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(GRAY_PRISMARINE_SMALL_TILE.get())));
+    public static final DeferredBlock<Block> GRAY_PRISMARINE_SMALL_TILE_SLAB = registerWithItem("gray_prismarine_small_tile_slab", () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(GRAY_PRISMARINE_SMALL_TILE.get())));
+
+    public static final DeferredBlock<Block> DARK_GRAY_PRISMARINE_TILE = registerWithItem("dark_gray_prismarine_tile", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).requiresCorrectToolForDrops().strength(1.5F, 6.0F)));
+    public static final DeferredBlock<Block> DARK_GRAY_PRISMARINE_TILE_STAIRS = registerWithItem("dark_gray_prismarine_tile_stairs", () -> new StairBlock(DARK_GRAY_PRISMARINE_TILE.get().defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(DARK_GRAY_PRISMARINE_TILE.get())));
+    public static final DeferredBlock<Block> DARK_GRAY_PRISMARINE_TILE_SLAB = registerWithItem("dark_gray_prismarine_tile_slab", () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(DARK_GRAY_PRISMARINE_TILE.get())));
+
+    public static final DeferredBlock<Block> DARK_GRAY_PRISMARINE_SMALL_TILE = registerWithItem("dark_gray_prismarine_small_tile", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).requiresCorrectToolForDrops().strength(1.5F, 6.0F)));
+    public static final DeferredBlock<Block> DARK_GRAY_PRISMARINE_SMALL_TILE_STAIRS = registerWithItem("dark_gray_prismarine_small_tile_stairs", () -> new StairBlock(DARK_GRAY_PRISMARINE_SMALL_TILE.get().defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(DARK_GRAY_PRISMARINE_SMALL_TILE.get())));
+    public static final DeferredBlock<Block> DARK_GRAY_PRISMARINE_SMALL_TILE_SLAB = registerWithItem("dark_gray_prismarine_small_tile_slab", () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(DARK_GRAY_PRISMARINE_SMALL_TILE.get())));
+
+    public static final DeferredBlock<Block> BLACK_PRISMARINE_TILE = registerWithItem("black_prismarine_tile", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).requiresCorrectToolForDrops().strength(1.5F, 6.0F)));
+    public static final DeferredBlock<Block> BLACK_PRISMARINE_TILE_STAIRS = registerWithItem("black_prismarine_tile_stairs", () -> new StairBlock(BLACK_PRISMARINE_TILE.get().defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(BLACK_PRISMARINE_TILE.get())));
+    public static final DeferredBlock<Block> BLACK_PRISMARINE_TILE_SLAB = registerWithItem("black_prismarine_tile_slab", () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(BLACK_PRISMARINE_TILE.get())));
+
+    public static final DeferredBlock<Block> BLACK_PRISMARINE_SMALL_TILE = registerWithItem("black_prismarine_small_tile", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).requiresCorrectToolForDrops().strength(1.5F, 6.0F)));
+    public static final DeferredBlock<Block> BLACK_PRISMARINE_SMALL_TILE_STAIRS = registerWithItem("black_prismarine_small_tile_stairs", () -> new StairBlock(BLACK_PRISMARINE_SMALL_TILE.get().defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(BLACK_PRISMARINE_SMALL_TILE.get())));
+    public static final DeferredBlock<Block> BLACK_PRISMARINE_SMALL_TILE_SLAB = registerWithItem("black_prismarine_small_tile_slab", () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(BLACK_PRISMARINE_SMALL_TILE.get())));
+
 
     private static <T extends Block> DeferredBlock<T> registerWithItem(String name, Supplier<T> supplier, Item.@NotNull Properties properties) {
         DeferredBlock<T> block = BLOCKS.register(name, supplier);

@@ -1,0 +1,13 @@
+﻿{
+  "variants": {
+    "type=bottom": {
+      "model": "wilddungeons:block/dark_gray_prismarine_small_tile_slab"
+    },
+    "type=double": {
+      "model": "wilddungeons:block/dark_gray_prismarine_small_tile"
+    },
+    "type=top": {
+      "model": "wilddungeons:block/dark_gray_prismarine_small_tile_slab_top"
+    }
+  }
+}
