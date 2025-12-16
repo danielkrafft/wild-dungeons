@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "wilddungeons:block/large_detonite_bud",
+      "x": 180
+    },
+    "facing=east": {
+      "model": "wilddungeons:block/large_detonite_bud",
+      "x": 90,
+      "y": 90
+    },
+    "facing=north": {
+      "model": "wilddungeons:block/large_detonite_bud",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "wilddungeons:block/large_detonite_bud",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up": {
+      "model": "wilddungeons:block/large_detonite_bud"
+    },
+    "facing=west": {
+      "model": "wilddungeons:block/large_detonite_bud",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

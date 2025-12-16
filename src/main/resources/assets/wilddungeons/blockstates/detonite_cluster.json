@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "wilddungeons:block/detonite_cluster",
+      "x": 180
+    },
+    "facing=east": {
+      "model": "wilddungeons:block/detonite_cluster",
+      "x": 90,
+      "y": 90
+    },
+    "facing=north": {
+      "model": "wilddungeons:block/detonite_cluster",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "wilddungeons:block/detonite_cluster",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up": {
+      "model": "wilddungeons:block/detonite_cluster"
+    },
+    "facing=west": {
+      "model": "wilddungeons:block/detonite_cluster",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

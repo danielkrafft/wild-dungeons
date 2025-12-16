@@ -30,6 +30,15 @@ public class WDCreativeTabs {
                 output.accept(WIND_CANNON_ITEM.get());
                 output.accept(WIND_HAMMER_ITEM.get());
                 output.accept(STAR_CANNON.get());
+
+
+                output.accept(DETONITE_CRYSTAL.get());
+                output.accept(DETONITE_CRYSTAL_BLOCK.get());
+                output.accept(SMALL_DETONITE_BUD.get());
+                output.accept(MEDIUM_DETONITE_BUD.get());
+                output.accept(LARGE_DETONITE_BUD.get());
+                output.accept(DETONITE_CLUSTER.get());
+
                 output.accept(EGG_SAC_ARROWS.get());
 
                 output.accept(WOODEN_WAR_SPEAR.get());
@@ -217,6 +226,7 @@ public class WDCreativeTabs {
                 output.accept(BLACK_PRISMARINE_SMALL_TILE.get());
                 output.accept(BLACK_PRISMARINE_SMALL_TILE_SLAB.get());
                 output.accept(BLACK_PRISMARINE_SMALL_TILE_STAIRS.get());
+
 
             })
             .build()

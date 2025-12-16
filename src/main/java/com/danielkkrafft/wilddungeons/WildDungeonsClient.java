@@ -3,6 +3,7 @@ package com.danielkkrafft.wilddungeons;
 import com.danielkkrafft.wilddungeons.entity.model.*;
 import com.danielkkrafft.wilddungeons.entity.renderer.*;
 import com.danielkkrafft.wilddungeons.registry.WDBlockEntities;
+import com.danielkkrafft.wilddungeons.registry.WDBlocks;
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
 import com.danielkkrafft.wilddungeons.registry.WDFluids;
 import com.danielkkrafft.wilddungeons.util.CameraShakeUtil;
@@ -110,6 +111,10 @@ public class WildDungeonsClient {
 
         ItemBlockRenderTypes.setRenderLayer(WDFluids.LIFE_LIQUID.get(), RenderType.translucent());
         ItemBlockRenderTypes.setRenderLayer(WDFluids.FLOWING_LIFE_LIQUID.get(), RenderType.translucent());
+        ItemBlockRenderTypes.setRenderLayer(WDBlocks.SMALL_DETONITE_BUD.get(), RenderType.cutoutMipped());
+        ItemBlockRenderTypes.setRenderLayer(WDBlocks.MEDIUM_DETONITE_BUD.get(), RenderType.cutoutMipped());
+        ItemBlockRenderTypes.setRenderLayer(WDBlocks.LARGE_DETONITE_BUD.get(), RenderType.cutoutMipped());
+        ItemBlockRenderTypes.setRenderLayer(WDBlocks.DETONITE_CLUSTER.get(), RenderType.cutoutMipped());
 
         event.registerFluidType(new IClientFluidTypeExtensions() {
 

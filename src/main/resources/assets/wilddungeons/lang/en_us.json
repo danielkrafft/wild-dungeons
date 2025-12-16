@@ -38,6 +38,8 @@
   "item.wilddungeons.boss_key": "Boss Key",
   "item.wilddungeons.egg_sac_arrow": "Egg Sac Arrow",
 
+  "item.wilddungeons.detonite_crystal": "Detonite Crystal",
+
   "item.wilddungeons.wooden_war_spear": "Wooden War Spear",
   "item.wilddungeons.stone_war_spear": "Stone War Spear",
   "item.wilddungeons.iron_war_spear": "Iron War Spear",
@@ -92,6 +94,13 @@
   "block.wilddungeons.iron_grate": "Iron Grate",
   "block.wilddungeons.toxic_gas": "Toxic Gas",
   "block.wilddungeons.spider_egg": "Egg Sac",
+
+  "block.wilddungeons.detonite_crystal_block": "Detonite Crystal Block",
+  "block.wilddungeons.small_detonite_bud": "Small Detonite Bud",
+  "block.wilddungeons.medium_detonite_bud": "Medium Detonite Bud",
+  "block.wilddungeons.large_detonite_bud": "Large Detonite Bud",
+  "block.wilddungeons.detonite_cluster": "Detonite Cluster",
+
 
   "block.wilddungeons.prismarine_tile": "Prismarine Tiles",
   "block.wilddungeons.prismarine_tile_slab": "Prismarine Tiles Slab",

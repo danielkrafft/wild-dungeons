@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+  "layer0": "wilddungeons:block/medium_detonite_bud"
+}
+}
