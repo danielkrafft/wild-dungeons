@@ -125,7 +125,7 @@ public class PrimalCreeper extends Monster implements GeoEntity {
 
     public static AttributeSupplier.Builder createMobAttributes() {
         return Monster.createMonsterAttributes()
-                .add(Attributes.MAX_HEALTH, 1000.0D)
+                .add(Attributes.MAX_HEALTH, 300.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.11f)
                 .add(Attributes.FOLLOW_RANGE, 40.0D)
                 .add(Attributes.ATTACK_DAMAGE, 15.0D)
@@ -478,7 +478,7 @@ public class PrimalCreeper extends Monster implements GeoEntity {
             tickCount = 0;
             hasThrown = false;
             isPostThrow = false;
-            entity.setCooldown(340);
+            entity.setCooldown(200);
             entity.getNavigation().stop();
         }
 
@@ -692,7 +692,7 @@ public class PrimalCreeper extends Monster implements GeoEntity {
             tickCount = 0;
             currentSet = 0;
             hasThrown = new boolean[9];
-            entity.setCooldown(600);
+            entity.setCooldown(300);
             entity.getNavigation().stop();
         }
 

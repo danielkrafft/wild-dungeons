@@ -74,6 +74,10 @@ public class WildDungeonsClient {
         event.registerEntityRenderer(WDEntities.EGG_SAC_ARROW.get(),  EggSacArrowRenderer::new);
         event.registerEntityRenderer(WDEntities.THROWN_NAUTILUS_SHIELD.get(),  ThrownNautilusShieldRenderer::new);
 
+        event.registerEntityRenderer(WDEntities.CONDEMNED_GUARDIAN.get(),  CondemnedGuardianRenderer::new);
+        event.registerEntityRenderer(WDEntities.CONDEMNED_GUARDIAN_SEGMENT.get(),  CondemnedGuardianSegmentRenderer::new);
+
+
         event.registerBlockEntityRenderer(WDBlockEntities.TOXIC_GAS_ENTITY.get(), GasBlockRenderer::new);
 
     }

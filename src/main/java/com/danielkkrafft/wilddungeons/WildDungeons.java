@@ -114,6 +114,7 @@ public class WildDungeons {
         e.put(WDEntities.COPPER_SENTINEL.get(), CopperSentinel.createMobAttributes().build());
         e.put(WDEntities.PRIMAL_CREEPER.get(), PrimalCreeper.createMobAttributes().build());
         e.put(WDEntities.CONDEMNED_GUARDIAN.get(), CondemnedGuardian.createMobAttributes().build());
+        e.put(WDEntities.CONDEMNED_GUARDIAN_SEGMENT.get(), CondemnedGuardian.createMobAttributes().build());
 
     }
 
