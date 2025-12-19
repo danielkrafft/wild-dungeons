@@ -26,12 +26,9 @@ import software.bernie.geckolib.renderer.GeoEntityRenderer;
 @OnlyIn(Dist.CLIENT)
 public class CondemnedGuardianRenderer extends GeoEntityRenderer<CondemnedGuardian> {
 
-    private static final ResourceLocation GUARDIAN_BEAM_LOCATION = ResourceLocation.withDefaultNamespace("textures/entity/guardian_beam.png");
-    private static final RenderType LASER_RENDER_TYPE = RenderType.entityCutoutNoCull(GUARDIAN_BEAM_LOCATION);
-
     public CondemnedGuardianRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new CondemnedGuardianHeadModel());
-        //this.addRenderLayer(new CondemnedGuardianLaserLayer(this));
+        this.addRenderLayer(new CondemnedGuardianGlowLayer(this));
     }
 
 
@@ -49,8 +46,4 @@ public class CondemnedGuardianRenderer extends GeoEntityRenderer<CondemnedGuardi
     }
 
 
-
-    private static void vertex(VertexConsumer consumer, PoseStack.Pose pose, float x, float y, float z, int red, int green, int blue, float u, float v) {
-        consumer.addVertex(pose, x, y, z).setColor(red, green, blue, 255).setUv(u, v).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(pose, 0.0F, 1.0F, 0.0F);
-    }
 }

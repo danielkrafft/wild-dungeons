@@ -16,6 +16,7 @@ import software.bernie.geckolib.renderer.GeoEntityRenderer;
 public class CondemnedGuardianSegmentRenderer extends GeoEntityRenderer<CondemnedGuardianSegment> {
     public CondemnedGuardianSegmentRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new CondemnedGuardianSegmentModel());
+        this.addRenderLayer(new CondemnedGuardianSegmentGlowLayer(this));
     }
 
     @Override

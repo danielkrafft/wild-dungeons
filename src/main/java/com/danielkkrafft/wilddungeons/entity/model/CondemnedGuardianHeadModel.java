@@ -9,7 +9,7 @@ public class CondemnedGuardianHeadModel extends ClientModel<CondemnedGuardian>
     public CondemnedGuardianHeadModel()
     {
         super(
-                WildDungeons.rl("animations/entity/condemned_guardian.animation.json"),
+                WildDungeons.rl("animations/entity/condemned_guardian_head.animation.json"),
                 WildDungeons.rl("geo/entity/condemned_guardian_head.geo.json"),
                 WildDungeons.rl("textures/entity/condemned_guardian.png")
         );

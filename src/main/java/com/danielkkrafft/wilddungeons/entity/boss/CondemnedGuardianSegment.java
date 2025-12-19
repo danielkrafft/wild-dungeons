@@ -38,7 +38,7 @@ public class CondemnedGuardianSegment extends PathfinderMob implements GeoEntity
     private int followEntityId = -1;
 
     private static final double POSITION_LERP_SPEED = 0.85D;
-    private static final double SEGMENT_SPACING = 1.5D;
+    private static final double SEGMENT_SPACING = 1.1D;
 
     private static final EntityDataAccessor<Integer> DATA_SEGMENT_INDEX = SynchedEntityData.defineId(CondemnedGuardianSegment.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> DATA_NEXT_ENTITY_ID = SynchedEntityData.defineId(CondemnedGuardianSegment.class, EntityDataSerializers.INT);

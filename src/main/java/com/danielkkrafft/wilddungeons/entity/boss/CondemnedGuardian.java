@@ -1,5 +1,6 @@
 package com.danielkkrafft.wilddungeons.entity.boss;
 
+import com.danielkkrafft.wilddungeons.entity.PrimalCreeper;
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
@@ -41,6 +42,7 @@ import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.animation.AnimationController;
 import software.bernie.geckolib.animation.PlayState;
+import software.bernie.geckolib.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
@@ -58,6 +60,22 @@ public class CondemnedGuardian extends PathfinderMob implements GeoEntity {
 
     private static final EntityDataAccessor<Float> DATA_HEALTH_SYNC = SynchedEntityData.defineId(CondemnedGuardian.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> DATA_BOSS_PROGRESS = SynchedEntityData.defineId(CondemnedGuardian.class, EntityDataSerializers.FLOAT);
+    private static final String CONDEMNED_GUARDIAN_CONTROLLER = "condemned_guardian_controller";
+
+    private final AnimationController<CondemnedGuardian> mainController = new AnimationController<>(this, CONDEMNED_GUARDIAN_CONTROLLER, 5, state ->
+            state.setAndContinue(idleAnim)
+    )
+            .triggerableAnim(laser, laserAnim);
+    private static final String
+            idle = "animation.model.idle", //Idle
+            laser = "animation.model.laser",
+            chomp = "animation.model.laser";  //Laser
+
+    private static final RawAnimation
+            idleAnim = RawAnimation.begin().thenLoop(idle),
+            laserAnim = RawAnimation.begin().thenLoop(laser),
+            chompAnim = RawAnimation.begin().thenLoop(chomp);
+
 
     public boolean isShootingLaser = false;
 
@@ -315,7 +333,7 @@ public class CondemnedGuardian extends PathfinderMob implements GeoEntity {
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(new AnimationController<>(this, "main_controller", 5, state -> PlayState.STOP));
+        controllers.add(mainController);
     }
 
     @Override
@@ -428,9 +446,11 @@ public class CondemnedGuardian extends PathfinderMob implements GeoEntity {
                 this.phaseTimer = 0;
                 if (this.guardian.getRandom().nextFloat() < 0.35F && dist > 8.0D) {
                     this.currentPhase = ChargePhase.LASER;
+                    this.guardian.triggerAnim(CONDEMNED_GUARDIAN_CONTROLLER,laser);
                     this.guardian.isShootingLaser = true;
                     this.laserTime = -10;
                 } else {
+                    this.guardian.triggerAnim(CONDEMNED_GUARDIAN_CONTROLLER,chomp);
                     this.currentPhase = ChargePhase.CHARGING;
                 }
             }
@@ -468,6 +488,7 @@ public class CondemnedGuardian extends PathfinderMob implements GeoEntity {
                         this.guardian.damageSources().indirectMagic(this.guardian, this.guardian),
                         10.0F
                 );
+                this.guardian.stopTriggeredAnim(CONDEMNED_GUARDIAN_CONTROLLER,laser);
                 this.guardian.isShootingLaser = false;
                 this.currentPhase = ChargePhase.CIRCLING;
                 this.phaseTimer = 0;
@@ -502,6 +523,7 @@ public class CondemnedGuardian extends PathfinderMob implements GeoEntity {
                     entity.getX() - headPos.x,
                     entity.getZ() - headPos.z
             );
+            this.guardian.stopTriggeredAnim(CONDEMNED_GUARDIAN_CONTROLLER,chomp);
 
             this.currentPhase = ChargePhase.CIRCLING;
             this.phaseTimer = 0;

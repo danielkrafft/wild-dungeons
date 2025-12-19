@@ -1,0 +1,32 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"animation.model.idle": {
+			"loop": true,
+			"bones": {
+				"lower_jaw": {
+					"rotation": [0, 0, "math.cos(query.anim_time*100)*5"]
+				}
+			}
+		},
+		"animation.model.laser": {
+			"loop": true,
+			"bones": {
+				"lower_jaw": {
+					"rotation": [0, 0, "-27.5 + math.cos(query.anim_time*3000)*1"]
+				},
+				"upper_jaw": {
+					"rotation": [0, 0, "-math.cos(query.anim_time*3000)*1"]
+				}
+			}
+		},
+		"animation.model.chomp": {
+			"loop": true,
+			"bones": {
+				"lower_jaw": {
+					"rotation": [0, 0, "-2.5+math.cos(query.anim_time * 600) * 25"]
+				}
+			}
+		}
+	}
+}
