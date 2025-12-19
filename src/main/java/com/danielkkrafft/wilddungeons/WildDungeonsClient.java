@@ -119,6 +119,7 @@ public class WildDungeonsClient {
         ItemBlockRenderTypes.setRenderLayer(WDBlocks.MEDIUM_DETONITE_BUD.get(), RenderType.cutoutMipped());
         ItemBlockRenderTypes.setRenderLayer(WDBlocks.LARGE_DETONITE_BUD.get(), RenderType.cutoutMipped());
         ItemBlockRenderTypes.setRenderLayer(WDBlocks.DETONITE_CLUSTER.get(), RenderType.cutoutMipped());
+        ItemBlockRenderTypes.setRenderLayer(WDBlocks.PUTRID_EGG.get(), RenderType.cutoutMipped());
 
         event.registerFluidType(new IClientFluidTypeExtensions() {
 

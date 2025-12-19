@@ -31,7 +31,10 @@ public class WDCreativeTabs {
                 output.accept(WIND_HAMMER_ITEM.get());
                 output.accept(STAR_CANNON.get());
 
+                output.accept(PUTRID_EGG.get());
 
+                output.accept(DETONITE_ORE.get());
+                output.accept(DETONITE_BLOCK.get());
                 output.accept(DETONITE_CRYSTAL.get());
                 output.accept(DETONITE_CRYSTAL_BLOCK.get());
                 output.accept(SMALL_DETONITE_BUD.get());

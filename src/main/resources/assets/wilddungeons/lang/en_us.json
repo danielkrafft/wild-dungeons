@@ -94,7 +94,10 @@
   "block.wilddungeons.iron_grate": "Iron Grate",
   "block.wilddungeons.toxic_gas": "Toxic Gas",
   "block.wilddungeons.spider_egg": "Egg Sac",
+  "block.wilddungeons.putrid_egg": "Putrid Egg",
 
+  "block.wilddungeons.detonite_ore": "Detonite Ore",
+  "block.wilddungeons.detonite_block": "Detonite Block",
   "block.wilddungeons.detonite_crystal_block": "Detonite Crystal Block",
   "block.wilddungeons.small_detonite_bud": "Small Detonite Bud",
   "block.wilddungeons.medium_detonite_bud": "Medium Detonite Bud",

@@ -14,6 +14,7 @@ import net.minecraft.world.BossEvent;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -125,7 +126,7 @@ public class PrimalCreeper extends Monster implements GeoEntity {
 
     public static AttributeSupplier.Builder createMobAttributes() {
         return Monster.createMonsterAttributes()
-                .add(Attributes.MAX_HEALTH, 300.0D)
+                .add(Attributes.MAX_HEALTH, 240.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.11f)
                 .add(Attributes.FOLLOW_RANGE, 40.0D)
                 .add(Attributes.ATTACK_DAMAGE, 15.0D)
@@ -247,8 +248,8 @@ public class PrimalCreeper extends Monster implements GeoEntity {
 
     @Override
     public boolean hurt(DamageSource source, float amount) {
-        if (!source.isDirect()) {
-            amount *= 0.75f;
+        if (source.is(DamageTypes.EXPLOSION) || source.is(DamageTypes.PLAYER_EXPLOSION)) {
+            return false;
         }
         return super.hurt(source, amount);
     }
@@ -455,6 +456,14 @@ public class PrimalCreeper extends Monster implements GeoEntity {
         private final PrimalCreeper entity;
         private boolean hasThrown = false;
         private boolean isPostThrow = false;
+        private Pattern selectedPattern = Pattern.SIMPLE;
+
+        public enum Pattern {
+            SIMPLE,
+            CROSS,
+            T_PATTERN,
+            CIRCLE
+        }
 
         public ThrowTNTGoal(PrimalCreeper entity) {
             this.entity = entity;
@@ -478,8 +487,22 @@ public class PrimalCreeper extends Monster implements GeoEntity {
             tickCount = 0;
             hasThrown = false;
             isPostThrow = false;
-            entity.setCooldown(200);
+            entity.setCooldown(120);
             entity.getNavigation().stop();
+            int r =entity.random.nextInt(3);
+            if (r==0) {
+                selectedPattern = Pattern.SIMPLE;
+
+            } else if (r==1) {
+                selectedPattern = Pattern.CROSS;
+
+            } else if (r==2) {
+                selectedPattern = Pattern.CIRCLE;
+
+            } else if (r==3) {
+                selectedPattern = Pattern.T_PATTERN;
+
+            }
         }
 
         @Override
@@ -495,7 +518,50 @@ public class PrimalCreeper extends Monster implements GeoEntity {
                 spawnChargeParticles();
             }
             else if (tickCount == THROW_TICK && !hasThrown) {
-                throwTNT(target);
+                switch (selectedPattern) {
+                    case SIMPLE -> {
+                    throwTNT(target);
+                    }
+                    case CROSS -> {
+                        throwTNTWithOffset(target,0f,0f);
+                        throwTNTWithOffset(target,-90f,0f);
+                        throwTNTWithOffset(target,-180f,0f);
+                        throwTNTWithOffset(target,90f,0f);
+                    }
+                    case CIRCLE -> {
+                        throwTNTWithOffset(target,0f,0f);
+                        throwTNTWithOffset(target,-15f,0f);
+                        throwTNTWithOffset(target,-30f,0f);
+                        throwTNTWithOffset(target,-45f,0f);
+                        throwTNTWithOffset(target,-60f,0f);
+                        throwTNTWithOffset(target,-75f,0f);
+                        throwTNTWithOffset(target,-90f,0f);
+                        throwTNTWithOffset(target,-105f,0f);
+                        throwTNTWithOffset(target,-120f,0f);
+                        throwTNTWithOffset(target,-135f,0f);
+                        throwTNTWithOffset(target,-150f,0f);
+                        throwTNTWithOffset(target,-165f,0f);
+                        throwTNTWithOffset(target,-180f,0f);
+                        throwTNTWithOffset(target,15f,0f);
+                        throwTNTWithOffset(target,30f,0f);
+                        throwTNTWithOffset(target,45f,0f);
+                        throwTNTWithOffset(target,60f,0f);
+                        throwTNTWithOffset(target,75f,0f);
+                        throwTNTWithOffset(target,90f,0f);
+                        throwTNTWithOffset(target,105f,0f);
+                        throwTNTWithOffset(target,120f,0f);
+                        throwTNTWithOffset(target,135f,0f);
+                        throwTNTWithOffset(target,150f,0f);
+                        throwTNTWithOffset(target,165f,0f);
+                    }
+                    case T_PATTERN -> {
+                        throwTNTWithOffset(target,-15f,0f);
+                        throwTNTWithOffset(target,-0f,0f);
+                        throwTNTWithOffset(target,15f,0f);
+                        throwTNTWithOffset(target,-0f,1.5f);
+                        throwTNTWithOffset(target,-0f,3f);
+                    }
+                }
                 hasThrown = true;
                 isPostThrow = true;
             }
@@ -533,16 +599,43 @@ public class PrimalCreeper extends Monster implements GeoEntity {
                     entity
             );
 
+            tnt.setFuse((int) (target.position().distanceTo(entity.position())* 5));
+
             Vec3 throwVector = target.position().subtract(entity.position())
                     .normalize()
                     .add(0, 0.3, 0);
 
             tnt.setDeltaMovement(throwVector.scale((0.075f * target.position().distanceTo(entity.position())))); // Even faster throw
-            tnt.setFuse(80);
             entity.level().addFreshEntity(tnt);
 
             entity.setDeltaMovement(entity.getDeltaMovement().subtract(throwVector.scale(0.25)));
             entity.playSound(SoundEvents.CREEPER_PRIMED, 1.3F, 0.7F);
+        }
+        private void throwTNTWithOffset(LivingEntity target, float angleOffset, float lengthOffset) {
+            double d0 = target.getX() - entity.getX();
+            double d2 = target.getZ() - entity.getZ();
+            double baseAngle = Math.atan2(d2, d0);
+            double offsetAngle = baseAngle + Math.toRadians(angleOffset);
+
+            Vec3 direction = new Vec3(
+                    Math.cos(offsetAngle),
+                    0,
+                    Math.sin(offsetAngle)
+            ).normalize();
+            Vec3 throwVector = direction.add(0, 0.4, 0);
+
+            PrimedTnt tnt = new PrimedTnt(
+                    entity.level(),
+                    entity.getX(),
+                    entity.getY() + 1.5,
+                    entity.getZ(),
+                    entity
+            );
+            tnt.setFuse((int) (target.position().distanceTo(entity.position())* 5));
+
+
+            tnt.setDeltaMovement(throwVector.scale((0.075f * (target.position().distanceTo(entity.position())+lengthOffset))));
+            entity.level().addFreshEntity(tnt);
         }
 
         @Override
@@ -556,7 +649,7 @@ public class PrimalCreeper extends Monster implements GeoEntity {
     protected class TNTSpreadGoal extends Goal {
         public static final int ID = 2;
         public static final int WINDUP_START = 30;
-        public static final int[] THROW_TICKS = {40, 50, 60};
+        public static final int[] THROW_TICKS = {32, 34, 36};
         public static final float[] ANGLES = {-15.0f, 0.0f, 15.0f};
         public static final int MAX_TIME = 130;
 
@@ -587,7 +680,7 @@ public class PrimalCreeper extends Monster implements GeoEntity {
             tickCount = 0;
             nextThrowIndex = 0;
             hasThrown = new boolean[3];
-            entity.setCooldown(400);
+            entity.setCooldown(200);
             entity.getNavigation().stop();
         }
 
@@ -643,9 +736,10 @@ public class PrimalCreeper extends Monster implements GeoEntity {
                     entity.getZ(),
                     entity
             );
+            tnt.setFuse((int) (target.position().distanceTo(entity.position())* 5));
+
 
             tnt.setDeltaMovement(throwVector.scale((0.075f * target.position().distanceTo(entity.position()))));
-            tnt.setFuse(80);
             entity.level().addFreshEntity(tnt);
         }
 
@@ -660,8 +754,8 @@ public class PrimalCreeper extends Monster implements GeoEntity {
     protected class LongTNTSpreadGoal extends Goal {
         public static final int ID = 3;
         public static final int WINDUP_START = 30;
-        public static final int[] SET_START_TICKS = {40, 80, 120};
-        public static final int[] THROW_DELAYS = {0, 10, 20};
+        public static final int[] SET_START_TICKS = {32, 40, 48};
+        public static final int[] THROW_DELAYS = {0, 2, 4};
         public static final float[] ANGLES = {-15.0f, 0.0f, 15.0f};
         public static final int MAX_TIME = 150;
 
@@ -692,7 +786,7 @@ public class PrimalCreeper extends Monster implements GeoEntity {
             tickCount = 0;
             currentSet = 0;
             hasThrown = new boolean[9];
-            entity.setCooldown(300);
+            entity.setCooldown(180);
             entity.getNavigation().stop();
         }
 
@@ -756,8 +850,9 @@ public class PrimalCreeper extends Monster implements GeoEntity {
                     entity.getZ(),
                     entity
             );
+            tnt.setFuse((int) (target.position().distanceTo(entity.position())* 5));
+
             tnt.setDeltaMovement(throwVector.scale((0.075f * target.position().distanceTo(entity.position()))));
-            tnt.setFuse(80);
             entity.level().addFreshEntity(tnt);
         }
 

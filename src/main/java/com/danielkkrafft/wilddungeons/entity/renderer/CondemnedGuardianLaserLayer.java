@@ -29,7 +29,7 @@ public class CondemnedGuardianLaserLayer extends GeoRenderLayer<CondemnedGuardia
 
     @Override
     public void render(PoseStack poseStack, CondemnedGuardian animatable, BakedGeoModel bakedModel, @Nullable RenderType renderType, MultiBufferSource bufferSource, @Nullable VertexConsumer buffer, float partialTick, int packedLight, int packedOverlay) {
-        if (!animatable.isShootingLaser || animatable.getTarget() == null) return;
+        if (animatable.getTarget() == null) return;
 
         LivingEntity target = animatable.getTarget();
 

@@ -198,11 +198,15 @@ public class WDBlocks {
     public static final DeferredBlock<Block> BLACK_PRISMARINE_SMALL_TILE_STAIRS = registerWithItem("black_prismarine_small_tile_stairs", () -> new StairBlock(BLACK_PRISMARINE_SMALL_TILE.get().defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(BLACK_PRISMARINE_SMALL_TILE.get())));
     public static final DeferredBlock<Block> BLACK_PRISMARINE_SMALL_TILE_SLAB = registerWithItem("black_prismarine_small_tile_slab", () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(BLACK_PRISMARINE_SMALL_TILE.get())));
 
+    public static final DeferredBlock<Block> DETONITE_ORE = registerWithItem("detonite_ore", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GRAY).requiresCorrectToolForDrops().strength(1.9F, 6.0F).sound(SoundType.STONE)));
+    public static final DeferredBlock<Block> DETONITE_BLOCK = registerWithItem("detonite_block", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GRAY).requiresCorrectToolForDrops().strength(1.9F, 6.0F).sound(SoundType.STONE)));
     public static final DeferredBlock<Block> DETONITE_CRYSTAL_BLOCK = registerWithItem("detonite_crystal_block", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_YELLOW).requiresCorrectToolForDrops().strength(1.5F, 6.0F).sound(SoundType.AMETHYST)));
     public static final DeferredBlock<Block> SMALL_DETONITE_BUD = registerWithItem("small_detonite_bud", () -> new DetoniteClusterBlock(3f,4f,BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_YELLOW).requiresCorrectToolForDrops().strength(1.5F, 6.0F).sound(SoundType.AMETHYST)));
     public static final DeferredBlock<Block> MEDIUM_DETONITE_BUD = registerWithItem("medium_detonite_bud", () -> new DetoniteClusterBlock(4f,3f,BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_YELLOW).requiresCorrectToolForDrops().strength(1.5F, 6.0F).sound(SoundType.AMETHYST)));
     public static final DeferredBlock<Block> LARGE_DETONITE_BUD = registerWithItem("large_detonite_bud", () -> new DetoniteClusterBlock(5f,3f,BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_YELLOW).requiresCorrectToolForDrops().strength(1.5F, 6.0F).sound(SoundType.AMETHYST)));
     public static final DeferredBlock<Block> DETONITE_CLUSTER = registerWithItem("detonite_cluster", () -> new DetoniteClusterBlock(7f,3f,BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_YELLOW).requiresCorrectToolForDrops().strength(1.5F, 6.0F).sound(SoundType.AMETHYST)));
+
+    public static final DeferredBlock<Block> PUTRID_EGG = registerWithItem("putrid_egg", () -> new PutridEggBlock(BlockBehaviour.Properties.of().mapColor(MapColor.GRASS).requiresCorrectToolForDrops().strength(3.5F, 0.2f).sound(SoundType.MUD)));
 
 
     private static <T extends Block> DeferredBlock<T> registerWithItem(String name, Supplier<T> supplier, Item.@NotNull Properties properties) {
