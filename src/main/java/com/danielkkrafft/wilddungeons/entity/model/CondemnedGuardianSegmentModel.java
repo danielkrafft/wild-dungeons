@@ -20,7 +20,7 @@ public class CondemnedGuardianSegmentModel extends ClientModel<CondemnedGuardian
 
     @Override
     public ResourceLocation getModelResource(CondemnedGuardianSegment animatable, @Nullable GeoRenderer<CondemnedGuardianSegment> renderer) {
-        if (animatable.getIndex() % 3 == 0) return WildDungeons.rl("geo/entity/condemned_guardian_segment_2.geo.json");
+        if (animatable.getIndex() % 3 == 0 && animatable.getIndex() < 10) return WildDungeons.rl("geo/entity/condemned_guardian_segment_2.geo.json");
         return super.getModelResource(animatable, renderer);
     }
 }

@@ -17,6 +17,7 @@ import net.minecraft.world.BossEvent;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -68,7 +69,7 @@ public class CondemnedGuardian extends PathfinderMob implements GeoEntity {
 
     public static AttributeSupplier.Builder createMobAttributes() {
         return Monster.createMonsterAttributes()
-                .add(Attributes.MAX_HEALTH, 1000.0D)
+                .add(Attributes.MAX_HEALTH, 300.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.3D)
                 .add(Attributes.FOLLOW_RANGE, 40.0D)
                 .add(Attributes.ATTACK_DAMAGE, 15.0D)
@@ -79,7 +80,7 @@ public class CondemnedGuardian extends PathfinderMob implements GeoEntity {
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
-        builder.define(DATA_HEALTH_SYNC, 1000.0f);
+        builder.define(DATA_HEALTH_SYNC, 300.0f);
         builder.define(DATA_BOSS_PROGRESS, 1.0f);
     }
 
@@ -180,13 +181,6 @@ public class CondemnedGuardian extends PathfinderMob implements GeoEntity {
         float totalMaxHealth = 0.0f;
         totalHealth += getHealth();
         totalMaxHealth += getMaxHealth();
-        for (CondemnedGuardianSegment segment : this.segments) {
-            if (segment != null && segment.isAlive()) {
-                totalHealth += segment.getHealth();
-                totalMaxHealth += segment.getMaxHealth();
-            }
-        }
-
         float progress = totalMaxHealth > 0 ? totalHealth / totalMaxHealth : 0.0f;
         this.entityData.set(DATA_HEALTH_SYNC, totalHealth);
         this.entityData.set(DATA_BOSS_PROGRESS, progress);
@@ -266,10 +260,18 @@ public class CondemnedGuardian extends PathfinderMob implements GeoEntity {
     }
 
     @Override
+    public boolean hurt(DamageSource source, float amount) {
+        if (source.is(DamageTypes.GENERIC_KILL)) return super.hurt(source, amount);
+        if (source.getEntity() instanceof CondemnedGuardianSegment) return super.hurt(source, amount);
+
+        return false;
+    }
+
+    @Override
     public void die(DamageSource source) {
         for (CondemnedGuardianSegment segment : new ArrayList<>(this.segments)) {
             if (segment.isAlive()) {
-                segment.remove(RemovalReason.DISCARDED);
+                segment.hurt(this.damageSources().mobAttack(this),100f);
             }
         }
         this.segments.clear();

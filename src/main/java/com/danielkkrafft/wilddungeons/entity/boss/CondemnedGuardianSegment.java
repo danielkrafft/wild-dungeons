@@ -6,8 +6,11 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -201,23 +204,26 @@ public class CondemnedGuardianSegment extends PathfinderMob implements GeoEntity
 
     @Override
     public boolean hurt(DamageSource source, float amount) {
-        if (!entityData.get(DATA_IS_VULNERABLE)) {
-            return false;
-        }
+        if (source.getEntity() instanceof CondemnedGuardian) return super.hurt(source, amount);
+        if (source.is(DamageTypes.GENERIC_KILL)) return super.hurt(source, amount);
+        if (this.getIndex() % 3 != 0 || this.getIndex() > 10) return false;
 
         boolean result = super.hurt(source, amount);
 
         if (result && isDeadOrDying() && !level().isClientSide) {
-            handleDeath();
+            handleDeath(source);
         }
 
         return result;
     }
 
-    private void handleDeath() {
+    private void handleDeath(DamageSource source) {
         if (this.headEntityId != -1) {
             Entity headEntity = level().getEntity(this.headEntityId);
             if (headEntity instanceof CondemnedGuardian head) {
+                head.hurt(this.damageSources().mobAttack(this),110.5F);
+                this.level().playLocalSound(this, SoundEvents.WITHER_HURT, SoundSource.HOSTILE,1,1);
+                this.level().explode(this,this.getX(),this.getY(),this.getZ(),0.2f, Level.ExplosionInteraction.MOB);
                 head.onSegmentDeath(this);
             }
         }
