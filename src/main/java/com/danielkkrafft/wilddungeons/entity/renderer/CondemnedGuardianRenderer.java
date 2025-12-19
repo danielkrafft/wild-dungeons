@@ -31,7 +31,7 @@ public class CondemnedGuardianRenderer extends GeoEntityRenderer<CondemnedGuardi
 
     public CondemnedGuardianRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new CondemnedGuardianHeadModel());
-        this.addRenderLayer(new CondemnedGuardianLaserLayer(this));
+        //this.addRenderLayer(new CondemnedGuardianLaserLayer(this));
     }
 
 

@@ -49,6 +49,7 @@ public class CondemnedGuardian extends PathfinderMob implements GeoEntity {
     private static final int SEGMENT_COUNT = 12;
     private static final double SEGMENT_SPACING = 1.5D;
     private static final double WAVE_AMPLITUDE = 0.25D;
+    private static final double WAVE_SPEED = 0.1D;
 
     private final List<CondemnedGuardianSegment> segments = new ArrayList<>();
     private final ServerBossEvent bossEvent = new ServerBossEvent(getDisplayName(), BossEvent.BossBarColor.BLUE, BossEvent.BossBarOverlay.PROGRESS);

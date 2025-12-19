@@ -8,7 +8,6 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -102,8 +101,9 @@ public class CondemnedGuardianSegment extends PathfinderMob implements GeoEntity
     public void tick() {
         super.tick();
 
-        if (this.nextEntityId == -1 && this.prevEntityId == -1) this.remove(RemovalReason.DISCARDED);
-
+        if (!this.level().isClientSide && this.tickCount> 2) {
+            if (this.nextEntityId == -1 && this.prevEntityId == -1) this.remove(RemovalReason.DISCARDED);
+        }
         setNoGravity(isInWater());
 
         if (isInWater()) {
@@ -201,9 +201,9 @@ public class CondemnedGuardianSegment extends PathfinderMob implements GeoEntity
 
     @Override
     public boolean hurt(DamageSource source, float amount) {
-        if (source.is(DamageTypes.GENERIC_KILL)) return super.hurt(source, amount);
-
-        if (this.getIndex() % 3 != 0) return false;
+        if (!entityData.get(DATA_IS_VULNERABLE)) {
+            return false;
+        }
 
         boolean result = super.hurt(source, amount);
 
