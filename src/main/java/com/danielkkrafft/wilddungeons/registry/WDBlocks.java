@@ -208,6 +208,8 @@ public class WDBlocks {
 
     public static final DeferredBlock<Block> PUTRID_EGG = registerWithItem("putrid_egg", () -> new PutridEggBlock(BlockBehaviour.Properties.of().mapColor(MapColor.GRASS).requiresCorrectToolForDrops().strength(3.5F, 0.2f).sound(SoundType.MUD)));
 
+    public static final DeferredBlock<Block> DENSE_TNT = registerWithItem("dense_tnt", () -> new DenseTNTBlock(BlockBehaviour.Properties.of().mapColor(MapColor.FIRE).instabreak().sound(SoundType.GRASS).ignitedByLava()));
+
 
     private static <T extends Block> DeferredBlock<T> registerWithItem(String name, Supplier<T> supplier, Item.@NotNull Properties properties) {
         DeferredBlock<T> block = BLOCKS.register(name, supplier);

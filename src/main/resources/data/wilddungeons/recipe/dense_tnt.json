@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "#": [
+      {
+        "item": "minecraft:tnt"
+      }
+    ],
+    "X": {
+      "item": "wilddungeons:detonite_crystal"
+    }
+  },
+  "pattern": [
+    "X#X",
+    "#X#",
+    "X#X"
+  ],
+  "result": {
+    "count": 1,
+    "id": "wilddungeons:dense_tnt"
+  }
+}

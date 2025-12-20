@@ -128,6 +128,12 @@ public class WDEntities {
                     .sized(1f, 1f)
                     .build(WildDungeons.rl("wind_arrow").toString()));
 
+    public static final DeferredHolder<EntityType<?>, EntityType<PrimedDenseTnt>> PRIMED_DENSE_TNT = ENTITIES.register("primed_dense_tnt",
+            () -> EntityType.Builder
+                    .<PrimedDenseTnt>of(PrimedDenseTnt::new, MobCategory.MISC)
+                    .sized(1f, 1f)
+                    .build(WildDungeons.rl("primed_dense_tnt").toString()));
+
     public static final DeferredHolder<EntityType<?>, EntityType<BlackHole>> BLACK_HOLE = ENTITIES.register("black_hole",
             () -> EntityType.Builder
                     .of(BlackHole::new, MobCategory.MISC)

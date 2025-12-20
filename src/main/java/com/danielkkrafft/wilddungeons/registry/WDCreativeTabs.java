@@ -33,6 +33,7 @@ public class WDCreativeTabs {
 
                 output.accept(WATCHFUL_EYE.get());
                 output.accept(PUTRID_EGG.get());
+                output.accept(DENSE_TNT.get());
 
                 output.accept(DETONITE_ORE.get());
                 output.accept(DETONITE_BLOCK.get());

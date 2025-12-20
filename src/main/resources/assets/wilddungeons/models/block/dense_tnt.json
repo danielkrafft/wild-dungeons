@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "bottom": "wilddungeons:block/dense_tnt_bottom",
+    "side": "wilddungeons:block/dense_tnt_side",
+    "top": "wilddungeons:block/dense_tnt_top"
+  }
+}
