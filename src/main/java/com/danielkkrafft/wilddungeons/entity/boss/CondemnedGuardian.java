@@ -65,7 +65,8 @@ public class CondemnedGuardian extends PathfinderMob implements GeoEntity {
     private final AnimationController<CondemnedGuardian> mainController = new AnimationController<>(this, CONDEMNED_GUARDIAN_CONTROLLER, 5, state ->
             state.setAndContinue(idleAnim)
     )
-            .triggerableAnim(laser, laserAnim);
+            .triggerableAnim(laser, laserAnim)
+            .triggerableAnim(chomp, chompAnim);
     private static final String
             idle = "animation.model.idle", //Idle
             laser = "animation.model.laser",
@@ -91,8 +92,7 @@ public class CondemnedGuardian extends PathfinderMob implements GeoEntity {
                 .add(Attributes.MOVEMENT_SPEED, 0.3D)
                 .add(Attributes.FOLLOW_RANGE, 40.0D)
                 .add(Attributes.ATTACK_DAMAGE, 15.0D)
-                .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D)
-                .add(Attributes.ARMOR, 10.0D);
+                .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D);
     }
 
     @Override

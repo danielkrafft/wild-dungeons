@@ -39,6 +39,7 @@ public class WDItems {
     public static final DeferredItem<Item> BOSS_KEY = ITEMS.register("boss_key", () -> new Item(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)));
 
     public static final DeferredItem<Item> DETONITE_CRYSTAL = ITEMS.register("detonite_crystal", () -> new Item( new Item.Properties()));
+    public static final DeferredItem<Item> WATCHFUL_EYE = ITEMS.register("watchful_eye", () -> new Item( new Item.Properties().stacksTo(1)));
 
 
     //------- MUSIC DISCS -------//
@@ -75,5 +76,8 @@ public class WDItems {
     public static final DeferredItem<Item> SPIDERLING_SPAWN_EGG = ITEMS.register("spiderling_spawn_egg", () -> new SpawnEggItem(WDEntities.SPIDERLING.get(), new Color(65, 0, 70).getRGB(), new Color(8, 8, 8).getRGB(), new Item.Properties()));
     public static final DeferredItem<Item> COPPER_SENTINEL_SPAWN_EGG = ITEMS.register("copper_sentinel_spawn_egg", () -> new SpawnEggItem(WDEntities.COPPER_SENTINEL.get(), new Color(255, 102, 0).getRGB(), new Color(29, 176, 84).getRGB(), new Item.Properties()));
     public static final DeferredItem<Item> TOXIC_WISP_SPAWN_EGG = ITEMS.register("toxic_wisp_spawn_egg", () -> new SpawnEggItem(WDEntities.SMALL_TOXIC_WISP.get(), new Color(162, 255, 0).getRGB(), new Color(107, 73, 0).getRGB(), new Item.Properties()));
+    public static final DeferredItem<Item> PRIMAL_CREEPER_SPAWN_EGG = ITEMS.register("primal_creeper_spawn_egg", () -> new SpawnEggItem(WDEntities.PRIMAL_CREEPER.get(), new Color(60, 94, 64).getRGB(), new Color(34, 55, 45).getRGB(), new Item.Properties()));
+    public static final DeferredItem<Item> CONDEMNED_GUARDIAN_SPAWN_EGG = ITEMS.register("condemned_guardian_spawn_egg", () -> new SpawnEggItem(WDEntities.CONDEMNED_GUARDIAN.get(), new Color(255, 100, 0).getRGB(), new Color(58, 149, 134).getRGB(), new Item.Properties()));
+
 }
 

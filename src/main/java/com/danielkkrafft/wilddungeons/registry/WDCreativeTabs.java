@@ -31,6 +31,7 @@ public class WDCreativeTabs {
                 output.accept(WIND_HAMMER_ITEM.get());
                 output.accept(STAR_CANNON.get());
 
+                output.accept(WATCHFUL_EYE.get());
                 output.accept(PUTRID_EGG.get());
 
                 output.accept(DETONITE_ORE.get());
@@ -74,6 +75,8 @@ public class WDCreativeTabs {
                 output.accept(SPIDERLING_SPAWN_EGG.get());
                 output.accept(COPPER_SENTINEL_SPAWN_EGG.get());
                 output.accept(TOXIC_WISP_SPAWN_EGG.get());
+                output.accept(PRIMAL_CREEPER_SPAWN_EGG.get());
+                output.accept(CONDEMNED_GUARDIAN_SPAWN_EGG.get());
 
                 output.accept(CONNECTION_BLOCK.get());
                 output.accept(SPAWN_BLOCK.get());

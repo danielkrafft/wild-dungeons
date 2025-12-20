@@ -39,6 +39,7 @@ public class CondemnedGuardianRenderer extends GeoEntityRenderer<CondemnedGuardi
         poseStack.mulPose(Axis.YP.rotationDegrees(-entityYaw));
         poseStack.mulPose(Axis.XP.rotationDegrees(entity.getViewXRot(partialTick)));
         poseStack.mulPose(Axis.YP.rotationDegrees(entityYaw));
+        poseStack.translate(0,0,-0.42f);
         poseStack.mulPose(Axis.YP.rotationDegrees(90));
         super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
         poseStack.popPose();
