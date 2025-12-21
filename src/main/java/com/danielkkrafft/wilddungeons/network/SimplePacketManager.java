@@ -16,8 +16,7 @@ public class SimplePacketManager {
     public static void setup(PayloadRegistrar reg) {
         reg.playToClient(ClientboundTagPacket.TYPE, ClientboundTagPacket.STREAM_CODEC, ClientboundTagPacket::handle);
         reg.playToServer(ServerboundTagPacket.TYPE, ServerboundTagPacket.STREAM_CODEC, ServerboundTagPacket::handle);
-        reg.playToServer(ThrowNautilusShieldPayload.TYPE, ThrowNautilusShieldPayload.STREAM_CODEC, ThrowNautilusShieldHandler.Client::handleDataOnNetwork);
-
+        reg.playToServer(ThrowNautilusShieldPayload.TYPE, ThrowNautilusShieldPayload.STREAM_CODEC, ThrowNautilusShieldHandler.Server::handleDataOnNetwork);
     }
 
     public record ClientboundTagPacket(CompoundTag data) implements CustomPacketPayload {

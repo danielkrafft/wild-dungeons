@@ -1,5 +1,6 @@
 package com.danielkkrafft.wilddungeons.entity.boss;
 
+import com.danielkkrafft.wilddungeons.entity.GuardianLaserBeamEntity;
 import com.danielkkrafft.wilddungeons.entity.PrimalCreeper;
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
@@ -102,6 +103,12 @@ public class CondemnedGuardian extends PathfinderMob implements GeoEntity {
         builder.define(DATA_BOSS_PROGRESS, 1.0f);
     }
 
+
+    @Override
+    public double getEyeY() {
+        return this.position().y + 0.5f;
+    }
+
     @Override
     protected void registerGoals() {
         goalSelector.addGoal(0, new CondemnedChargeAttackGoal(this));
@@ -111,6 +118,8 @@ public class CondemnedGuardian extends PathfinderMob implements GeoEntity {
         targetSelector.addGoal(0, new HurtByTargetGoal(this));
         targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, true));
     }
+
+
 
     @Override
     public void tick() {
@@ -481,13 +490,13 @@ public class CondemnedGuardian extends PathfinderMob implements GeoEntity {
 
             if (this.laserTime == 0) {
                 this.guardian.playSound(SoundEvents.GUARDIAN_ATTACK, 2.0F, 0.7F);
+                GuardianLaserBeamEntity beamEntity = new GuardianLaserBeamEntity(WDEntities.GUARDIAN_LASER_BEAM.get(), this.guardian.level());
+                beamEntity.setTarget(this.target);
+                beamEntity.setOwner(this.guardian);
+                this.guardian.level().addFreshEntity(beamEntity);
             }
 
             if (this.laserTime >= LASER_WINDUP) {
-                this.target.hurt(
-                        this.guardian.damageSources().indirectMagic(this.guardian, this.guardian),
-                        10.0F
-                );
                 this.guardian.stopTriggeredAnim(CONDEMNED_GUARDIAN_CONTROLLER,laser);
                 this.guardian.isShootingLaser = false;
                 this.currentPhase = ChargePhase.CIRCLING;

@@ -9,7 +9,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import java.util.Optional;
 
 public class ThrowNautilusShieldHandler {
-    public class Client {
+    public class Server {
         public static void handleDataOnNetwork(ThrowNautilusShieldPayload data, final IPayloadContext context) {
             Player player = context.player();
 

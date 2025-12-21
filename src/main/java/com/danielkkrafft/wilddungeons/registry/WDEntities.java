@@ -134,6 +134,12 @@ public class WDEntities {
                     .sized(1f, 1f)
                     .build(WildDungeons.rl("primed_dense_tnt").toString()));
 
+    public static final DeferredHolder<EntityType<?>, EntityType<GuardianLaserBeamEntity>> GUARDIAN_LASER_BEAM = ENTITIES.register("guardian_laser_beam",
+            () -> EntityType.Builder
+                    .<GuardianLaserBeamEntity>of(GuardianLaserBeamEntity::new, MobCategory.MISC)
+                    .sized(0.5f, 0.5f)
+                    .build(WildDungeons.rl("guardian_laser_beam").toString()));
+
     public static final DeferredHolder<EntityType<?>, EntityType<BlackHole>> BLACK_HOLE = ENTITIES.register("black_hole",
             () -> EntityType.Builder
                     .of(BlackHole::new, MobCategory.MISC)
