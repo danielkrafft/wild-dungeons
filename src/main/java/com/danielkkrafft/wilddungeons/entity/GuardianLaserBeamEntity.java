@@ -29,6 +29,7 @@ public class GuardianLaserBeamEntity extends Entity implements Targeting, Ownabl
 
     public GuardianLaserBeamEntity(EntityType<?> entityType, Level level) {
         super(entityType, level);
+        this.setInvisible(true);
     }
 
     @Override

@@ -1,12 +1,20 @@
 package com.danielkkrafft.wilddungeons.block;
 
+import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.*;
@@ -36,6 +44,7 @@ public class DetoniteClusterBlock extends AmethystBlock implements SimpleWaterlo
     protected final VoxelShape westAabb;
     protected final VoxelShape upAabb;
     protected final VoxelShape downAabb;
+    public static final BooleanProperty COOLDOWN = BooleanProperty.create("cooldown");
 
     public MapCodec<DetoniteClusterBlock> codec() {
         return CODEC;
@@ -43,7 +52,7 @@ public class DetoniteClusterBlock extends AmethystBlock implements SimpleWaterlo
 
     public DetoniteClusterBlock(float height, float aabbOffset, BlockBehaviour.Properties properties) {
         super(properties);
-        this.registerDefaultState((BlockState)((BlockState)this.defaultBlockState().setValue(WATERLOGGED, false)).setValue(FACING, Direction.UP));
+        this.registerDefaultState((BlockState)((BlockState)this.defaultBlockState().setValue(COOLDOWN, false).setValue(WATERLOGGED, false)).setValue(FACING, Direction.UP));
         this.upAabb = Block.box((double)aabbOffset, (double)0.0F, (double)aabbOffset, (double)(16.0F - aabbOffset), (double)height, (double)(16.0F - aabbOffset));
         this.downAabb = Block.box((double)aabbOffset, (double)(16.0F - height), (double)aabbOffset, (double)(16.0F - aabbOffset), (double)16.0F, (double)(16.0F - aabbOffset));
         this.northAabb = Block.box((double)aabbOffset, (double)aabbOffset, (double)(16.0F - height), (double)(16.0F - aabbOffset), (double)(16.0F - aabbOffset), (double)16.0F);
@@ -71,6 +80,65 @@ public class DetoniteClusterBlock extends AmethystBlock implements SimpleWaterlo
             default:
                 return this.upAabb;
         }
+    }
+    @Override
+    public float getExplosionResistance() {
+        return 3_600_000.0F;
+    }
+
+    @Override
+    public void stepOn(Level level, BlockPos pos, BlockState state, Entity entity) {
+        if (level.isClientSide) return;
+        if (state.getValue(COOLDOWN)) return;
+        if (entity instanceof Player player && player.isCrouching()) return;
+        triggerExplosion(level, pos, state, null);
+    }
+
+
+    @Override
+    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+        boolean silkTouch = EnchantmentHelper.getItemEnchantmentLevel(
+                WildDungeons.getEnchantment(Enchantments.SILK_TOUCH), player.getMainHandItem()) > 0;
+
+        if (!level.isClientSide) {
+            if (!silkTouch) {
+                level.explode(
+                        player,
+                        pos.getX() + 0.5,
+                        pos.getY() + 0.5,
+                        pos.getZ() + 0.5,
+                        3.0F,
+                        Level.ExplosionInteraction.MOB
+                );
+            }
+        }
+
+        return super.playerWillDestroy(level, pos, state, player);
+    }
+
+
+    @Override
+    public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+        if (state.getValue(COOLDOWN)) {
+            level.setBlock(pos, state.setValue(COOLDOWN, false), Block.UPDATE_ALL);
+        }
+    }
+
+
+    private void triggerExplosion(Level level, BlockPos pos, BlockState state, @Nullable Entity source) {
+
+        level.explode(
+                source,
+                pos.getX() + 0.5,
+                pos.getY() + 0.5,
+                pos.getZ() + 0.5,
+                3.0F,
+                Level.ExplosionInteraction.MOB
+        );
+
+        level.setBlock(pos, state.setValue(COOLDOWN, true), Block.UPDATE_ALL);
+
+        level.scheduleTick(pos, this, 10);
     }
 
     protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
@@ -107,7 +175,7 @@ public class DetoniteClusterBlock extends AmethystBlock implements SimpleWaterlo
     }
 
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(new Property[]{WATERLOGGED, FACING});
+        builder.add(new Property[]{WATERLOGGED, FACING, COOLDOWN});
     }
 
     static {
