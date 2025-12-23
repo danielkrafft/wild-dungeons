@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "wilddungeons:detonite_ore",
+    "wilddungeons:detonite_crystal_block",
+    "wilddungeons:detonite_block",
+    "wilddungeons:small_detonite_bud",
+    "wilddungeons:medium_detonite_bud",
+    "wilddungeons:large_detonite_bud",
+    "wilddungeons:detonite_cluster"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "wilddungeons:detonite_crystal_block"
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "wilddungeons:blocks/detonite_crystal_block"
+}

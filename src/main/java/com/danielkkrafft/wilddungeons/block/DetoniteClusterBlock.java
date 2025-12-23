@@ -99,11 +99,12 @@ public class DetoniteClusterBlock extends AmethystBlock implements SimpleWaterlo
     public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
         boolean silkTouch = EnchantmentHelper.getItemEnchantmentLevel(
                 WildDungeons.getEnchantment(Enchantments.SILK_TOUCH), player.getMainHandItem()) > 0;
+        if (player.isCreative()) return super.playerWillDestroy(level, pos, state, player);
 
         if (!level.isClientSide) {
             if (!silkTouch) {
                 level.explode(
-                        player,
+                        null,
                         pos.getX() + 0.5,
                         pos.getY() + 0.5,
                         pos.getZ() + 0.5,
@@ -128,7 +129,7 @@ public class DetoniteClusterBlock extends AmethystBlock implements SimpleWaterlo
     private void triggerExplosion(Level level, BlockPos pos, BlockState state, @Nullable Entity source) {
 
         level.explode(
-                source,
+                null,
                 pos.getX() + 0.5,
                 pos.getY() + 0.5,
                 pos.getZ() + 0.5,

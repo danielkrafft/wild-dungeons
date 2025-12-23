@@ -51,22 +51,25 @@ public class DetoniteBlock extends Block {
 
     @Override
     public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
-        if (level.isClientSide) {
 
-            boolean silkTouch = EnchantmentHelper.getItemEnchantmentLevel(
-                    WildDungeons.getEnchantment(Enchantments.SILK_TOUCH), player.getMainHandItem()) > 0;
+        if (player.isCreative()) return super.playerWillDestroy(level, pos, state, player);
 
-            if (!silkTouch) {
-                level.explode(
-                        player,
-                        pos.getX() + 0.5,
-                        pos.getY() + 0.5,
-                        pos.getZ() + 0.5,
-                        3.0F,
-                        Level.ExplosionInteraction.MOB
-                );
+
+            if (!level.isClientSide) {
+                boolean silkTouch = EnchantmentHelper.getItemEnchantmentLevel(
+                        WildDungeons.getEnchantment(Enchantments.SILK_TOUCH), player.getMainHandItem()) > 0;
+
+                if (!silkTouch) {
+                    level.explode(
+                            null,
+                            pos.getX() + 0.5,
+                            pos.getY() + 0.5,
+                            pos.getZ() + 0.5,
+                            3.0F,
+                            Level.ExplosionInteraction.MOB
+                    );
+                }
             }
-        }
 
         return super.playerWillDestroy(level, pos, state, player);
     }
@@ -83,7 +86,7 @@ public class DetoniteBlock extends Block {
     private void triggerExplosion(Level level, BlockPos pos, BlockState state, @Nullable Entity source) {
 
         level.explode(
-                source,
+                null,
                 pos.getX() + 0.5,
                 pos.getY() + 0.5,
                 pos.getZ() + 0.5,
