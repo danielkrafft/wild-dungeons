@@ -3,6 +3,7 @@ package com.danielkkrafft.wilddungeons.registry;
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.entity.*;
 import com.danielkkrafft.wilddungeons.entity.boss.*;
+import com.danielkkrafft.wilddungeons.entity.boss.CopperSentinel;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;

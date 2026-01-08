@@ -11,13 +11,10 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.DifficultyInstance;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -31,23 +28,19 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.animation.AnimationController;
 import software.bernie.geckolib.animation.RawAnimation;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.EnumSet;
 import java.util.List;
 
-public class BusinessCEO extends Monster implements GeoEntity {
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    private final ServerBossEvent bossEvent = new ServerBossEvent(getDisplayName(), BossEvent.BossBarColor.GREEN, BossEvent.BossBarOverlay.NOTCHED_6);
+//703 original -> 605 now (98 saved)
+public class BusinessCEO extends WDBoss implements GeoEntity {
     private static final String
             idle = "idle",
             stand_up = "stand_up",
@@ -56,6 +49,7 @@ public class BusinessCEO extends Monster implements GeoEntity {
             point = "point",
             ascend = "ascend",
             dash = "dash";
+
     private static final RawAnimation
             idleAnim = RawAnimation.begin().thenLoop(idle),
             standUpAnim = RawAnimation.begin().thenPlay(stand_up),
@@ -64,11 +58,11 @@ public class BusinessCEO extends Monster implements GeoEntity {
             pointAnim = RawAnimation.begin().thenPlay(point),
             ascendAnim = RawAnimation.begin().thenPlay(ascend),
             dashAnim = RawAnimation.begin().thenPlay(dash);
+
     private static final EntityDataAccessor<Integer> TICKS_INVULNERABLE = SynchedEntityData.defineId(BusinessCEO.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> SECOND_PHASE_TRIGGERED = SynchedEntityData.defineId(BusinessCEO.class, EntityDataSerializers.BOOLEAN);
-    private static final int SUMMON_TICKS = 70;
-    private static final String
-            ceo_controller = "ceo_controller";
+    private static final String ceo_controller = "ceo_controller";
+
     private final AnimationController<BusinessCEO> mainController = new AnimationController<>(this, ceo_controller, 5,
             state -> state.setAndContinue(idleAnim))
             .triggerableAnim(idle, idleAnim)
@@ -93,14 +87,15 @@ public class BusinessCEO extends Monster implements GeoEntity {
 
     public static Class[] FRIENDLIES = {Witch.class, BusinessCEO.class, BusinessGolem.class, AbstractIllager.class};
 
-    public BusinessCEO(EntityType<? extends Monster> entityType, Level level) {
-        super(entityType, level);
+    public BusinessCEO(EntityType<? extends WDBoss> entityType, Level level) {
+        super(entityType, level, BossEvent.BossBarColor.GREEN, BossEvent.BossBarOverlay.NOTCHED_6);
         this.xpReward = 200;
+        this.summonTicks = 70;
     }
 
     @Override
     protected void registerGoals() {
-        goalSelector.addGoal(0, new SummonGoal(this));
+        goalSelector.addGoal(0, new WDBoss.WDBossSummonGoal(this));
         goalSelector.addGoal(1, new BusinessCEOPointGoal());
         goalSelector.addGoal(2, new BusinessCEOAscendGoal());
         goalSelector.addGoal(3, new BusinessCEODashGoal());
@@ -125,11 +120,6 @@ public class BusinessCEO extends Monster implements GeoEntity {
         controllers.add(mainController);
     }
 
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return cache;
-    }
-
     public static AttributeSupplier setAttributes() {
         return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 175)
                 .add(Attributes.MOVEMENT_SPEED, 0.5)
@@ -150,77 +140,30 @@ public class BusinessCEO extends Monster implements GeoEntity {
             setSecondPhaseTriggered(true);
         }
         bossEvent.setProgress(hp);
-        //get the current goal
-//        WrappedGoal goal = goalSelector.getAvailableGoals().stream().filter(WrappedGoal::isRunning).findFirst().orElse(null);
-//        if (goal != null) {
-//            bossEvent.setName(Component.literal(goal.getGoal().getClass().getSimpleName()));
-//        } else {
-//            bossEvent.setName(getDisplayName());
-//        }
         if (!level.isClientSide && !isDeadOrDying()) {
             if (isSecondPhaseTriggered() && tickCount % 10 == 0){
-                //particle effects to indicate second phase
+                //particle effects to indicate the second phase
                 UtilityMethods.sendParticles((ServerLevel) level, ParticleTypes.ANGRY_VILLAGER, true, 1, getX(), getY() + 1.5f, getZ(), 0.5f, 0.5f, 0.5f, 0.05f);
             }
-            //logic
-//            if (getTarget() != null) {
-//                //particle effects to indicate targeting
-//                Vec3 pos = getTarget().position();
-//                UtilityMethods.sendParticles((ServerLevel) level, ParticleTypes.ELECTRIC_SPARK, true, 5, pos.x, pos.y + 1.5f, pos.z, .5f, .5f, .5f, 0.06f);
-//            }
         }
     }
 
     @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-        compound.putInt("TI", this.getTicksInvulnerable());
+    protected void saveBossData(CompoundTag compound) {
         compound.putBoolean("SP", this.isSecondPhaseTriggered());
     }
 
     @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-        if (hasCustomName()) {
-            bossEvent.setName(getDisplayName());
-        }
-
-        if (compound.contains("TI")) {
-            this.setTicksInvulnerable(compound.getInt("TI"));
-        }
-
+    protected void loadBossData(CompoundTag compound) {
         if (compound.contains("SP")) {
             this.setSecondPhaseTriggered(compound.getBoolean("SP"));
         }
     }
 
     @Override
-    public boolean mayBeLeashed() {
-        return false;
+    protected @NotNull BossSounds bossSounds() {
+        return null;
     }
-
-    @Override
-    public boolean canHaveALeashAttachedToIt() {
-        return false;
-    }
-
-
-    @Override
-    public @Nullable SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor level, @NotNull DifficultyInstance difficulty, @NotNull MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
-        bossEvent.setVisible(true);
-        return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
-    }
-
-    @Override
-    public void startSeenByPlayer(@NotNull ServerPlayer serverPlayer) {
-        bossEvent.addPlayer(serverPlayer);
-    }
-
-    @Override
-    public void stopSeenByPlayer(@NotNull ServerPlayer serverPlayer) {
-        bossEvent.removePlayer(serverPlayer);
-    }
-
 
     @Override
     protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
@@ -229,12 +172,24 @@ public class BusinessCEO extends Monster implements GeoEntity {
         builder.define(SECOND_PHASE_TRIGGERED, false);
     }
 
-    public void setTicksInvulnerable(int ticks) {
-        this.entityData.set(TICKS_INVULNERABLE, ticks);
+    @Override
+    public @Nullable SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor level, @NotNull DifficultyInstance difficulty, @NotNull MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
+        bossEvent.setVisible(true);
+        return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
     }
 
-    public int getTicksInvulnerable() {
-        return this.entityData.get(TICKS_INVULNERABLE);
+    @Override
+    protected void spawnSummonParticles(Vec3 pos) {
+        if (!(level() instanceof ServerLevel server)) return;
+
+        UtilityMethods.sendParticles((ServerLevel) BusinessCEO.this.level(), ParticleTypes.EXPLOSION_EMITTER, true, 1, pos.x, pos.y, pos.z, 0, 0, 0, 0);
+        UtilityMethods.sendParticles((ServerLevel) BusinessCEO.this.level(), ParticleTypes.ENCHANT, true, 200, pos.x, pos.y, pos.z, 1, 2, 1, 0.06f);
+        UtilityMethods.sendParticles((ServerLevel) BusinessCEO.this.level(), ParticleTypes.COMPOSTER, true, 400, pos.x, pos.y, pos.z, 1, 2, 1, 0.08f);
+    }
+
+    @Override
+    protected void summonAnimation() {
+        BusinessCEO.this.triggerAnim(ceo_controller, stand_up);
     }
 
     public void setSecondPhaseTriggered(boolean triggered) {
@@ -249,59 +204,6 @@ public class BusinessCEO extends Monster implements GeoEntity {
     public boolean isSecondPhaseTriggered() {
         return this.entityData.get(SECOND_PHASE_TRIGGERED);
     }
-
-    public boolean isInvulnerable() {
-        return getTicksInvulnerable() <= SUMMON_TICKS;
-    }
-
-
-    public class SummonGoal extends Goal {
-        public SummonGoal(@NotNull Mob mob) {
-            this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.JUMP, Goal.Flag.LOOK, Goal.Flag.TARGET));
-        }
-
-        @Override
-        public void tick() {
-            int ticks = BusinessCEO.this.getTicksInvulnerable();
-            BusinessCEO.this.setTicksInvulnerable(BusinessCEO.this.getTicksInvulnerable() + 1);
-            if (ticks % 20 == 0)
-                BusinessCEO.this.playSound(SoundEvents.NOTE_BLOCK_PLING.value(), 2, 2f);
-        }
-
-        @Override
-        public void start() {
-            BusinessCEO.this.triggerAnim(ceo_controller, stand_up);
-            BusinessCEO.this.playSound(SoundEvents.GENERIC_EXTINGUISH_FIRE, 2, 0.7f);
-            BusinessCEO.this.setInvulnerable(true);
-        }
-
-        @Override
-        public boolean canUse() {
-            return BusinessCEO.this.isInvulnerable();
-        }
-
-        @Override
-        public void stop() {
-            //pseudo explosion
-            Vec3 pos = BusinessCEO.this.position();
-            List<LivingEntity> list = BusinessCEO.this.level().getEntitiesOfClass(LivingEntity.class, AABB.ofSize(BusinessCEO.this.position(), 10, 10, 10), BusinessCEO.this::hasLineOfSight);
-            list.remove(BusinessCEO.this);
-            for (LivingEntity li : list) {
-                Vec3 kb = new Vec3(pos.x - li.position().x, pos.y - li.position().y, pos.z - li.position().z).
-                        normalize().scale(2);
-                li.knockback(1.5, kb.x, kb.z);
-                li.setRemainingFireTicks(li.getRemainingFireTicks() + 100);
-                li.hurt(new DamageSource(BusinessCEO.this.level().damageSources().generic().typeHolder()), 10);
-            }
-            BusinessCEO.this.playSound(SoundEvents.GENERIC_EXPLODE.value(), 2f, 0.8f);
-            UtilityMethods.sendParticles((ServerLevel) BusinessCEO.this.level(), ParticleTypes.EXPLOSION_EMITTER, true, 1, pos.x, pos.y, pos.z, 0, 0, 0, 0);
-            UtilityMethods.sendParticles((ServerLevel) BusinessCEO.this.level(), ParticleTypes.ENCHANT, true, 200, pos.x, pos.y, pos.z, 1, 2, 1, 0.06f);
-            UtilityMethods.sendParticles((ServerLevel) BusinessCEO.this.level(), ParticleTypes.COMPOSTER, true, 400, pos.x, pos.y, pos.z, 1, 2, 1, 0.08f);
-            BusinessCEO.this.setInvulnerable(false);
-            BusinessCEO.this.triggerAnim(ceo_controller, idle);
-        }
-    }
-
 
     class BusinessCEOTargetPlayerGoal extends Goal {
         private final TargetingConditions attackTargeting = TargetingConditions.forCombat().range(64.0F);

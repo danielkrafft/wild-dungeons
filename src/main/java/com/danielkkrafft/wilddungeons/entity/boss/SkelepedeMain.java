@@ -2,6 +2,7 @@ package com.danielkkrafft.wilddungeons.entity.boss;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
+import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
@@ -52,14 +53,14 @@ import java.util.*;
 import static net.minecraft.world.effect.MobEffects.POISON;
 import static net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE;
 
-public class SkelepedeMain extends Monster implements GeoEntity {
+//446 original -> 436 now (10 saved)
+public class SkelepedeMain extends WDBoss implements GeoEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private static final String SKELEPEDE_HEAD_CONTROLLER = "skelepede_head_controller";
     private final AnimationController<SkelepedeMain> mainController = new AnimationController<>(this, SKELEPEDE_HEAD_CONTROLLER, 5, animationPredicate());
     private static final String
             idle = "idle",
             bite = "bite";
-    private final ServerBossEvent bossEvent = new ServerBossEvent(getDisplayName(), BossEvent.BossBarColor.WHITE, BossEvent.BossBarOverlay.NOTCHED_20);
 
     private ArrayList<SkelepedeSegment> segments = new ArrayList<>();
 
@@ -82,7 +83,7 @@ public class SkelepedeMain extends Monster implements GeoEntity {
             SynchedEntityData.defineId(SkelepedeMain.class, EntityDataSerializers.FLOAT);
 
     public SkelepedeMain(EntityType<? extends Monster> entityType, Level level) {
-        super(entityType, level);
+        super(entityType, level, BossEvent.BossBarColor.WHITE, BossEvent.BossBarOverlay.NOTCHED_20);
     }
 
     protected void registerGoals() {
@@ -111,12 +112,6 @@ public class SkelepedeMain extends Monster implements GeoEntity {
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         // animation logic here
-    }
-
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return cache;
     }
 
     private boolean hasSetupSegments = false;//should this be a synced data parameter?
@@ -362,14 +357,7 @@ public class SkelepedeMain extends Monster implements GeoEntity {
     }
 
     @Override
-    public void startSeenByPlayer(@NotNull ServerPlayer serverPlayer) {
-        bossEvent.addPlayer(serverPlayer);
-    }
-
-    @Override
-    public void stopSeenByPlayer(@NotNull ServerPlayer serverPlayer) {
-        bossEvent.removePlayer(serverPlayer);
-    }
+    protected void spawnSummonParticles(Vec3 pos) {}
 
     @Override
     protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
@@ -383,9 +371,11 @@ public class SkelepedeMain extends Monster implements GeoEntity {
         return entity instanceof LivingEntity && !(entity instanceof SkelepedeSegment) && !(entity instanceof SkelepedeMain);
     }
 
+    private static final BossSounds SOUNDS = new BossSounds(null, SoundEvents.SKELETON_HURT, null);
+
     @Override
-    protected SoundEvent getHurtSound(DamageSource damageSource) {
-        return SoundEvents.SKELETON_HURT;
+    protected BossSounds bossSounds() {
+        return SOUNDS;
     }
 
     @Override

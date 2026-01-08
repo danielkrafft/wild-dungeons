@@ -1,18 +1,13 @@
-package com.danielkkrafft.wilddungeons.entity;
+package com.danielkkrafft.wilddungeons.entity.boss;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ServerBossEvent;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.util.Mth;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.DifficultyInstance;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.*;
@@ -23,34 +18,26 @@ import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
-import net.minecraft.world.entity.ai.util.LandRandomPos;
 import net.minecraft.world.entity.animal.Cat;
 import net.minecraft.world.entity.animal.Ocelot;
 import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.pathfinder.Node;
-import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.animation.AnimationController;
 import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.animation.RawAnimation;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.EnumSet;
 
-public class PrimalCreeper extends Monster implements GeoEntity {
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    private final ServerBossEvent bossEvent = new ServerBossEvent(this.getDisplayName(), BossEvent.BossBarColor.GREEN, BossEvent.BossBarOverlay.NOTCHED_6);
+//907 original -> 869 now (48 saved)
+public class PrimalCreeper extends WDBoss implements GeoEntity {
     private static final String PRIMAL_CREEPER_CONTROLLER = "primal_creeper_controller";
     private static final String PRIMAL_CREEPER_ATTACK_CONTROLLER = "primal_creeper_attack_controller";
 
@@ -70,10 +57,10 @@ public class PrimalCreeper extends Monster implements GeoEntity {
             idle = "animation.model.idle", //Idle
             walk = "animation.model.walk", //Walking
             run = "animation.model.run", //Running
-            dash = "animation.model.dash", // Dashing (not really a dash but  it's like more than running so eh ig it's a dash)
+            dash = "animation.model.dash", // Dashing (not really a dash but it's like more than running so eh ig it's a dash)
             throwing = "animation.model.throw", //throwing a tnt
             spread = "animation.model.spread", //Spreading 3 tnt
-            slow_spread = "animation.model.long_spread"; // spreading 3 tnt , 3 times
+            slow_spread = "animation.model.long_spread"; // spreading 3 tnt, 3 times
 
     private static final RawAnimation
             idleAnim = RawAnimation.begin().thenLoop(idle),
@@ -100,7 +87,7 @@ public class PrimalCreeper extends Monster implements GeoEntity {
             SynchedEntityData.defineId(PrimalCreeper.class, EntityDataSerializers.INT);
 
     public PrimalCreeper(EntityType<? extends Monster> entityType, Level level) {
-        super(entityType, level);
+        super(entityType, level, BossEvent.BossBarColor.GREEN, BossEvent.BossBarOverlay.NOTCHED_6);
         this.xpReward = 100;
     }
 
@@ -138,18 +125,6 @@ public class PrimalCreeper extends Monster implements GeoEntity {
     public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
         controllerRegistrar.add(mainController);
         controllerRegistrar.add(attackController);
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return cache;
-    }
-
-    @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
-        builder.define(CURRENT_ACTION, 0);
-        builder.define(COOLDOWN, 0);
     }
 
     public int getCurrentAction() {
@@ -235,16 +210,7 @@ public class PrimalCreeper extends Monster implements GeoEntity {
     }
 
     @Override
-    public void startSeenByPlayer(ServerPlayer serverPlayer) {
-        super.startSeenByPlayer(serverPlayer);
-        bossEvent.addPlayer(serverPlayer);
-    }
-
-    @Override
-    public void stopSeenByPlayer(ServerPlayer serverPlayer) {
-        super.stopSeenByPlayer(serverPlayer);
-        bossEvent.removePlayer(serverPlayer);
-    }
+    protected void spawnSummonParticles(Vec3 pos) {}
 
     @Override
     public boolean hurt(DamageSource source, float amount) {
@@ -885,19 +851,15 @@ public class PrimalCreeper extends Monster implements GeoEntity {
         }
     }
 
-    @Override
-    protected SoundEvent getAmbientSound() {
-        return SoundEvents.CREEPER_HURT;
-    }
+    private static final BossSounds SOUNDS = new BossSounds(
+            SoundEvents.CREEPER_HURT,
+            SoundEvents.CREEPER_HURT,
+            SoundEvents.CREEPER_DEATH
+    );
 
     @Override
-    protected SoundEvent getHurtSound(DamageSource damageSource) {
-        return SoundEvents.CREEPER_HURT;
-    }
-
-    @Override
-    protected SoundEvent getDeathSound() {
-        return SoundEvents.CREEPER_DEATH;
+    protected BossSounds bossSounds() {
+        return SOUNDS;
     }
 
     @Override

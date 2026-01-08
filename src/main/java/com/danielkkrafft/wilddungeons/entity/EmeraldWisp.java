@@ -1,5 +1,6 @@
 package com.danielkkrafft.wilddungeons.entity;
 
+import com.danielkkrafft.wilddungeons.entity.boss.CopperSentinel;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;

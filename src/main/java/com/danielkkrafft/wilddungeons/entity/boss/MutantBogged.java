@@ -9,15 +9,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.BossEvent;
@@ -49,26 +41,19 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.animation.AnimationController;
 import software.bernie.geckolib.animation.RawAnimation;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class MutantBogged extends Monster implements RangedAttackMob, GeoEntity {
+//543 original -> 433 now (110 saved)
+public class MutantBogged extends WDBoss implements RangedAttackMob, GeoEntity {
     private static final String CONTROLLER = "mutantboggedcontroller";
     private static final String idle = "idle", walk = "walk", arrowVolley = "arrow_volley", chargedArrow = "charged_arrow", dig = "dig";
     private static final RawAnimation idleAnim = RawAnimation.begin().thenLoop(idle), walkAnim = RawAnimation.begin().thenLoop(walk), arrowVolleyAnim = RawAnimation.begin().thenPlay(arrowVolley), chargedArrowAnim = RawAnimation.begin().thenPlay(chargedArrow), digAnim = RawAnimation.begin().thenLoop(dig);
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    private static final EntityDataAccessor<Integer> TICKSINVULNERABLE = SynchedEntityData.defineId(MutantBogged.class, EntityDataSerializers.INT);
-    private static final int SUMMONTICKS = 50;
-    private final ServerBossEvent bossEvent = new ServerBossEvent(
-            getDisplayName(), BossEvent.BossBarColor.GREEN, BossEvent.BossBarOverlay.PROGRESS
-    );
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
@@ -80,11 +65,6 @@ public class MutantBogged extends Monster implements RangedAttackMob, GeoEntity 
                 triggerableAnim(chargedArrow, chargedArrowAnim).
                 triggerableAnim(dig, digAnim)
         );
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return cache;
     }
 
     public enum AttackType {
@@ -106,7 +86,7 @@ public class MutantBogged extends Monster implements RangedAttackMob, GeoEntity 
     private int maxDestroySpeed, currDestroySpeed;
 
     public MutantBogged(EntityType<? extends Monster> type, Level level) {
-        super(type, level);
+        super(type, level, BossEvent.BossBarColor.GREEN, BossEvent.BossBarOverlay.PROGRESS);
         moveControl = new MoveControl(this);
         xpReward = 100;
     }
@@ -125,7 +105,7 @@ public class MutantBogged extends Monster implements RangedAttackMob, GeoEntity 
 
     @Override
     protected void registerGoals() {
-        goalSelector.addGoal(0, new SummonGoal(this));
+        goalSelector.addGoal(0, new WDBoss.WDBossSummonGoal(this));
         goalSelector.addGoal(2, new MoveTowardsTargetGoal(this, 1, 15));
         goalSelector.addGoal(2, new MutantBoggedAttackGoal(this, 1, 60));
         goalSelector.addGoal(4, new WaterAvoidingRandomStrollGoal(this, 1));
@@ -138,46 +118,6 @@ public class MutantBogged extends Monster implements RangedAttackMob, GeoEntity 
     @Override
     protected @NotNull PathNavigation createNavigation(@NotNull Level level) {
         return new GroundPathNavigation(this, level);
-    }
-
-    @Override
-    protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
-        super.defineSynchedData(builder);
-        builder.define(TICKSINVULNERABLE, 0);
-    }
-
-    @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-        compound.putInt("InvulnerableTicks", getInvulnerableTicks());
-        if (hasCustomName()) {
-            bossEvent.setName(getDisplayName());
-        }
-    }
-
-    @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-        setInvulnerableTicks(compound.getInt("InvulnerableTicks"));
-        if (hasCustomName()) {
-            bossEvent.setName(getDisplayName());
-        }
-    }
-
-    public void setInvulnerableTicks(int i) {
-        entityData.set(TICKSINVULNERABLE, i);
-    }
-    public void addInvulnerableTick() {
-        setInvulnerableTicks(getInvulnerableTicks() + 1);
-    }
-    public int getInvulnerableTicks() {
-        return entityData.get(TICKSINVULNERABLE);
-    }
-    public boolean isInvulnerable() {
-        return getInvulnerableTicks() <= SUMMONTICKS;
-    }
-    public boolean isAttacking() {
-        return attacking;
     }
 
     @Override
@@ -319,24 +259,15 @@ public class MutantBogged extends Monster implements RangedAttackMob, GeoEntity 
         return super.hurt(source, damage * 0.5f);
     }
 
-    @Override
-    protected @org.jetbrains.annotations.Nullable SoundEvent getAmbientSound() {
-        return WDSoundEvents.MUTANT_BOGGED_GROWL.value();
-    }
+    private static final BossSounds SOUNDS = new BossSounds(
+            WDSoundEvents.MUTANT_BOGGED_GROWL.value(),
+            WDSoundEvents.MUTANT_BOGGED_HIT.value(),
+            WDSoundEvents.MUTANT_BOGGED_DEATH.value()
+    );
 
     @Override
-    protected @NotNull SoundEvent getHurtSound(@NotNull DamageSource pDamageSource) {
-        return WDSoundEvents.MUTANT_BOGGED_HIT.value();
-    }
-
-    @Override
-    protected @NotNull SoundEvent getDeathSound() {
-        return WDSoundEvents.MUTANT_BOGGED_DEATH.value();
-    }
-
-    @Override
-    public @NotNull SoundSource getSoundSource() {
-        return SoundSource.HOSTILE;
+    protected BossSounds bossSounds() {
+        return SOUNDS;
     }
 
     @Override
@@ -433,52 +364,10 @@ public class MutantBogged extends Monster implements RangedAttackMob, GeoEntity 
         return destroySpeed < 0 ? -1 : (int) Math.ceil(destroySpeed / 5f);
     }
 
-    @Override public void startSeenByPlayer(@NotNull ServerPlayer serverPlayer) { bossEvent.addPlayer(serverPlayer); }
-    @Override public void stopSeenByPlayer(@NotNull ServerPlayer serverPlayer) { bossEvent.removePlayer(serverPlayer); }
-
-    public static class SummonGoal extends Goal {
-        private final MutantBogged bogged;
-
-        public SummonGoal(MutantBogged bogged) {
-            this.bogged = bogged;
-            this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.JUMP, Goal.Flag.LOOK, Goal.Flag.TARGET));
-        }
-
-        @Override
-        public void tick() {
-            int ticks = bogged.getInvulnerableTicks();
-            bogged.addInvulnerableTick();
-            if (ticks % 10 == 0)
-                bogged.playSound(SoundEvents.NOTE_BLOCK_PLING.value(), 2f, 2f);
-        }
-
-        @Override
-        public void start() {
-            bogged.playSound(SoundEvents.BOGGED_AMBIENT, 2f, 0.5f);
-            bogged.setInvulnerable(true);
-        }
-
-        @Override public boolean canUse() {
-            return bogged.isInvulnerable();
-        }
-
-        @Override
-        public void stop() {
-            //psuedo explosion
-            Vec3 pos = bogged.position();
-            List<LivingEntity> list = bogged.level().getEntitiesOfClass(LivingEntity.class, AABB.ofSize(bogged.position(), 10, 10, 10), bogged::hasLineOfSight);
-            for (LivingEntity li : list) {
-                Vec3 kb = new Vec3(pos.x - li.position().x, pos.y - li.position().y, pos.z - li.position().z).
-                        normalize().scale(2);
-                li.knockback(1.5, kb.x, kb.z);
-                if (!li.hasEffect(MobEffects.POISON)) li.addEffect(new MobEffectInstance(MobEffects.POISON, 5 * 20, 2));
-                li.hurt(bogged.level().damageSources().generic(), 10);
-            }
-            bogged.playSound(SoundEvents.GENERIC_EXPLODE.value(), 2f, 0.8f);
-            UtilityMethods.sendParticles((ServerLevel) bogged.level(), ParticleTypes.EXPLOSION_EMITTER, true, 1, pos.x, pos.y, pos.z, 0, 0, 0, 0);
-            UtilityMethods.sendParticles((ServerLevel) bogged.level(), ParticleTypes.SPORE_BLOSSOM_AIR, true, 200, pos.x, pos.y, pos.z, 0, 0, 0, 0.3f);
-            bogged.setInvulnerable(false);
-        }
+    @Override
+    protected void spawnSummonParticles(Vec3 pos) {
+        UtilityMethods.sendParticles((ServerLevel) MutantBogged.this.level(), ParticleTypes.EXPLOSION_EMITTER, true, 1, pos.x, pos.y, pos.z, 0, 0, 0, 0);
+        UtilityMethods.sendParticles((ServerLevel) MutantBogged.this.level(), ParticleTypes.SPORE_BLOSSOM_AIR, true, 200, pos.x, pos.y, pos.z, 0, 0, 0, 0.3f);
     }
 
     public static class MutantBoggedAttackGoal extends Goal {
@@ -521,6 +410,7 @@ public class MutantBogged extends Monster implements RangedAttackMob, GeoEntity 
         @Override public boolean requiresUpdateEveryTick() {
             return true;
         }
+
 
         @Override
         public void tick() {
