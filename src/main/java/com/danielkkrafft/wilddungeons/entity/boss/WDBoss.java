@@ -21,74 +21,99 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
-
 import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.List;
 
-//540 lines saved across boss package
+//753 lines saved across the boss package
 public abstract class WDBoss extends Monster implements GeoEntity {
     protected final ServerBossEvent bossEvent;
 
     private static final EntityDataAccessor<Integer> TICKS_INVULNERABLE = SynchedEntityData.defineId(WDBoss.class, EntityDataSerializers.INT);
     protected int summonTicks = 50; // common override
     protected boolean attacking;
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    public record BossSounds(
-            @Nullable SoundEvent ambient,
-            @Nullable SoundEvent hurt,
-            @Nullable SoundEvent death
-    ) {
-        public static final BossSounds DEFAULT = new BossSounds(null, null, null);
-    }
-    
     protected WDBoss(EntityType<? extends Monster> type, Level level,
                      BossEvent.BossBarColor color,
                      BossEvent.BossBarOverlay overlay) {
         super(type, level);
         this.bossEvent = new ServerBossEvent(getDisplayName(), color, overlay);
     }
+    
+    protected void updateBossBar() {
+        float hp = getHealth() / getMaxHealth();
+        bossEvent.setProgress(hp);
+    }
+
+    /* -- saves/data -- */
 
     @Override
     protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
         super.defineSynchedData(builder);
         builder.define(TICKS_INVULNERABLE, 0);
     }
-    
-    protected void updateBossBar() {
-        float hp = getHealth() / getMaxHealth();
-        bossEvent.setProgress(hp);
-    }
- 
+
     @Override
-    public void startSeenByPlayer(@NotNull ServerPlayer player) {
-        super.startSeenByPlayer(player);
-        bossEvent.addPlayer(player);
+    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
+        super.addAdditionalSaveData(compound);
+        compound.putInt("InvulnerableTicks", getTicksInvulnerable());
+        if (hasCustomName()) {
+            bossEvent.setName(getDisplayName());
+        }
+        saveBossData(compound);
+    }
+    
+    @Override
+    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
+        super.readAdditionalSaveData(compound);
+        setTicksInvulnerable(compound.getInt("InvulnerableTicks"));
+        if (hasCustomName()) {
+            bossEvent.setName(getDisplayName());
+        }
+        loadBossData(compound);
+    }
+
+    protected void saveBossData(CompoundTag compound) {}
+
+    protected void loadBossData(CompoundTag compound) {}
+
+    /* -- sounds -- */
+
+    public record BossSounds(
+            @Nullable SoundEvent ambient,
+            @Nullable SoundEvent hurt,
+            @Nullable SoundEvent death
+    ) { public static final BossSounds DEFAULT = new BossSounds(null, null, null); }
+
+    @Override
+    public @NotNull SoundSource getSoundSource() {
+        return SoundSource.HOSTILE;
+    }
+
+    protected BossSounds bossSounds() {
+        return BossSounds.DEFAULT;
     }
 
     @Override
-    public void stopSeenByPlayer(@NotNull ServerPlayer player) {
-        super.stopSeenByPlayer(player);
-        bossEvent.removePlayer(player);
+    protected final @NotNull SoundEvent getAmbientSound() {
+        return (bossSounds().ambient() != null) ? bossSounds().ambient() : null;
     }
- 
-    public void setTicksInvulnerable(int ticks) {
-        entityData.set(TICKS_INVULNERABLE, ticks);
+
+    @Override
+    protected final @NotNull SoundEvent getHurtSound(@NotNull DamageSource source) {
+        return (bossSounds().hurt() != null) ? bossSounds().hurt() : super.getHurtSound(source);
     }
-    
-    public int getTicksInvulnerable() {
-        return entityData.get(TICKS_INVULNERABLE);
+
+    @Override
+    protected final @NotNull SoundEvent getDeathSound() {
+        return (bossSounds().death() != null) ? bossSounds().death() : super.getDeathSound();
     }
+
+    /* -- summon goal -- */
 
     public boolean isInSummonPhase() {
         return getTicksInvulnerable() <= summonTicks;
-    }
-
-    public boolean isAttacking() {
-        return attacking;
     }
 
     protected void tickSummonPhase() {
@@ -119,7 +144,7 @@ public abstract class WDBoss extends Monster implements GeoEntity {
                 AABB.ofSize(position(), 10, 10, 10),
                 this::hasLineOfSight
         );
-        
+
         for (LivingEntity li : list) {
             if (li == this) continue; // Don't affect self
             Vec3 kb = new Vec3(pos.x - li.position().x, pos.y - li.position().y,
@@ -128,7 +153,7 @@ public abstract class WDBoss extends Monster implements GeoEntity {
             li.setRemainingFireTicks(li.getRemainingFireTicks() + 100);
             li.hurt(damageSources().generic(), 10);
         }
-        
+
         playSound(SoundEvents.GENERIC_EXPLODE.value(), 2f, 0.8f);
         spawnSummonParticles(pos);
     }
@@ -136,93 +161,6 @@ public abstract class WDBoss extends Monster implements GeoEntity {
     protected void summonAnimation() {}
 
     protected abstract void spawnSummonParticles(Vec3 pos);
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return cache;
-    }
-
-    @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-        compound.putInt("InvulnerableTicks", getTicksInvulnerable());
-        if (hasCustomName()) {
-            bossEvent.setName(getDisplayName());
-        }
-        saveBossData(compound);
-    }
-    
-    @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-        setTicksInvulnerable(compound.getInt("InvulnerableTicks"));
-        if (hasCustomName()) {
-            bossEvent.setName(getDisplayName());
-        }
-        loadBossData(compound);
-    }
-
-    protected void saveBossData(CompoundTag compound) {
-    }
-
-    protected void loadBossData(CompoundTag compound) {
-    }
-    
-    protected boolean isImmuneToDamageType(DamageSource source) {
-        return false;
-    }
-
-    protected float getDamageMultiplier(DamageSource source) {
-        return 1.0f;
-    }
-    
-    @Override
-    public boolean hurt(@NotNull DamageSource source, float amount) {
-        if (isImmuneToDamageType(source)) {
-            return false;
-        }
-        return super.hurt(source, amount * getDamageMultiplier(source));
-    }
-
-    @Override
-    public boolean mayBeLeashed() {
-        return false;
-    }
-    
-    @Override
-    public boolean canHaveALeashAttachedToIt() {
-        return false;
-    }
-
-    @Override
-    public @NotNull SoundSource getSoundSource() {
-        return SoundSource.HOSTILE;
-    }
-
-    @Override
-    public void die(@NotNull DamageSource source) {
-        super.die(source);
-        bossEvent.removeAllPlayers();
-    }
-
-    protected BossSounds bossSounds() {
-        return BossSounds.DEFAULT;
-    }
-
-    @Override
-    protected final @NotNull SoundEvent getAmbientSound() {
-        return (bossSounds().ambient() != null) ? bossSounds().ambient() : null;
-    }
-
-    @Override
-    protected final @NotNull SoundEvent getHurtSound(@NotNull DamageSource source) {
-        return (bossSounds().hurt() != null) ? bossSounds().hurt() : super.getHurtSound(source);
-    }
-
-    @Override
-    protected final @NotNull SoundEvent getDeathSound() {
-        return (bossSounds().death() != null) ? bossSounds().death() : super.getDeathSound();
-    }
 
     public static class WDBossSummonGoal extends Goal {
         protected final WDBoss boss;
@@ -251,5 +189,140 @@ public abstract class WDBoss extends Monster implements GeoEntity {
         public void stop() {
             boss.endSummonPhase();
         }
+    }
+
+    /* -- timed action (usually attack) goal -- */
+
+    protected int getBossAction() { return 0; }
+    protected void setBossAction(int action) {}
+    protected int getBossCooldown() { return 0; }
+    protected void setBossCooldown(int ticks) {}
+
+    protected abstract class TimedActionGoal extends Goal {
+        protected final WDBoss boss;
+        protected int t;
+
+        protected TimedActionGoal(WDBoss boss, EnumSet<Flag> flags) {
+            this.boss = boss;
+            this.setFlags(flags);
+        }
+
+        protected abstract int actionId();
+
+        protected abstract int maxTime();
+
+        protected int startCooldown() { return 0; }
+
+        protected void onStart(LivingEntity target) {}
+
+        protected abstract void onTick(LivingEntity target);
+
+        protected void onStop() {}
+
+        @Override
+        public boolean canUse() {
+            LivingEntity target = boss.getTarget();
+            return target != null && target.isAlive() && boss.getBossAction() == actionId();
+        }
+
+        @Override
+        public boolean canContinueToUse() {
+            LivingEntity target = boss.getTarget();
+            return target != null && target.isAlive() && t < maxTime();
+        }
+
+        @Override
+        public void start() {
+            t = 0;
+            boss.getNavigation().stop();
+            int cd = startCooldown();
+            if (cd > 0) boss.setBossCooldown(cd);
+
+            LivingEntity target = boss.getTarget();
+            if (target != null) onStart(target);
+        }
+
+        @Override
+        public void tick() {
+            LivingEntity target = boss.getTarget();
+            if (target == null) return;
+
+            t++;
+            onTick(target);
+        }
+
+        @Override
+        public void stop() {
+            boss.setBossAction(0);
+            boss.getNavigation().stop();
+            onStop();
+        }
+    }
+
+    /* -- random utils -- */
+
+    @Override
+    public boolean mayBeLeashed() {
+        return false;
+    }
+
+    @Override
+    public boolean canHaveALeashAttachedToIt() {
+        return false;
+    }
+
+    protected boolean isImmuneToDamageType(DamageSource source) {
+        return false;
+    }
+
+    protected float getDamageMultiplier(DamageSource source) {
+        return 1.0f;
+    }
+
+    @Override
+    public boolean hurt(@NotNull DamageSource source, float amount) {
+        if (isImmuneToDamageType(source)) {
+            return false;
+        }
+        return super.hurt(source, amount * getDamageMultiplier(source));
+    }
+
+    @Override
+    public void die(@NotNull DamageSource source) {
+        super.die(source);
+        bossEvent.removeAllPlayers();
+    }
+
+    public void setTicksInvulnerable(int ticks) {
+        entityData.set(TICKS_INVULNERABLE, ticks);
+    }
+
+    public int getTicksInvulnerable() {
+        return entityData.get(TICKS_INVULNERABLE);
+    }
+
+    public boolean isAttacking() {
+        return attacking;
+    }
+
+    @Override
+    public void startSeenByPlayer(@NotNull ServerPlayer player) {
+        super.startSeenByPlayer(player);
+        bossEvent.addPlayer(player);
+    }
+
+    @Override
+    public void stopSeenByPlayer(@NotNull ServerPlayer player) {
+        super.stopSeenByPlayer(player);
+        bossEvent.removePlayer(player);
+    }
+
+    /* -- animation station -- */
+
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return cache;
     }
 }

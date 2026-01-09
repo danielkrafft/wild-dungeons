@@ -49,7 +49,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-//543 original -> 433 now (110 saved)
+//543 original -> 423 now (120 saved)
 public class MutantBogged extends WDBoss implements RangedAttackMob, GeoEntity {
     private static final String CONTROLLER = "mutantboggedcontroller";
     private static final String idle = "idle", walk = "walk", arrowVolley = "arrow_volley", chargedArrow = "charged_arrow", dig = "dig";
@@ -135,8 +135,7 @@ public class MutantBogged extends WDBoss implements RangedAttackMob, GeoEntity {
 
         Level level = level();
         bossEvent.setVisible(true);
-        float hp = getHealth() / getMaxHealth();
-        bossEvent.setProgress(hp);
+        updateBossBar();
         if (level.isClientSide || isDeadOrDying()) return;
 
         Vec3 pos = position();
@@ -206,7 +205,7 @@ public class MutantBogged extends WDBoss implements RangedAttackMob, GeoEntity {
                             };
                             for (int i = 0; i < blockAttack.length; i++) {
                                 Vec3 vec3 = blockAttack[i];
-                                BlockPos blockPos = new BlockPos((int) Math.floor(vec3.x), (int) Math.floor(vec3.y), (int) Math.floor(vec3.z));
+                                BlockPos blockPos = BlockPos.containing(vec3);
                                 if (canBeMined(blockPos)) {
                                     count.getAndIncrement();
                                     positionsToAttack.add(blockPos);
@@ -285,10 +284,6 @@ public class MutantBogged extends WDBoss implements RangedAttackMob, GeoEntity {
         spawnAtLocation(tippedArrow);
     }
 
-    private int floor(double d) {
-        return (int) Math.floor(d);
-    }
-
     @Override
     public void performRangedAttack(@NotNull LivingEntity target, float vel) {
         if (!level().isClientSide) {
@@ -302,26 +297,22 @@ public class MutantBogged extends WDBoss implements RangedAttackMob, GeoEntity {
                 Set<BlockPos> positions = new HashSet<>();
                 int highestDestroySpeed = -1;
                 //at most 14 iterations * 8 testVectors = 112 calculations
-                //likely inefficient and there has to be a better way to do this
+                //likely inefficient, and there has to be a better way to do this
                 for (float i = 0; i < distToTarget; i++) {
-                    //Vec3 test=getPositionRelative(ParticleTypes.END_ROD,getEyePosition(),positionToLook,i,0,0);
                     Vec3 test = getPositionRelative(null, getEyePosition(), positionToLook, i, 0, 0);
-                    BlockPos pos = new BlockPos(floor(test.x), floor(test.y), floor(test.z));
+                    BlockPos pos = BlockPos.containing(test);
                     if (!positions.contains(pos)) {
                         BlockState state = level().getBlockState(pos);
-                        //block not air, liquid, or invulnerable, dig
                         if (!state.isAir() && !state.liquid()) {
                             positions.add(pos);
                             if (i >= distToTarget - 3) {
                                 int speed = getDestroySpeed(state.getDestroySpeed(level(), pos));
-                                //System.out.println(state+",mine speed:"+speed);
                                 if (speed > highestDestroySpeed) highestDestroySpeed = speed;
                             }
                         }
                     }
                 }
                 int blocksEncountered = positions.size();
-                //DanielKrafftMod.sendClientMessage("Dist:"+Math.round(distToTarget)+",Blocks:"+blocksEncountered+",Highest:"+highestDestroySpeed);
                 //adjust this value based on results
                 if (blocksEncountered >= 3) {
                     maxDestroySpeed = highestDestroySpeed;
@@ -410,7 +401,6 @@ public class MutantBogged extends WDBoss implements RangedAttackMob, GeoEntity {
         @Override public boolean requiresUpdateEveryTick() {
             return true;
         }
-
 
         @Override
         public void tick() {

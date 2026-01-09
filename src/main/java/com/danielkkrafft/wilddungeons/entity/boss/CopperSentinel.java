@@ -7,6 +7,9 @@ import com.danielkkrafft.wilddungeons.registry.WDEntities;
 import com.danielkkrafft.wilddungeons.util.UtilityMethods;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.BossEvent;
@@ -25,10 +28,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.ExplosionDamageCalculator;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraft.world.level.SimpleExplosionDamageCalculator;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.Tags;
@@ -40,45 +41,90 @@ import software.bernie.geckolib.animation.AnimationController;
 import software.bernie.geckolib.animation.RawAnimation;
 
 import java.util.EnumSet;
-import java.util.Optional;
 
-//540 original -> 425 now (115 saved)
+//540 original -> 430 now (110 saved)
 public class CopperSentinel extends WDBoss implements GeoEntity , RangedAttackMob {
     private static final String COPPER_SENTINEL_CONTROLLER = "copper_sentinel_controller";
+    private static final String
+            startup = "animation.model.transform",
+            walk = "animation.model.walking",
+            shoot = "animation.model.shoot",
+            slash = "animation.model.swing_charge";
+
+    private static final RawAnimation
+            startupAnim = RawAnimation.begin().thenPlay(startup),
+            walkAnim = RawAnimation.begin().thenLoop(walk),
+            shootAnim = RawAnimation.begin().thenPlay(shoot).thenLoop(walk),
+            slashAnim = RawAnimation.begin().thenPlay(slash).thenLoop(walk);
+    
     private final AnimationController<CopperSentinel> mainController = new AnimationController<>(this, COPPER_SENTINEL_CONTROLLER, 5,
             state -> state.setAndContinue(startupAnim))
             .triggerableAnim(startup, startupAnim)
             .triggerableAnim(walk, walkAnim)
             .triggerableAnim(shoot, shootAnim)
             .triggerableAnim(slash, slashAnim);
-    private static final String
-            startup = "animation.model.transform",
-            walk = "animation.model.walking",
-            shoot = "animation.model.shoot",
-            slash = "animation.model.swing_charge";
-    private static final RawAnimation
-            startupAnim = RawAnimation.begin().thenPlayAndHold(startup),
-            walkAnim = RawAnimation.begin().thenLoop(walk),
-            shootAnim = RawAnimation.begin().thenPlay(shoot).thenLoop(walk),
-            slashAnim = RawAnimation.begin().thenPlay(slash).thenLoop(walk);
+    
     private static final int MELEE_COOLDOWN = 20;
     private static final int RANGED_COOLDOWN = 120;
     private static final int EXPLODE_COOLDOWN = 200;
 
-    // Tracking when goals were last used
-    private int lastMeleeGoalTick = -MELEE_COOLDOWN;
-    private int lastRangedGoalTick = -RANGED_COOLDOWN;
-    private int lastExplodeGoalTick = EXPLODE_COOLDOWN;
+    private static final int MELEE_ACTION = 1;
+    private static final int RANGED_ACTION = 2;
+    private static final int EXPLODE_ACTION = 3;
 
-    public CopperSentinel(EntityType<? extends Monster> entityType, Level level) {
-        super(entityType, level, BossEvent.BossBarColor.YELLOW, BossEvent.BossBarOverlay.NOTCHED_6);
+    private static final EntityDataAccessor<Integer> ACTION =
+            SynchedEntityData.defineId(CopperSentinel.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> COOLDOWN =
+            SynchedEntityData.defineId(CopperSentinel.class, EntityDataSerializers.INT);
+
+    public CopperSentinel(EntityType<? extends WDBoss> type, Level level) {
+        super(type, level, BossEvent.BossBarColor.YELLOW, BossEvent.BossBarOverlay.NOTCHED_6);
         this.summonTicks = 80;
+        this.xpReward = 200;
     }
 
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(ACTION, 0);
+        builder.define(COOLDOWN, 0);
+    }
+
+    @Override
+    protected int getBossAction() {
+        return entityData.get(ACTION);
+    }
+
+    @Override
+    protected void setBossAction(int action) {
+        entityData.set(ACTION, action);
+    }
+
+    @Override
+    protected int getBossCooldown() {
+        return entityData.get(COOLDOWN);
+    }
+
+    @Override
+    protected void setBossCooldown(int ticks) {
+        entityData.set(COOLDOWN, ticks);
+    }
+
+    @Override
+    public void tick() {
+        updateBossBar();
+        
+        if (getTarget() != null && getBossCooldown() > 0 && getBossAction() == 0) {
+            setBossCooldown(getBossCooldown() - 1);
+        }
+        
+        super.tick();
+    }
 
     @Override
     protected void registerGoals() {
         goalSelector.addGoal(0, new WDBoss.WDBossSummonGoal(this));
+        goalSelector.addGoal(0, new ActionSelector());
         goalSelector.addGoal(1, new CopperSentinelMeleeAttackGoal());
         goalSelector.addGoal(1, new CopperSentinelRangedAttackGoal());
         goalSelector.addGoal(2, new CopperSentinelExplodeGoal());
@@ -95,7 +141,6 @@ public class CopperSentinel extends WDBoss implements GeoEntity , RangedAttackMo
 
             @Override
             public void tick() {
-                //play step sound every 10 ticks
                 if (CopperSentinel.this.tickCount % 20 == 0) {
                     CopperSentinel.this.playSound(SoundEvents.IRON_GOLEM_STEP, 3, .7f);
                 }
@@ -103,16 +148,8 @@ public class CopperSentinel extends WDBoss implements GeoEntity , RangedAttackMo
             }
         });
         targetSelector.addGoal(1, new HurtByTargetGoal(this).setAlertOthers());
-        targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, 0, false, false,
-                player -> !((Player) player).isCreative() && !((Player) player).isSpectator()));
+        targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, 0, false, false, player -> !((Player) player).isCreative() && !((Player) player).isSpectator()));
         targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 0, false, false, li -> !(li instanceof CopperSentinel) && !(li instanceof ToxicWisp)));
-    }
-
-    @Override
-    public void tick() {
-        float hp = getHealth() / getMaxHealth();
-        bossEvent.setProgress(hp);
-        super.tick();
     }
 
     @Override
@@ -140,6 +177,11 @@ public class CopperSentinel extends WDBoss implements GeoEntity , RangedAttackMo
     protected void spawnSummonParticles(Vec3 pos) {
         UtilityMethods.sendParticles((ServerLevel) CopperSentinel.this.level(), ParticleTypes.EXPLOSION_EMITTER, true, 1, pos.x, pos.y, pos.z, 0, 0, 0, 0);
         UtilityMethods.sendParticles((ServerLevel) CopperSentinel.this.level(), ParticleTypes.LAVA, true, 200, pos.x, pos.y, pos.z, 1, 2, 1, 0.06f);
+    }
+
+    @Override
+    protected void summonAnimation() {
+        triggerAnim(COPPER_SENTINEL_CONTROLLER, startup);
     }
 
     @Override
@@ -183,238 +225,206 @@ public class CopperSentinel extends WDBoss implements GeoEntity , RangedAttackMo
         return false;
     }
 
-    class CopperSentinelMeleeAttackGoal extends Goal {
-        private int ticks;
-        private boolean hasAttacked;
-        private boolean stopped = false;
-        private static final float MELEE_DISTANCE = 18;
-
-        public CopperSentinelMeleeAttackGoal() {
-            this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
-        }
-
+    class ActionSelector extends Goal {
+        @Override
         public boolean canUse() {
-            return CopperSentinel.this.getTarget() != null &&
-                    CopperSentinel.this.distanceToSqr(CopperSentinel.this.getTarget()) < MELEE_DISTANCE &&
-                    !CopperSentinel.this.isInvulnerable() &&
-                    (CopperSentinel.this.tickCount - CopperSentinel.this.lastMeleeGoalTick >= MELEE_COOLDOWN);
+            LivingEntity target = CopperSentinel.this.getTarget();
+            return target != null && target.isAlive()
+                    && getBossAction() == 0
+                    && getBossCooldown() <= 0
+                    && !CopperSentinel.this.isInvulnerable();
         }
 
-        public boolean canContinueToUse() {
-            return !stopped && CopperSentinel.this.getTarget() != null &&
-                    CopperSentinel.this.getTarget().isAlive() &&
-                    !CopperSentinel.this.isInvulnerable() &&
-                    (CopperSentinel.this.distanceToSqr(CopperSentinel.this.getTarget()) < MELEE_DISTANCE);
-        }
-
+        @Override
         public void start() {
-            this.ticks = 20;
-            this.stopped = false;
-            this.hasAttacked = false;
-            CopperSentinel.this.getNavigation().stop();
-            CopperSentinel.this.triggerAnim(COPPER_SENTINEL_CONTROLLER, slash);
-            //rotate the entity to face the target
-            double d0 = CopperSentinel.this.getTarget().getX() - CopperSentinel.this.getX();
-            double d1 = CopperSentinel.this.getTarget().getZ() - CopperSentinel.this.getZ();
-            CopperSentinel.this.setYRot((float) (Math.atan2(d1, d0) * (180D / Math.PI)) - 90F);
-            CopperSentinel.this.yBodyRot = CopperSentinel.this.getYRot();
-            CopperSentinel.this.yHeadRot = CopperSentinel.this.getYRot();}
+            LivingEntity target = CopperSentinel.this.getTarget();
+            if (target == null) return;
 
+            double distSqr = CopperSentinel.this.distanceToSqr(target);
 
-        public void stop() {
-            LivingEntity livingentity = CopperSentinel.this.getTarget();
-            if (!EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(livingentity)) {
-                CopperSentinel.this.setTarget(null);
+            if (CopperSentinel.this.tickCount % 200 == 0) {
+                setBossAction(EXPLODE_ACTION);
+            } else if (distSqr < 18 && CopperSentinel.this.getRandom().nextFloat() < 0.6f) {
+                setBossAction(MELEE_ACTION);
+            } else if (distSqr >= 12 && distSqr <= 400) {
+                setBossAction(RANGED_ACTION);
             }
-            CopperSentinel.this.triggerAnim(COPPER_SENTINEL_CONTROLLER, walk);
-            stopped = true;
-            CopperSentinel.this.lastMeleeGoalTick = CopperSentinel.this.tickCount;
-        }
-
-        public boolean requiresUpdateEveryTick() {
-            return true;
-        }
-
-        public void tick() {
-            LivingEntity livingentity = CopperSentinel.this.getTarget();
-            if (livingentity != null) {
-                CopperSentinel.this.getLookControl().setLookAt(livingentity, 30.0F, 30.0F);
-                this.ticks = Math.max(this.ticks - 1, 0);
-                if (!this.hasAttacked && this.ticks <= 0 && this.canPerformAttack(livingentity)) {
-                    if (CopperSentinel.this.distanceToSqr(CopperSentinel.this.getTarget()) < MELEE_DISTANCE) {
-                        CopperSentinel.this.doHurtTarget(livingentity);
-                    }
-                    CopperSentinel.this.playSound(SoundEvents.PLAYER_ATTACK_SWEEP, 2, 0.8f);
-                    this.hasAttacked = true;
-                    this.ticks = 60;
-                } else if (this.hasAttacked) {
-                    this.ticks = Math.max(this.ticks - 1, 0);
-                    if (this.ticks <= 0) {
-                        this.stop();
-                    }
-                }
-            } else {
-                this.ticks = Math.max(this.ticks - 1, 0);
-                if (this.ticks <= 0) {
-                    this.stop();
-                }
-            }
-        }
-
-        protected boolean canPerformAttack(LivingEntity entity) {
-            return CopperSentinel.this.distanceToSqr(entity) < MELEE_DISTANCE && CopperSentinel.this.getSensing().hasLineOfSight(entity);
         }
     }
 
-    class CopperSentinelRangedAttackGoal extends Goal {
-        private int attackTime = 0;
-        private boolean stopped = false;
-        private int projectilesShot = 0;
-        private static final int RANGED_PROJECTILES = 3; // Number of projectiles to shoot in one burst
+    class CopperSentinelMeleeAttackGoal extends TimedActionGoal {
+        private static final float MELEE_DISTANCE = 18;
+        private boolean hasAttacked;
 
-        public CopperSentinelRangedAttackGoal() {
-            this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
+        public CopperSentinelMeleeAttackGoal() {
+            super(CopperSentinel.this, EnumSet.of(Flag.MOVE, Flag.LOOK));
         }
 
         @Override
-        public boolean canUse() {
-            return CopperSentinel.this.getTarget() != null &&
-                    CopperSentinel.this.distanceToSqr(CopperSentinel.this.getTarget()) >= 12 &&
-                    CopperSentinel.this.distanceToSqr(CopperSentinel.this.getTarget()) <= 400 &&
-                    !CopperSentinel.this.isInvulnerable() &&
-                    (CopperSentinel.this.tickCount - CopperSentinel.this.lastRangedGoalTick >= RANGED_COOLDOWN);
+        protected int actionId() {
+            return MELEE_ACTION;
         }
 
         @Override
-        public boolean canContinueToUse() {
-            return !stopped && CopperSentinel.this.getTarget() != null &&
-                    CopperSentinel.this.getTarget().isAlive() &&
-                    !CopperSentinel.this.isInvulnerable();
+        protected int maxTime() {
+            return 80;
         }
 
         @Override
-        public void start() {
-            this.attackTime = 17; // Initial delay before first attack
-            this.projectilesShot = 0;
-            this.stopped = false;
-            CopperSentinel.this.getNavigation().stop();
-            CopperSentinel.this.triggerAnim(COPPER_SENTINEL_CONTROLLER, shoot);
-            //rotate the entity to face the target
-            double d0 = CopperSentinel.this.getTarget().getX() - CopperSentinel.this.getX();
-            double d1 = CopperSentinel.this.getTarget().getZ() - CopperSentinel.this.getZ();
+        protected int startCooldown() {
+            return MELEE_COOLDOWN;
+        }
+
+        @Override
+        protected void onStart(LivingEntity target) {
+            hasAttacked = false;
+            CopperSentinel.this.triggerAnim(COPPER_SENTINEL_CONTROLLER, slash);
+
+            double d0 = target.getX() - CopperSentinel.this.getX();
+            double d1 = target.getZ() - CopperSentinel.this.getZ();
             CopperSentinel.this.setYRot((float) (Math.atan2(d1, d0) * (180D / Math.PI)) - 90F);
             CopperSentinel.this.yBodyRot = CopperSentinel.this.getYRot();
             CopperSentinel.this.yHeadRot = CopperSentinel.this.getYRot();
-
         }
 
         @Override
-        public void stop() {
-            LivingEntity livingentity = CopperSentinel.this.getTarget();
-            if (!EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(livingentity)) {
-                CopperSentinel.this.setTarget(null);
-            }
-            CopperSentinel.this.triggerAnim(COPPER_SENTINEL_CONTROLLER, walk);
-            stopped = true;
-            CopperSentinel.this.lastRangedGoalTick = CopperSentinel.this.tickCount;
-        }
+        protected void onTick(LivingEntity target) {
+            CopperSentinel.this.getLookControl().setLookAt(target, 30.0F, 30.0F);
 
-        @Override
-        public boolean requiresUpdateEveryTick() {
-            return true;
-        }
-
-        @Override
-        public void tick() {
-            LivingEntity livingentity = CopperSentinel.this.getTarget();
-            if (livingentity != null) {
-                CopperSentinel.this.getLookControl().setLookAt(livingentity, 30.0F, 30.0F);
-                if (--this.attackTime <= 0 && this.projectilesShot < RANGED_PROJECTILES) {
-                    if (CopperSentinel.this.distanceToSqr(CopperSentinel.this.getTarget()) >= 12 && CopperSentinel.this.distanceToSqr(CopperSentinel.this.getTarget()) <= 400) {
-                        this.projectilesShot++;
-                        CopperSentinel.this.performRangedAttack(livingentity, 1.0f);
-                        if (this.projectilesShot < RANGED_PROJECTILES) {
-                            this.attackTime = 5; // Short delay between shots in a burst
-                        } else {
-                            this.attackTime = 15; // Longer delay after finishing a burst
-                        }
-                    } else {
-                        this.stop();
-                    }
-                } else if (this.attackTime<=0) {
-                    this.stop();
+            if (!hasAttacked && t == 20) {
+                if (CopperSentinel.this.distanceToSqr(target) < MELEE_DISTANCE
+                        && CopperSentinel.this.getSensing().hasLineOfSight(target)) {
+                    CopperSentinel.this.doHurtTarget(target);
+                    CopperSentinel.this.playSound(SoundEvents.PLAYER_ATTACK_SWEEP, 2, 0.8f);
                 }
-            } else {
-                this.stop();
+                hasAttacked = true;
             }
+        }
+
+        @Override
+        protected void onStop() {
+            CopperSentinel.this.triggerAnim(COPPER_SENTINEL_CONTROLLER, walk);
         }
     }
 
-    class CopperSentinelExplodeGoal extends Goal {
-        private static final ExplosionDamageCalculator EXPLOSION_DAMAGE_CALCULATOR = new SimpleExplosionDamageCalculator(
-                true, true, Optional.of(1.22F), Optional.empty());
-        private static final float EXPLODE_DISTANCE = 3;
-        private int ticks;
-        public CopperSentinelExplodeGoal() {
-            this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
+    class CopperSentinelRangedAttackGoal extends TimedActionGoal {
+        private int projectilesShot = 0;
+        private static final int RANGED_PROJECTILES = 3;
+
+        public CopperSentinelRangedAttackGoal() {
+            super(CopperSentinel.this, EnumSet.of(Flag.MOVE, Flag.LOOK));
         }
 
-        public boolean canUse() {
-            return CopperSentinel.this.getTarget() != null &&
-                    !CopperSentinel.this.isInvulnerable() &&
-                    (CopperSentinel.this.tickCount - CopperSentinel.this.lastExplodeGoalTick >= EXPLODE_COOLDOWN);
+        @Override
+        protected int actionId() {
+            return RANGED_ACTION;
         }
 
-        public boolean canContinueToUse() {
-            return CopperSentinel.this.getTarget() != null &&
-                    CopperSentinel.this.getTarget().isAlive() &&
-                    !CopperSentinel.this.isInvulnerable() &&
-                    (CopperSentinel.this.tickCount - CopperSentinel.this.lastExplodeGoalTick >= EXPLODE_COOLDOWN);
+        @Override
+        protected int maxTime() {
+            return 50;
         }
 
-        public void start() {
-            CopperSentinel.this.level().explode(CopperSentinel.this, CopperSentinel.this.getX(), CopperSentinel.this.getY()+2, CopperSentinel.this.getZ(), EXPLODE_DISTANCE, false, Level.ExplosionInteraction.NONE);
-            //particles
-            if (CopperSentinel.this.level() instanceof ServerLevel serverLevel) {
-                serverLevel.sendParticles(ParticleTypes.EXPLOSION, CopperSentinel.this.getX(), CopperSentinel.this.getY() + 2, CopperSentinel.this.getZ(), 20, 1, 1, 1, 0.1);
-                serverLevel.sendParticles(ParticleTypes.SMOKE, CopperSentinel.this.getX(), CopperSentinel.this.getY() + 2, CopperSentinel.this.getZ(), 50, 1, 1, 1, 0.05f);
-                serverLevel.sendParticles(ParticleTypes.FLAME, CopperSentinel.this.getX(), CopperSentinel.this.getY() + 2, CopperSentinel.this.getZ(), 30, 1, 1, 1, 0.05f);
+        @Override
+        protected int startCooldown() {
+            return RANGED_COOLDOWN;
+        }
+
+        @Override
+        protected void onStart(LivingEntity target) {
+            projectilesShot = 0;
+            CopperSentinel.this.triggerAnim(COPPER_SENTINEL_CONTROLLER, shoot);
+
+            double d0 = target.getX() - CopperSentinel.this.getX();
+            double d1 = target.getZ() - CopperSentinel.this.getZ();
+            CopperSentinel.this.setYRot((float) (Math.atan2(d1, d0) * (180D / Math.PI)) - 90F);
+            CopperSentinel.this.yBodyRot = CopperSentinel.this.getYRot();
+            CopperSentinel.this.yHeadRot = CopperSentinel.this.getYRot();
+        }
+
+        @Override
+        protected void onTick(LivingEntity target) {
+            CopperSentinel.this.getLookControl().setLookAt(target, 30.0F, 30.0F);
+
+            double distSqr = CopperSentinel.this.distanceToSqr(target);
+            if (distSqr < 12 || distSqr > 400) return;
+
+            if (projectilesShot < RANGED_PROJECTILES) {
+                if (t == 17 + (projectilesShot * 5)) {
+                    CopperSentinel.this.performRangedAttack(target, 1.0f);
+                    projectilesShot++;
+                }
             }
-            //search nearby for gasblocks to trigger
-            BlockPos.betweenClosedStream(CopperSentinel.this.blockPosition().offset(-5, -3, -5), CopperSentinel.this.blockPosition().offset(5, 10, 5)).forEach(pos -> {
+        }
+
+        @Override
+        protected void onStop() {
+            CopperSentinel.this.triggerAnim(COPPER_SENTINEL_CONTROLLER, walk);
+        }
+    }
+
+    class CopperSentinelExplodeGoal extends TimedActionGoal {
+        private static final float EXPLODE_DISTANCE = 3;
+
+        public CopperSentinelExplodeGoal() {
+            super(CopperSentinel.this, EnumSet.of(Flag.MOVE, Flag.LOOK));
+        }
+
+        @Override
+        protected int actionId() {
+            return EXPLODE_ACTION;
+        }
+
+        @Override
+        protected int maxTime() {
+            return 10;
+        }
+
+        @Override
+        protected int startCooldown() {
+            return EXPLODE_COOLDOWN;
+        }
+
+        @Override
+        protected void onStart(LivingEntity target) {
+            CopperSentinel.this.level().explode(CopperSentinel.this,
+                    CopperSentinel.this.getX(), CopperSentinel.this.getY() + 2,
+                    CopperSentinel.this.getZ(), EXPLODE_DISTANCE, false,
+                    Level.ExplosionInteraction.NONE);
+
+            if (CopperSentinel.this.level() instanceof ServerLevel serverLevel) {
+                serverLevel.sendParticles(ParticleTypes.EXPLOSION, CopperSentinel.this.getX(),
+                        CopperSentinel.this.getY() + 2, CopperSentinel.this.getZ(), 20, 1, 1, 1, 0.1);
+                serverLevel.sendParticles(ParticleTypes.SMOKE, CopperSentinel.this.getX(),
+                        CopperSentinel.this.getY() + 2, CopperSentinel.this.getZ(), 50, 1, 1, 1, 0.05f);
+                serverLevel.sendParticles(ParticleTypes.FLAME, CopperSentinel.this.getX(),
+                        CopperSentinel.this.getY() + 2, CopperSentinel.this.getZ(), 30, 1, 1, 1, 0.05f);
+            }
+
+            BlockPos.betweenClosedStream(CopperSentinel.this.blockPosition().offset(-5, -3, -5),
+                    CopperSentinel.this.blockPosition().offset(5, 10, 5)).forEach(pos -> {
                 BlockState state = CopperSentinel.this.level().getBlockState(pos);
-                if (state.is(WDBlocks.TOXIC_GAS.get())){
-                    ToxicGasBlock tgb = (ToxicGasBlock)state.getBlock();
+                if (state.is(WDBlocks.TOXIC_GAS.get())) {
+                    ToxicGasBlock tgb = (ToxicGasBlock) state.getBlock();
                     tgb.Explode(CopperSentinel.this.level(), pos);
                 }
             });
         }
 
-        public void stop() {
-            LivingEntity livingentity = CopperSentinel.this.getTarget();
-            if (!EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(livingentity)) {
-                CopperSentinel.this.setTarget(null);
-            }
-            this.ticks = 0;
-            CopperSentinel.this.lastExplodeGoalTick = CopperSentinel.this.tickCount;
-        }
-
         @Override
-        public void tick() {
-            if (ticks++ < 5) {
-                return;
+        protected void onTick(LivingEntity target) {
+            if (t == 5) {
+                ToxicWisp wisp = WDEntities.SMALL_TOXIC_WISP.get().create(CopperSentinel.this.level());
+                Vec3 pos = CopperSentinel.this.position().add(
+                        (CopperSentinel.this.level().random.nextDouble() - 0.5) * 8, 1,
+                        (CopperSentinel.this.level().random.nextDouble() - 0.5) * 8);
+                wisp.setPos(pos.x, pos.y, pos.z);
+                CopperSentinel.this.level().addFreshEntity(wisp);
+
+                Vec3 kb = wisp.position().subtract(CopperSentinel.this.position()).normalize().scale(1);
+                wisp.setDeltaMovement(kb);
+                CopperSentinel.this.playSound(SoundEvents.BEEHIVE_EXIT, 2, 0.7f);
             }
-            //spawn a wisp
-            ToxicWisp wisp = WDEntities.SMALL_TOXIC_WISP.get().create(CopperSentinel.this.level());
-            //position it around the sentinel randomly at least 4 blocks away
-            Vec3 pos = CopperSentinel.this.position().add((CopperSentinel.this.level().random.nextDouble() - 0.5) * 8, 1, (CopperSentinel.this.level().random.nextDouble() - 0.5) * 8);
-            wisp.setPos(pos.x, pos.y, pos.z);
-            CopperSentinel.this.level().addFreshEntity(wisp);
-            //push the wisp away from the sentinel
-            Vec3 kb = wisp.position().subtract(CopperSentinel.this.position()).normalize().scale(1);
-            wisp.setDeltaMovement(kb);
-            CopperSentinel.this.playSound(SoundEvents.BEEHIVE_EXIT, 2, 0.7f);
-            this.stop();
         }
     }
 

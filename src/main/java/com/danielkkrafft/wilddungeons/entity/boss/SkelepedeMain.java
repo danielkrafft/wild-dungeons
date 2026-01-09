@@ -53,7 +53,7 @@ import java.util.*;
 import static net.minecraft.world.effect.MobEffects.POISON;
 import static net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE;
 
-//446 original -> 436 now (10 saved)
+//446 original -> 428 now (18 saved)
 public class SkelepedeMain extends WDBoss implements GeoEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private static final String SKELEPEDE_HEAD_CONTROLLER = "skelepede_head_controller";
@@ -71,7 +71,6 @@ public class SkelepedeMain extends WDBoss implements GeoEntity {
 
     // Store previous positions for segment following
     private final LinkedList<Vec3> previousPositions = new LinkedList<>();
-    // store previous rotations for segment following
     private final LinkedList<Float> previousRotations = new LinkedList<>();
 
     private String uniqueID = "";
@@ -125,7 +124,6 @@ public class SkelepedeMain extends WDBoss implements GeoEntity {
         this.setHealth(clientHealth);
         bossEvent.setProgress(clientBossProgress);
         if (level().isClientSide()) {
-//            WildDungeons.getLogger().debug("Client SkelepedeMain tick - health: " + getHealth());
             return;
         }
 
@@ -151,9 +149,6 @@ public class SkelepedeMain extends WDBoss implements GeoEntity {
         int maxHistory = (int) (NUM_SEGMENTS * SEGMENT_SPACING * POSITION_HISTORY_MULTIPLIER);
         while (previousPositions.size() > maxHistory) {
             previousPositions.removeLast();
-        }
-        while (previousRotations.size() > maxHistory) {
-            previousRotations.removeLast();
         }
 
         ProcessPossibleSplits();
@@ -193,7 +188,6 @@ public class SkelepedeMain extends WDBoss implements GeoEntity {
             //this happens when a new head is created from a split, because we are halfway through a tick when we do the split and the client hasn't synced the new head's health yet.
             totalHealth = 1;
         }
-//        WildDungeons.getLogger().debug("Server SkelepedeMain tick - health: " + totalHealth + " , segments: " + segments.size());
         // Update synced data floats
         this.entityData.set(SYNCED_HEALTH, totalHealth);
         this.entityData.set(SYNCED_BOSS_PROGRESS, totalMaxHealth == 0 ? 0.0f : totalHealth / totalMaxHealth);
@@ -332,7 +326,6 @@ public class SkelepedeMain extends WDBoss implements GeoEntity {
             this.addSegments(foundSegments);
         } else {
             // If no segments were found, consider the SkelepedeMain invalid and remove it
-            WildDungeons.getLogger().error("SkelepedeMain at " + this.blockPosition() + " found no segments and will be removed.");
             this.kill();
         }
     }
@@ -349,7 +342,6 @@ public class SkelepedeMain extends WDBoss implements GeoEntity {
         }
 
         compound.putInt("SegmentCount", segmentUIDs.size());
-//        WildDungeons.getLogger().debug("Saving Skelepede with " + segmentUUIDs.size() + " segments.");
         for (int i = 0; i < segmentUIDs.size(); i++) {
             compound.putString("SegmentUID_" + i, segmentUIDs.get(i));
         }

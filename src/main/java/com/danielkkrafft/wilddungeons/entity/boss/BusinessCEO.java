@@ -31,7 +31,6 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.animation.AnimationController;
 import software.bernie.geckolib.animation.RawAnimation;
@@ -39,8 +38,11 @@ import software.bernie.geckolib.animation.RawAnimation;
 import java.util.EnumSet;
 import java.util.List;
 
-//703 original -> 605 now (98 saved)
-public class BusinessCEO extends WDBoss implements GeoEntity {
+//703 original -> 598 now (105 saved)
+public class BusinessCEO extends WDBoss {
+    private static final EntityDataAccessor<Boolean> SECOND_PHASE_TRIGGERED = SynchedEntityData.defineId(BusinessCEO.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Integer> TICKS_INVULNERABLE = SynchedEntityData.defineId(BusinessCEO.class,EntityDataSerializers.INT);
+    private static final String ceo_controller = "ceo_controller";
     private static final String
             idle = "idle",
             stand_up = "stand_up",
@@ -59,10 +61,6 @@ public class BusinessCEO extends WDBoss implements GeoEntity {
             ascendAnim = RawAnimation.begin().thenPlay(ascend),
             dashAnim = RawAnimation.begin().thenPlay(dash);
 
-    private static final EntityDataAccessor<Integer> TICKS_INVULNERABLE = SynchedEntityData.defineId(BusinessCEO.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Boolean> SECOND_PHASE_TRIGGERED = SynchedEntityData.defineId(BusinessCEO.class, EntityDataSerializers.BOOLEAN);
-    private static final String ceo_controller = "ceo_controller";
-
     private final AnimationController<BusinessCEO> mainController = new AnimationController<>(this, ceo_controller, 5,
             state -> state.setAndContinue(idleAnim))
             .triggerableAnim(idle, idleAnim)
@@ -73,13 +71,10 @@ public class BusinessCEO extends WDBoss implements GeoEntity {
             .triggerableAnim(ascend, ascendAnim)
             .triggerableAnim(dash, dashAnim);
 
-    // Cooldown constants for each goal type
     private static final int MELEE_COOLDOWN = 5;
     private static final int DASH_COOLDOWN = 20;
     private static final int ASCEND_COOLDOWN = 200; // 10 seconds
     private static final int POINT_COOLDOWN = 600; // 30 seconds
-
-    // Tracking when goals were last used
     private int lastMeleeGoalTick = -MELEE_COOLDOWN;
     private int lastDashGoalTick = -DASH_COOLDOWN;
     private int lastAscendGoalTick = -ASCEND_COOLDOWN;
@@ -87,15 +82,15 @@ public class BusinessCEO extends WDBoss implements GeoEntity {
 
     public static Class[] FRIENDLIES = {Witch.class, BusinessCEO.class, BusinessGolem.class, AbstractIllager.class};
 
-    public BusinessCEO(EntityType<? extends WDBoss> entityType, Level level) {
+    public BusinessCEO(EntityType<? extends Monster> entityType, Level level) {
         super(entityType, level, BossEvent.BossBarColor.GREEN, BossEvent.BossBarOverlay.NOTCHED_6);
-        this.xpReward = 200;
         this.summonTicks = 70;
+        this.xpReward = 200;
     }
 
     @Override
     protected void registerGoals() {
-        goalSelector.addGoal(0, new WDBoss.WDBossSummonGoal(this));
+        goalSelector.addGoal(0, new WDBossSummonGoal(this));
         goalSelector.addGoal(1, new BusinessCEOPointGoal());
         goalSelector.addGoal(2, new BusinessCEOAscendGoal());
         goalSelector.addGoal(3, new BusinessCEODashGoal());
@@ -139,30 +134,12 @@ public class BusinessCEO extends WDBoss implements GeoEntity {
         if (hp < 0.5f && !isSecondPhaseTriggered()) {
             setSecondPhaseTriggered(true);
         }
-        bossEvent.setProgress(hp);
+        updateBossBar();
         if (!level.isClientSide && !isDeadOrDying()) {
             if (isSecondPhaseTriggered() && tickCount % 10 == 0){
-                //particle effects to indicate the second phase
                 UtilityMethods.sendParticles((ServerLevel) level, ParticleTypes.ANGRY_VILLAGER, true, 1, getX(), getY() + 1.5f, getZ(), 0.5f, 0.5f, 0.5f, 0.05f);
             }
         }
-    }
-
-    @Override
-    protected void saveBossData(CompoundTag compound) {
-        compound.putBoolean("SP", this.isSecondPhaseTriggered());
-    }
-
-    @Override
-    protected void loadBossData(CompoundTag compound) {
-        if (compound.contains("SP")) {
-            this.setSecondPhaseTriggered(compound.getBoolean("SP"));
-        }
-    }
-
-    @Override
-    protected @NotNull BossSounds bossSounds() {
-        return null;
     }
 
     @Override
@@ -173,23 +150,34 @@ public class BusinessCEO extends WDBoss implements GeoEntity {
     }
 
     @Override
-    public @Nullable SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor level, @NotNull DifficultyInstance difficulty, @NotNull MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
-        bossEvent.setVisible(true);
-        return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
+    protected void saveBossData(CompoundTag compound) {
+        compound.putBoolean("SP", isSecondPhaseTriggered());
     }
 
     @Override
-    protected void spawnSummonParticles(Vec3 pos) {
-        if (!(level() instanceof ServerLevel server)) return;
-
-        UtilityMethods.sendParticles((ServerLevel) BusinessCEO.this.level(), ParticleTypes.EXPLOSION_EMITTER, true, 1, pos.x, pos.y, pos.z, 0, 0, 0, 0);
-        UtilityMethods.sendParticles((ServerLevel) BusinessCEO.this.level(), ParticleTypes.ENCHANT, true, 200, pos.x, pos.y, pos.z, 1, 2, 1, 0.06f);
-        UtilityMethods.sendParticles((ServerLevel) BusinessCEO.this.level(), ParticleTypes.COMPOSTER, true, 400, pos.x, pos.y, pos.z, 1, 2, 1, 0.08f);
+    protected void loadBossData(CompoundTag compound) {
+        if (compound.contains("SP")) {
+            setSecondPhaseTriggered(compound.getBoolean("SP"));
+        }
     }
 
     @Override
     protected void summonAnimation() {
-        BusinessCEO.this.triggerAnim(ceo_controller, stand_up);
+        triggerAnim(ceo_controller, stand_up);
+    }
+
+    @Override
+    protected void spawnSummonParticles(Vec3 pos) {
+        UtilityMethods.sendParticles((ServerLevel) level(), ParticleTypes.EXPLOSION_EMITTER, true, 1, pos.x, pos.y, pos.z, 0, 0, 0, 0);
+        UtilityMethods.sendParticles((ServerLevel) level(), ParticleTypes.ENCHANT, true, 200, pos.x, pos.y, pos.z, 1, 2, 1, 0.06f);
+        UtilityMethods.sendParticles((ServerLevel) level(), ParticleTypes.COMPOSTER, true, 400, pos.x, pos.y, pos.z, 1, 2, 1, 0.08f);
+        triggerAnim(ceo_controller, idle);
+    }
+
+    @Override
+    public @Nullable SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor level, @NotNull DifficultyInstance difficulty, @NotNull MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
+        bossEvent.setVisible(true);
+        return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
     }
 
     public void setSecondPhaseTriggered(boolean triggered) {
@@ -203,6 +191,11 @@ public class BusinessCEO extends WDBoss implements GeoEntity {
 
     public boolean isSecondPhaseTriggered() {
         return this.entityData.get(SECOND_PHASE_TRIGGERED);
+    }
+
+    @Override
+    public boolean isInSummonPhase() {
+        return getTicksInvulnerable() <= summonTicks;
     }
 
     class BusinessCEOTargetPlayerGoal extends Goal {
@@ -250,14 +243,14 @@ public class BusinessCEO extends WDBoss implements GeoEntity {
         public boolean canUse() {
             return BusinessCEO.this.getTarget() != null &&
                     BusinessCEO.this.distanceToSqr(BusinessCEO.this.getTarget()) < 12 &&
-                    !BusinessCEO.this.isInvulnerable() &&
+                    !BusinessCEO.this.isInSummonPhase() &&
                     (BusinessCEO.this.tickCount - BusinessCEO.this.lastMeleeGoalTick >= MELEE_COOLDOWN);
         }
 
         public boolean canContinueToUse() {
             return !stopped && BusinessCEO.this.getTarget() != null &&
                     BusinessCEO.this.getTarget().isAlive() &&
-                    !BusinessCEO.this.isInvulnerable();
+                    !BusinessCEO.this.isInSummonPhase();
         }
 
         public void start() {
@@ -321,7 +314,7 @@ public class BusinessCEO extends WDBoss implements GeoEntity {
         public boolean canUse() {
             return BusinessCEO.this.getTarget() != null &&
                     BusinessCEO.this.distanceToSqr(BusinessCEO.this.getTarget()) > 12 &&
-                    !BusinessCEO.this.isInvulnerable() &&
+                    !BusinessCEO.this.isInSummonPhase() &&
                     (BusinessCEO.this.tickCount - BusinessCEO.this.lastDashGoalTick >= DASH_COOLDOWN);
         }
 
@@ -330,7 +323,7 @@ public class BusinessCEO extends WDBoss implements GeoEntity {
             return !stopped && BusinessCEO.this.getTarget() != null &&
                     BusinessCEO.this.getTarget().isAlive() &&
                     BusinessCEO.this.distanceToSqr(BusinessCEO.this.getTarget()) > 12 &&
-                    !BusinessCEO.this.isInvulnerable();
+                    !BusinessCEO.this.isInSummonPhase();
         }
 
         public void start() {
@@ -405,7 +398,7 @@ public class BusinessCEO extends WDBoss implements GeoEntity {
         public boolean canUse() {
             return isSecondPhaseTriggered() &&
                     BusinessCEO.this.getTarget() != null &&
-                    !BusinessCEO.this.isInvulnerable() &&
+                    !BusinessCEO.this.isInSummonPhase() &&
                     (BusinessCEO.this.tickCount - BusinessCEO.this.lastAscendGoalTick >= ASCEND_COOLDOWN);
         }
 
@@ -414,7 +407,7 @@ public class BusinessCEO extends WDBoss implements GeoEntity {
             return BusinessCEO.this.getTarget() != null &&
                     BusinessCEO.this.getTarget().isAlive() &&
                     hoveredTicks < maxHoverTicks && // Limit the hover time
-                    !BusinessCEO.this.isInvulnerable();
+                    !BusinessCEO.this.isInSummonPhase();
         }
 
         @Override
@@ -528,7 +521,7 @@ public class BusinessCEO extends WDBoss implements GeoEntity {
             return isSecondPhaseTriggered() &&
                     BusinessCEO.this.getTarget() != null &&
                     BusinessCEO.this.distanceToSqr(BusinessCEO.this.getTarget()) > 12 &&
-                    !BusinessCEO.this.isInvulnerable() &&
+                    !BusinessCEO.this.isInSummonPhase() &&
                     (BusinessCEO.this.tickCount - BusinessCEO.this.lastPointGoalTick >= POINT_COOLDOWN);
         }
 
