@@ -56,7 +56,6 @@ import java.util.List;
  * Charged Cannon: Charges cannon 1-10 times every second (beeping sound each charge). Triggered if the target is obstructed by blocks. Wind charge shot if reacquire line of sight and below 10 charges
  */
 
-//615 original -> 448 now (167 saved)
 public class BreezeGolem extends WDBoss implements RangedAttackMob, GeoEntity {
     private static final String CONTROLLER="breezegolemcontroller";
 

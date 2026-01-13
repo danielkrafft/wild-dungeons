@@ -40,7 +40,6 @@ import software.bernie.geckolib.animation.RawAnimation;
 
 import java.util.EnumSet;
 
-//907 original -> 602 now (305 saved)
 public class PrimalCreeper extends WDBoss implements GeoEntity {
     private static final String PRIMAL_CREEPER_CONTROLLER = "primal_creeper_controller";
     private static final String PRIMAL_CREEPER_ATTACK_CONTROLLER = "primal_creeper_attack_controller";

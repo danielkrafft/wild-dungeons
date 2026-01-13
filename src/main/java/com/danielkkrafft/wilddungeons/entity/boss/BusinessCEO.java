@@ -38,7 +38,6 @@ import software.bernie.geckolib.animation.RawAnimation;
 import java.util.EnumSet;
 import java.util.List;
 
-//703 original -> 598 now (105 saved)
 public class BusinessCEO extends WDBoss {
     private static final EntityDataAccessor<Boolean> SECOND_PHASE_TRIGGERED = SynchedEntityData.defineId(BusinessCEO.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Integer> TICKS_INVULNERABLE = SynchedEntityData.defineId(BusinessCEO.class,EntityDataSerializers.INT);

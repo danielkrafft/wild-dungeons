@@ -42,7 +42,6 @@ import software.bernie.geckolib.animation.RawAnimation;
 
 import java.util.EnumSet;
 
-//540 original -> 453 now (87 saved)
 public class CopperSentinel extends WDBoss implements GeoEntity , RangedAttackMob {
     private static final String COPPER_SENTINEL_CONTROLLER = "copper_sentinel_controller";
     private static final String
@@ -116,7 +115,6 @@ public class CopperSentinel extends WDBoss implements GeoEntity , RangedAttackMo
         if (getTarget() != null && getBossCooldown() > 0 && getBossAction() == 0) {
             setBossCooldown(getBossCooldown() - 1);
         }
-        
         super.tick();
     }
 
@@ -244,7 +242,7 @@ public class CopperSentinel extends WDBoss implements GeoEntity , RangedAttackMo
             if (CopperSentinel.this.tickCount % EXPLODE_COOLDOWN == 0) {
                 setBossAction(EXPLODE_ACTION);
             }
-            else if (dist < 6) {
+            else if (dist < 3.5) {
                 setBossAction(MELEE_ACTION);
             }
             else if (dist >= 3.5 && dist <= 20) {

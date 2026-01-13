@@ -1,18 +1,13 @@
 package com.danielkkrafft.wilddungeons.entity.boss;
 
-import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
-import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.BossEvent;
@@ -53,7 +48,6 @@ import java.util.*;
 import static net.minecraft.world.effect.MobEffects.POISON;
 import static net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE;
 
-//446 original -> 428 now (18 saved)
 public class SkelepedeMain extends WDBoss implements GeoEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private static final String SKELEPEDE_HEAD_CONTROLLER = "skelepede_head_controller";
@@ -347,9 +341,6 @@ public class SkelepedeMain extends WDBoss implements GeoEntity {
         }
         super.addAdditionalSaveData(compound);
     }
-
-    @Override
-    protected void spawnSummonParticles(Vec3 pos) {}
 
     @Override
     protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {

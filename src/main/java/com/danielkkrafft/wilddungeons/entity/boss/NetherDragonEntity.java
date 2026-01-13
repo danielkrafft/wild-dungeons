@@ -13,6 +13,8 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -47,7 +49,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static com.danielkkrafft.wilddungeons.entity.boss.NetherDragonEntity.AttackPhase.*;
 
-//789 original -> 693 now
 public class NetherDragonEntity extends WDBoss implements GeoEntity {
     private BlockPos anchorPoint, spawnPoint = BlockPos.ZERO;
     private static final EntityDataAccessor<Vector3f> MOVE_TARGET_POINT = SynchedEntityData.defineId(NetherDragonEntity.class, EntityDataSerializers.VECTOR3);
@@ -152,8 +153,8 @@ public class NetherDragonEntity extends WDBoss implements GeoEntity {
     }
 
     @Override
-    protected int calculateFallDamage(float fallDistance, float damageMultiplier) {
-        return 0;
+    protected boolean isImmuneToDamageType(DamageSource source) {
+        return source.is(DamageTypes.FALL);
     }
 
     @Override
@@ -187,14 +188,6 @@ public class NetherDragonEntity extends WDBoss implements GeoEntity {
         if (compound.contains("SX")) {
             this.spawnPoint = new BlockPos(compound.getInt("SX"), compound.getInt("SY"), compound.getInt("SZ"));
         }
-    }
-
-    @Override
-    protected @NotNull PathNavigation createNavigation(@NotNull Level level) {
-        FlyingPathNavigation path = new FlyingPathNavigation(this, level);
-        path.setCanFloat(true);
-        path.setCanPassDoors(true);
-        return path;
     }
 
     @Override
@@ -241,12 +234,7 @@ public class NetherDragonEntity extends WDBoss implements GeoEntity {
     @Override
     public void tick() {
         super.tick();
-        Level level = getCommandSenderWorld();
-        float hp = getHealth() / getMaxHealth();
-        bossEvent.setProgress(hp);
-        if (!level.isClientSide && !isDeadOrDying()) {
-            this.setNoGravity(true);
-        }
+        updateBossBar();
     }
 
     public void StopAttackAnimations(){
@@ -264,6 +252,17 @@ public class NetherDragonEntity extends WDBoss implements GeoEntity {
         LivingEntity livingentity = NetherDragonEntity.this.getTarget();
         BlockPos blockpos = livingentity != null ? livingentity.blockPosition() : NetherDragonEntity.this.blockPosition();
         this.anchorPoint = blockpos.above(2+ this.random.nextInt(10));
+    }
+
+    @Override
+    protected MoveControl createMoveControlFor(Locomotion mode) {
+        if (mode == Locomotion.AERIAL) return new NetherDragonMoveControl(this);
+        return super.createMoveControlFor(mode);
+    }
+
+    @Override
+    protected Locomotion defaultLocomotion() {
+        return Locomotion.AERIAL;
     }
 
     class NetherDragonMoveControl extends MoveControl {

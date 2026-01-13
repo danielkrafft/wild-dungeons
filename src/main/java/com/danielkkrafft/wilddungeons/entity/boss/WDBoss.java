@@ -13,6 +13,7 @@ import net.minecraft.world.BossEvent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.control.FlyingMoveControl;
 import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
@@ -37,7 +38,6 @@ public abstract class WDBoss extends Monster implements GeoEntity {
     private static final EntityDataAccessor<Integer> LOCOMOTION = SynchedEntityData.defineId(WDBoss.class, EntityDataSerializers.INT);
     protected int summonTicks = 50; // common override
     protected boolean attacking;
-    protected Locomotion locomotion = Locomotion.TERRESTRIAL;
 
     public enum Locomotion {
         AERIAL,
@@ -64,18 +64,11 @@ public abstract class WDBoss extends Monster implements GeoEntity {
 
         this.setNoGravity(mode == Locomotion.AERIAL);
 
-        this.moveControl = switch (mode) {
-            case AERIAL -> new net.minecraft.world.entity.ai.control.FlyingMoveControl(this, 10, false);
-            case AQUATIC, TERRESTRIAL -> new MoveControl(this);
-        };
-
-        this.navigation = switch (mode) {
-            case AERIAL -> createAerialPath(level());
-            case AQUATIC, TERRESTRIAL -> new GroundPathNavigation(this, level());
-        };
-
-        //this.setDeltaMovement(this.getDeltaMovement().multiply(0.5, 0.5, 0.5));
+        this.moveControl = createMoveControlFor(mode);
+        this.navigation  = createNavigationFor(mode, level());
     }
+
+    protected Locomotion defaultLocomotion() { return Locomotion.TERRESTRIAL; }
 
     public final Locomotion getLocomotion() {
         return Locomotion.values()[entityData.get(LOCOMOTION)];
@@ -94,27 +87,33 @@ public abstract class WDBoss extends Monster implements GeoEntity {
         return path;
     }
 
+    // splitting these out into their own methods like this makes it overridable so we can still have custom move controllers like the nether dragon's
+    protected MoveControl createMoveControlFor(Locomotion mode) {
+        return switch (mode) {
+            case AERIAL -> new FlyingMoveControl(this, 10, false);
+            case AQUATIC, TERRESTRIAL -> new MoveControl(this);
+        };
+    }
+
+    protected PathNavigation createNavigationFor(Locomotion mode, Level level) {
+        return switch (mode) {
+            case AERIAL -> createAerialPath(level);
+            case AQUATIC, TERRESTRIAL -> new GroundPathNavigation(this, level);
+        };
+    }
+
     @Override
     public void tick() {
         super.tick();
 
         if (getLocomotion() == Locomotion.AERIAL) {
             this.setNoGravity(true);
-            Vec3 v = getDeltaMovement();
-            if (v.y < 0) setDeltaMovement(v.x, 0, v.z);
         }
     }
 
     @Override
     protected @NotNull PathNavigation createNavigation(@NotNull Level level) {
-        if (getLocomotion() == Locomotion.AERIAL) {
-            FlyingPathNavigation path = new FlyingPathNavigation(this, level);
-            path.setCanFloat(false);
-            path.setCanPassDoors(true);
-            return path;
-        } else {
-            return new GroundPathNavigation(this, level);
-        }
+        return createNavigationFor(getLocomotion(), level);
     }
 
     /* -- saves/data -- */
@@ -123,7 +122,7 @@ public abstract class WDBoss extends Monster implements GeoEntity {
     protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
         super.defineSynchedData(builder);
         builder.define(TICKS_INVULNERABLE, 0);
-        builder.define(LOCOMOTION, Locomotion.TERRESTRIAL.ordinal());
+        builder.define(LOCOMOTION, defaultLocomotion().ordinal());
     }
 
     @Override
@@ -181,7 +180,7 @@ public abstract class WDBoss extends Monster implements GeoEntity {
     }
 
     @Override
-    protected final @NotNull SoundEvent getHurtSound(@NotNull DamageSource source) {
+    protected @NotNull SoundEvent getHurtSound(@NotNull DamageSource source) {
         return (bossSounds().hurt() != null) ? bossSounds().hurt() : super.getHurtSound(source);
     }
 
@@ -240,7 +239,7 @@ public abstract class WDBoss extends Monster implements GeoEntity {
 
     protected void summonAnimation() {}
 
-    protected abstract void spawnSummonParticles(Vec3 pos);
+    protected void spawnSummonParticles(Vec3 pos) {};
 
     public static class WDBossSummonGoal extends Goal {
         protected final WDBoss boss;
