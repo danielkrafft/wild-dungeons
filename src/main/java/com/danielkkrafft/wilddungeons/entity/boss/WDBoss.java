@@ -13,7 +13,11 @@ import net.minecraft.world.BossEvent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
+import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
+import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -26,13 +30,20 @@ import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.List;
 
-//753 lines saved across the boss package
 public abstract class WDBoss extends Monster implements GeoEntity {
     protected final ServerBossEvent bossEvent;
 
     private static final EntityDataAccessor<Integer> TICKS_INVULNERABLE = SynchedEntityData.defineId(WDBoss.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> LOCOMOTION = SynchedEntityData.defineId(WDBoss.class, EntityDataSerializers.INT);
     protected int summonTicks = 50; // common override
     protected boolean attacking;
+    protected Locomotion locomotion = Locomotion.TERRESTRIAL;
+
+    public enum Locomotion {
+        AERIAL,
+        TERRESTRIAL,
+        AQUATIC
+    }
 
     protected WDBoss(EntityType<? extends Monster> type, Level level,
                      BossEvent.BossBarColor color,
@@ -40,10 +51,70 @@ public abstract class WDBoss extends Monster implements GeoEntity {
         super(type, level);
         this.bossEvent = new ServerBossEvent(getDisplayName(), color, overlay);
     }
-    
+
     protected void updateBossBar() {
         float hp = getHealth() / getMaxHealth();
         bossEvent.setProgress(hp);
+    }
+
+    /* -- locomotion (mode of transport) -- */
+
+    protected void applyLocomotion(Locomotion mode) {
+        this.navigation.stop();
+
+        this.setNoGravity(mode == Locomotion.AERIAL);
+
+        this.moveControl = switch (mode) {
+            case AERIAL -> new net.minecraft.world.entity.ai.control.FlyingMoveControl(this, 10, false);
+            case AQUATIC, TERRESTRIAL -> new MoveControl(this);
+        };
+
+        this.navigation = switch (mode) {
+            case AERIAL -> createAerialPath(level());
+            case AQUATIC, TERRESTRIAL -> new GroundPathNavigation(this, level());
+        };
+
+        //this.setDeltaMovement(this.getDeltaMovement().multiply(0.5, 0.5, 0.5));
+    }
+
+    public final Locomotion getLocomotion() {
+        return Locomotion.values()[entityData.get(LOCOMOTION)];
+    }
+
+    public final void setLocomotion(Locomotion mode) {
+        if (mode == getLocomotion()) return;
+        entityData.set(LOCOMOTION, mode.ordinal());
+        applyLocomotion(mode);
+    }
+
+    protected PathNavigation createAerialPath(Level level) {
+        FlyingPathNavigation path = new FlyingPathNavigation(this, level);
+        path.setCanFloat(true);
+        path.setCanPassDoors(true);
+        return path;
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+
+        if (getLocomotion() == Locomotion.AERIAL) {
+            this.setNoGravity(true);
+            Vec3 v = getDeltaMovement();
+            if (v.y < 0) setDeltaMovement(v.x, 0, v.z);
+        }
+    }
+
+    @Override
+    protected @NotNull PathNavigation createNavigation(@NotNull Level level) {
+        if (getLocomotion() == Locomotion.AERIAL) {
+            FlyingPathNavigation path = new FlyingPathNavigation(this, level);
+            path.setCanFloat(false);
+            path.setCanPassDoors(true);
+            return path;
+        } else {
+            return new GroundPathNavigation(this, level);
+        }
     }
 
     /* -- saves/data -- */
@@ -52,6 +123,7 @@ public abstract class WDBoss extends Monster implements GeoEntity {
     protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
         super.defineSynchedData(builder);
         builder.define(TICKS_INVULNERABLE, 0);
+        builder.define(LOCOMOTION, Locomotion.TERRESTRIAL.ordinal());
     }
 
     @Override
@@ -77,6 +149,14 @@ public abstract class WDBoss extends Monster implements GeoEntity {
     protected void saveBossData(CompoundTag compound) {}
 
     protected void loadBossData(CompoundTag compound) {}
+
+    @Override
+    public void onSyncedDataUpdated(@NotNull EntityDataAccessor<?> key) {
+        super.onSyncedDataUpdated(key);
+        if (key.equals(LOCOMOTION)) {
+            applyLocomotion(getLocomotion());
+        }
+    }
 
     /* -- sounds -- */
 

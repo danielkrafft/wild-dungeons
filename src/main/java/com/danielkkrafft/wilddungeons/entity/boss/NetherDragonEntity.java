@@ -7,17 +7,12 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.DifficultyInstance;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -43,10 +38,8 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 import software.bernie.geckolib.animatable.GeoAnimatable;
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.animation.AnimationState;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -54,39 +47,37 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static com.danielkkrafft.wilddungeons.entity.boss.NetherDragonEntity.AttackPhase.*;
 
-public class NetherDragonEntity extends FlyingMob implements GeoEntity {
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    private final ServerBossEvent bossEvent = new ServerBossEvent(getDisplayName(), BossEvent.BossBarColor.YELLOW, BossEvent.BossBarOverlay.NOTCHED_10);
-    private BlockPos anchorPoint = BlockPos.ZERO;
-    private BlockPos spawnPoint = BlockPos.ZERO;
+//789 original -> 693 now
+public class NetherDragonEntity extends WDBoss implements GeoEntity {
+    private BlockPos anchorPoint, spawnPoint = BlockPos.ZERO;
     private static final EntityDataAccessor<Vector3f> MOVE_TARGET_POINT = SynchedEntityData.defineId(NetherDragonEntity.class, EntityDataSerializers.VECTOR3);
     private static final EntityDataAccessor<Integer> ATTACK_PHASE = SynchedEntityData.defineId(NetherDragonEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Integer> TICKS_INVULNERABLE = SynchedEntityData.defineId(NetherDragonEntity.class,EntityDataSerializers.INT);
-    private static final int SUMMON_TICKS = 50;//5s
     private static final String
             FLIGHTCONTROLLER = "NetherDragonFlightController",
             ATTACKCONTROLLER = "NetherDragonAttackController";
+
     private static final String
             idle = "idle",
             fly = "fly",
             fireball = "idle",//todo should be replaced with an actual fireball animation that blends with the fly animation probably
             sweep = "dive",
             glide = "glide";
+
     private static final RawAnimation
             flyAnim = RawAnimation.begin().thenLoop(fly),
             fireballAnim = RawAnimation.begin().thenPlay(fireball),
             sweepAnim = RawAnimation.begin().thenLoop(sweep),
             glideAnim = RawAnimation.begin().thenLoop(glide),
             idleAnim = RawAnimation.begin().thenLoop(idle);
-    //<editor-fold desc="Core Mob Properties">
-    public NetherDragonEntity(EntityType<? extends FlyingMob> entityType, Level level) {
-        super(entityType, level);
+
+    public NetherDragonEntity(EntityType<? extends WDBoss> entityType, Level level) {
+        super(entityType, level, BossEvent.BossBarColor.YELLOW, BossEvent.BossBarOverlay.NOTCHED_10);
         this.setMoveTargetPoint(new Vector3f(0,0,0));
         this.anchorPoint = BlockPos.ZERO;
         this.setAttackPhase(CIRCLE);
         this.xpReward = 200;
+        this.summonTicks = 50;
         this.moveControl = new NetherDragonMoveControl(this);
-//        setPersistenceRequired();
     }
 
     @Override
@@ -99,7 +90,7 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
 
     @Override
     protected void registerGoals() {
-        goalSelector.addGoal(0, new SummonGoal(this));
+        goalSelector.addGoal(0, new WDBoss.WDBossSummonGoal(this));
         //todo death goal like EnderDragon
         goalSelector.addGoal(1, new NetherDragonEntityAttackStrategyGoal());
         goalSelector.addGoal(2, new NetherDragonEntitySweepAttackGoal());
@@ -160,23 +151,6 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
         return PlayState.STOP;
     }
 
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return cache;
-    }
-
-
-    @Override
-    public boolean mayBeLeashed() {
-        return false;
-    }
-
-    @Override
-    public boolean canHaveALeashAttachedToIt() {
-        return false;
-    }
-
     @Override
     protected int calculateFallDamage(float fallDistance, float damageMultiplier) {
         return 0;
@@ -187,14 +161,11 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
         return true;
     }
 
-    @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
+    protected void saveBossData(CompoundTag compound) {
         compound.putInt("AX", this.anchorPoint.getX());
         compound.putInt("AY", this.anchorPoint.getY());
         compound.putInt("AZ", this.anchorPoint.getZ());
         compound.putInt("AP", this.getAttackPhase().ordinal());
-        compound.putInt("TI", this.getTicksInvulnerable());
         compound.putDouble("MTX", this.getMoveTargetPoint().x());
         compound.putDouble("MTY", this.getMoveTargetPoint().y());
         compound.putDouble("MTZ", this.getMoveTargetPoint().z());
@@ -203,20 +174,12 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
         compound.putInt("SZ", this.spawnPoint.getZ());
     }
 
-    @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-        if (hasCustomName()) {
-            bossEvent.setName(getDisplayName());
-        }
+    protected void loadBossData(CompoundTag compound) {
         if (compound.contains("AX")) {
             this.anchorPoint = new BlockPos(compound.getInt("AX"), compound.getInt("AY"), compound.getInt("AZ"));
         }
         if (compound.contains("AP")) {
             this.setAttackPhase(AttackPhase.values()[compound.getInt("AP")]);
-        }
-        if (compound.contains("TI")) {
-            this.setTicksInvulnerable(compound.getInt("TI"));
         }
         if (compound.contains("MTX")) {
             this.setMoveTargetPoint(new Vector3f((float) compound.getDouble("MTX"), (float) compound.getDouble("MTY"), (float) compound.getDouble("MTZ")));
@@ -238,7 +201,6 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
     protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
         super.defineSynchedData(builder);
         builder.define(ATTACK_PHASE, 0);
-        builder.define(TICKS_INVULNERABLE,0);
         builder.define(MOVE_TARGET_POINT, new Vector3f(0,0,0));
     }
 
@@ -250,14 +212,6 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
         return AttackPhase.values()[this.entityData.get(ATTACK_PHASE)];
     }
 
-    public void setTicksInvulnerable(int ticks){
-        this.entityData.set(TICKS_INVULNERABLE,ticks);
-    }
-
-    public int getTicksInvulnerable(){
-        return this.entityData.get(TICKS_INVULNERABLE);
-    }
-
     public void setMoveTargetPoint(Vector3f pos) {
         this.entityData.set(MOVE_TARGET_POINT, pos);
     }
@@ -266,34 +220,22 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
         return this.entityData.get(MOVE_TARGET_POINT);
     }
 
+    private static final BossSounds SOUNDS = new BossSounds(
+            SoundEvents.ENDER_DRAGON_AMBIENT,
+            SoundEvents.ENDER_DRAGON_AMBIENT,
+            SoundEvents.ENDER_DRAGON_DEATH
+    );
+
     @Override
-    protected @org.jetbrains.annotations.Nullable SoundEvent getAmbientSound() {
-        return SoundEvents.ENDER_DRAGON_AMBIENT;//todo
+    protected BossSounds bossSounds() {
+        return SOUNDS;
     }
 
     @Override
-    protected @NotNull SoundEvent getHurtSound(@NotNull DamageSource damageSource) {
-        return getAmbientSound();
-    }
-
-    @Override
-    protected @NotNull SoundEvent getDeathSound() {
-        return SoundEvents.ENDER_DRAGON_DEATH;//todo
-    }
-
-    @Override
-    public @NotNull SoundSource getSoundSource() {
-        return SoundSource.HOSTILE;
-    }
-
-    @Override
-    public void startSeenByPlayer(@NotNull ServerPlayer serverPlayer) {
-        bossEvent.addPlayer(serverPlayer);
-    }
-
-    @Override
-    public void stopSeenByPlayer(@NotNull ServerPlayer serverPlayer) {
-        bossEvent.removePlayer(serverPlayer);
+    protected void spawnSummonParticles(Vec3 pos) {
+        UtilityMethods.sendParticles((ServerLevel) NetherDragonEntity.this.level(), ParticleTypes.EXPLOSION_EMITTER, true, 1, pos.x, pos.y, pos.z, 0, 0, 0, 0);
+        UtilityMethods.sendParticles((ServerLevel) NetherDragonEntity.this.level(), ParticleTypes.LAVA, true, 200, pos.x, pos.y, pos.z, 2, 2, 2, 0.06f);
+        UtilityMethods.sendParticles((ServerLevel) NetherDragonEntity.this.level(), ParticleTypes.FLAME, true, 400, pos.x, pos.y, pos.z, 4, 4, 4, 0.08f);
     }
 
     @Override
@@ -303,20 +245,15 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
         float hp = getHealth() / getMaxHealth();
         bossEvent.setProgress(hp);
         if (!level.isClientSide && !isDeadOrDying()) {
-            //logic
-//            WildDungeons.getLogger().info("Current Target: {}", getTarget());
-//            WildDungeons.getLogger().info("Nether Dragon attack phase: {}", getAttackPhase());
-//            WildDungeons.getLogger().info("Nether Dragon Y: {}, desired Y {}", getY(), getMoveTargetPoint().y);
+            this.setNoGravity(true);
         }
-
     }
-// </editor-fold>
+
     public void StopAttackAnimations(){
         triggerAnim(ATTACKCONTROLLER,idle);
         AttackController.stop();
     }
 
-    //<editor-fold desc="Goals">
     public enum AttackPhase {
         CIRCLE,
         SWOOP,
@@ -328,55 +265,6 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
         BlockPos blockpos = livingentity != null ? livingentity.blockPosition() : NetherDragonEntity.this.blockPosition();
         this.anchorPoint = blockpos.above(2+ this.random.nextInt(10));
     }
-
-    public boolean isInvulnerable() {
-        return getTicksInvulnerable() <= SUMMON_TICKS;
-    }
-
-    public class SummonGoal extends Goal {
-        public SummonGoal(@NotNull Mob mob) {
-            this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.JUMP, Goal.Flag.LOOK, Goal.Flag.TARGET));
-        }
-
-        @Override
-        public void tick() {
-            int ticks = NetherDragonEntity.this.getTicksInvulnerable();
-            NetherDragonEntity.this.setTicksInvulnerable(NetherDragonEntity.this.getTicksInvulnerable() + 1);
-            if (ticks % 10 == 0)
-                NetherDragonEntity.this.playSound(SoundEvents.NOTE_BLOCK_PLING.value(), 2f, 2f);
-        }
-
-        @Override
-        public void start() {
-            NetherDragonEntity.this.playSound(SoundEvents.GENERIC_EXTINGUISH_FIRE, 2f, 0.7f);
-            NetherDragonEntity.this.setInvulnerable(true);
-        }
-
-        @Override
-        public boolean canUse() {
-            return NetherDragonEntity.this.isInvulnerable();
-        }
-
-        @Override
-        public void stop() {
-            //psuedo explosion
-            Vec3 pos = NetherDragonEntity.this.position();
-            List<LivingEntity> list = NetherDragonEntity.this.level().getEntitiesOfClass(LivingEntity.class, AABB.ofSize(NetherDragonEntity.this.position(), 10, 10, 10), NetherDragonEntity.this::hasLineOfSight);
-            for (LivingEntity li : list) {
-                Vec3 kb = new Vec3(pos.x - li.position().x, pos.y - li.position().y, pos.z - li.position().z).
-                        normalize().scale(2);
-                li.knockback(1.5, kb.x, kb.z);
-                li.setRemainingFireTicks(li.getRemainingFireTicks() + 100);
-                li.hurt(new DamageSource(NetherDragonEntity.this.level().damageSources().generic().typeHolder()), 10);
-            }
-            NetherDragonEntity.this.playSound(SoundEvents.GENERIC_EXPLODE.value(), 2f, 0.8f);
-            UtilityMethods.sendParticles((ServerLevel) NetherDragonEntity.this.level(), ParticleTypes.EXPLOSION_EMITTER, true, 1, pos.x, pos.y, pos.z, 0, 0, 0, 0);
-            UtilityMethods.sendParticles((ServerLevel) NetherDragonEntity.this.level(), ParticleTypes.LAVA, true, 200, pos.x, pos.y, pos.z, 2, 2, 2, 0.06f);
-            UtilityMethods.sendParticles((ServerLevel) NetherDragonEntity.this.level(), ParticleTypes.FLAME, true, 400, pos.x, pos.y, pos.z, 4, 4, 4, 0.08f);
-            NetherDragonEntity.this.setInvulnerable(false);
-        }
-    }
-
 
     class NetherDragonMoveControl extends MoveControl {
         private float speed = 0.1F;
@@ -785,5 +673,4 @@ public class NetherDragonEntity extends FlyingMob implements GeoEntity {
             return livingentity != null && NetherDragonEntity.this.canAttack(livingentity, attackTargeting);
         }
     }
-    // </editor-fold>
 }

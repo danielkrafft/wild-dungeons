@@ -42,7 +42,7 @@ import software.bernie.geckolib.animation.RawAnimation;
 
 import java.util.EnumSet;
 
-//540 original -> 430 now (110 saved)
+//540 original -> 453 now (87 saved)
 public class CopperSentinel extends WDBoss implements GeoEntity , RangedAttackMob {
     private static final String COPPER_SENTINEL_CONTROLLER = "copper_sentinel_controller";
     private static final String
@@ -67,7 +67,6 @@ public class CopperSentinel extends WDBoss implements GeoEntity , RangedAttackMo
     private static final int MELEE_COOLDOWN = 20;
     private static final int RANGED_COOLDOWN = 120;
     private static final int EXPLODE_COOLDOWN = 200;
-
     private static final int MELEE_ACTION = 1;
     private static final int RANGED_ACTION = 2;
     private static final int EXPLODE_ACTION = 3;
@@ -240,14 +239,19 @@ public class CopperSentinel extends WDBoss implements GeoEntity , RangedAttackMo
             LivingEntity target = CopperSentinel.this.getTarget();
             if (target == null) return;
 
-            double distSqr = CopperSentinel.this.distanceToSqr(target);
+            double dist = CopperSentinel.this.distanceTo(target);
 
-            if (CopperSentinel.this.tickCount % 200 == 0) {
+            if (CopperSentinel.this.tickCount % EXPLODE_COOLDOWN == 0) {
                 setBossAction(EXPLODE_ACTION);
-            } else if (distSqr < 18 && CopperSentinel.this.getRandom().nextFloat() < 0.6f) {
+            }
+            else if (dist < 6) {
                 setBossAction(MELEE_ACTION);
-            } else if (distSqr >= 12 && distSqr <= 400) {
+            }
+            else if (dist >= 3.5 && dist <= 20) {
                 setBossAction(RANGED_ACTION);
+            }
+            else {
+                setBossAction(MELEE_ACTION);
             }
         }
     }
@@ -276,6 +280,12 @@ public class CopperSentinel extends WDBoss implements GeoEntity , RangedAttackMo
         }
 
         @Override
+        public boolean canContinueToUse() {
+            LivingEntity target = boss.getTarget();
+            return target != null && target.isAlive() && t < maxTime();
+        }
+
+        @Override
         protected void onStart(LivingEntity target) {
             hasAttacked = false;
             CopperSentinel.this.triggerAnim(COPPER_SENTINEL_CONTROLLER, slash);
@@ -292,7 +302,7 @@ public class CopperSentinel extends WDBoss implements GeoEntity , RangedAttackMo
             CopperSentinel.this.getLookControl().setLookAt(target, 30.0F, 30.0F);
 
             if (!hasAttacked && t == 20) {
-                if (CopperSentinel.this.distanceToSqr(target) < MELEE_DISTANCE
+                if (CopperSentinel.this.distanceToSqr(target) < MELEE_DISTANCE * MELEE_DISTANCE
                         && CopperSentinel.this.getSensing().hasLineOfSight(target)) {
                     CopperSentinel.this.doHurtTarget(target);
                     CopperSentinel.this.playSound(SoundEvents.PLAYER_ATTACK_SWEEP, 2, 0.8f);
@@ -331,6 +341,12 @@ public class CopperSentinel extends WDBoss implements GeoEntity , RangedAttackMo
         }
 
         @Override
+        public boolean canContinueToUse() {
+            LivingEntity target = boss.getTarget();
+            return target != null && target.isAlive() && t < maxTime();
+        }
+
+        @Override
         protected void onStart(LivingEntity target) {
             projectilesShot = 0;
             CopperSentinel.this.triggerAnim(COPPER_SENTINEL_CONTROLLER, shoot);
@@ -345,9 +361,6 @@ public class CopperSentinel extends WDBoss implements GeoEntity , RangedAttackMo
         @Override
         protected void onTick(LivingEntity target) {
             CopperSentinel.this.getLookControl().setLookAt(target, 30.0F, 30.0F);
-
-            double distSqr = CopperSentinel.this.distanceToSqr(target);
-            if (distSqr < 12 || distSqr > 400) return;
 
             if (projectilesShot < RANGED_PROJECTILES) {
                 if (t == 17 + (projectilesShot * 5)) {
@@ -383,6 +396,11 @@ public class CopperSentinel extends WDBoss implements GeoEntity , RangedAttackMo
         @Override
         protected int startCooldown() {
             return EXPLODE_COOLDOWN;
+        }
+
+        @Override
+        public boolean canContinueToUse() {
+            return t < maxTime();
         }
 
         @Override

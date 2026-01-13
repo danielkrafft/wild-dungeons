@@ -56,7 +56,7 @@ import java.util.List;
  * Charged Cannon: Charges cannon 1-10 times every second (beeping sound each charge). Triggered if the target is obstructed by blocks. Wind charge shot if reacquire line of sight and below 10 charges
  */
 
-//615 original -> 446 now (169 saved)
+//615 original -> 448 now (167 saved)
 public class BreezeGolem extends WDBoss implements RangedAttackMob, GeoEntity {
     private static final String CONTROLLER="breezegolemcontroller";
 
@@ -64,8 +64,10 @@ public class BreezeGolem extends WDBoss implements RangedAttackMob, GeoEntity {
             idle="idle",
             walk="walk",
             coreSpin="core_spin",
-            rapidCannonStart="rapid_cannon_start",rapidCannonShoot="rapid_cannon_shoot",
-            chargedCannonCharge="charged_canon_charge",chargedCannonShoot="charged_canon_shoot";
+            rapidCannonStart="rapid_cannon_start",
+            rapidCannonShoot="rapid_cannon_shoot",
+            chargedCannonCharge="charged_canon_charge",
+            chargedCannonShoot="charged_canon_shoot";
 
     private static final RawAnimation
             idleAnim=RawAnimation.begin().thenLoop(idle),
@@ -119,8 +121,8 @@ public class BreezeGolem extends WDBoss implements RangedAttackMob, GeoEntity {
     private static final float ASCENDRATE = 0.15f;
     public BreezeGolem(EntityType<? extends Monster> type, Level level) {
         super(type, level, BossEvent.BossBarColor.BLUE, BossEvent.BossBarOverlay.PROGRESS);
-        moveControl = new FlyingMoveControl(this, 10, false);
-        xpReward = 100;
+        this.moveControl = new FlyingMoveControl(this, 10, false);
+        this.xpReward = 100;
         this.summonTicks = 50;
     }
 
