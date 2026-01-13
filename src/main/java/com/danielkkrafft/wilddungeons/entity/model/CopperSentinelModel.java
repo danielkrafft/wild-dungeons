@@ -1,7 +1,7 @@
 package com.danielkkrafft.wilddungeons.entity.model;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.entity.CopperSentinel;
+import com.danielkkrafft.wilddungeons.entity.boss.CopperSentinel;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.renderer.GeoRenderer;
