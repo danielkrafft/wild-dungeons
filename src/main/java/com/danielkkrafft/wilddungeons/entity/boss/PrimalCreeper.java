@@ -1,6 +1,8 @@
 
 package com.danielkkrafft.wilddungeons.entity.boss;
 
+import com.danielkkrafft.wilddungeons.entity.PrimedDenseTnt;
+import com.danielkkrafft.wilddungeons.registry.WDItems;
 import com.danielkkrafft.wilddungeons.util.UtilityMethods;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -27,10 +29,12 @@ import net.minecraft.world.entity.animal.Ocelot;
 import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animation.AnimatableManager;
@@ -96,6 +100,8 @@ public class PrimalCreeper extends WDBoss implements GeoEntity {
             SynchedEntityData.defineId(PrimalCreeper.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> COOLDOWN =
             SynchedEntityData.defineId(PrimalCreeper.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Boolean> SHINY =
+            SynchedEntityData.defineId(PrimalCreeper.class, EntityDataSerializers.BOOLEAN);
 
     public PrimalCreeper(EntityType<? extends WDBoss> entityType, Level level) {
         super(entityType, level, BossEvent.BossBarColor.GREEN, BossEvent.BossBarOverlay.NOTCHED_6);
@@ -138,6 +144,7 @@ public class PrimalCreeper extends WDBoss implements GeoEntity {
         super.defineSynchedData(builder);
         builder.define(ACTION, 0);
         builder.define(COOLDOWN, 0);
+        builder.define(SHINY, false);
     }
 
     @Override
@@ -211,10 +218,22 @@ public class PrimalCreeper extends WDBoss implements GeoEntity {
         Vec3 direction = new Vec3(Math.cos(offsetAngle), 0, Math.sin(offsetAngle)).normalize();
         Vec3 throwVector = direction.add(0, 0.4 + arcBoost, 0);
 
-        PrimedTnt tnt = new PrimedTnt(level(), getX(), getY() + 1.5, getZ(), this);
-        tnt.setFuse((int) (target.position().distanceTo(position()) * 5));
-        tnt.setDeltaMovement(throwVector.scale(0.075f * (target.position().distanceTo(position()) + lengthOffset)));
-        level().addFreshEntity(tnt);
+        double dist = target.position().distanceTo(position());
+        int fuseTicks = (int) (dist * 5);
+        Vec3 vel = throwVector.scale(0.075f * (dist + lengthOffset));
+
+        if (isShiny()) {
+            PrimedDenseTnt tnt = new PrimedDenseTnt(level(), getX(), getY() + 1.5, getZ(), this);
+            tnt.setFuse(fuseTicks);
+            tnt.setDeltaMovement(vel);
+            level().addFreshEntity(tnt);
+        } else {
+            PrimedTnt tnt = new PrimedTnt(level(), getX(), getY() + 1.5, getZ(), this);
+            tnt.setFuse(fuseTicks);
+            tnt.setDeltaMovement(vel);
+            level().addFreshEntity(tnt);
+        }
+
         return throwVector;
     }
 
@@ -244,9 +263,22 @@ public class PrimalCreeper extends WDBoss implements GeoEntity {
         return source.is(DamageTypes.EXPLOSION) || source.is(DamageTypes.PLAYER_EXPLOSION);
     }
 
+    public boolean isShiny() { return entityData.get(SHINY); }
+    private void rollShiny() { entityData.set(SHINY, getRandom().nextFloat() < 0.05f); }
+
     @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty,
-                                        MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
+    protected void dropAllDeathLoot(@NotNull ServerLevel level, @NotNull DamageSource source) {
+        super.dropAllDeathLoot(level, source);
+        if (!isShiny()) return;
+        spawnAtLocation(new ItemStack(WDItems.DETONITE_CRYSTAL.get(), 32 + random.nextInt(65)));
+    }
+
+    @Override
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
+        if (!level.isClientSide()) {
+            rollShiny();
+            this.xpReward = isShiny() ? 500 : 100;
+        }
         bossEvent.setVisible(true);
         return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
     }

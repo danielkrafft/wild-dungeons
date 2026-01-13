@@ -16,10 +16,8 @@ public class PrimalCreeperModel extends ClientModel<PrimalCreeper>
                 WildDungeons.rl("textures/entity/primal_creeper.png")
         );
     }
-
     @Override
     public ResourceLocation getTextureResource(PrimalCreeper creeper, @Nullable GeoRenderer<PrimalCreeper> renderer) {
-        return WildDungeons.rl("textures/entity/primal_creeper.png");
-
+        return creeper.isShiny() ? WildDungeons.rl("textures/entity/primal_creeper_black.png") : WildDungeons.rl("textures/entity/primal_creeper.png");
     }
 }
