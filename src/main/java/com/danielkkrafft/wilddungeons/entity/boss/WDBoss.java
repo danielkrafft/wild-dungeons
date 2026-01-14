@@ -1,10 +1,13 @@
 package com.danielkkrafft.wilddungeons.entity.boss;
 
+import com.danielkkrafft.wilddungeons.registry.WDItems;
+import com.danielkkrafft.wilddungeons.util.UtilityMethods;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerBossEvent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -20,6 +23,8 @@ import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -148,6 +153,12 @@ public abstract class WDBoss extends Monster implements GeoEntity {
     protected void saveBossData(CompoundTag compound) {}
 
     protected void loadBossData(CompoundTag compound) {}
+
+    @Override
+    protected void dropAllDeathLoot(@NotNull ServerLevel level, @NotNull DamageSource source) {
+        super.dropAllDeathLoot(level, source);
+        spawnAtLocation(WDItems.BOSS_KEY);
+    }
 
     @Override
     public void onSyncedDataUpdated(@NotNull EntityDataAccessor<?> key) {

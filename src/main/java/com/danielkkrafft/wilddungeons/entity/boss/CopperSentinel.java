@@ -4,6 +4,7 @@ import com.danielkkrafft.wilddungeons.block.ToxicGasBlock;
 import com.danielkkrafft.wilddungeons.entity.ToxicWisp;
 import com.danielkkrafft.wilddungeons.registry.WDBlocks;
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
+import com.danielkkrafft.wilddungeons.registry.WDItems;
 import com.danielkkrafft.wilddungeons.util.UtilityMethods;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -86,6 +87,13 @@ public class CopperSentinel extends WDBoss implements GeoEntity , RangedAttackMo
         super.defineSynchedData(builder);
         builder.define(ACTION, 0);
         builder.define(COOLDOWN, 0);
+    }
+
+    @Override
+    protected void dropAllDeathLoot(@NotNull ServerLevel level, @NotNull DamageSource source) {
+        super.dropAllDeathLoot(level, source);
+        spawnAtLocation(WDItems.TOXIC_SLUDGE_BUCKET);
+        spawnAtLocation(new ItemStack(Items.COPPER_INGOT, UtilityMethods.RNG(16, 64)));
     }
 
     @Override
