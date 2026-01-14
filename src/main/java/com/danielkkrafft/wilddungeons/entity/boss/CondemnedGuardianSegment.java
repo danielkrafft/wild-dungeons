@@ -45,6 +45,10 @@ public class CondemnedGuardianSegment extends PathfinderMob implements GeoEntity
     private static final EntityDataAccessor<Integer> DATA_PREV_ENTITY_ID = SynchedEntityData.defineId(CondemnedGuardianSegment.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> DATA_FOLLOW_ENTITY_ID = SynchedEntityData.defineId(CondemnedGuardianSegment.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> DATA_IS_VULNERABLE = SynchedEntityData.defineId(CondemnedGuardianSegment.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Integer> DATA_WEAKPOINT_INTERVAL = SynchedEntityData.defineId(CondemnedGuardianSegment.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> DATA_WEAKPOINT_MAX = SynchedEntityData.defineId(CondemnedGuardianSegment.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Boolean> DATA_SHINY = SynchedEntityData.defineId(CondemnedGuardianSegment.class, EntityDataSerializers.BOOLEAN);
+
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -70,6 +74,53 @@ public class CondemnedGuardianSegment extends PathfinderMob implements GeoEntity
         builder.define(DATA_PREV_ENTITY_ID, -1);
         builder.define(DATA_FOLLOW_ENTITY_ID, -1);
         builder.define(DATA_IS_VULNERABLE, false);
+        builder.define(DATA_WEAKPOINT_INTERVAL, 3);
+        builder.define(DATA_WEAKPOINT_MAX, 9);
+        builder.define(DATA_SHINY, false);
+    }
+
+    @Override
+    public void addAdditionalSaveData(CompoundTag compound) {
+        super.addAdditionalSaveData(compound);
+        compound.putInt("SegmentIndex", getIndex());
+        compound.putInt("WeakpointInterval", getWeakpointInterval());
+        compound.putInt("WeakpointMax", getWeakpointMax());
+        compound.putBoolean("Shiny", isShiny());
+        compound.putInt("HeadEntityId", this.headEntityId);
+    }
+
+    @Override
+    public void readAdditionalSaveData(CompoundTag compound) {
+        super.readAdditionalSaveData(compound);
+        if (compound.contains("Shiny")) {
+            setShiny(compound.getBoolean("Shiny"));
+        }
+        if (compound.contains("SegmentIndex")) {
+            setSegmentIndex(compound.getInt("SegmentIndex"));
+        }
+        if (compound.contains("WeakpointInterval")) {
+            setWeakpointInterval(compound.getInt("WeakpointInterval"));
+        }
+        if (compound.contains("WeakpointMax")) {
+            setWeakpointMax(compound.getInt("WeakpointMax"));
+        }
+        if (compound.contains("HeadEntityId")) {
+            this.headEntityId = compound.getInt("HeadEntityId");
+        }
+    }
+
+    public void setWeakpointInterval(int v) { entityData.set(DATA_WEAKPOINT_INTERVAL, v); }
+    public int getWeakpointInterval() { return entityData.get(DATA_WEAKPOINT_INTERVAL); }
+
+    public void setWeakpointMax(int v) { entityData.set(DATA_WEAKPOINT_MAX, v); }
+    public int getWeakpointMax() { return entityData.get(DATA_WEAKPOINT_MAX); }
+
+    public void setShiny(boolean shiny) { this.entityData.set(DATA_SHINY, shiny); }
+    public boolean isShiny() { return this.entityData.get(DATA_SHINY); }
+
+    public boolean isWeakPoint() {
+        int idx = getIndex();
+        return idx % getWeakpointInterval() == 0 && idx <= getWeakpointMax();
     }
 
     public void setHeadEntityId(int id) {
@@ -206,7 +257,7 @@ public class CondemnedGuardianSegment extends PathfinderMob implements GeoEntity
     public boolean hurt(DamageSource source, float amount) {
         if (source.getEntity() instanceof CondemnedGuardian) return super.hurt(source, amount);
         if (source.is(DamageTypes.GENERIC_KILL)) return super.hurt(source, amount);
-        if (this.getIndex() % 3 != 0 || this.getIndex() > 10) return false;
+        if (!isWeakPoint()) return false;
 
         boolean result = super.hurt(source, amount);
 
