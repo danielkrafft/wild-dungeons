@@ -11,26 +11,6 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "wilddungeons:watchful_eye",
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": 1
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "rolls": 1.0,
-      "conditions": [
-        {
-          "condition": "minecraft:killed_by_player"
-        }
-      ],
-      "entries": [
-        {
-          "type": "minecraft:item",
           "name": "wilddungeons:boss_key",
           "functions": [
             {
