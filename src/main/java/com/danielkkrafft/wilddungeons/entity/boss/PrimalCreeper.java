@@ -222,17 +222,10 @@ public class PrimalCreeper extends WDBoss implements GeoEntity {
         int fuseTicks = (int) (dist * 5);
         Vec3 vel = throwVector.scale(0.075f * (dist + lengthOffset));
 
-        if (isShiny()) {
-            PrimedDenseTnt tnt = new PrimedDenseTnt(level(), getX(), getY() + 1.5, getZ(), this);
-            tnt.setFuse(fuseTicks);
-            tnt.setDeltaMovement(vel);
-            level().addFreshEntity(tnt);
-        } else {
-            PrimedTnt tnt = new PrimedTnt(level(), getX(), getY() + 1.5, getZ(), this);
-            tnt.setFuse(fuseTicks);
-            tnt.setDeltaMovement(vel);
-            level().addFreshEntity(tnt);
-        }
+        PrimedTnt tnt = isShiny() ? new PrimedDenseTnt(level(), getX(), getY() + 1.5, getZ(), this) : new PrimedTnt(level(), getX(), getY() + 1.5, getZ(), this);;
+        tnt.setFuse(fuseTicks);
+        tnt.setDeltaMovement(vel);
+        level().addFreshEntity(tnt);
 
         return throwVector;
     }
