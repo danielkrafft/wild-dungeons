@@ -1,7 +1,7 @@
 package com.danielkkrafft.wilddungeons.entity.renderer;
 
 import com.danielkkrafft.wilddungeons.entity.boss.NetherDragonEntity;
-import com.danielkkrafft.wilddungeons.entity.model.NetherDragonModel;
+import com.danielkkrafft.wilddungeons.entity.model.ClientModel;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -16,8 +16,10 @@ import software.bernie.geckolib.renderer.GeoEntityRenderer;
 import software.bernie.geckolib.renderer.layer.AutoGlowingGeoLayer;
 
 public class NetherDragonRenderer extends GeoEntityRenderer<NetherDragonEntity> {
+    private static final ClientModel<NetherDragonEntity> MODEL = ClientModel.<NetherDragonEntity>ofEntity("nether_dragon");
+
     public NetherDragonRenderer(EntityRendererProvider.Context renderManager) {
-        super(renderManager, new NetherDragonModel());
+        super(renderManager, MODEL);
         shadowRadius = 4;
         shadowStrength = 1;
         addRenderLayer(new AutoGlowingGeoLayer<>(this));

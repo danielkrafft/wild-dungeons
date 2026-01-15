@@ -1,33 +1,23 @@
 package com.danielkkrafft.wilddungeons.entity.renderer;
 
 import com.danielkkrafft.wilddungeons.entity.boss.CondemnedGuardian;
-import com.danielkkrafft.wilddungeons.entity.boss.CondemnedGuardianSegment;
-import com.danielkkrafft.wilddungeons.entity.model.CondemnedGuardianHeadModel;
-import com.danielkkrafft.wilddungeons.entity.model.CondemnedGuardianSegmentModel;
+import com.danielkkrafft.wilddungeons.entity.model.ClientModel;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.monster.Guardian;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
 @OnlyIn(Dist.CLIENT)
 public class CondemnedGuardianRenderer extends GeoEntityRenderer<CondemnedGuardian> {
+    private static final ClientModel<CondemnedGuardian> MODEL =
+            ClientModel.<CondemnedGuardian>ofEntity("condemned_guardian_head")
+            .withConditionalTexture(CondemnedGuardian::isShiny, "condemned_guardian_shiny");
 
     public CondemnedGuardianRenderer(EntityRendererProvider.Context renderManager) {
-        super(renderManager, new CondemnedGuardianHeadModel());
+        super(renderManager, MODEL);
         this.addRenderLayer(new CondemnedGuardianGlowLayer(this));
     }
 
@@ -45,6 +35,4 @@ public class CondemnedGuardianRenderer extends GeoEntityRenderer<CondemnedGuardi
         poseStack.popPose();
 
     }
-
-
 }

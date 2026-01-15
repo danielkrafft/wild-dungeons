@@ -1,7 +1,7 @@
 package com.danielkkrafft.wilddungeons.entity.renderer;
 
 import com.danielkkrafft.wilddungeons.entity.boss.MutantBogged;
-import com.danielkkrafft.wilddungeons.entity.model.MutantBoggedModel;
+import com.danielkkrafft.wilddungeons.entity.model.ClientModel;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -17,7 +17,7 @@ public class MutantBoggedRenderer extends DynamicGeoEntityRenderer<MutantBogged>
 {
     public MutantBoggedRenderer(EntityRendererProvider.Context renderManager)
     {
-        super(renderManager,new MutantBoggedModel());
+        super(renderManager, ClientModel.ofEntity("mutant_bogged"));
     }
     @Override
     public void actuallyRender(PoseStack poseStack, MutantBogged entity, BakedGeoModel model, @Nullable RenderType renderType, MultiBufferSource bufferSource, @Nullable VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int colour)

@@ -8,6 +8,10 @@ import software.bernie.geckolib.animatable.GeoAnimatable;
 import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.renderer.GeoRenderer;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Predicate;
+
 public class ClientModel<T extends GeoAnimatable> extends GeoModel<T>
 {
     protected ResourceLocation animation;
@@ -17,6 +21,8 @@ public class ClientModel<T extends GeoAnimatable> extends GeoModel<T>
     protected ResourceLocation baseTexture;
     protected ResourceLocation altModel;
     protected ResourceLocation altTexture;
+
+    protected List<ConditionalResource<T>> conditionalResources = new ArrayList<>();
 
     public ClientModel(ResourceLocation a, ResourceLocation m, ResourceLocation t) {
         animation = a;
@@ -28,6 +34,18 @@ public class ClientModel<T extends GeoAnimatable> extends GeoModel<T>
 
     public ClientModel(String a, String m, String t) {
         this(WildDungeons.makeAnimationRL(a), WildDungeons.makeGeoModelRL(m), WildDungeons.makeItemTextureRL(t));
+    }
+
+    public ClientModel(String entityPath) {
+        this(
+                WildDungeons.rl("animations/entity/" + entityPath + ".animation.json"),
+                WildDungeons.rl("geo/entity/" + entityPath + ".geo.json"),
+                WildDungeons.rl("textures/entity/" + entityPath + ".png")
+        );
+    }
+
+    public static <T extends GeoAnimatable> ClientModel<T> ofEntity(String entityPath) {
+        return new ClientModel<>(entityPath);
     }
 
     public void setAnim(ResourceLocation a) {
@@ -77,11 +95,21 @@ public class ClientModel<T extends GeoAnimatable> extends GeoModel<T>
 
     @Override
     public ResourceLocation getModelResource(T animatable, @Nullable GeoRenderer<T> renderer) {
+        for (ConditionalResource<T> conditional : conditionalResources) {
+            if (conditional.condition.test(animatable)) {
+                return conditional.model;
+            }
+        }
         return model;
     }
 
     @Override
     public ResourceLocation getTextureResource(T animatable, @Nullable GeoRenderer<T> renderer) {
+        for (ConditionalResource<T> conditional : conditionalResources) {
+            if (conditional.condition.test(animatable)) {
+                return conditional.texture;
+            }
+        }
         return texture;
     }
 
@@ -95,5 +123,44 @@ public class ClientModel<T extends GeoAnimatable> extends GeoModel<T>
     @SuppressWarnings("removal")
     public ResourceLocation getTextureResource(T animatable) {
         return null;
+    }
+
+    protected static class ConditionalResource<T extends GeoAnimatable> {
+        final Predicate<T> condition;
+        final ResourceLocation texture;
+        final ResourceLocation model;
+
+        ConditionalResource(Predicate<T> condition, ResourceLocation texture, ResourceLocation model) {
+            this.condition = condition;
+            this.texture = texture;
+            this.model = model;
+        }
+    }
+
+    public ClientModel<T> withConditionalTexture(Predicate<T> condition, String texturePath) {
+        conditionalResources.add(new ConditionalResource<>(
+                condition,
+                WildDungeons.rl("textures/entity/" + texturePath + ".png"),
+                this.model
+        ));
+        return this;
+    }
+
+    public ClientModel<T> withConditionalModel(Predicate<T> condition, String modelPath) {
+        conditionalResources.add(new ConditionalResource<>(
+                condition,
+                this.texture,
+                WildDungeons.rl("geo/entity/" + modelPath + ".geo.json")
+        ));
+        return this;
+    }
+
+    public ClientModel<T> withConditionalResources(Predicate<T> condition, String texturePath, String modelPath) {
+        conditionalResources.add(new ConditionalResource<>(
+                condition,
+                WildDungeons.rl("textures/entity/" + texturePath + ".png"),
+                WildDungeons.rl("geo/entity/" + modelPath + ".geo.json")
+        ));
+        return this;
     }
 }
