@@ -32,20 +32,16 @@ public class ClientModel<T extends GeoAnimatable> extends GeoModel<T>
         setAltModel(m, t);
     }
 
-    public ClientModel(String a, String m, String t) {
-        this(WildDungeons.makeAnimationRL(a), WildDungeons.makeGeoModelRL(m), WildDungeons.makeItemTextureRL(t));
-    }
-
-    public ClientModel(String entityPath) {
+    public ClientModel(String modelName, String modelType) {
         this(
-                WildDungeons.rl("animations/entity/" + entityPath + ".animation.json"),
-                WildDungeons.rl("geo/entity/" + entityPath + ".geo.json"),
-                WildDungeons.rl("textures/entity/" + entityPath + ".png")
+                WildDungeons.rl("animations/" + modelType + "/" + modelName + ".animation.json"),
+                WildDungeons.rl("geo/" + modelType + "/" + modelName + ".geo.json"),
+                WildDungeons.rl("textures/" + modelType + "/" + modelName + ".png")
         );
     }
 
-    public static <T extends GeoAnimatable> ClientModel<T> ofEntity(String entityPath) {
-        return new ClientModel<>(entityPath);
+    public static <T extends GeoAnimatable> ClientModel<T> ofEntity(String modelName, String modelType) {
+        return new ClientModel<>(modelName, modelType);
     }
 
     public void setAnim(ResourceLocation a) {
@@ -137,29 +133,29 @@ public class ClientModel<T extends GeoAnimatable> extends GeoModel<T>
         }
     }
 
-    public ClientModel<T> withConditionalTexture(Predicate<T> condition, String texturePath) {
+    public ClientModel<T> withConditionalTexture(Predicate<T> condition, String texturePath, String modelType) {
         conditionalResources.add(new ConditionalResource<>(
                 condition,
-                WildDungeons.rl("textures/entity/" + texturePath + ".png"),
+                WildDungeons.rl("textures/" + modelType + "/" + texturePath + ".png"),
                 this.model
         ));
         return this;
     }
 
-    public ClientModel<T> withConditionalModel(Predicate<T> condition, String modelPath) {
+    public ClientModel<T> withConditionalModel(Predicate<T> condition, String modelPath, String modelType) {
         conditionalResources.add(new ConditionalResource<>(
                 condition,
                 this.texture,
-                WildDungeons.rl("geo/entity/" + modelPath + ".geo.json")
+                WildDungeons.rl("geo/" + modelType + "/" + modelPath + ".geo.json")
         ));
         return this;
     }
 
-    public ClientModel<T> withConditionalResources(Predicate<T> condition, String texturePath, String modelPath) {
+    public ClientModel<T> withConditionalResources(Predicate<T> condition, String texturePath, String modelPath, String modelType) {
         conditionalResources.add(new ConditionalResource<>(
                 condition,
-                WildDungeons.rl("textures/entity/" + texturePath + ".png"),
-                WildDungeons.rl("geo/entity/" + modelPath + ".geo.json")
+                WildDungeons.rl("textures/" + modelType + "/" + texturePath + ".png"),
+                WildDungeons.rl("geo/" + modelType + "/" + modelPath + ".geo.json")
         ));
         return this;
     }

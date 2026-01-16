@@ -42,10 +42,10 @@ public class LaserSword extends WDWeapon {
         super(NAME, new Properties().rarity(Rarity.RARE).durability(200).attributes(SwordItem.createAttributes(Tiers.DIAMOND, 3, -2.4F)));
         hasEmissive = true;
 
-        ClientModel<WDWeapon> model = new ClientModel<>("laser_sword", "laser_sword", "laser_sword_working");
-        model.setAltModel("laser_sword_working", "laser_sword_working");
+        ClientModel<WDWeapon> model = new ClientModel<>(NAME, "item");
+        model.setAltModel("item/laser_sword_working", "laser_sword_working");
         this.model = model;
-        this.model.activateBaseModel();
+        this.model.activateAltModel();
 
         this.animator.addLoopingAnimation(AnimationList.idle.toString());//default animation
         this.animator.addAnimation(AnimationList.gun_transform.toString(), (float) 2 / warmUpSeconds);//2 seconds long

@@ -7,8 +7,8 @@ import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
 public class PrimalCreeperRenderer extends GeoEntityRenderer<PrimalCreeper> {
     private static final ClientModel<PrimalCreeper> MODEL =
-            ClientModel.<PrimalCreeper>ofEntity("primal_creeper")
-            .withConditionalTexture(PrimalCreeper::isShiny, "primal_creeper_black");
+            ClientModel.<PrimalCreeper>ofEntity("primal_creeper", "entity")
+            .withConditionalTexture(PrimalCreeper::isShiny, "primal_creeper_black", "entity");
 
     public PrimalCreeperRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, MODEL);

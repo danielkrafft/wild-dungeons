@@ -13,8 +13,8 @@ import software.bernie.geckolib.renderer.GeoEntityRenderer;
 @OnlyIn(Dist.CLIENT)
 public class CondemnedGuardianRenderer extends GeoEntityRenderer<CondemnedGuardian> {
     private static final ClientModel<CondemnedGuardian> MODEL =
-            ClientModel.<CondemnedGuardian>ofEntity("condemned_guardian_head")
-            .withConditionalTexture(CondemnedGuardian::isShiny, "condemned_guardian_shiny");
+            ClientModel.<CondemnedGuardian>ofEntity("condemned_guardian_head", "entity")
+            .withConditionalTexture(CondemnedGuardian::isShiny, "condemned_guardian_shiny", "entity");
 
     public CondemnedGuardianRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, MODEL);

@@ -15,7 +15,7 @@ import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
 public class BreezeGolemRenderer extends GeoEntityRenderer<BreezeGolem> {
     public BreezeGolemRenderer(EntityRendererProvider.Context renderManager) {
-        super(renderManager, ClientModel.ofEntity("breeze_golem"));
+        super(renderManager, ClientModel.ofEntity("breeze_golem", "entity"));
     }
     @Override
     public void actuallyRender(PoseStack poseStack, BreezeGolem entity, BakedGeoModel model, @Nullable RenderType renderType, MultiBufferSource bufferSource, @Nullable VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int colour) {

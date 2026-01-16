@@ -10,6 +10,6 @@ import software.bernie.geckolib.renderer.GeoEntityRenderer;
 @OnlyIn(Dist.CLIENT)
 public class SkelepedeMainRenderer extends GeoEntityRenderer<SkelepedeMain> {
     public SkelepedeMainRenderer(EntityRendererProvider.Context renderManager) {
-        super(renderManager, ClientModel.ofEntity("skelepede"));
+        super(renderManager, ClientModel.ofEntity("skelepede", "entity"));
     }
 }

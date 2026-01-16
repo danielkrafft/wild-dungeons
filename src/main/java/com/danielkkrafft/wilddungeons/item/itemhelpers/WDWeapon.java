@@ -36,7 +36,7 @@ public abstract class WDWeapon extends Item implements GeoAnimatable, GeoItem {
     public WDWeapon(String name, Properties properties) {
         super(properties);
         this.name = name;
-        this.model = new ClientModel<>(name,name,name);
+        this.model = new ClientModel<>(name, "item");
         this.animator = new WDItemAnimator(name, this);
         SingletonGeoAnimatable.registerSyncedAnimatable(this);
     }

@@ -16,7 +16,7 @@ import software.bernie.geckolib.renderer.GeoEntityRenderer;
 import software.bernie.geckolib.renderer.layer.AutoGlowingGeoLayer;
 
 public class NetherDragonRenderer extends GeoEntityRenderer<NetherDragonEntity> {
-    private static final ClientModel<NetherDragonEntity> MODEL = ClientModel.<NetherDragonEntity>ofEntity("nether_dragon");
+    private static final ClientModel<NetherDragonEntity> MODEL = ClientModel.<NetherDragonEntity>ofEntity("nether_dragon", "entity");
 
     public NetherDragonRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, MODEL);

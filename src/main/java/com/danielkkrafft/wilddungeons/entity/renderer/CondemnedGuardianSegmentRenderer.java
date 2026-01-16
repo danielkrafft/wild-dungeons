@@ -13,10 +13,10 @@ import software.bernie.geckolib.renderer.GeoEntityRenderer;
 @OnlyIn(Dist.CLIENT)
 public class CondemnedGuardianSegmentRenderer extends GeoEntityRenderer<CondemnedGuardianSegment> {
     public static final ClientModel<CondemnedGuardianSegment> MODEL =
-            ClientModel.<CondemnedGuardianSegment>ofEntity("condemned_guardian_segment")
-                    .withConditionalResources(guardian -> (guardian.isWeakPoint() && guardian.isShiny()) , "condemned_guardian_shiny", "condemned_guardian_segment_2")
-                    .withConditionalModel(CondemnedGuardianSegment::isWeakPoint, "condemned_guardian_segment_2")
-                    .withConditionalTexture(CondemnedGuardianSegment::isShiny, "condemned_guardian_shiny");
+            ClientModel.<CondemnedGuardianSegment>ofEntity("condemned_guardian_segment", "entity")
+                    .withConditionalResources(guardian -> (guardian.isWeakPoint() && guardian.isShiny()) , "condemned_guardian_shiny", "condemned_guardian_segment_2", "entity")
+                    .withConditionalModel(CondemnedGuardianSegment::isWeakPoint, "condemned_guardian_segment_2", "entity")
+                    .withConditionalTexture(CondemnedGuardianSegment::isShiny, "condemned_guardian_shiny", "entity");
 
     public CondemnedGuardianSegmentRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, MODEL);

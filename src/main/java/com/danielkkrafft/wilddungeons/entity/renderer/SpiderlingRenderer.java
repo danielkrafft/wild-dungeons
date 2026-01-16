@@ -10,6 +10,6 @@ import software.bernie.geckolib.renderer.GeoEntityRenderer;
 @OnlyIn(Dist.CLIENT)
 public class SpiderlingRenderer extends GeoEntityRenderer<Spiderling> {
     public SpiderlingRenderer(EntityRendererProvider.Context renderManager) {
-        super(renderManager, ClientModel.ofEntity("spiderling"));
+        super(renderManager, ClientModel.ofEntity("spiderling", "entity"));
     }
 }
