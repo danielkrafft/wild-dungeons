@@ -10,7 +10,6 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
-import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import software.bernie.geckolib.animatable.client.GeoRenderProvider;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
@@ -66,12 +65,6 @@ public class WarSpearItem extends WDWeapon {
     public void releaseUsing(ItemStack stack, Level level, LivingEntity livingEntity, int timeCharged) {
         super.releaseUsing(stack, level, livingEntity, timeCharged);
     }
-    public int getUseDuration(ItemStack stack, LivingEntity entity) {return 72000;}
-
-    public UseAnim getUseAnimation(ItemStack stack) {
-        return UseAnim.SPEAR;
-    }
-
 
     public SpearType getType() {
         return this.type;
@@ -86,5 +79,4 @@ public class WarSpearItem extends WDWeapon {
         NETHERITE,
         HEAVY
     }
-
 }

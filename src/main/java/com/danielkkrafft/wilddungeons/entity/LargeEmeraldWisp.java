@@ -1,8 +1,11 @@
 package com.danielkkrafft.wilddungeons.entity;
 
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
+import com.danielkkrafft.wilddungeons.util.UtilityMethods;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
@@ -11,7 +14,10 @@ import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 
 public class LargeEmeraldWisp extends EmeraldWisp {
 
@@ -25,6 +31,11 @@ public class LargeEmeraldWisp extends EmeraldWisp {
         this.goalSelector.addGoal(1, new AvoidEntityGoal<>(this, Player.class, 16f, 0.6, 1.0F));
         this.goalSelector.addGoal(2, new SummonMoreGoal(this));
         this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, true, (target) -> target != this.getOwner()));
+    }
+
+    @Override
+    protected void dropAllDeathLoot(@NotNull ServerLevel level, @NotNull DamageSource source) {
+        spawnAtLocation(new ItemStack(Items.EMERALD, UtilityMethods.RNG(0, 3)));
     }
 
     @Override

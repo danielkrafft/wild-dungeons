@@ -1,8 +1,11 @@
 package com.danielkkrafft.wilddungeons.entity.boss;
 
 import com.danielkkrafft.wilddungeons.registry.WDBlocks;
+import com.danielkkrafft.wilddungeons.registry.WDItems;
+import com.danielkkrafft.wilddungeons.util.UtilityMethods;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
@@ -12,6 +15,8 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
@@ -142,5 +147,12 @@ public class SkelepedeSegment extends Monster implements GeoEntity {
         if (compound.contains("uniqueID")) {
             uniqueID = compound.getString("uniqueID");
         }
+    }
+
+    @Override
+    protected void dropAllDeathLoot(ServerLevel level, DamageSource source) {
+        spawnAtLocation(WDItems.EGG_SAC_ARROWS.toStack(UtilityMethods.RNG(0, 4)));
+        spawnAtLocation(new ItemStack(Items.GOLD_INGOT, UtilityMethods.RNG(0, 1)));
+        spawnAtLocation(new ItemStack(Items.BONE, UtilityMethods.RNG(1, 4)));
     }
 }

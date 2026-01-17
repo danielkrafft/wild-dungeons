@@ -2,7 +2,6 @@ package com.danielkkrafft.wilddungeons.item;
 
 import com.danielkkrafft.wilddungeons.entity.model.ClientModel;
 import com.danielkkrafft.wilddungeons.entity.renderer.NautilusShieldRenderer;
-import com.danielkkrafft.wilddungeons.entity.renderer.WarSpearRenderer;
 import com.danielkkrafft.wilddungeons.item.itemhelpers.WDItemAnimator;
 import com.danielkkrafft.wilddungeons.item.itemhelpers.WDWeapon;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
@@ -35,7 +34,7 @@ public class NautilusShieldItem extends ShieldItem implements GeoAnimatable, Geo
 
     public NautilusShieldItem(Properties properties) {
         super(properties);
-        this.model = new ClientModel<>(this.name,this.name,this.name);
+        this.model = new ClientModel<>(this.name, "item");
         this.animator = new WDItemAnimator(this.name, this);
         SingletonGeoAnimatable.registerSyncedAnimatable(this);
     }

@@ -73,11 +73,6 @@ public class Meathook extends WDWeapon {
     }
 
     @Override
-    public @NotNull UseAnim getUseAnimation(@NotNull ItemStack it) {
-        return UseAnim.NONE;
-    }
-
-    @Override
     public boolean onDroppedByPlayer(@NotNull ItemStack it, Player p) {
         if (!p.level().isClientSide) {
             resetHook(p, it);

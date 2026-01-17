@@ -65,10 +65,4 @@ public class FireworkGun extends WDWeapon {
         player.getCooldowns().addCooldown(this, 4);
         fireworks.setCount(fireworks.getCount() - 1);
     }
-
-
-    @Override
-    public @NotNull UseAnim getUseAnimation(@NotNull ItemStack it) {
-        return UseAnim.NONE;
-    }
 }

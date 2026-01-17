@@ -27,7 +27,10 @@ public class FriendlyEmeraldWisp extends EmeraldWisp{
         this.goalSelector.addGoal(4, new MeleeAttackGoal(this, 1.0F, false));
         this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Monster.class, true, (target) -> target != this.getOwner()));
     }
-    
+
+    public void setFiredDirectionAndSpeed(Vec3 lookAngle, float v) {
+    }
+
     public static class SuicideBombGoal extends Goal {
         private final FriendlyEmeraldWisp wisp;
         private int chargeTicks = 0;

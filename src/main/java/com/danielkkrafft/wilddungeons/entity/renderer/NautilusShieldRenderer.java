@@ -13,9 +13,9 @@ import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 public class NautilusShieldRenderer extends GeoItemRenderer<WarSpearItem> {
-    private final ClientModel<WarSpearItem> BASE = new ClientModel<>(null, WildDungeons.rl("geo/nautilus_shield.geo.json"), WildDungeons.rl("textures/item/nautilus_shield.png"));
+    private final ClientModel<WarSpearItem> BASE = new ClientModel<>(null, WildDungeons.rl("geo/item/nautilus_shield.geo.json"), WildDungeons.rl("textures/item/nautilus_shield.png"));
     public NautilusShieldRenderer() {
-        super(new ClientModel<>(null, WildDungeons.rl("geo/nautilus_shield.geo.json"), WildDungeons.rl("textures/item/nautilus_shield.png")));
+        super(new ClientModel<>(null, WildDungeons.rl("geo/item/nautilus_shield.geo.json"), WildDungeons.rl("textures/item/nautilus_shield.png")));
     }
 
 

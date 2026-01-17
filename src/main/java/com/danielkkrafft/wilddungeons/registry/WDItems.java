@@ -2,8 +2,6 @@ package com.danielkkrafft.wilddungeons.registry;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.item.*;
-import com.danielkkrafft.wilddungeons.item.itemhelpers.ItemData.BowDataRegistry;
-import com.danielkkrafft.wilddungeons.item.itemhelpers.ItemData.GunDataRegistry;
 import com.danielkkrafft.wilddungeons.util.debug.DebugItem;
 import net.minecraft.world.item.*;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -52,9 +50,9 @@ public class WDItems {
     public static final DeferredItem<Item> THE_CAPITAL_MUSIC_DISC = ITEMS.register("the_capital_music_disc", () -> new Item( new Item.Properties().jukeboxPlayable(WDSoundEvents.THE_CAPITAL_KEY).stacksTo(1).rarity(Rarity.EPIC)));
     public static final DeferredItem<Item> THE_CAPITAL_SAFE_MUSIC_DISC = ITEMS.register("the_capital_safe_music_disc", () -> new Item( new Item.Properties().jukeboxPlayable(WDSoundEvents.THE_CAPITAL_SAFE_KEY).stacksTo(1).rarity(Rarity.EPIC)));
 
-    public static final DeferredItem<Item> WIND_BOW_ITEM = ITEMS.register("wind_bow", () -> new WindBow(BowDataRegistry.find("wind_bow")));
-    public static final DeferredItem<Item> EMERALD_STAFF = ITEMS.register("emerald_staff", () -> new EmeraldStaff(GunDataRegistry.find("emerald_staff")));
-    public static final DeferredItem<Item> STAR_CANNON = ITEMS.register("star_cannon", () -> new StarCannon(GunDataRegistry.find("star_cannon")));
+    public static final DeferredItem<Item> WIND_BOW_ITEM = ITEMS.register("wind_bow", WindBow::new);
+    public static final DeferredItem<Item> EMERALD_STAFF = ITEMS.register("emerald_staff", EmeraldStaff::new);
+    public static final DeferredItem<Item> STAR_CANNON = ITEMS.register("star_cannon", StarCannon::new);
     public static final DeferredItem<Item> EGG_SAC_ARROWS = ITEMS.register("egg_sac_arrow", () -> new EggSacArrowItem(new Item.Properties().rarity(Rarity.UNCOMMON)));
 
     //------- WAR SPEAR ITEMS -------//
