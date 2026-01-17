@@ -1,7 +1,7 @@
 package com.danielkkrafft.wilddungeons.item;
 
 import com.danielkkrafft.wilddungeons.entity.Laserbeam;
-import com.danielkkrafft.wilddungeons.entity.model.ClientModel;
+import com.danielkkrafft.wilddungeons.item.itemhelpers.WDItemAnimator;
 import com.danielkkrafft.wilddungeons.item.itemhelpers.WDWeapon;
 import com.danielkkrafft.wilddungeons.util.MathUtil;
 import net.minecraft.core.particles.ParticleTypes;
@@ -26,42 +26,44 @@ public class LaserSword extends WDWeapon {
 
     public enum AnimationList {idle, gun_transform, charging_up, fully_charged, shoot, sword_transform}
 
-    private static final int warmUpSeconds = 5;//old 5
-    private static final int maxChargeSeconds = 15;//old 15
-    private static final int cooldownSeconds = 3;//used to be 3x the total charge time
-    private static final float cooldownTransitionRatio = 0.25f;
-    private static final int laserEntityChargeSeconds = 0;
-    private static final Vector2i blastLevelRange = new Vector2i(1, 5);
-    private static final Vector2f damageRange = new Vector2f(0.75f, 20f);
-    private static final Vector2f laserRadiusRange = new Vector2f(0.1f, 1.0f);
-    private static final Vector2f laserDistanceRange = new Vector2f(15, 160);
-    private static final Vector2i explosionRadiusRange = new Vector2i(1, 30);
-
+    private static final int WARMUP_SECONDS = 5;//old 5
+    private static final int MAX_CHARGE_SECONDS = 15;//old 15
+    private static final int COOLDOWN_SECONDS = 3;//used to be 3x the total charge time
+    private static final float COOLDOWN_TRANSITION_RATIO = 0.25f;
+    private static final int LASER_ENTITY_CHARGE_SECONDS = 0;
+    private static final Vector2i BLAST_LEVEL_RANGE = new Vector2i(1, 5);
+    private static final Vector2f DAMAGE_RANGE = new Vector2f(0.75f, 20f);
+    private static final Vector2f LASER_RADIUS_RANGE = new Vector2f(0.1f, 1.0f);
+    private static final Vector2f LASER_DISTANCE_RANGE = new Vector2f(15, 160);
+    private static final Vector2i EXPLOSION_RADIUS_RANGE = new Vector2i(1, 30);
 
     public LaserSword() {
         super(NAME, new Properties().rarity(Rarity.RARE).durability(200).attributes(SwordItem.createAttributes(Tiers.DIAMOND, 3, -2.4F)));
-        hasEmissive = true;
-
-        ClientModel<WDWeapon> model = new ClientModel<>(NAME, "item");
-        model.setAltModel("item/laser_sword_working", "laser_sword_working");
-        this.model = model;
-        this.model.activateAltModel();
-
-        this.animator.addLoopingAnimation(AnimationList.idle.toString());//default animation
-        this.animator.addAnimation(AnimationList.gun_transform.toString(), (float) 2 / warmUpSeconds);//2 seconds long
-        this.animator.addLoopingAnimation(AnimationList.charging_up.toString(), (float) 20 / (maxChargeSeconds + warmUpSeconds));//20 seconds long
-        this.animator.addLoopingAnimation(AnimationList.fully_charged.toString());//20 seconds long
-        this.animator.addAnimation(AnimationList.shoot.toString(), 1.5f / (cooldownSeconds * cooldownTransitionRatio));//1.5 seconds long
-        this.animator.addAnimation(AnimationList.sword_transform.toString(), (float) 2 / (cooldownSeconds * (1 - cooldownTransitionRatio)));//2 seconds long
+        this.hasEmissive = true;
+        this.hasIdle = false;
     }
 
     @Override
-    @NotNull
-    public InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
-        model.activateAltModel();
+    protected void configureAnimator(WDItemAnimator animator) {
+        this.animator.addLoopingAnimation(AnimationList.idle.toString());//default animation
+        this.animator.addAnimation(AnimationList.gun_transform.toString(), (float) 2 / WARMUP_SECONDS);//2 seconds long
+        this.animator.addLoopingAnimation(AnimationList.charging_up.toString(), (float) 20 / (MAX_CHARGE_SECONDS + WARMUP_SECONDS));//20 seconds long
+        this.animator.addLoopingAnimation(AnimationList.fully_charged.toString());//20 seconds long
+        this.animator.addAnimation(AnimationList.shoot.toString(), 1.5f / (COOLDOWN_SECONDS * COOLDOWN_TRANSITION_RATIO));//1.5 seconds long
+        this.animator.addAnimation(AnimationList.sword_transform.toString(), (float) 2 / (COOLDOWN_SECONDS * (1 - COOLDOWN_TRANSITION_RATIO)));//2 seconds long
+    }
+
+    @Override
+    protected UseAnim getDefaultUseAnim() {
+        return UseAnim.BOW;
+    }
+
+    @Override
+    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
+        if (!level.isClientSide) animator.playAnimation(this, AnimationList.gun_transform.toString(), stack, player, level);
         player.startUsingItem(hand);
-        this.animator.playAnimation(this, AnimationList.gun_transform.toString(), player.getItemInHand(hand), player, player.level());
-        return InteractionResultHolder.consume(player.getItemInHand(hand));
+        return InteractionResultHolder.consume(stack);
     }
 
     @Override
@@ -69,39 +71,32 @@ public class LaserSword extends WDWeapon {
         if (livingEntity instanceof Player player) {
             int charge = getUseDuration(stack, livingEntity) - remainingUseDuration;
             if (charge == 0) this.animator.playAnimation(this, AnimationList.gun_transform.toString(), stack, player, player.level());
-            if (charge == warmUpSeconds * 20)
+            if (charge == WARMUP_SECONDS * 20)
                 this.animator.playAnimation(this, AnimationList.charging_up.toString(), stack, player, player.level());
-            if (charge == (maxChargeSeconds * 20) + (warmUpSeconds * 20))
+            if (charge == (MAX_CHARGE_SECONDS * 20) + (WARMUP_SECONDS * 20))
                 this.animator.playAnimation(this, AnimationList.fully_charged.toString(), stack, player, player.level());
         }
     }
 
     @Override
-    public @NotNull UseAnim getUseAnimation(@NotNull ItemStack it) {
-        return UseAnim.BOW;
-    }
-
-    @Override
     public void releaseUsing(@NotNull ItemStack stack, @NotNull Level level, @NotNull LivingEntity livingEntity, int remainingUseDuration) {
-
-        model.activateBaseModel();
         if (!(livingEntity instanceof Player player)) return;
-        int charge = getUseDuration(stack, player) - remainingUseDuration - warmUpSeconds * 20;
+        int charge = getUseDuration(stack, player) - remainingUseDuration - WARMUP_SECONDS * 20;
         if (charge <= 0) return;
 
-        float ratio = Math.clamp((float) charge / (maxChargeSeconds * 20), 0.0f, 1.0f);
+        float ratio = Math.clamp((float) charge / (MAX_CHARGE_SECONDS * 20), 0.0f, 1.0f);
 
-        int blastLevel = Mth.lerpInt(ratio, blastLevelRange.x, blastLevelRange.y);
-        float damage = Mth.lerp(ratio, damageRange.x, damageRange.y);
-        float laserRadius = Mth.lerp(ratio, laserRadiusRange.x, laserRadiusRange.y);
-        float range = Mth.lerp(ratio, laserDistanceRange.x, laserDistanceRange.y);
-        float explosionRadius = Mth.lerpInt(ratio, explosionRadiusRange.x, explosionRadiusRange.y);
+        int blastLevel = Mth.lerpInt(ratio, BLAST_LEVEL_RANGE.x, BLAST_LEVEL_RANGE.y);
+        float damage = Mth.lerp(ratio, DAMAGE_RANGE.x, DAMAGE_RANGE.y);
+        float laserRadius = Mth.lerp(ratio, LASER_RADIUS_RANGE.x, LASER_RADIUS_RANGE.y);
+        float range = Mth.lerp(ratio, LASER_DISTANCE_RANGE.x, LASER_DISTANCE_RANGE.y);
+        float explosionRadius = Mth.lerpInt(ratio, EXPLOSION_RADIUS_RANGE.x, EXPLOSION_RADIUS_RANGE.y);
         boolean explosion = ratio > 0.4f;
         boolean debris = ratio > 0.6f;
 
         if (!player.isCreative()) stack.setDamageValue(stack.getDamageValue() + blastLevel * 10);//should this be hurtAndBreak?
-        player.getCooldowns().addCooldown(this, cooldownSeconds * 20);
-        shoot(blastLevel, level, player, damage, laserRadius, range, explosion, explosionRadius, debris);
+        player.getCooldowns().addCooldown(this, COOLDOWN_SECONDS * 20);
+        shootLaser(blastLevel, level, player, damage, laserRadius, range, explosion, explosionRadius, debris);
         this.animator.playAnimation(this, AnimationList.shoot.toString(), stack, player, level);
     }
 
@@ -109,7 +104,7 @@ public class LaserSword extends WDWeapon {
     public void inventoryTick(@NotNull ItemStack itemStack, @NotNull Level level, @NotNull Entity entity, int slot, boolean inMainHand) {
 
         if (entity instanceof Player player && player.getCooldowns().isOnCooldown(this) && !player.isUsingItem()) {
-            if (player.getCooldowns().getCooldownPercent(this, 0) <= 1 - cooldownTransitionRatio) {
+            if (player.getCooldowns().getCooldownPercent(this, 0) <= 1 - COOLDOWN_TRANSITION_RATIO) {
                 this.animator.playAnimation(this, AnimationList.sword_transform.toString(), itemStack, player, level);
             }
         } else if (entity instanceof Player player && !player.getCooldowns().isOnCooldown(this) && !player.isUsingItem()) {
@@ -117,10 +112,10 @@ public class LaserSword extends WDWeapon {
         }
     }
 
-    private void shoot(int blastLevel, Level level, Player player, float damage, float radius, float range, boolean explosion, float explosionradius, boolean debris) {
+    private void shootLaser(int blastLevel, Level level, Player player, float damage, float radius, float range, boolean explosion, float explosionradius, boolean debris) {
         float yaw = player.getYRot(), pitch = player.getXRot();
         Vec3 vec = MathUtil.displaceVector(0.5f, player.getEyePosition(), yaw, pitch);
-        level.addFreshEntity(new Laserbeam(player, vec, yaw, pitch, damage, radius, range, explosion, explosionradius, debris, laserEntityChargeSeconds));
+        level.addFreshEntity(new Laserbeam(player, vec, yaw, pitch, damage, radius, range, explosion, explosionradius, debris, LASER_ENTITY_CHARGE_SECONDS));
         Vec3 oppositeLook = MathUtil.velocity3d(1, yaw + 180, -pitch);
 
         float ratio = Math.clamp((float) blastLevel / 5, 0.0f, 1.0f);

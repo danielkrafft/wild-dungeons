@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-  "layer0": "wilddungeons:item/warspear/iron_spear_inhand"
+  "layer0": "wilddungeons:item/iron_spear_inhand"
 }
 }

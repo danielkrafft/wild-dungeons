@@ -58,12 +58,6 @@ public class WindMace extends WDWeapon {
     }
 
     @Override
-    public @NotNull UseAnim getUseAnimation(@NotNull ItemStack stack)
-    {
-        return UseAnim.NONE;
-    }
-
-    @Override
     public void onStopUsing(ItemStack stack, LivingEntity entity, int count)
     {
         if(entity instanceof Player p && p.level()instanceof ServerLevel server)
