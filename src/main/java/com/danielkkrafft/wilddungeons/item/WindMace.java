@@ -102,7 +102,7 @@ public class WindMace extends WDWeapon {
                 int elapsed = diff - JITTER_TICK;
 
                 float rampUpTicks = 60f;
-                float maxPull = 0.4f;
+                float maxPull = 0.1f;
                 float ampFactor = Math.min(elapsed / rampUpTicks, 1.0f);
                 double amplitude = maxPull * ampFactor;
 

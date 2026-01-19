@@ -5,7 +5,6 @@ import com.danielkkrafft.wilddungeons.item.itemhelpers.WDItemAnimator;
 import com.danielkkrafft.wilddungeons.item.itemhelpers.WDWeapon;
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
 import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
@@ -37,7 +36,9 @@ public class WindBow extends WDWeapon {
         );
 
         this.hasIdle = false;
-        configureBow(Items.ARROW, RANGE, WDEntities.WIND_ARROW.get());
+        this.projectileRange = RANGE;
+        this.arrowType = WDEntities.WIND_ARROW.get();
+        this.ammoPredicate = stack -> stack.is(Items.ARROW);
     }
 
     @Override
@@ -98,7 +99,7 @@ public class WindBow extends WDWeapon {
         float power = BowItem.getPowerForTime(lastUseDuration);
         if ((double) power < 0.1) return;
 
-        List<ItemStack> shots = decrementAmmo(stack, ammo, player);
+        List<ItemStack> shots = decrementAmmo(ammo, player);
         if (shots.isEmpty()) return;
 
         if (!level.isClientSide) {
@@ -112,7 +113,7 @@ public class WindBow extends WDWeapon {
 
                 float spreadAngle = -((shots.size() - 1) * spreadStep * 0.5f) + i * spreadStep;
 
-                Projectile projectile = createArrowProjectile(level, player, stack, ammoStack, power == 1.0F);
+                Projectile projectile = createProjectile(level, player, power == 1.0F);
                 if (projectile == null) continue;
 
                 shootProjectile(player, projectile, power * 3.0F, 1.0f, spreadAngle);

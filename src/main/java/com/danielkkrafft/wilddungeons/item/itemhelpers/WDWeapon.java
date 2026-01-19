@@ -7,6 +7,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -14,6 +15,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoAnimatable;
 import software.bernie.geckolib.animatable.GeoItem;
@@ -27,6 +29,8 @@ import software.bernie.geckolib.renderer.layer.AutoGlowingGeoLayer;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+
+import static net.minecraft.world.item.Items.ARROW;
 
 public abstract class WDWeapon extends Item implements GeoAnimatable, GeoItem {
     public final String name;
@@ -59,12 +63,6 @@ public abstract class WDWeapon extends Item implements GeoAnimatable, GeoItem {
     protected void configureModel(ClientModel<WDWeapon> model) {}
 
     protected void configureAnimator(WDItemAnimator animator) {}
-
-    protected void configureBow(Item ammoType, int range, EntityType<? extends AbstractArrow> arrowType) {
-        this.ammoPredicate = stack -> stack.is(ammoType);
-        this.projectileRange = range;
-        this.arrowType = arrowType;
-    }
 
     /* -- overrides -- */
 
@@ -124,7 +122,7 @@ public abstract class WDWeapon extends Item implements GeoAnimatable, GeoItem {
         return ItemStack.EMPTY;
     }
 
-    protected List<ItemStack> decrementAmmo(ItemStack weapon, ItemStack ammo, LivingEntity shooter) {
+    protected List<ItemStack> decrementAmmo(ItemStack ammo, LivingEntity shooter) {
         if (ammo.isEmpty()) return List.of();
 
         ItemStack shot = ammo.copyWithCount(1);
@@ -139,48 +137,28 @@ public abstract class WDWeapon extends Item implements GeoAnimatable, GeoItem {
         return List.of(shot);
     }
 
-    protected Projectile createArrowProjectile(Level level, LivingEntity shooter, ItemStack weapon, ItemStack ammo, boolean isCrit) {
+    protected Projectile createProjectile(Level level, LivingEntity owner, boolean isCrit) {
         AbstractArrow arrow = arrowType.create(level);
         if (arrow == null) return null;
 
-        arrow.setOwner(shooter);
+        arrow.setOwner(owner);
         if (isCrit) arrow.setCritArrow(true);
 
-        //configureProjectile(arrow, level, shooter, weapon, ammo);
         return arrow;
     }
+    protected void shootProjectile(LivingEntity shooter, Projectile projectile, float velocity, float inaccuracy, float spreadAngleDegrees) {
+        projectile.setPos(shooter.getX(), shooter.getEyeY() - 0.1, shooter.getZ());
+        projectile.shootFromRotation(shooter, shooter.getXRot(), shooter.getYRot() + spreadAngleDegrees, 0.0f, velocity, inaccuracy);
+    }
 
-    //protected void configureProjectile(AbstractArrow arrow, Level level, LivingEntity shooter, ItemStack weapon, ItemStack ammo) {}
-
-    protected <E extends Entity> E createEntityProjectile(ServerLevel level, EntityType<E> type, LivingEntity shooter, float distance, float heightOffset, float speed, java.util.function.Consumer<E> config) {
+    protected <E extends Entity> E summonEntity(ServerLevel level, EntityType<E> type, Vec3 pos) {
         E e = type.create(level);
         if (e == null) return null;
 
-        var look = shooter.getLookAngle();
-        var spawnPos = shooter.getEyePosition()
-                .add(look.scale(distance))
-                .add(0.0, heightOffset, 0.0);
-
-        e.setPos(spawnPos);
-        e.setYRot(shooter.getYRot());
-        e.setXRot(shooter.getXRot());
-        e.setDeltaMovement(look.normalize().scale(speed));
-
-        if (e instanceof net.minecraft.world.entity.Mob mob) {
-            mob.setYBodyRot(shooter.getYRot());
-            mob.setYHeadRot(shooter.getYRot());
-        }
-
-        if (config != null) config.accept(e);
+        e.setPos(pos);
 
         level.addFreshEntity(e);
         return e;
-    }
-
-    protected void shootProjectile(LivingEntity shooter, Projectile projectile, float velocity, float inaccuracy, float spreadAngleDegrees) {
-        projectile.setOwner(shooter);
-        projectile.setPos(shooter.getX(), shooter.getEyeY() - 0.1, shooter.getZ());
-        projectile.shootFromRotation(shooter, shooter.getXRot(), shooter.getYRot() + spreadAngleDegrees, 0.0f, velocity, inaccuracy);
     }
 
     /* -- rendering -- */
