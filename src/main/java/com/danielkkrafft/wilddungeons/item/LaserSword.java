@@ -45,12 +45,12 @@ public class LaserSword extends WDWeapon {
 
     @Override
     protected void configureAnimator(WDItemAnimator animator) {
-        this.animator.addLoopingAnimation(AnimationList.idle.toString());//default animation
-        this.animator.addAnimation(AnimationList.gun_transform.toString(), (float) 2 / WARMUP_SECONDS);//2 seconds long
-        this.animator.addLoopingAnimation(AnimationList.charging_up.toString(), (float) 20 / (MAX_CHARGE_SECONDS + WARMUP_SECONDS));//20 seconds long
-        this.animator.addLoopingAnimation(AnimationList.fully_charged.toString());//20 seconds long
-        this.animator.addAnimation(AnimationList.shoot.toString(), 1.5f / (COOLDOWN_SECONDS * COOLDOWN_TRANSITION_RATIO));//1.5 seconds long
-        this.animator.addAnimation(AnimationList.sword_transform.toString(), (float) 2 / (COOLDOWN_SECONDS * (1 - COOLDOWN_TRANSITION_RATIO)));//2 seconds long
+        animator.addLoopingAnimation(AnimationList.idle.toString());//default animation
+        animator.addAnimation(AnimationList.gun_transform.toString(), (float) 2 / WARMUP_SECONDS);//2 seconds long
+        animator.addLoopingAnimation(AnimationList.charging_up.toString(), (float) 20 / (MAX_CHARGE_SECONDS + WARMUP_SECONDS));//20 seconds long
+        animator.addLoopingAnimation(AnimationList.fully_charged.toString());//20 seconds long
+        animator.addAnimation(AnimationList.shoot.toString(), 1.5f / (COOLDOWN_SECONDS * COOLDOWN_TRANSITION_RATIO));//1.5 seconds long
+        animator.addAnimation(AnimationList.sword_transform.toString(), (float) 2 / (COOLDOWN_SECONDS * (1 - COOLDOWN_TRANSITION_RATIO)));//2 seconds long
     }
 
     @Override
@@ -70,11 +70,11 @@ public class LaserSword extends WDWeapon {
     public void onUseTick(@NotNull Level level, @NotNull LivingEntity livingEntity, @NotNull ItemStack stack, int remainingUseDuration) {
         if (livingEntity instanceof Player player) {
             int charge = getUseDuration(stack, livingEntity) - remainingUseDuration;
-            if (charge == 0) this.animator.playAnimation(this, AnimationList.gun_transform.toString(), stack, player, player.level());
+            if (charge == 0) animator.playAnimation(this, AnimationList.gun_transform.toString(), stack, player, player.level());
             if (charge == WARMUP_SECONDS * 20)
-                this.animator.playAnimation(this, AnimationList.charging_up.toString(), stack, player, player.level());
+                animator.playAnimation(this, AnimationList.charging_up.toString(), stack, player, player.level());
             if (charge == (MAX_CHARGE_SECONDS * 20) + (WARMUP_SECONDS * 20))
-                this.animator.playAnimation(this, AnimationList.fully_charged.toString(), stack, player, player.level());
+                animator.playAnimation(this, AnimationList.fully_charged.toString(), stack, player, player.level());
         }
     }
 
@@ -97,7 +97,7 @@ public class LaserSword extends WDWeapon {
         if (!player.isCreative()) stack.setDamageValue(stack.getDamageValue() + blastLevel * 10);//should this be hurtAndBreak?
         player.getCooldowns().addCooldown(this, COOLDOWN_SECONDS * 20);
         shootLaser(blastLevel, level, player, damage, laserRadius, range, explosion, explosionRadius, debris);
-        this.animator.playAnimation(this, AnimationList.shoot.toString(), stack, player, level);
+        animator.playAnimation(this, AnimationList.shoot.toString(), stack, player, level);
     }
 
     @Override
@@ -105,10 +105,10 @@ public class LaserSword extends WDWeapon {
 
         if (entity instanceof Player player && player.getCooldowns().isOnCooldown(this) && !player.isUsingItem()) {
             if (player.getCooldowns().getCooldownPercent(this, 0) <= 1 - COOLDOWN_TRANSITION_RATIO) {
-                this.animator.playAnimation(this, AnimationList.sword_transform.toString(), itemStack, player, level);
+                animator.playAnimation(this, AnimationList.sword_transform.toString(), itemStack, player, level);
             }
         } else if (entity instanceof Player player && !player.getCooldowns().isOnCooldown(this) && !player.isUsingItem()) {
-            this.animator.playAnimation(this, AnimationList.idle.toString(), itemStack, player, level);
+            animator.playAnimation(this, AnimationList.idle.toString(), itemStack, player, level);
         }
     }
 

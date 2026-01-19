@@ -7,6 +7,6 @@ import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
 public class BusinessCEORenderer extends GeoEntityRenderer<BusinessCEO> {
     public BusinessCEORenderer(EntityRendererProvider.Context renderManager) {
-        super(renderManager, ClientModel.ofEntity("business_ceo", "entity"));
+        super(renderManager, new ClientModel<>("business_ceo", "entity"));
     }
 }

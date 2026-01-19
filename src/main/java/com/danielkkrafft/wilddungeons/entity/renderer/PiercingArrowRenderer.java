@@ -17,7 +17,7 @@ import java.util.Optional;
 public class PiercingArrowRenderer extends GeoEntityRenderer<PiercingArrow> {
 
     public PiercingArrowRenderer(EntityRendererProvider.Context context) {
-        super(context, ClientModel.ofEntity("piercing_arrow", "entity"));
+        super(context, new ClientModel<>("piercing_arrow", "entity"));
     }
 
     @Override

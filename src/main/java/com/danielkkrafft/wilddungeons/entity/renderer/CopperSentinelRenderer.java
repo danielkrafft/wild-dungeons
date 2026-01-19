@@ -9,8 +9,7 @@ import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
 @OnlyIn(Dist.CLIENT)
 public class CopperSentinelRenderer extends GeoEntityRenderer<CopperSentinel> {
-    private static final ClientModel<CopperSentinel> MODEL =
-            ClientModel.<CopperSentinel>ofEntity("copper_sentinel", "entity")
+    private static final ClientModel<CopperSentinel> MODEL = new ClientModel<CopperSentinel>("copper_sentinel", "entity")
                     .withConditionalTexture(sentinel -> (sentinel.getHealth() / sentinel.getMaxHealth()) < 0.25f, "copper_sentinel_oxidized_3", "entity")
                     .withConditionalTexture(sentinel -> (sentinel.getHealth() / sentinel.getMaxHealth()) < 0.5f, "copper_sentinel_oxidized_2", "entity")
                     .withConditionalTexture(sentinel -> (sentinel.getHealth() / sentinel.getMaxHealth()) < 0.75f, "copper_sentinel_oxidized_1", "entity");

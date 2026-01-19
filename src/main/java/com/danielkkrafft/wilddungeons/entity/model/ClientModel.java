@@ -33,10 +33,6 @@ public class ClientModel<T extends GeoAnimatable> extends GeoModel<T> {
         );
     }
 
-    public static <T extends GeoAnimatable> ClientModel<T> ofEntity(String modelName, String modelType) {
-        return new ClientModel<>(modelName, modelType);
-    }
-
     @Override
     public ResourceLocation getAnimationResource(@NotNull T t){return animation;}
 
@@ -81,9 +77,7 @@ public class ClientModel<T extends GeoAnimatable> extends GeoModel<T> {
         final @Nullable ResourceLocation texture;
         final @Nullable ResourceLocation model;
 
-        ConditionalResource(Predicate<T> condition,
-                            @Nullable ResourceLocation texture,
-                            @Nullable ResourceLocation model) {
+        ConditionalResource(Predicate<T> condition, @Nullable ResourceLocation texture, @Nullable ResourceLocation model) {
             this.condition = condition;
             this.texture = texture;
             this.model = model;

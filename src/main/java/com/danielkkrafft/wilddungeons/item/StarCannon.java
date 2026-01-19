@@ -1,7 +1,6 @@
 package com.danielkkrafft.wilddungeons.item;
 
 import com.danielkkrafft.wilddungeons.entity.BlackHole;
-import com.danielkkrafft.wilddungeons.entity.model.ClientModel;
 import com.danielkkrafft.wilddungeons.item.itemhelpers.WDItemAnimator;
 import com.danielkkrafft.wilddungeons.item.itemhelpers.WDWeapon;
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
@@ -12,8 +11,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
@@ -44,11 +41,6 @@ public class StarCannon extends WDWeapon {
     }
 
     @Override
-    protected UseAnim getDefaultUseAnim() {
-        return UseAnim.NONE;
-    }
-
-    @Override
     protected void configureAnimator(WDItemAnimator animator) {
         animator.addAnimation("fire");
     }
@@ -61,10 +53,7 @@ public class StarCannon extends WDWeapon {
         boolean hasAmmo = !ammo.isEmpty();
 
         if (!player.getAbilities().instabuild && !hasAmmo) {
-            player.displayClientMessage(
-                    Component.translatable("wilddungeons.missing_ammo", Items.NETHER_STAR.getDescription()),
-                    true
-            );
+            player.displayClientMessage(Component.translatable("wilddungeons.missing_ammo", Items.NETHER_STAR.getDescription()), true);
             return InteractionResultHolder.fail(stack);
         }
 
@@ -81,16 +70,7 @@ public class StarCannon extends WDWeapon {
         }
 
         // spawn Black Hole
-        spawnProjectile(
-                (ServerLevel) level,
-                WDEntities.BLACK_HOLE.get(),
-                player,
-                SPAWN_DISTANCE,
-                SPAWN_HEIGHT,
-                PROJECTILE_SPEED,
-                e -> {
-                    e.setCustomName(Component.literal("Black Hole"));
-
+        spawnProjectile((ServerLevel) level, WDEntities.BLACK_HOLE.get(), player, SPAWN_DISTANCE, SPAWN_HEIGHT, PROJECTILE_SPEED, e -> {e.setCustomName(Component.literal("Black Hole"));
                     if (e instanceof BlackHole blackHole) {
                         var look = player.getLookAngle();
                         blackHole.setFiredDirectionAndSpeed(look, PROJECTILE_SPEED);
@@ -99,14 +79,7 @@ public class StarCannon extends WDWeapon {
         );
 
         animator.playAnimation(this, "fire", stack, player, level);
-        level.playSound(
-                null,
-                player.blockPosition(),
-                SoundEvents.SHULKER_SHOOT,
-                SoundSource.PLAYERS,
-                1.0f,
-                1.0f
-        );
+        level.playSound(null, player.blockPosition(), SoundEvents.SHULKER_SHOOT, SoundSource.PLAYERS, 1.0f, 1.0f);
 
         player.getCooldowns().addCooldown(this, COOLDOWN_TICKS);
         player.awardStat(Stats.ITEM_USED.get(this));

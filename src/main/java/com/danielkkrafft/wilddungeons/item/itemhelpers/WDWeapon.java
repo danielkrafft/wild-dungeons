@@ -57,8 +57,6 @@ public abstract class WDWeapon extends Item implements GeoAnimatable, GeoItem {
         configureAnimator(animator);
     }
 
-    /* -- config hooks -- */
-
     protected void configureModel(ClientModel<WDWeapon> model) {}
 
     protected void configureAnimator(WDItemAnimator animator) {}
@@ -70,7 +68,7 @@ public abstract class WDWeapon extends Item implements GeoAnimatable, GeoItem {
         this.bowEnabled = true;
     }
 
-    /* -- vanilla overrides -- */
+    /* -- overrides -- */
 
     protected int getMaxUseDuration() {
         return 72000; // same as bow
@@ -91,8 +89,7 @@ public abstract class WDWeapon extends Item implements GeoAnimatable, GeoItem {
     }
 
     @Override
-    public void inventoryTick(@NotNull ItemStack stack, @NotNull Level level,
-                              @NotNull Entity entity, int slot, boolean selected) {
+    public void inventoryTick(@NotNull ItemStack stack, @NotNull Level level, @NotNull Entity entity, int slot, boolean selected) {
         if (!(entity instanceof Player player)) return;
         if (!hasIdle) return;
         if (player.getCooldowns().isOnCooldown(this)) return;
@@ -107,16 +104,8 @@ public abstract class WDWeapon extends Item implements GeoAnimatable, GeoItem {
 
     /* -- ranged logic -- */
 
-    protected boolean isRanged() {
-        return projectileRange > 0 && ammoPredicate != null;
-    }
-
     protected Predicate<ItemStack> getAllSupportedProjectiles() {
         return ammoPredicate != null ? ammoPredicate : (stack -> false);
-    }
-
-    public int getDefaultProjectileRange() {
-        return projectileRange;
     }
 
     protected ItemStack findAmmo(Player player) {
@@ -158,7 +147,6 @@ public abstract class WDWeapon extends Item implements GeoAnimatable, GeoItem {
 
         if (isCrit) arrow.setCritArrow(true);
 
-        //so subclasses can tweak damage and stuff
         //configureArrow(arrow, level, shooter, weapon, ammo);
 
         return arrow;
@@ -202,14 +190,7 @@ public abstract class WDWeapon extends Item implements GeoAnimatable, GeoItem {
     protected void shootProjectile(LivingEntity shooter, Projectile projectile, int index, float velocity, float inaccuracy, float spreadAngleDegrees) {
         projectile.setOwner(shooter);
         projectile.setPos(shooter.getX(), shooter.getEyeY() - 0.1, shooter.getZ());
-        projectile.shootFromRotation(
-                shooter,
-                shooter.getXRot(),
-                shooter.getYRot() + spreadAngleDegrees,
-                0.0f,
-                velocity,
-                inaccuracy
-        );
+        projectile.shootFromRotation(shooter, shooter.getXRot(), shooter.getYRot() + spreadAngleDegrees, 0.0f, velocity, inaccuracy);
     }
 
     protected void shootProjectiles(ServerLevel level, LivingEntity shooter, InteractionHand hand, ItemStack weapon, List<ItemStack> projectileItems, float velocity, float inaccuracy, boolean isCrit) {
@@ -245,8 +226,7 @@ public abstract class WDWeapon extends Item implements GeoAnimatable, GeoItem {
     @Override
     public void createGeoRenderer(Consumer<GeoRenderProvider> consumer) {
         consumer.accept(new GeoRenderProvider() {
-            private final BlockEntityWithoutLevelRenderer renderer =
-                    new WDWeaponRenderer<>(model, hasEmissive);
+            private final BlockEntityWithoutLevelRenderer renderer = new WDWeaponRenderer<>(model, hasEmissive);
 
             @Override
             public BlockEntityWithoutLevelRenderer getGeoItemRenderer() {

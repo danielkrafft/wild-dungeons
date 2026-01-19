@@ -17,7 +17,7 @@ public class MutantBoggedRenderer extends DynamicGeoEntityRenderer<MutantBogged>
 {
     public MutantBoggedRenderer(EntityRendererProvider.Context renderManager)
     {
-        super(renderManager, ClientModel.ofEntity("mutant_bogged", "entity"));
+        super(renderManager, new ClientModel<>("mutant_bogged", "entity"));
     }
     @Override
     public void actuallyRender(PoseStack poseStack, MutantBogged entity, BakedGeoModel model, @Nullable RenderType renderType, MultiBufferSource bufferSource, @Nullable VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int colour)

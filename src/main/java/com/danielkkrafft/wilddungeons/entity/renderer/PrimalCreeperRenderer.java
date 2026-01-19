@@ -6,8 +6,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
 public class PrimalCreeperRenderer extends GeoEntityRenderer<PrimalCreeper> {
-    private static final ClientModel<PrimalCreeper> MODEL =
-            ClientModel.<PrimalCreeper>ofEntity("primal_creeper", "entity")
+    private static final ClientModel<PrimalCreeper> MODEL = new ClientModel<PrimalCreeper>("primal_creeper", "entity")
             .withConditionalTexture(PrimalCreeper::isShiny, "primal_creeper_black", "entity");
 
     public PrimalCreeperRenderer(EntityRendererProvider.Context renderManager) {
