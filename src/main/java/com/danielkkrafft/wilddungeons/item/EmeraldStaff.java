@@ -74,15 +74,7 @@ public class EmeraldStaff extends WDWeapon {
             }
         }
 
-        spawnProjectile(
-                (ServerLevel) level,
-                WDEntities.FRIENDLY_EMERALD_WISP.get(),
-                player,
-                SPAWN_DISTANCE,
-                SPAWN_HEIGHT,
-                PROJECTILE_SPEED,
-                wisp -> wisp.setCustomName(Component.literal("Summoned Wisp"))
-        );
+        createEntityProjectile((ServerLevel) level, WDEntities.FRIENDLY_EMERALD_WISP.get(), player, SPAWN_DISTANCE, SPAWN_HEIGHT, PROJECTILE_SPEED, wisp -> wisp.setCustomName(Component.literal("Summoned Wisp")));
 
         animator.playAnimation(this, "fire", stack, player, level);
         level.playSound(
@@ -98,31 +90,5 @@ public class EmeraldStaff extends WDWeapon {
         player.awardStat(Stats.ITEM_USED.get(this));
 
         return InteractionResultHolder.consume(stack);
-    }
-
-    private void spawnWisp(ServerLevel level, LivingEntity shooter) {
-        Entity wisp = WDEntities.FRIENDLY_EMERALD_WISP.get().create(level);
-        if (wisp == null) return;
-
-        var look = shooter.getLookAngle();
-
-        var spawnPos = shooter.getEyePosition()
-                .add(look.scale(SPAWN_DISTANCE))
-                .add(0.0, SPAWN_HEIGHT, 0.0);
-
-        wisp.setPos(spawnPos);
-        wisp.setYRot(shooter.getYRot());
-        wisp.setXRot(shooter.getXRot());
-
-        wisp.setDeltaMovement(look.normalize().scale(PROJECTILE_SPEED));
-
-        if (wisp instanceof net.minecraft.world.entity.Mob mob) {
-            mob.setYBodyRot(shooter.getYRot());
-            mob.setYHeadRot(shooter.getYRot());
-        }
-
-        wisp.setCustomName(Component.literal("Summoned Wisp"));
-
-        level.addFreshEntity(wisp);
     }
 }

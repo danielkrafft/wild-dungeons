@@ -13,6 +13,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
@@ -97,12 +98,30 @@ public class WindBow extends WDWeapon {
         float power = BowItem.getPowerForTime(lastUseDuration);
         if ((double) power < 0.1) return;
 
-        List<ItemStack> shots = drawAmmo(stack, ammo, player);
+        List<ItemStack> shots = decrementAmmo(stack, ammo, player);
         if (shots.isEmpty()) return;
 
         if (!level.isClientSide) {
             animator.playAnimation(this, RELEASE_ANIM, stack, player, level);
-            shootProjectiles((ServerLevel) level, player, player.getUsedItemHand(), stack, shots, power * 3.0F, 1.0F, power == 1.0F);
+
+            float spreadStep = shots.size() == 1 ? 0.0F : 6.0F;
+
+            for (int i = 0; i < shots.size(); i++) {
+                ItemStack ammoStack = shots.get(i);
+                if (ammoStack.isEmpty()) continue;
+
+                float spreadAngle = -((shots.size() - 1) * spreadStep * 0.5f) + i * spreadStep;
+
+                Projectile projectile = createArrowProjectile(level, player, stack, ammoStack, power == 1.0F);
+                if (projectile == null) continue;
+
+                shootProjectile(player, projectile, power * 3.0F, 1.0f, spreadAngle);
+                level.addFreshEntity(projectile);
+
+                stack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(player.getUsedItemHand()));
+                if (stack.isEmpty()) break;
+            }
+
             level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 1.0F, 1.0F / (level.getRandom().nextFloat() * 0.4F + 1.2F) + power * 0.5F);
 
             player.awardStat(Stats.ITEM_USED.get(this));

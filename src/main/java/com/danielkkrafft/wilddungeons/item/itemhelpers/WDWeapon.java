@@ -34,7 +34,6 @@ public abstract class WDWeapon extends Item implements GeoAnimatable, GeoItem {
     protected final ClientModel<WDWeapon> model;
     protected boolean hasIdle = true;
     protected boolean hasEmissive = false;
-    protected boolean bowEnabled = false;
     protected Predicate<ItemStack> ammoPredicate = s -> false;
     protected int projectileRange = 0;
 
@@ -65,7 +64,6 @@ public abstract class WDWeapon extends Item implements GeoAnimatable, GeoItem {
         this.ammoPredicate = stack -> stack.is(ammoType);
         this.projectileRange = range;
         this.arrowType = arrowType;
-        this.bowEnabled = true;
     }
 
     /* -- overrides -- */
@@ -126,7 +124,7 @@ public abstract class WDWeapon extends Item implements GeoAnimatable, GeoItem {
         return ItemStack.EMPTY;
     }
 
-    protected List<ItemStack> drawAmmo(ItemStack weapon, ItemStack ammo, LivingEntity shooter) {
+    protected List<ItemStack> decrementAmmo(ItemStack weapon, ItemStack ammo, LivingEntity shooter) {
         if (ammo.isEmpty()) return List.of();
 
         ItemStack shot = ammo.copyWithCount(1);
@@ -141,28 +139,20 @@ public abstract class WDWeapon extends Item implements GeoAnimatable, GeoItem {
         return List.of(shot);
     }
 
-    protected Projectile createProjectile(Level level, LivingEntity shooter, ItemStack weapon, ItemStack ammo, boolean isCrit) {
-        AbstractArrow arrow = createArrowEntity(level, shooter);
-        if (arrow == null) return null;
-
-        if (isCrit) arrow.setCritArrow(true);
-
-        //configureArrow(arrow, level, shooter, weapon, ammo);
-
-        return arrow;
-    }
-
-    //protected void configureArrow(AbstractArrow arrow, Level level, LivingEntity shooter, ItemStack weapon, ItemStack ammo) {}
-
-    protected AbstractArrow createArrowEntity(Level level, LivingEntity shooter) {
+    protected Projectile createArrowProjectile(Level level, LivingEntity shooter, ItemStack weapon, ItemStack ammo, boolean isCrit) {
         AbstractArrow arrow = arrowType.create(level);
         if (arrow == null) return null;
 
         arrow.setOwner(shooter);
+        if (isCrit) arrow.setCritArrow(true);
+
+        //configureProjectile(arrow, level, shooter, weapon, ammo);
         return arrow;
     }
 
-    protected <E extends Entity> E spawnProjectile(ServerLevel level, EntityType<E> type, LivingEntity shooter, float distance, float heightOffset, float speed, java.util.function.Consumer<E> config) {
+    //protected void configureProjectile(AbstractArrow arrow, Level level, LivingEntity shooter, ItemStack weapon, ItemStack ammo) {}
+
+    protected <E extends Entity> E createEntityProjectile(ServerLevel level, EntityType<E> type, LivingEntity shooter, float distance, float heightOffset, float speed, java.util.function.Consumer<E> config) {
         E e = type.create(level);
         if (e == null) return null;
 
@@ -187,31 +177,10 @@ public abstract class WDWeapon extends Item implements GeoAnimatable, GeoItem {
         return e;
     }
 
-    protected void shootProjectile(LivingEntity shooter, Projectile projectile, int index, float velocity, float inaccuracy, float spreadAngleDegrees) {
+    protected void shootProjectile(LivingEntity shooter, Projectile projectile, float velocity, float inaccuracy, float spreadAngleDegrees) {
         projectile.setOwner(shooter);
         projectile.setPos(shooter.getX(), shooter.getEyeY() - 0.1, shooter.getZ());
         projectile.shootFromRotation(shooter, shooter.getXRot(), shooter.getYRot() + spreadAngleDegrees, 0.0f, velocity, inaccuracy);
-    }
-
-    protected void shootProjectiles(ServerLevel level, LivingEntity shooter, InteractionHand hand, ItemStack weapon, List<ItemStack> projectileItems, float velocity, float inaccuracy, boolean isCrit) {
-        float spreadStep = projectileItems.size() == 1 ? 0.0F : 6.0F; // degrees between projectiles
-        float centerOffset = (projectileItems.size() - 1) * spreadStep * 0.5f;
-
-        for (int i = 0; i < projectileItems.size(); i++) {
-            ItemStack ammoStack = projectileItems.get(i);
-            if (ammoStack.isEmpty()) continue;
-
-            float spreadAngle = -centerOffset + i * spreadStep;
-
-            Projectile projectile = createProjectile(level, shooter, weapon, ammoStack, isCrit);
-            if (projectile == null) continue;
-
-            shootProjectile(shooter, projectile, i, velocity, inaccuracy, spreadAngle);
-            level.addFreshEntity(projectile);
-
-            weapon.hurtAndBreak(1, shooter, LivingEntity.getSlotForHand(hand));
-            if (weapon.isEmpty()) break;
-        }
     }
 
     /* -- rendering -- */

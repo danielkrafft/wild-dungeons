@@ -70,7 +70,7 @@ public class StarCannon extends WDWeapon {
         }
 
         // spawn Black Hole
-        spawnProjectile((ServerLevel) level, WDEntities.BLACK_HOLE.get(), player, SPAWN_DISTANCE, SPAWN_HEIGHT, PROJECTILE_SPEED, e -> {e.setCustomName(Component.literal("Black Hole"));
+        createEntityProjectile((ServerLevel) level, WDEntities.BLACK_HOLE.get(), player, SPAWN_DISTANCE, SPAWN_HEIGHT, PROJECTILE_SPEED, e -> {e.setCustomName(Component.literal("Black Hole"));
                     if (e instanceof BlackHole blackHole) {
                         var look = player.getLookAngle();
                         blackHole.setFiredDirectionAndSpeed(look, PROJECTILE_SPEED);
