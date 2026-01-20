@@ -6,9 +6,12 @@ import com.danielkkrafft.wilddungeons.entity.EssenceOrb;
 import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
+import com.danielkkrafft.wilddungeons.registry.WDShaders;
 import com.danielkkrafft.wilddungeons.render.AnimatedTexture;
+import com.danielkkrafft.wilddungeons.render.RiftRenderType;
 import com.danielkkrafft.wilddungeons.ui.ItemPreviewTooltipLayer;
 import com.danielkkrafft.wilddungeons.util.ColorUtil;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -36,6 +39,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import org.joml.Vector2i;
+import org.joml.Vector3f;
 
 import java.util.HexFormat;
 
@@ -43,6 +47,8 @@ import java.util.HexFormat;
 public class OfferingRenderer extends EntityRenderer<Offering> {
     private final ItemRenderer itemRenderer;
     private final RandomSource random = RandomSource.create();
+
+    private static final ResourceLocation RIFT_TEX = WildDungeons.rl("textures/entity/rifts/rift_tex.png");
 
     private static final ResourceLocation MESSAGE_BUBBLE_TEXTURE = WildDungeons.rl("textures/gui/sprites/hud/message_bubble.png");
     private static final ResourceLocation PERK_RING_TEXTURE = WildDungeons.rl("textures/gui/sprites/hud/perk_ring.png");
@@ -198,20 +204,20 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
             poseStack.scale(0.1F+extraScaleFactor, 0.1F+extraScaleFactor, 0.1F+extraScaleFactor);
 
             //Custom Shader Version
-//            if (WDShaders.RIFT_SHADER == null) return;
-//            RenderSystem.setShader(() -> WDShaders.RIFT_SHADER);
-//            VertexConsumer vertexconsumer = buffer.getBuffer(RiftRenderType.getRiftRenderType());
-//            Vector3f pRGB = entity.getPrimaryColorRGB();
-//            Vector3f sRGB = entity.getSecondaryColorRGB();
-//            Vector3f bgRGB = entity.getBackgroundColorRGB();
-//            WDShaders.RIFT_SHADER.safeGetUniform("BGColor").set(bgRGB.x,bgRGB.y,bgRGB.z);
-//            WDShaders.RIFT_SHADER.safeGetUniform("PrimaryColor").set(pRGB.x,pRGB.y,pRGB.z);
-//            WDShaders.RIFT_SHADER.safeGetUniform("SecondaryColor").set(sRGB.x,sRGB.y,sRGB.z);
+            //if (WDShaders.RIFT_SHADER == null) return;
+            //RenderSystem.setShader(() -> WDShaders.RIFT_SHADER);
+            VertexConsumer vertexconsumer = buffer.getBuffer(RiftRenderType.getRiftRenderType(RIFT_TEX));
+            //Vector3f pRGB = entity.getPrimaryColorRGB();
+            //Vector3f sRGB = entity.getSecondaryColorRGB();
+            //Vector3f bgRGB = entity.getBackgroundColorRGB();
+            //WDShaders.RIFT_SHADER.safeGetUniform("BGColor").set(bgRGB.x,bgRGB.y,bgRGB.z);
+            //WDShaders.RIFT_SHADER.safeGetUniform("PrimaryColor").set(pRGB.x,pRGB.y,pRGB.z);
+            //WDShaders.RIFT_SHADER.safeGetUniform("SecondaryColor").set(sRGB.x,sRGB.y,sRGB.z);
 
             //Animated Texture Version
 
             PoseStack.Pose posestack$pose = poseStack.last();
-            VertexConsumer vertexconsumer = buffer.getBuffer(RenderType.itemEntityTranslucentCull(RIFT_ANIMATION.getCurrentFrame()));
+            //VertexConsumer vertexconsumer = buffer.getBuffer(RenderType.itemEntityTranslucentCull(RIFT_ANIMATION.getCurrentFrame()));
 
             vertex(vertexconsumer, posestack$pose, -1.0f, -1.0f, 0.0f, 1.0f, 0xF000F0, 1.0f, entity.getSecondaryColor());
             vertex(vertexconsumer, posestack$pose, 1.0f, -1.0f, 1.0f, 1.0f, 0xF000F0, 1.0f, entity.getSecondaryColor());
@@ -219,7 +225,7 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
             vertex(vertexconsumer, posestack$pose, -1.0f, 1.0f, 0.0f, 0.0f, 0xF000F0, 1.0f, entity.getSecondaryColor());
 
             poseStack.translate(0.0f, 0.0f, 0.001f);
-
+/*
             vertexconsumer = buffer.getBuffer(RenderType.itemEntityTranslucentCull(RIFT_2_ANIMATION.getCurrentFrame()));
 
             vertex(vertexconsumer, posestack$pose, -1.0f, -1.0f, 0.0f, 1.0f, 0xF000F0, 1.0f, entity.getPrimaryColor());
@@ -227,6 +233,8 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
             vertex(vertexconsumer, posestack$pose, 1.0f, 1.0f, 1.0f, 0.0f, 0xF000F0, 1.0f, entity.getPrimaryColor());
             vertex(vertexconsumer, posestack$pose, -1.0f, 1.0f, 0.0f, 0.0f, 0xF000F0, 1.0f, entity.getPrimaryColor());
 
+
+ */
             poseStack.popPose();
         }
     }

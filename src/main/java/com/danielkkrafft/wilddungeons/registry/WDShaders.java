@@ -17,7 +17,7 @@ public class WDShaders {
     @SubscribeEvent
     public static void onRegisterShaders(RegisterShadersEvent event) {
         try {
-            event.registerShader(new ShaderInstance(event.getResourceProvider(), WildDungeons.rl("rift"), DefaultVertexFormat.POSITION), shader -> RIFT_SHADER = shader);
+            event.registerShader(new ShaderInstance(event.getResourceProvider(), WildDungeons.rl("rift_rendertype"), DefaultVertexFormat.POSITION), shader -> RIFT_SHADER = shader);
         } catch (IOException e) {
             WildDungeons.getLogger().info("Failed to load custom shader!", e);
         }
