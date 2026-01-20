@@ -37,7 +37,7 @@ public class WindBow extends WDWeapon {
 
         this.hasIdle = false;
         this.projectileRange = RANGE;
-        this.arrowType = WDEntities.WIND_ARROW.get();
+        this.projectileType = WDEntities.WIND_ARROW.get();
         this.ammoPredicate = stack -> stack.is(Items.ARROW);
     }
 
@@ -113,7 +113,7 @@ public class WindBow extends WDWeapon {
 
                 float spreadAngle = -((shots.size() - 1) * spreadStep * 0.5f) + i * spreadStep;
 
-                Projectile projectile = createProjectile(level, player, power == 1.0F);
+                Projectile projectile = createProjectile(level, player, this.projectileType, power == 1.0F);
                 if (projectile == null) continue;
 
                 shootProjectile(player, projectile, power * 3.0F, 1.0f, spreadAngle);

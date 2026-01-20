@@ -41,7 +41,7 @@ public abstract class WDWeapon extends Item implements GeoAnimatable, GeoItem {
     protected Predicate<ItemStack> ammoPredicate = s -> false;
     protected int projectileRange = 0;
 
-    protected EntityType<? extends AbstractArrow> arrowType = EntityType.ARROW; // default
+    protected EntityType<? extends Projectile> projectileType = EntityType.ARROW; // default
     protected int lastUseDuration = 0;
 
     protected WDWeapon(String name) {
@@ -137,15 +137,19 @@ public abstract class WDWeapon extends Item implements GeoAnimatable, GeoItem {
         return List.of(shot);
     }
 
-    protected Projectile createProjectile(Level level, LivingEntity owner, boolean isCrit) {
-        AbstractArrow arrow = arrowType.create(level);
-        if (arrow == null) return null;
+    protected Projectile createProjectile(Level level, LivingEntity owner, EntityType<? extends Projectile> type, boolean isCrit) {
+        Projectile projectile = type.create(level);
+        if (projectile == null) return null;
 
-        arrow.setOwner(owner);
-        if (isCrit) arrow.setCritArrow(true);
+        projectile.setOwner(owner);
 
-        return arrow;
+        if (projectile instanceof AbstractArrow arrow && isCrit) {
+            arrow.setCritArrow(true);
+        }
+
+        return projectile;
     }
+
     protected void shootProjectile(LivingEntity shooter, Projectile projectile, float velocity, float inaccuracy, float spreadAngleDegrees) {
         projectile.setPos(shooter.getX(), shooter.getEyeY() - 0.1, shooter.getZ());
         projectile.shootFromRotation(shooter, shooter.getXRot(), shooter.getYRot() + spreadAngleDegrees, 0.0f, velocity, inaccuracy);
