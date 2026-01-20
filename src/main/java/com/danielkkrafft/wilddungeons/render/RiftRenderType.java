@@ -20,7 +20,7 @@ public class RiftRenderType extends RenderType {
                 RenderType.CompositeState compositeState = RenderType.CompositeState.builder()
                         .setShaderState(new RenderStateShard.ShaderStateShard(() -> WDShaders.RIFT_SHADER))
                         .setTextureState(new RenderStateShard.TextureStateShard(texture, false, false))
-                        .setTransparencyState(NO_TRANSPARENCY)
+                        .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
                         .setCullState(NO_CULL)
                         .setLightmapState(LIGHTMAP)
                         .setOverlayState(OVERLAY)
