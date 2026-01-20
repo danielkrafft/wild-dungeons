@@ -14,8 +14,8 @@ public class WindCannonRenderer extends GeoItemRenderer<WindCannon>
 {
     public WindCannonRenderer()
     {
-        super(new ClientModel<>(WildDungeons.rl("animations/wind_cannon.animation.json"),
-                WildDungeons.rl("geo/wind_cannon.geo.json"),
+        super(new ClientModel<>(WildDungeons.rl("animations/item/wind_cannon.animation.json"),
+                WildDungeons.rl("geo/item/wind_cannon.geo.json"),
                 WildDungeons.rl("textures/item/wind_cannon.png")));
     }
 

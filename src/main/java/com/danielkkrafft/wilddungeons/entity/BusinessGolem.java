@@ -1,5 +1,6 @@
 package com.danielkkrafft.wilddungeons.entity;
 
+import com.danielkkrafft.wilddungeons.util.UtilityMethods;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -36,6 +37,7 @@ import net.minecraft.world.level.NaturalSpawner;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
@@ -69,6 +71,11 @@ public class BusinessGolem extends AbstractGolem implements NeutralMob {
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder.define(DATA_FLAGS_ID, (byte)0);
+    }
+
+    @Override
+    protected void dropAllDeathLoot(@NotNull ServerLevel level, @NotNull DamageSource source) {
+        spawnAtLocation(new ItemStack(Items.EMERALD, UtilityMethods.RNG(0, 3)));
     }
 
     public static AttributeSupplier.Builder createAttributes() {

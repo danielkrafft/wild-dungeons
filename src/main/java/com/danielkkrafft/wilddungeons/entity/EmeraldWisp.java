@@ -1,10 +1,12 @@
 package com.danielkkrafft.wilddungeons.entity;
 
 import com.danielkkrafft.wilddungeons.entity.boss.CopperSentinel;
+import com.danielkkrafft.wilddungeons.util.UtilityMethods;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
@@ -21,6 +23,8 @@ import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.animal.goat.Goat;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.Vec3;
@@ -98,6 +102,11 @@ public class EmeraldWisp extends PathfinderMob implements TraceableEntity {
             this.ignite();
         }
 
+    }
+
+    @Override
+    protected void dropAllDeathLoot(@NotNull ServerLevel level, @NotNull DamageSource source) {
+        spawnAtLocation(new ItemStack(Items.EMERALD, UtilityMethods.RNG(1, 2)));
     }
 
     public boolean isIgnited() {

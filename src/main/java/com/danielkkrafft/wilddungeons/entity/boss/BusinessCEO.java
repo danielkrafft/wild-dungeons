@@ -5,6 +5,7 @@ import com.danielkkrafft.wilddungeons.entity.BusinessVindicator;
 import com.danielkkrafft.wilddungeons.entity.EmeraldProjectileEntity;
 import com.danielkkrafft.wilddungeons.entity.EmeraldWisp;
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
+import com.danielkkrafft.wilddungeons.registry.WDItems;
 import com.danielkkrafft.wilddungeons.util.UtilityMethods;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -15,6 +16,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -25,6 +27,7 @@ import net.minecraft.world.entity.monster.AbstractIllager;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.monster.Witch;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -158,6 +161,12 @@ public class BusinessCEO extends WDBoss {
         if (compound.contains("SP")) {
             setSecondPhaseTriggered(compound.getBoolean("SP"));
         }
+    }
+
+    @Override
+    protected void dropAllDeathLoot(@NotNull ServerLevel level, @NotNull DamageSource source) {
+        super.dropAllDeathLoot(level, source);
+        spawnAtLocation(WDItems.EMERALD_STAFF);
     }
 
     @Override

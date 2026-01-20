@@ -56,8 +56,6 @@ public class WDCreativeTabs {
 
                 output.accept(NAUTILUS_SHIELD.get());
 
-                //output.accept(WOODEN_WAR_SPEAR.get());
-
                 output.accept(ROTTEN_MOSS.get());
                 output.accept(TOXIC_GAS.get());
                 output.accept(SPIDER_EGG.get());

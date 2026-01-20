@@ -1,6 +1,8 @@
 package com.danielkkrafft.wilddungeons.entity.boss;
 
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
+import com.danielkkrafft.wilddungeons.registry.WDItems;
+import com.danielkkrafft.wilddungeons.util.UtilityMethods;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
@@ -28,6 +30,8 @@ import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
@@ -398,14 +402,9 @@ public class SkelepedeMain extends WDBoss implements GeoEntity {
     }
 
     @Override
-    protected void dropAllDeathLoot(ServerLevel p_level, DamageSource damageSource) {
-        if (level() instanceof ServerLevel serverLevel) {
-            List<SkelepedeMain> mainsInWorld = serverLevel.getEntitiesOfClass(SkelepedeMain.class, new AABB(this.blockPosition()).inflate(100));
-            boolean otherMainsExist = mainsInWorld.stream().anyMatch(main -> main != this && !main.isRemoved() && main.isAlive());
-            if (!otherMainsExist) {
-                super.dropAllDeathLoot(p_level, damageSource);
-            }
-        }
+    protected void dropAllDeathLoot(ServerLevel level, DamageSource source) {
+        super.dropAllDeathLoot(level, source);
+        spawnAtLocation(WDItems.EGG_SAC_ARROWS.toStack(UtilityMethods.RNG(8, 24)));
     }
 
     @Override
