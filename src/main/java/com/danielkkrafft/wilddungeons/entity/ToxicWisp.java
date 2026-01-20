@@ -1,5 +1,6 @@
 package com.danielkkrafft.wilddungeons.entity;
 
+import com.danielkkrafft.wilddungeons.entity.boss.CopperSentinel;
 import com.danielkkrafft.wilddungeons.registry.WDBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;

@@ -1,8 +1,8 @@
 package com.danielkkrafft.wilddungeons.entity.boss;
 
 import com.danielkkrafft.wilddungeons.entity.GuardianLaserBeamEntity;
-import com.danielkkrafft.wilddungeons.entity.PrimalCreeper;
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
+import com.danielkkrafft.wilddungeons.registry.WDItems;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -16,7 +16,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.BossEvent;
-import net.minecraft.world.Difficulty;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -25,24 +24,21 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
-import net.minecraft.world.entity.ai.goal.RandomSwimmingGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.animation.AnimationController;
-import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
@@ -50,7 +46,6 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 public class CondemnedGuardian extends PathfinderMob implements GeoEntity {
-    private static final int SEGMENT_COUNT = 12;
     private static final double SEGMENT_SPACING = 1.5D;
     private static final double WAVE_AMPLITUDE = 0.25D;
     private static final double WAVE_SPEED = 0.1D;
@@ -61,6 +56,8 @@ public class CondemnedGuardian extends PathfinderMob implements GeoEntity {
 
     private static final EntityDataAccessor<Float> DATA_HEALTH_SYNC = SynchedEntityData.defineId(CondemnedGuardian.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> DATA_BOSS_PROGRESS = SynchedEntityData.defineId(CondemnedGuardian.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Boolean> SHINY = SynchedEntityData.defineId(CondemnedGuardian.class, EntityDataSerializers.BOOLEAN);
+
     private static final String CONDEMNED_GUARDIAN_CONTROLLER = "condemned_guardian_controller";
 
     private final AnimationController<CondemnedGuardian> mainController = new AnimationController<>(this, CONDEMNED_GUARDIAN_CONTROLLER, 5, state ->
@@ -101,8 +98,53 @@ public class CondemnedGuardian extends PathfinderMob implements GeoEntity {
         super.defineSynchedData(builder);
         builder.define(DATA_HEALTH_SYNC, 300.0f);
         builder.define(DATA_BOSS_PROGRESS, 1.0f);
+        builder.define(SHINY, false);
     }
 
+    @Override
+    public void addAdditionalSaveData(CompoundTag compound) {
+        super.addAdditionalSaveData(compound);
+        compound.putBoolean("Shiny", isShiny());
+
+        CompoundTag segmentsTag = new CompoundTag();
+        segmentsTag.putInt("Count", this.segments.size());
+        for (int i = 0; i < this.segments.size(); i++) {
+            CondemnedGuardianSegment segment = this.segments.get(i);
+            if (segment != null && segment.isAlive()) {
+                segmentsTag.putUUID("Segment" + i, segment.getUUID());
+            }
+        }
+        compound.put("Segments", segmentsTag);
+    }
+
+    @Override
+    public void readAdditionalSaveData(CompoundTag compound) {
+        super.readAdditionalSaveData(compound);
+        this.entityData.set(SHINY, compound.getBoolean("Shiny"));
+
+        if (!level().isClientSide && compound.contains("Segments")) {
+            CompoundTag segmentsTag = compound.getCompound("Segments");
+            int count = segmentsTag.getInt("Count");
+
+            List<UUID> segmentUUIDs = new ArrayList<>();
+            for (int i = 0; i < count; i++) {
+                if (segmentsTag.hasUUID("Segment" + i)) {
+                    segmentUUIDs.add(segmentsTag.getUUID("Segment" + i));
+                }
+            }
+
+            if (!segmentUUIDs.isEmpty()) {
+                this.scheduledSegmentReconnection = segmentUUIDs;
+            }
+        }
+    }
+
+    @Override
+    protected void dropAllDeathLoot(@NotNull ServerLevel level, @NotNull DamageSource source) {
+        super.dropAllDeathLoot(level, source);
+        spawnAtLocation(new ItemStack(WDItems.WATCHFUL_EYE.get(), 1));
+        if (isShiny()) spawnAtLocation(new ItemStack(WDItems.WATCHFUL_EYE.get(), 1));
+    }
 
     @Override
     public double getEyeY() {
@@ -119,7 +161,7 @@ public class CondemnedGuardian extends PathfinderMob implements GeoEntity {
         targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, true));
     }
 
-
+    private List<UUID> scheduledSegmentReconnection = null;
 
     @Override
     public void tick() {
@@ -136,9 +178,69 @@ public class CondemnedGuardian extends PathfinderMob implements GeoEntity {
             return;
         }
 
+        if (scheduledSegmentReconnection != null) {
+            reconnectSegments(scheduledSegmentReconnection);
+            scheduledSegmentReconnection = null;
+        }
+
         updateSegmentPositions();
         updateBossHealth();
         handleAttacks();
+    }
+
+
+    private void reconnectSegments(List<UUID> segmentUUIDs) {
+        if (!(level() instanceof ServerLevel serverLevel)) return;
+
+        this.segments.clear();
+        List<CondemnedGuardianSegment> foundSegments = new ArrayList<>();
+
+        AABB searchBox = new AABB(blockPosition()).inflate(100);
+        List<CondemnedGuardianSegment> nearbySegments = serverLevel.getEntitiesOfClass(
+                CondemnedGuardianSegment.class,
+                searchBox
+        );
+
+        for (UUID uuid : segmentUUIDs) {
+            for (CondemnedGuardianSegment segment : nearbySegments) {
+                if (segment.getUUID().equals(uuid) && segment.isAlive()) {
+                    foundSegments.add(segment);
+                    break;
+                }
+            }
+        }
+
+        foundSegments.sort(Comparator.comparingInt(CondemnedGuardianSegment::getIndex));
+
+        int weakInterval = getWeakpointInterval();
+        int weakMax = getWeakpointMax();
+
+        for (int i = 0; i < foundSegments.size(); i++) {
+            CondemnedGuardianSegment segment = foundSegments.get(i);
+            segment.setHeadEntityId(getId());
+
+            segment.setWeakpointInterval(weakInterval);
+            segment.setWeakpointMax(weakMax);
+            segment.setShiny(isShiny());
+
+            if (i == 0) {
+                segment.setFollowEntityId(getId());
+                segment.setPrevEntityId(getId());
+            } else {
+                CondemnedGuardianSegment prevSegment = foundSegments.get(i - 1);
+                segment.setFollowEntityId(prevSegment.getId());
+                segment.setPrevEntityId(prevSegment.getId());
+            }
+
+            if (i == foundSegments.size() - 1) {
+                segment.setNextEntityId(-1);
+            } else {
+                CondemnedGuardianSegment nextSegment = foundSegments.get(i + 1);
+                segment.setNextEntityId(nextSegment.getId());
+            }
+        }
+
+        this.segments.addAll(foundSegments);
     }
 
     public float getAttackAnimationScale(float partialTick) {
@@ -225,19 +327,40 @@ public class CondemnedGuardian extends PathfinderMob implements GeoEntity {
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
         SpawnGroupData groupData = super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
+        if (!level.isClientSide()) {
+            rollShiny();
+            this.xpReward = isShiny() ? 500 : 100;
+        }
         if (level.getLevel() instanceof ServerLevel serverLevel) {
             spawnSegments(serverLevel);
         }
         return groupData;
     }
 
+    private int getSegmentCount() {
+        return isShiny() ? 18 : 12;
+    }
+
+    private int getWeakpointInterval() {
+        return 3;
+    }
+
+    private int getWeakpointMax() {
+        return isShiny() ? 15 : 9;
+    }
+
     private void spawnSegments(ServerLevel serverLevel) {
         Vec3 lookDir = getLookAngle().normalize();
         Vec3 startPos = position();
         float waveOffset = 0.0F;
+
+        int segmentCount = getSegmentCount();
+        int weakInterval = getWeakpointInterval();
+        int weakMax = getWeakpointMax();
+
         List<CondemnedGuardianSegment> newSegments = new ArrayList<>();
 
-        for (int i = 0; i < SEGMENT_COUNT; i++) {
+        for (int i = 0; i < segmentCount; i++) {
             CondemnedGuardianSegment segment = new CondemnedGuardianSegment(WDEntities.CONDEMNED_GUARDIAN_SEGMENT.get(), level());
             double waveX = Math.sin(waveOffset + i * 0.3D) * WAVE_AMPLITUDE;
             double waveZ = Math.cos(waveOffset + i * 0.3D) * WAVE_AMPLITUDE;
@@ -251,6 +374,11 @@ public class CondemnedGuardian extends PathfinderMob implements GeoEntity {
             segment.moveTo(spawnPos.x, spawnPos.y, spawnPos.z, getYRot(), 0.0F);
             segment.setHeadEntityId(getId());
             segment.setSegmentIndex(i + 1);
+
+            segment.setWeakpointInterval(weakInterval);
+            segment.setWeakpointMax(weakMax);
+
+            segment.setShiny(isShiny());
 
             serverLevel.addFreshEntity(segment);
             newSegments.add(segment);
@@ -318,6 +446,9 @@ public class CondemnedGuardian extends PathfinderMob implements GeoEntity {
         super.stopSeenByPlayer(player);
         this.bossEvent.removePlayer(player);
     }
+
+    public boolean isShiny() { return entityData.get(SHINY); }
+    private void rollShiny() { entityData.set(SHINY, getRandom().nextFloat() < 0.05f); }
 
     public static boolean checkGuardianSpawnRules(EntityType<CondemnedGuardian> entityType, ServerLevelAccessor level,
                                                   SpawnGroupData spawnData, BlockPos pos, ChunkGenerator generator) {

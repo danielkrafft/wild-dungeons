@@ -1,17 +1,15 @@
 package com.danielkkrafft.wilddungeons.entity.boss;
 
-import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
+import com.danielkkrafft.wilddungeons.registry.WDItems;
+import com.danielkkrafft.wilddungeons.util.UtilityMethods;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.BossEvent;
@@ -32,6 +30,8 @@ import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
@@ -52,14 +52,13 @@ import java.util.*;
 import static net.minecraft.world.effect.MobEffects.POISON;
 import static net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE;
 
-public class SkelepedeMain extends Monster implements GeoEntity {
+public class SkelepedeMain extends WDBoss implements GeoEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private static final String SKELEPEDE_HEAD_CONTROLLER = "skelepede_head_controller";
     private final AnimationController<SkelepedeMain> mainController = new AnimationController<>(this, SKELEPEDE_HEAD_CONTROLLER, 5, animationPredicate());
     private static final String
             idle = "idle",
             bite = "bite";
-    private final ServerBossEvent bossEvent = new ServerBossEvent(getDisplayName(), BossEvent.BossBarColor.WHITE, BossEvent.BossBarOverlay.NOTCHED_20);
 
     private ArrayList<SkelepedeSegment> segments = new ArrayList<>();
 
@@ -70,7 +69,6 @@ public class SkelepedeMain extends Monster implements GeoEntity {
 
     // Store previous positions for segment following
     private final LinkedList<Vec3> previousPositions = new LinkedList<>();
-    // store previous rotations for segment following
     private final LinkedList<Float> previousRotations = new LinkedList<>();
 
     private String uniqueID = "";
@@ -82,7 +80,7 @@ public class SkelepedeMain extends Monster implements GeoEntity {
             SynchedEntityData.defineId(SkelepedeMain.class, EntityDataSerializers.FLOAT);
 
     public SkelepedeMain(EntityType<? extends Monster> entityType, Level level) {
-        super(entityType, level);
+        super(entityType, level, BossEvent.BossBarColor.WHITE, BossEvent.BossBarOverlay.NOTCHED_20);
     }
 
     protected void registerGoals() {
@@ -113,12 +111,6 @@ public class SkelepedeMain extends Monster implements GeoEntity {
         // animation logic here
     }
 
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return cache;
-    }
-
     private boolean hasSetupSegments = false;//should this be a synced data parameter?
 
     @Override
@@ -130,7 +122,6 @@ public class SkelepedeMain extends Monster implements GeoEntity {
         this.setHealth(clientHealth);
         bossEvent.setProgress(clientBossProgress);
         if (level().isClientSide()) {
-//            WildDungeons.getLogger().debug("Client SkelepedeMain tick - health: " + getHealth());
             return;
         }
 
@@ -156,9 +147,6 @@ public class SkelepedeMain extends Monster implements GeoEntity {
         int maxHistory = (int) (NUM_SEGMENTS * SEGMENT_SPACING * POSITION_HISTORY_MULTIPLIER);
         while (previousPositions.size() > maxHistory) {
             previousPositions.removeLast();
-        }
-        while (previousRotations.size() > maxHistory) {
-            previousRotations.removeLast();
         }
 
         ProcessPossibleSplits();
@@ -198,7 +186,6 @@ public class SkelepedeMain extends Monster implements GeoEntity {
             //this happens when a new head is created from a split, because we are halfway through a tick when we do the split and the client hasn't synced the new head's health yet.
             totalHealth = 1;
         }
-//        WildDungeons.getLogger().debug("Server SkelepedeMain tick - health: " + totalHealth + " , segments: " + segments.size());
         // Update synced data floats
         this.entityData.set(SYNCED_HEALTH, totalHealth);
         this.entityData.set(SYNCED_BOSS_PROGRESS, totalMaxHealth == 0 ? 0.0f : totalHealth / totalMaxHealth);
@@ -337,7 +324,6 @@ public class SkelepedeMain extends Monster implements GeoEntity {
             this.addSegments(foundSegments);
         } else {
             // If no segments were found, consider the SkelepedeMain invalid and remove it
-            WildDungeons.getLogger().error("SkelepedeMain at " + this.blockPosition() + " found no segments and will be removed.");
             this.kill();
         }
     }
@@ -354,21 +340,10 @@ public class SkelepedeMain extends Monster implements GeoEntity {
         }
 
         compound.putInt("SegmentCount", segmentUIDs.size());
-//        WildDungeons.getLogger().debug("Saving Skelepede with " + segmentUUIDs.size() + " segments.");
         for (int i = 0; i < segmentUIDs.size(); i++) {
             compound.putString("SegmentUID_" + i, segmentUIDs.get(i));
         }
         super.addAdditionalSaveData(compound);
-    }
-
-    @Override
-    public void startSeenByPlayer(@NotNull ServerPlayer serverPlayer) {
-        bossEvent.addPlayer(serverPlayer);
-    }
-
-    @Override
-    public void stopSeenByPlayer(@NotNull ServerPlayer serverPlayer) {
-        bossEvent.removePlayer(serverPlayer);
     }
 
     @Override
@@ -383,9 +358,11 @@ public class SkelepedeMain extends Monster implements GeoEntity {
         return entity instanceof LivingEntity && !(entity instanceof SkelepedeSegment) && !(entity instanceof SkelepedeMain);
     }
 
+    private static final BossSounds SOUNDS = new BossSounds(null, SoundEvents.SKELETON_HURT, null);
+
     @Override
-    protected SoundEvent getHurtSound(DamageSource damageSource) {
-        return SoundEvents.SKELETON_HURT;
+    protected BossSounds bossSounds() {
+        return SOUNDS;
     }
 
     @Override
@@ -425,14 +402,9 @@ public class SkelepedeMain extends Monster implements GeoEntity {
     }
 
     @Override
-    protected void dropAllDeathLoot(ServerLevel p_level, DamageSource damageSource) {
-        if (level() instanceof ServerLevel serverLevel) {
-            List<SkelepedeMain> mainsInWorld = serverLevel.getEntitiesOfClass(SkelepedeMain.class, new AABB(this.blockPosition()).inflate(100));
-            boolean otherMainsExist = mainsInWorld.stream().anyMatch(main -> main != this && !main.isRemoved() && main.isAlive());
-            if (!otherMainsExist) {
-                super.dropAllDeathLoot(p_level, damageSource);
-            }
-        }
+    protected void dropAllDeathLoot(ServerLevel level, DamageSource source) {
+        super.dropAllDeathLoot(level, source);
+        spawnAtLocation(WDItems.EGG_SAC_ARROWS.toStack(UtilityMethods.RNG(8, 24)));
     }
 
     @Override

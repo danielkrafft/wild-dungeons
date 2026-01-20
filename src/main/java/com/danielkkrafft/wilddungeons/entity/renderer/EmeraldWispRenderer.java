@@ -11,8 +11,8 @@ import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 
 public class EmeraldWispRenderer extends MobRenderer<EmeraldWisp, EmeraldWispModel<EmeraldWisp>> {
-    private static final ResourceLocation EMERALD_WISP = WildDungeons.rl("textures/entity/village/emerald_wisp.png");
-    private static final ResourceLocation LARGE_EMERALD_WISP = WildDungeons.rl("textures/entity/village/large_emerald_wisp.png");
+    private static final ResourceLocation EMERALD_WISP = WildDungeons.rl("textures/entity/emerald_wisp.png");
+    private static final ResourceLocation LARGE_EMERALD_WISP = WildDungeons.rl("textures/entity/large_emerald_wisp.png");
     private static final float BASE_SCALE = 1.0F;
 
     private final boolean isLarge;

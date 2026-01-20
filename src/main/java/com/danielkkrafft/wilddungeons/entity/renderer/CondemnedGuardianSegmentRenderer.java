@@ -1,9 +1,7 @@
 package com.danielkkrafft.wilddungeons.entity.renderer;
 
 import com.danielkkrafft.wilddungeons.entity.boss.CondemnedGuardianSegment;
-import com.danielkkrafft.wilddungeons.entity.boss.SkelepedeSegment;
-import com.danielkkrafft.wilddungeons.entity.model.CondemnedGuardianSegmentModel;
-import com.danielkkrafft.wilddungeons.entity.model.SkelepedeSegmentModel;
+import com.danielkkrafft.wilddungeons.entity.model.ClientModel;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -14,8 +12,13 @@ import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
 @OnlyIn(Dist.CLIENT)
 public class CondemnedGuardianSegmentRenderer extends GeoEntityRenderer<CondemnedGuardianSegment> {
+    public static final ClientModel<CondemnedGuardianSegment> MODEL = new ClientModel<CondemnedGuardianSegment>("condemned_guardian_segment", "entity")
+                    .withConditionalResources(guardian -> (guardian.isWeakPoint() && guardian.isShiny()) , "condemned_guardian_shiny", "condemned_guardian_segment_2", "entity")
+                    .withConditionalModel(CondemnedGuardianSegment::isWeakPoint, "condemned_guardian_segment_2", "entity")
+                    .withConditionalTexture(CondemnedGuardianSegment::isShiny, "condemned_guardian_shiny", "entity");
+
     public CondemnedGuardianSegmentRenderer(EntityRendererProvider.Context renderManager) {
-        super(renderManager, new CondemnedGuardianSegmentModel());
+        super(renderManager, MODEL);
         this.addRenderLayer(new CondemnedGuardianSegmentGlowLayer(this));
     }
 

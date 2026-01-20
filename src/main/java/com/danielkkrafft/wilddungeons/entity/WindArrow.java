@@ -43,7 +43,7 @@ public class WindArrow extends WDArrow {
     public WindArrow(Level level, LivingEntity livingEntity) {
         this(WDEntities.WIND_ARROW.value(), level);
         this.animator = new WDItemAnimator(NAME, this);
-        this.model = new ClientModel<>(NAME, NAME, NAME);
+        this.model = new ClientModel<>(NAME, "item");
 
         Vec3 position = livingEntity.position();
         this.setPos(position.x, livingEntity.getEyeY() - 0.1, position.z);

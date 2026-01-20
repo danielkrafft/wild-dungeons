@@ -58,12 +58,6 @@ public class WindMace extends WDWeapon {
     }
 
     @Override
-    public @NotNull UseAnim getUseAnimation(@NotNull ItemStack stack)
-    {
-        return UseAnim.NONE;
-    }
-
-    @Override
     public void onStopUsing(ItemStack stack, LivingEntity entity, int count)
     {
         if(entity instanceof Player p && p.level()instanceof ServerLevel server)
@@ -95,37 +89,34 @@ public class WindMace extends WDWeapon {
                 float volume = Math.min(BASE_VOLUME + (diff * VOLUME_SCALING), MAX_VOLUME);
                 float pitch = Math.min(BASE_PITCH + (diff * PITCH_SCALING), MAX_PITCH);
                 animator.setSoundKeyframeHandler(state -> {
-                    if(state.getKeyframeData().getSound().equals("mace_swing"))
-                        level.playSound(null,player,WDSoundEvents.WIND_MACE_SWING.value(),SoundSource.PLAYERS, volume, pitch);
+                    if (state.getKeyframeData().getSound().equals("mace_swing"))
+                        level.playSound(null, player, WDSoundEvents.WIND_MACE_SWING.value(), SoundSource.PLAYERS, volume, pitch);
                 });
             }
-        }
-        else {
-            if (diff > SHAKE_TICK){
+        } else {
+            if (diff > SHAKE_TICK) {
                 CameraShakeUtil.trigger(Math.min((diff - SHAKE_TICK) / 100f, 1.0f));
             }
-            if (diff > JITTER_TICK){
 
-                // original calculation: Math.sin(Math.min((diff-JITTERTICK)/20.,10)
-                // Because it is doing the move off a sin wave, it goes small then big then small
-                // if we want to cap it to a certain part of the wave, we need to manage the value
-                // thresholds. The below does that. It starts at 10 then goes down to the value
-                // of b. This is not the best method to use since its calculation is determined by
-                // the duration of the equipment and the JITTER_TICK value. If you adjust either of those
-                // everything goes out the window and you have to play around with it to find out what
-                // threshold you want. We should refactor this calculation in the future. - Lawrence
+            if (diff > JITTER_TICK && livingEntity instanceof Player player) {
+                int elapsed = diff - JITTER_TICK;
 
-                double a =  10 - (diff - JITTER_TICK) / 20.0;
-                double b = 9;
-                double progress = Math.max(a, b);
-//                WildDungeons.getLogger().info("a: {}, b: {}", a, b);
-                double pullDir = 0.4 * Math.sin(progress * Math.toRadians(diff * 9));
+                float rampUpTicks = 60f;
+                float maxPull = 0.1f;
+                float ampFactor = Math.min(elapsed / rampUpTicks, 1.0f);
+                double amplitude = maxPull * ampFactor;
 
-                if(livingEntity instanceof Player player)
-                {
-                    Vec3 forward = Vec3.directionFromRotation(0,player.getYHeadRot());
-                    player.setDeltaMovement(player.getDeltaMovement().add(pullDir*forward.x,0,pullDir*forward.z));
-                }
+                float periodTicks = 12f;
+                double phase = (elapsed % periodTicks) / periodTicks * (Math.PI * 2.0);
+                double wave = Math.sin(phase);
+
+                double pullDir = amplitude * wave;
+
+                Vec3 forward = Vec3.directionFromRotation(0, player.getYHeadRot());
+                player.setDeltaMovement(
+                        player.getDeltaMovement().add(forward.x * pullDir, 0, forward.z * pullDir
+                        )
+                );
             }
         }
     }
