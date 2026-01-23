@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 @OnlyIn(Dist.CLIENT)
 public class BusinessGolemRenderer extends MobRenderer<BusinessGolem, BusinessGolemModel<BusinessGolem>> {
-    private static final ResourceLocation GOLEM_LOCATION = WildDungeons.rl("textures/entity/village/business_golem.png");
+    private static final ResourceLocation GOLEM_LOCATION = WildDungeons.rl("textures/entity/business_golem.png");
 
     public BusinessGolemRenderer(EntityRendererProvider.Context context) {
         super(context, new BusinessGolemModel<>(context.bakeLayer(BusinessGolemModel.LAYER_LOCATION)), 0.7F);

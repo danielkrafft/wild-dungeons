@@ -5,8 +5,6 @@ import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.TargetPurgeRoom;
-import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
-import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.entity.EssenceOrb;
 import com.danielkkrafft.wilddungeons.entity.boss.BreezeGolem;
@@ -21,12 +19,10 @@ import com.danielkkrafft.wilddungeons.world.dimension.tools.ReflectionBuddy;
 import com.danielkkrafft.wilddungeons.world.structure.WDStructureTemplateManager;
 import com.mojang.datafixers.DataFixer;
 import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.client.Camera;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
@@ -47,22 +43,18 @@ import net.minecraft.world.entity.monster.piglin.Piglin;
 import net.minecraft.world.entity.monster.piglin.PiglinBrute;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
-import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.common.EffectCures;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
-import net.neoforged.neoforge.event.entity.EntityMobGriefingEvent;
 import net.neoforged.neoforge.event.entity.EntityStruckByLightningEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
@@ -71,17 +63,13 @@ import net.neoforged.neoforge.event.entity.living.LivingUseTotemEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerXpEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
-import net.neoforged.neoforge.event.level.ExplosionEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
-import net.neoforged.neoforge.event.level.PistonEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
-import org.joml.Vector2i;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -274,153 +262,6 @@ public class WDEvents {
         }
     }
 
-    private static DungeonRoom findRoom(DungeonFloor floor, BlockPos pos){
-        DungeonRoom room = null;
-        for (Vector2i vec2 : floor.getChunkMap().getOrDefault(new ChunkPos(pos), new ArrayList<>())) {
-            DungeonRoom possibleMatch = floor.getBranches().get(vec2.x).getRooms().get(vec2.y);
-            if (possibleMatch == null) continue;
-            for (BoundingBox box : possibleMatch.getBoundingBoxes()) {
-                if (box.isInside(pos)) {
-                    room = possibleMatch;
-                }
-            }
-        }
-        return room;
-    }
-
-    @SubscribeEvent
-    public static void onBlockBreak(BlockEvent.BreakEvent event) {
-        if (event.getLevel() instanceof ServerLevel serverLevel && event.getPlayer() instanceof ServerPlayer serverPlayer) {
-            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer);
-            if (wdPlayer.getCurrentDungeon() == null) return;
-            DungeonRoom room = findRoom(wdPlayer.getCurrentFloor(), event.getPos());
-            if (room==null) return;
-            boolean allowed = room.canBreakBlock(event.getPos(),event.getState());
-            event.setCanceled(!allowed);
-            if (allowed) {
-                wdPlayer.getCurrentDungeon().getStats(wdPlayer.getUUID()).blocksBroken += 1;
-            } else {
-                serverPlayer.sendSystemMessage(Component.translatable("message.wilddungeons.block_break_fail"),true);
-            }
-        }
-    }
-
-    @SubscribeEvent
-    public static void onBlockPlace(BlockEvent.EntityPlaceEvent event) {
-        if (event.getLevel() instanceof ServerLevel serverLevel && event.getEntity() instanceof ServerPlayer serverPlayer) {
-            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer);
-            if (wdPlayer.getCurrentDungeon() == null) return;
-            DungeonRoom room = findRoom(wdPlayer.getCurrentFloor(), event.getPos());
-            if (room == null) return;
-            boolean allowed = room.canPlaceBlock(event.getPos(),event.getPlacedBlock());
-            event.setCanceled(!allowed);
-            if (allowed) {
-                wdPlayer.getCurrentDungeon().getStats(wdPlayer.getUUID()).blocksPlaced += 1;
-            } else {
-                serverPlayer.sendSystemMessage(Component.translatable("message.wilddungeons.block_place_fail"),true);
-                serverPlayer.containerMenu.broadcastFullState();
-            }
-
-        }
-    }
-// Removed because we protect the blocks now instead of cancelling the explosion event
-//    @SubscribeEvent
-//    public static void onExplosionStart(ExplosionEvent.Start event){
-//        Level level = event.getLevel();
-//        if (level.isClientSide()) return;
-//
-//        DungeonFloor floor = DungeonSessionManager.getInstance().getFloorFromKey(level.dimension());
-//        if (floor == null) return;
-//
-//        BlockPos pos = BlockPos.containing(event.getExplosion().center());
-//        DungeonRoom room = findRoom(floor, pos);
-//        if (room == null) return;
-//
-//        DungeonRoomTemplate.DestructionRule rule = room.getProperty(HierarchicalProperty.DESTRUCTION_RULE);
-//        switch (rule) {
-//            case PROTECT_ALL_CLEAR -> {
-//                if (room.isClear()) return;
-//                event.setCanceled(true);
-//            }
-//            case PROTECT_ALL, PROTECT_BREAK -> {
-//                event.setCanceled(true);
-//            }
-//        }
-//    }
-
-    @SubscribeEvent
-    public static void onExplosionDetonate(ExplosionEvent.Detonate event){
-        Level level = event.getLevel();
-        if (level.isClientSide()) return;
-
-        for (BlockPos pos : event.getAffectedBlocks()) {
-            DungeonFloor floor = DungeonSessionManager.getInstance().getFloorFromKey(level.dimension());
-            if (floor == null) return;
-
-            DungeonRoom room = findRoom(floor, pos);
-
-            if (room == null) return;
-            event.getAffectedBlocks().removeIf(blockPos -> !room.canBreakBlock(blockPos, level.getBlockState(blockPos)));
-        }
-    }
-
-    @SubscribeEvent
-    public static void onMobGrief(EntityMobGriefingEvent event){
-        Level level = event.getEntity().level();
-        if (level.isClientSide()) return;
-
-        DungeonFloor floor = DungeonSessionManager.getInstance().getFloorFromKey(level.dimension());
-        if (floor == null) return;
-
-        BlockPos pos = event.getEntity().getOnPos();
-        DungeonRoom room = findRoom(floor, pos);
-        if (room == null) return;
-
-        DungeonRoomTemplate.DestructionRule rule = room.getProperty(HierarchicalProperty.DESTRUCTION_RULE);
-        switch (rule) {
-            case SHELL_CLEAR-> {
-                if (room.isClear()) return;
-                if (!room.isPosInsideShell(pos)) {
-                    event.setCanGrief(false);
-                } else {
-                    return;
-                }
-
-            }
-            case PROTECT_ALL, PROTECT_BREAK -> {
-                event.setCanGrief(false);
-            }
-            case PROTECT_ALL_CLEAR -> {
-                if (room.isClear()) return;
-                event.setCanGrief(false);
-            }
-        }
-    }
-
-    @SubscribeEvent
-    public static void onPistonMovePre(PistonEvent.Pre event){
-        Level level = (Level) event.getLevel();
-        if (level.isClientSide()) return;
-
-        DungeonFloor floor = DungeonSessionManager.getInstance().getFloorFromKey(level.dimension());
-        if (floor == null) return;
-
-        BlockPos pos = event.getPos();
-        DungeonRoom room = findRoom(floor, pos);
-        if (room == null) return;
-
-        DungeonRoomTemplate.DestructionRule rule = room.getProperty(HierarchicalProperty.DESTRUCTION_RULE);
-        switch (rule) {
-            case PROTECT_ALL_CLEAR -> {
-                if (room.isClear()) return;
-                event.setCanceled(true);
-            }
-            case PROTECT_ALL, PROTECT_BREAK -> {
-                event.setCanceled(true);
-            }
-        }
-    }
-
     @SubscribeEvent
     public static void onTotemUse(LivingUseTotemEvent event){
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
@@ -523,18 +364,4 @@ public class WDEvents {
     public static void onReloadListener(AddReloadListenerEvent event){
         event.addListener(WDStructureTemplateManager.StructureTemplateManagerReloadListener);
     }
-
-//    @SubscribeEvent
-//    public static void canMobEffectBeApplied(MobEffectEvent.Applicable event){
-//        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
-//            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer);
-//            if (wdPlayer.getCurrentDungeon() == null) return;
-//            if (event.getEffectInstance().getDuration()==69420) {
-//                event.setResult(MobEffectEvent.Applicable.Result.DO_NOT_APPLY);
-//                MobEffectInstance effectInstance = event.getEffectInstance();
-//                effectInstance = new MobEffectInstance(effectInstance.getEffect(), -1, effectInstance.getAmplifier(), effectInstance.isAmbient(), effectInstance.isVisible(), effectInstance.showIcon());
-//                wdPlayer.getServerPlayer().addEffect(effectInstance);
-//            }
-//        }
-//    }
 }

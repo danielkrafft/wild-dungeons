@@ -11,6 +11,7 @@ import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.player.SavedTransform;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.render.DecalRenderer;
+import com.danielkkrafft.wilddungeons.registry.WDProtectedRegion;
 import com.mojang.authlib.properties.Property;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
@@ -91,6 +92,8 @@ public class Serializer
         addCustom(WeaponGauntletKeyRoom.class);
         addCustom(LimitedRoomTracker.class);
         addCustom(LimitedRoomTracker.RoomContainer.class);
+        addCustom(WDProtectedRegion.class);
+        addCustom(WDProtectedRegion.RegionPermission.class);
     }
 
     private static void addCustom(Class<?> clazz) {
@@ -231,6 +234,31 @@ public class Serializer
             entry.put("value", nestedTag);
         }
 
+        else if (value instanceof EnumSet<?> enumSetValue) {
+            entry.putString("type", "enumSet");
+            CompoundTag nestedTag = new CompoundTag();
+            int index = 0;
+            Class<?> elementType = null;
+            if (!enumSetValue.isEmpty()) {
+                elementType = enumSetValue.iterator().next().getClass();
+            } else {
+                try {
+                    Field elementTypeField = EnumSet.class.getDeclaredField("elementType");
+                    elementTypeField.setAccessible(true);
+                    elementType = (Class<?>) elementTypeField.get(enumSetValue);
+                } catch (Exception e) {
+                    WildDungeons.getLogger().error("EnumSet element type is cooked ", e);
+                }
+            }
+
+            if (elementType != null) entry.putString("enumClass", elementType.getName());
+
+            for (Object object : enumSetValue.toArray()) {
+                serializeAndAdd(""+index++, object, nestedTag);
+            }
+            entry.put("value", nestedTag);
+        }
+
         else if (value instanceof Enum<?> enumValue)
         {
             entry.putString("type", "enum");
@@ -320,6 +348,27 @@ public class Serializer
 
                 return hashSetValue;
             }
+
+            case "enumSet" -> {
+                CompoundTag nestedTag = entry.getCompound("value");
+                String enumClassName = entry.getString("enumClass");
+
+                Class<?> enumClass = ACCEPTABLE_CLASS_REFERENCES.get(enumClassName);
+                if (enumClass == null) return null;
+
+                Class<? extends Enum> enumType = (Class<? extends Enum>) enumClass;
+                EnumSet enumSetValue = EnumSet.noneOf(enumType);
+
+                for (int i = 0; i < nestedTag.getAllKeys().size(); i++) {
+                    Enum enumVal = (Enum) deserialize(String.valueOf(i), nestedTag);
+                    if (enumVal != null) {
+                        boolean added = enumSetValue.add(enumVal);
+                    }
+                }
+
+                return enumSetValue;
+            }
+
             case "arrayList" -> {
                 CompoundTag nestedTag = entry.getCompound("value");
 

@@ -15,7 +15,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class BusinessVindicatorRenderer extends IllagerRenderer<BusinessVindicator> {
-    private static final ResourceLocation VINDICATOR = WildDungeons.rl("textures/entity/village/business_pillager.png");
+    private static final ResourceLocation VINDICATOR = WildDungeons.rl("textures/entity/business_pillager.png");
 
     public BusinessVindicatorRenderer(EntityRendererProvider.Context p_174439_) {
         super(p_174439_, new IllagerModel<>(p_174439_.bakeLayer(BusinessIllagerModel.LAYER_LOCATION)), 0.5F);
