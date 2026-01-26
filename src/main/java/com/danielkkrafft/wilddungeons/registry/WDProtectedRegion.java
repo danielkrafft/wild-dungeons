@@ -24,7 +24,7 @@ public final class WDProtectedRegion {
     private static final Map<ResourceKey<Level>, List<WDProtectedRegion>> PROTECTED_REGIONS = new HashMap<>();
     private static final Map<ResourceKey<Level>, Map<Long, List<WDProtectedRegion>>> CHUNK_REGIONS = new HashMap<>();
 
-    private boolean active;
+    private boolean active = true;
     private final ResourceKey<Level> dimension;
     private final List<BoundingBox> boxes;
     private EnumSet<RegionPermission> permissions = EnumSet.allOf(RegionPermission.class);
@@ -48,11 +48,10 @@ public final class WDProtectedRegion {
         NONE
     }
 
-    public WDProtectedRegion(ResourceKey<Level> dimension, List<BoundingBox> boxes, EnumSet<RegionPermission> permissions, boolean active) {
+    public WDProtectedRegion(ResourceKey<Level> dimension, List<BoundingBox> boxes, EnumSet<RegionPermission> permissions) {
         this.dimension = dimension;
         this.boxes = new ArrayList<>(boxes);
         this.permissions = permissions.clone();
-        this.active = active;
         register(this);
     }
 
@@ -102,14 +101,14 @@ public final class WDProtectedRegion {
     }
 
     private static boolean denies(Level level, BlockPos pos, RegionPermission permission) {
-        Map<Long, List<WDProtectedRegion>> chunkMap = CHUNK_REGIONS.get(level.dimension()); //list of all registered chunks in the level passed as arg
+        Map<Long, List<WDProtectedRegion>> chunkMap = CHUNK_REGIONS.get(level.dimension()); //list of all registered chunks in given level
         if (chunkMap == null || chunkMap.isEmpty()) return false;
 
         int chunkX = pos.getX() >> 4;
         int chunkZ = pos.getZ() >> 4;
         long key = ChunkPos.asLong(chunkX, chunkZ); //the chunk that we are checking
 
-        List<WDProtectedRegion> regions = chunkMap.get(key); //list of regions in the chunk we are checking
+        List<WDProtectedRegion> regions = chunkMap.get(key); //list of regions in the chunk
         if (regions == null || regions.isEmpty()) return false;
 
         for (WDProtectedRegion region : regions) { //loops through regions in chunk containing pos
@@ -124,14 +123,6 @@ public final class WDProtectedRegion {
     public void setPermissions(EnumSet<RegionPermission> permissions) {
         this.permissions.clear();
         this.permissions.addAll(permissions);
-    }
-
-    public void allow(RegionPermission permission) {
-        permissions.add(permission);
-    }
-
-    public void deny(RegionPermission permission) {
-        permissions.remove(permission);
     }
 
     private boolean contains(BlockPos pos) {
