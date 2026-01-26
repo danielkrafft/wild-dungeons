@@ -24,7 +24,7 @@ public class SpiderEggMixin {
         Level level = spider.level();
 
         // Random chance to place an egg block
-        if (!level.isClientSide && level.random.nextInt(1000) == 0) { // 1/1000 chance per tick
+        if (!level.isClientSide && level.random.nextInt(12000) == 0) { // 1/12000 chance per tick
             BlockPos posBelow = spider.blockPosition();
             BlockState eggBlock = WDBlocks.SPIDER_EGG.get().defaultBlockState();
             int eggs = spider.level().random.nextInt(8);

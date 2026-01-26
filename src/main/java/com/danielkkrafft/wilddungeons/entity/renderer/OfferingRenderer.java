@@ -12,16 +12,11 @@ import com.danielkkrafft.wilddungeons.render.RiftRenderType;
 import com.danielkkrafft.wilddungeons.ui.ItemPreviewTooltipLayer;
 import com.danielkkrafft.wilddungeons.util.ColorUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderStateShard;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
@@ -38,9 +33,11 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import org.joml.Matrix4f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 
+import java.awt.*;
 import java.util.HexFormat;
 
 @OnlyIn(Dist.CLIENT)
@@ -58,6 +55,9 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
     private static final Vector2i PERKS_TEXTURE_RESOLUTION = new Vector2i(64, 64);
     private static final ResourceLocation RIFT_TEXTURE = WildDungeons.rl("textures/entity/rift.png");
     private static final AnimatedTexture RIFT_ANIMATION = AnimatedTexture.auto("textures/entity/rift", 100, 2);
+    private static final AnimatedTexture RIFT3_ANIMATION = AnimatedTexture.auto("textures/entity/rift3", 60, 1);
+    private static final AnimatedTexture RIFT_EFFECT_ANIMATION = AnimatedTexture.auto("textures/entity/rifteffect", 60, 1);
+
     private static final AnimatedTexture RIFT_2_ANIMATION = AnimatedTexture.auto("textures/entity/rift2", 100, 2);
 
     private static final ResourceLocation EXPERIENCE_ORB_LOCATION = ResourceLocation.withDefaultNamespace("textures/entity/experience_orb.png");
@@ -203,38 +203,68 @@ public class OfferingRenderer extends EntityRenderer<Offering> {
             float extraScaleFactor = (float) (2.5f - Math.min(entity.position().distanceTo(Minecraft.getInstance().player.position()) / 15.0f, 2.5f));
             poseStack.scale(0.1F+extraScaleFactor, 0.1F+extraScaleFactor, 0.1F+extraScaleFactor);
 
+
+
             //Custom Shader Version
-            //if (WDShaders.RIFT_SHADER == null) return;
+            if (WDShaders.RIFT_SHADER == null) return;
             //RenderSystem.setShader(() -> WDShaders.RIFT_SHADER);
-            VertexConsumer vertexconsumer = buffer.getBuffer(RiftRenderType.getRiftRenderType(RIFT_TEX));
+            //VertexConsumer vertexconsumer = buffer.getBuffer(RiftRenderType.getRiftRenderType(RIFT_TEX));
             //Vector3f pRGB = entity.getPrimaryColorRGB();
             //Vector3f sRGB = entity.getSecondaryColorRGB();
             //Vector3f bgRGB = entity.getBackgroundColorRGB();
             //WDShaders.RIFT_SHADER.safeGetUniform("BGColor").set(bgRGB.x,bgRGB.y,bgRGB.z);
             //WDShaders.RIFT_SHADER.safeGetUniform("PrimaryColor").set(pRGB.x,pRGB.y,pRGB.z);
-            //WDShaders.RIFT_SHADER.safeGetUniform("SecondaryColor").set(sRGB.x,sRGB.y,sRGB.z);
+            //WDShaders.RIFT_SHADER.safeGetUniform("isSpecialEntity").set(1);
 
             //Animated Texture Version
+            //RenderType rType = RiftRenderType.getRift(RIFT_TEX);
+
 
             PoseStack.Pose posestack$pose = poseStack.last();
-            //VertexConsumer vertexconsumer = buffer.getBuffer(RenderType.itemEntityTranslucentCull(RIFT_ANIMATION.getCurrentFrame()));
+            VertexConsumer vertexconsumer = buffer.getBuffer(RenderType.itemEntityTranslucentCull(RIFT3_ANIMATION.getCurrentFrame()));
+/*
+            if (rType != null) {
+                vertexconsumer = buffer.getBuffer(rType);
+            }
+
+ */
+/*
+            RenderSystem.setShaderTexture(0, RIFT_TEX);
+            RenderSystem.setShader(() -> WDShaders.RIFT_SHADER);
+            Matrix4f matrix4f = posestack$pose.pose();
+            BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+            bufferbuilder.addVertex(matrix4f, (float)-1.0f, (float)-1.0f, (float)0).setUv(0, 0).setColor(entity.getSecondaryColor());
+            bufferbuilder.addVertex(matrix4f, (float)1.0f, (float)-1.0f, (float)0).setUv(0, 1).setColor(entity.getSecondaryColor());
+            bufferbuilder.addVertex(matrix4f, (float)1.0f, (float)1.0f, (float)0).setUv(1, 1).setColor(entity.getSecondaryColor());
+            bufferbuilder.addVertex(matrix4f, (float)-1.0f, (float)1.0f, (float)0).setUv(1, 0).setColor(entity.getSecondaryColor());
+            BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
+
+
+ */
+
 
             vertex(vertexconsumer, posestack$pose, -1.0f, -1.0f, 0.0f, 1.0f, 0xF000F0, 1.0f, entity.getSecondaryColor());
             vertex(vertexconsumer, posestack$pose, 1.0f, -1.0f, 1.0f, 1.0f, 0xF000F0, 1.0f, entity.getSecondaryColor());
             vertex(vertexconsumer, posestack$pose, 1.0f, 1.0f, 1.0f, 0.0f, 0xF000F0, 1.0f, entity.getSecondaryColor());
             vertex(vertexconsumer, posestack$pose, -1.0f, 1.0f, 0.0f, 0.0f, 0xF000F0, 1.0f, entity.getSecondaryColor());
 
+
+
             poseStack.translate(0.0f, 0.0f, 0.001f);
-/*
-            vertexconsumer = buffer.getBuffer(RenderType.itemEntityTranslucentCull(RIFT_2_ANIMATION.getCurrentFrame()));
-
-            vertex(vertexconsumer, posestack$pose, -1.0f, -1.0f, 0.0f, 1.0f, 0xF000F0, 1.0f, entity.getPrimaryColor());
-            vertex(vertexconsumer, posestack$pose, 1.0f, -1.0f, 1.0f, 1.0f, 0xF000F0, 1.0f, entity.getPrimaryColor());
-            vertex(vertexconsumer, posestack$pose, 1.0f, 1.0f, 1.0f, 0.0f, 0xF000F0, 1.0f, entity.getPrimaryColor());
-            vertex(vertexconsumer, posestack$pose, -1.0f, 1.0f, 0.0f, 0.0f, 0xF000F0, 1.0f, entity.getPrimaryColor());
+            poseStack.mulPose(Axis.ZN.rotationDegrees(-(entity.tickCount+partialTicks)));
 
 
- */
+            vertexconsumer = buffer.getBuffer(RenderType.breezeEyes(RIFT_EFFECT_ANIMATION.getCurrentFrame()));
+
+            vertex(vertexconsumer, posestack$pose, -1.0f, -1.0f, 0.0f, 1.0f, 0xF000F0, 1.0f, entity.getSecondaryColor());
+            vertex(vertexconsumer, posestack$pose, 1.0f, -1.0f, 1.0f, 1.0f, 0xF000F0, 1.0f, entity.getSecondaryColor());
+            vertex(vertexconsumer, posestack$pose, 1.0f, 1.0f, 1.0f, 0.0f, 0xF000F0, 1.0f, entity.getSecondaryColor());
+            vertex(vertexconsumer, posestack$pose, -1.0f, 1.0f, 0.0f, 0.0f, 0xF000F0, 1.0f, entity.getSecondaryColor());
+
+
+
+
+
             poseStack.popPose();
         }
     }

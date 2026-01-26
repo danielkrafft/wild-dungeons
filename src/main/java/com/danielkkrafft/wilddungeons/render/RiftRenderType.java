@@ -33,6 +33,16 @@ public class RiftRenderType extends RenderType {
         super(name, format, mode, bufferSize, affectsCrumbling, sortOnUpload, setupState, clearState);
     }
 
+    //private static final ResourceLocation RIFT = ResourceLocation.fromNamespaceAndPath("wilddungeons", "rift");
+
+    /*
+    public static RenderType getRift(ResourceLocation textureFormattingArg) {
+        return VeilRenderType.get(RIFT, textureFormattingArg.toString());
+    }
+
+     */
+
+
     public static RenderType getRiftRenderType(ResourceLocation location) {
         return RIFT_RENDER_TYPE.apply(location);
     }

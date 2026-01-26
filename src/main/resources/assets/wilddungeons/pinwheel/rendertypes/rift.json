@@ -1,0 +1,27 @@
+{
+  "format": "NEW_ENTITY",
+  "mode": "QUADS",
+  "bufferSize": "TRANSIENT",
+  "sort": false,
+  "affectsCrumbling": true,
+  "outline": true,
+  "layers": [
+    {
+      "type": "minecraft:texture",
+      "texture": "%1$s",
+      "blur": false,
+      "mipmap": false
+    },
+    { "type": "veil:shader", "name": "wilddungeons:rift" },
+    {
+      "type": "minecraft:lightmap"
+    },
+    {
+      "type": "minecraft:overlay"
+    },
+    {
+      "type": "minecraft:cull",
+      "face": "none"
+    }
+  ]
+}

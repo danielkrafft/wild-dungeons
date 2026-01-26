@@ -1,11 +1,20 @@
-#version 150
+#version 330 core
+#line 0 1
+#line 3 0
 
-uniform float GameTime; // raw Minecraft time
-uniform int isSpecialEntity;
+uniform sampler2D Sampler0;
 
-in vec2 texCoord0;
+uniform vec4 ColorModulator;
+uniform float FogStart;
+uniform float GameTime;
+
+uniform float FogEnd;
+uniform vec4 FogColor;
+in float vertexDistance;
 in vec4 vertexColor;
-
+in vec4 lightMapColor;
+in vec4 overlayColor;
+in vec2 texCoord0;
 out vec4 fragColor;
 
 /* ================= CONSTANTS ================= */
@@ -190,9 +199,9 @@ void main() {
 
     vec4 ccc = vec4(color, alpha);
 
-    if (alpha <= 0.001) discard;
+    if (alpha <= 0.001) ccc = vec4(0.,0.,0.,0.);
     if (cir <= 0.001) {
-    if (color.r >= 0.35 && color.g >= 0.35 && color.b >= 0.35) discard;
+        if (color.r >= 0.35 && color.g >= 0.35 && color.b >= 0.35) ccc = vec4(0.,0.,0.,0.);
     }
 
     fragColor = ccc;
