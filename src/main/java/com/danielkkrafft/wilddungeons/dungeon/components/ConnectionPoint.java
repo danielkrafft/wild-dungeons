@@ -258,7 +258,7 @@ public class ConnectionPoint {
                     this.getRoom().getProperty(BLOCKING_BLOCK).defaultBlockState() :
                     this.getRoom().getMaterial().get(DungeonMaterial.BlockSetting.BlockType.BASIC, this.getRoom().getProperty(HierarchicalProperty.BLOCKING_MATERIAL_INDEX), this.getRoom().getProperty(HierarchicalProperty.MATERIAL_NOISE), pos);
 
-            if (this.getRoom().getProperty(HierarchicalProperty.DESTRUCTION_RULE).equals(RegionRule.SHELL) || (this.getRoom().getProperty(HierarchicalProperty.DESTRUCTION_RULE).equals(RegionRule.SHELL_CLEAR) && !this.getRoom().isClear())) {
+            if (this.getRoom().getProperty(HierarchicalProperty.DESTRUCTION_RULE).equals(RegionRule.SHELL) || (this.getRoom().getProperty(HierarchicalProperty.DESTRUCTION_RULE).equals(RegionRule.SHELL) && !this.getRoom().isClear())) {
                 level.setBlock(pos, blockState.getBlock().defaultBlockState(), flags);
             } else {
                 level.setBlock(pos, blockState, flags);

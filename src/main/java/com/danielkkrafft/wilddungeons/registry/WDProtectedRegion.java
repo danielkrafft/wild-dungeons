@@ -21,7 +21,7 @@ import java.util.*;
 
 @EventBusSubscriber(modid = WildDungeons.MODID)
 public final class WDProtectedRegion {
-    private static final Map<ResourceKey<Level>, List<WDProtectedRegion>> PROTECTED_REGIONS = new HashMap<>();
+    private static final Set<WDProtectedRegion> PROTECTED_REGIONS = new HashSet<>();
     private static final Map<ResourceKey<Level>, Map<Long, List<WDProtectedRegion>>> CHUNK_REGIONS = new HashMap<>();
 
     private boolean active = true;
@@ -31,9 +31,7 @@ public final class WDProtectedRegion {
 
     public enum RegionRule {
         SHELL,
-        SHELL_CLEAR,
         PROTECT_ALL,
-        PROTECT_ALL_CLEAR,
         NONE
     }
 
@@ -48,6 +46,7 @@ public final class WDProtectedRegion {
         NONE
     }
 
+    // Constructor for setting manual permissions that is always active. This is being left, though unused, as a convenience constructor for testing and otherwise
     public WDProtectedRegion(ResourceKey<Level> dimension, List<BoundingBox> boxes, EnumSet<RegionPermission> permissions) {
         this.dimension = dimension;
         this.boxes = new ArrayList<>(boxes);
@@ -62,11 +61,11 @@ public final class WDProtectedRegion {
         register(this);
 
         switch (rule) {
-            case SHELL, SHELL_CLEAR -> {
+            case SHELL-> {
                 this.toShell();
                 this.setPermissions(EnumSet.of(WDProtectedRegion.RegionPermission.NONE));
             }
-            case PROTECT_ALL_CLEAR, PROTECT_ALL -> {
+            case PROTECT_ALL -> {
                 this.setPermissions(EnumSet.of(WDProtectedRegion.RegionPermission.NONE));
             }
         }
@@ -77,7 +76,7 @@ public final class WDProtectedRegion {
     }
 
     public static void register(WDProtectedRegion region) {
-        PROTECTED_REGIONS.computeIfAbsent(region.dimension, d -> new ArrayList<>()).add(region);
+        PROTECTED_REGIONS.add(region);
 
         Map<Long, List<WDProtectedRegion>> chunkMap = CHUNK_REGIONS.computeIfAbsent(region.dimension, d -> new HashMap<>());
 
@@ -134,7 +133,7 @@ public final class WDProtectedRegion {
         return false;
     }
 
-    public static Map<ResourceKey<Level>, List<WDProtectedRegion>> getAllRegions() {
+    public static Set<WDProtectedRegion> getAllRegions() {
         return PROTECTED_REGIONS;
     }
 

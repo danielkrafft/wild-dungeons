@@ -191,9 +191,9 @@ public class SaveSystem {
         WDPlayerManager.getInstance().setServerPlayers(players);
 
         if (saveFile.protectedRegions != null) {
-            saveFile.protectedRegions.forEach((dimension, regionList) -> {
-                regionList.forEach(WDProtectedRegion::register);
-            });
+            for (WDProtectedRegion region : saveFile.protectedRegions) {
+                WDProtectedRegion.register(region);
+            }
         }
 
         WildDungeons.getLogger().info("Loaded {} players", players.size());
@@ -208,14 +208,14 @@ public class SaveSystem {
 
     public static class SaveFile {
         public Map<String, WDPlayer> players = null;
-        public Map<ResourceKey<Level>, List<WDProtectedRegion>> protectedRegions = null;
+        public Set<WDProtectedRegion> protectedRegions = null;
         public List<String> sessionFilePaths = new ArrayList<>();
 
         public void AddPlayers(Map<String, WDPlayer> players) {
             this.players = players;
         }
 
-        public void AddProtectedRegions(Map<ResourceKey<Level>, List<WDProtectedRegion>> protectedRegions) {
+        public void AddProtectedRegions(Set<WDProtectedRegion> protectedRegions) {
             this.protectedRegions = protectedRegions;
         }
 

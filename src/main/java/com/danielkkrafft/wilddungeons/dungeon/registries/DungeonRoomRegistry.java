@@ -193,7 +193,7 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
             .set(BLOCKING_MATERIAL_INDEX, 1)
             .set(SOUNDSCAPE, SoundscapeTemplateRegistry.NETHER_DRAGON_LEADUP)
             .set(INTENSITY, 1)
-            .set(DESTRUCTION_RULE, RegionRule.PROTECT_ALL_CLEAR);
+            .set(DESTRUCTION_RULE, RegionRule.PROTECT_ALL);
     public static final DungeonRoomTemplate NETHER_FACTORY_BOSS_ROOM = create("nether_factory_boss_room",
             List.of(
                     of("nether/factory/boss_1", EMPTY_BLOCK_POS),
@@ -208,7 +208,7 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
                     of("nether/factory/boss_10", new BlockPos(-48, 18, 7))
             ))
             .setClazz(BossRoom.class)
-            .set(DESTRUCTION_RULE, RegionRule.SHELL_CLEAR)
+            .set(DESTRUCTION_RULE, RegionRule.SHELL)
             .set(ROOM_CLEAR_REWARD_POOL, WeightedPool.of(OfferingTemplateRegistry.EXIT_RIFT))
             .set(ENEMY_TABLE, EnemyTableRegistry.NETHER_DRAGON_ARENA)
             .set(BOSS_SPAWN_POS, new Vec3(3.0, 40.0, 3.0));
@@ -569,7 +569,7 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
             .set(SOUNDSCAPE, SoundscapeTemplateRegistry.PEACEFUL)
             .set(INTENSITY, 1)
             .set(SHOP_TABLE, new WeightedTable<DungeonRegistration.OfferingTemplate>().add(OfferingTemplatePoolRegistry.VILLAGE_STORE_POOL, 1))
-            .set(DESTRUCTION_RULE, RegionRule.PROTECT_ALL_CLEAR);//so they can't tunnel through the wall and cheat the keys
+            .set(DESTRUCTION_RULE, RegionRule.PROTECT_ALL);//so they can't tunnel through the wall and cheat the keys
     public static final DungeonRoomTemplate VILLAGE_METRO_TOWER_STAIRS = createSimple("village/tower/tower_connection")
             .set(DO_PLACEMENT_MIRROR, false)
             .set(DESTRUCTION_RULE, RegionRule.PROTECT_ALL);
@@ -612,16 +612,16 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     // ------- GAUNTLETS -------
     public static final DungeonRoomTemplate BOSS_KEY_ROOM = createSimple("special/gauntlet/boss_key_room").setClazz(WeaponGauntletKeyRoom.class).set(SOUNDSCAPE, SoundscapeTemplateRegistry.HEARTBEAT);
     // --- SCIFI
-    public static final DungeonRoomTemplate SCIFI_ARENA_LOOT_CHOICE_ROOM = createSimple("special/gauntlet/scifi_arena_loot_room").setClazz(LootChoiceRoom.class).set(DESTRUCTION_RULE,RegionRule.SHELL_CLEAR);
-    public static final DungeonRoomTemplate SCIFI_ARENA_COMBAT_ROOM = createCombat("special/gauntlet/scifi_arena_combat_room").set(DESTRUCTION_RULE,RegionRule.SHELL_CLEAR).set(DIFFICULTY_MODIFIER, 20.0).set(WAVE_SIZE, 40).set(COMBAT_GROUP_SIZE, 5).set(ROOM_CLEAR_REWARD_POOL, OfferingTemplatePoolRegistry.SCIFI_WEAPONS_POOL);
+    public static final DungeonRoomTemplate SCIFI_ARENA_LOOT_CHOICE_ROOM = createSimple("special/gauntlet/scifi_arena_loot_room").setClazz(LootChoiceRoom.class).set(DESTRUCTION_RULE,RegionRule.SHELL);
+    public static final DungeonRoomTemplate SCIFI_ARENA_COMBAT_ROOM = createCombat("special/gauntlet/scifi_arena_combat_room").set(DESTRUCTION_RULE,RegionRule.SHELL).set(DIFFICULTY_MODIFIER, 20.0).set(WAVE_SIZE, 40).set(COMBAT_GROUP_SIZE, 5).set(ROOM_CLEAR_REWARD_POOL, OfferingTemplatePoolRegistry.SCIFI_WEAPONS_POOL);
     public static final DungeonRoomTemplate SCIFI_ARENA_EXIT_ROOM = createSimple("special/gauntlet/scifi_arena_exit_room");
     // --- LAVA
-    public static final DungeonRoomTemplate TRIAL_ARENA_LOOT_CHOICE_ROOM = createSimple("special/gauntlet/trial_arena_loot_room").setClazz(LootChoiceRoom.class).set(DESTRUCTION_RULE,RegionRule.SHELL_CLEAR);
-    public static final DungeonRoomTemplate TRIAL_ARENA_COMBAT_ROOM = createCombat("special/gauntlet/trial_arena_combat_room").set(DESTRUCTION_RULE,RegionRule.SHELL_CLEAR).set(DIFFICULTY_MODIFIER, 20.0).set(WAVE_SIZE, 40).set(COMBAT_GROUP_SIZE, 5).set(ROOM_CLEAR_REWARD_POOL, OfferingTemplatePoolRegistry.WIND_WEAPONS_POOL);
+    public static final DungeonRoomTemplate TRIAL_ARENA_LOOT_CHOICE_ROOM = createSimple("special/gauntlet/trial_arena_loot_room").setClazz(LootChoiceRoom.class).set(DESTRUCTION_RULE,RegionRule.SHELL);
+    public static final DungeonRoomTemplate TRIAL_ARENA_COMBAT_ROOM = createCombat("special/gauntlet/trial_arena_combat_room").set(DESTRUCTION_RULE,RegionRule.SHELL).set(DIFFICULTY_MODIFIER, 20.0).set(WAVE_SIZE, 40).set(COMBAT_GROUP_SIZE, 5).set(ROOM_CLEAR_REWARD_POOL, OfferingTemplatePoolRegistry.WIND_WEAPONS_POOL);
     public static final DungeonRoomTemplate TRIAL_ARENA_EXIT_ROOM = createSimple("special/gauntlet/trial_arena_exit_room");
     // --- GENERAL
-    public static final DungeonRoomTemplate GENERAL_ARENA_LOOT_CHOICE_ROOM = createSimple("special/gauntlet/general_arena_loot_room").setClazz(LootChoiceRoom.class).set(DESTRUCTION_RULE,RegionRule.SHELL_CLEAR);
-    public static final DungeonRoomTemplate GENERAL_ARENA_COMBAT_ROOM = createCombat("special/gauntlet/general_arena_combat_room").set(DESTRUCTION_RULE,RegionRule.SHELL_CLEAR).set(DIFFICULTY_MODIFIER, 20.0).set(WAVE_SIZE, 40).set(COMBAT_GROUP_SIZE, 5).set(ROOM_CLEAR_REWARD_POOL, OfferingTemplatePoolRegistry.GENERAL_WEAPONS_POOL);
+    public static final DungeonRoomTemplate GENERAL_ARENA_LOOT_CHOICE_ROOM = createSimple("special/gauntlet/general_arena_loot_room").setClazz(LootChoiceRoom.class).set(DESTRUCTION_RULE,RegionRule.SHELL);
+    public static final DungeonRoomTemplate GENERAL_ARENA_COMBAT_ROOM = createCombat("special/gauntlet/general_arena_combat_room").set(DESTRUCTION_RULE,RegionRule.SHELL).set(DIFFICULTY_MODIFIER, 20.0).set(WAVE_SIZE, 40).set(COMBAT_GROUP_SIZE, 5).set(ROOM_CLEAR_REWARD_POOL, OfferingTemplatePoolRegistry.GENERAL_WEAPONS_POOL);
     public static final DungeonRoomTemplate GENERAL_ARENA_EXIT_ROOM = createSimple("special/gauntlet/general_arena_exit_room");
 
     public static DungeonRoomTemplate copyOf(DungeonRoomTemplate template, String name) {
@@ -633,7 +633,7 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static DungeonRoomTemplate copyCombatOf(DungeonRoomTemplate template, String name) {
         DungeonRoomTemplate room = DungeonRoomTemplate.copyOf(template, name);
         room.setClazz(CombatRoom.class);
-        room.set(DESTRUCTION_RULE, RegionRule.SHELL_CLEAR);
+        room.set(DESTRUCTION_RULE, RegionRule.SHELL);
         DUNGEON_ROOM_REGISTRY.add(room);
         return room;
     }
@@ -653,7 +653,7 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static DungeonRoomTemplate createCombat(String name) {
         DungeonRoomTemplate room = DungeonRoomTemplate.create(name, List.of(Pair.of(name, EMPTY_BLOCK_POS)));
         room.setClazz(CombatRoom.class);
-        room.set(DESTRUCTION_RULE, RegionRule.SHELL_CLEAR);
+        room.set(DESTRUCTION_RULE, RegionRule.SHELL);
         DUNGEON_ROOM_REGISTRY.add(room);
         return room;
     }
@@ -661,7 +661,7 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
     public static DungeonRoomTemplate createBoss(String name, Vec3 bossSpawnPos) {
         DungeonRoomTemplate room = DungeonRoomTemplate.create(name, List.of(Pair.of(name, EMPTY_BLOCK_POS)));
         room.setClazz(BossRoom.class);
-        room.set(DESTRUCTION_RULE, RegionRule.SHELL_CLEAR);
+        room.set(DESTRUCTION_RULE, RegionRule.SHELL);
         room.set(MOBS_FACE_PLAYER_ON_SPAWN, true);
         room.set(BOSS_SPAWN_POS, bossSpawnPos);
         DUNGEON_ROOM_REGISTRY.add(room);
