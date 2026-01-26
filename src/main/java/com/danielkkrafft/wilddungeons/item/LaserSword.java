@@ -26,8 +26,8 @@ public class LaserSword extends WDWeapon {
 
     public enum AnimationList {idle, gun_transform, charging_up, fully_charged, shoot, sword_transform}
 
-    private static final int WARMUP_SECONDS = 2;//old 5
-    private static final int MAX_CHARGE_SECONDS = 2;//old 15
+    private static final int WARMUP_SECONDS = 5;//old 5
+    private static final int MAX_CHARGE_SECONDS = 15;//old 15
     private static final int COOLDOWN_SECONDS = 3;//used to be 3x the total charge time
     private static final float COOLDOWN_TRANSITION_RATIO = 0.25f;
     private static final int LASER_ENTITY_CHARGE_SECONDS = 0;
