@@ -99,8 +99,13 @@ public class WindBow extends WDWeapon {
         float power = BowItem.getPowerForTime(lastUseDuration);
         if ((double) power < 0.1) return;
 
-        List<ItemStack> shots = decrementAmmo(ammo, player);
-        if (shots.isEmpty()) return;
+        List<ItemStack> shots;
+        if (player.getAbilities().instabuild) {
+            shots = List.of(new ItemStack(Items.ARROW));
+        } else {
+            shots = decrementAmmo(ammo, player);
+            if (shots.isEmpty()) return;
+        }
 
         if (!level.isClientSide) {
             animator.playAnimation(this, RELEASE_ANIM, stack, player, level);
