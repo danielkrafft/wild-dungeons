@@ -9,6 +9,7 @@ import com.danielkkrafft.wilddungeons.dungeon.registries.OfferingTemplateTableRe
 import com.danielkkrafft.wilddungeons.dungeon.registries.SoundscapeTemplateRegistry;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.registry.WDBlocks;
+import com.danielkkrafft.wilddungeons.registry.WDProtectedRegion.RegionRule;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import com.danielkkrafft.wilddungeons.util.WeightedTable;
 import com.danielkkrafft.wilddungeons.world.dimension.EmptyGenerator;
@@ -39,7 +40,7 @@ public class HierarchicalProperty<T> {
     public static final HierarchicalProperty<DungeonSession.DungeonExitBehavior> EXIT_BEHAVIOR = new HierarchicalProperty<>(new TypeToken<>() {}, DungeonSession.DungeonExitBehavior.DESTROY);
     public static final HierarchicalProperty<WeightedPool<DungeonRegistration.OfferingTemplate>> NEXT_DUNGEON_OFFERING = new HierarchicalProperty<>(new TypeToken<>() {}, null);
     public static final HierarchicalProperty<Boolean> HAS_BEDROCK_SHELL = new HierarchicalProperty<>(new TypeToken<>() {}, true);
-    public static final HierarchicalProperty<DungeonRoomTemplate.DestructionRule> DESTRUCTION_RULE = new HierarchicalProperty<>(new TypeToken<>() {}, DungeonRoomTemplate.DestructionRule.NONE);
+    public static final HierarchicalProperty<RegionRule> DESTRUCTION_RULE = new HierarchicalProperty<>(new TypeToken<>() {}, RegionRule.NONE);
     public static final HierarchicalProperty<Integer> BLOCKING_MATERIAL_INDEX = new HierarchicalProperty<>(new TypeToken<>() {}, 0); //TODO replace with Blocked Blockstate in the connection block entity
     public static final HierarchicalProperty<Integer> WAVE_SIZE = new HierarchicalProperty<>(new TypeToken<>() {}, 10);
     public static final HierarchicalProperty<Integer> INTENSITY = new HierarchicalProperty<>(new TypeToken<>() {}, 0);

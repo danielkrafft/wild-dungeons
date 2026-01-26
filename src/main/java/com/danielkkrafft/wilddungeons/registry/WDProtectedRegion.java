@@ -27,7 +27,15 @@ public final class WDProtectedRegion {
     private boolean active;
     private final ResourceKey<Level> dimension;
     private final List<BoundingBox> boxes;
-    private final EnumSet<RegionPermission> permissions;
+    private EnumSet<RegionPermission> permissions = EnumSet.allOf(RegionPermission.class);
+
+    public enum RegionRule {
+        SHELL,
+        SHELL_CLEAR,
+        PROTECT_ALL,
+        PROTECT_ALL_CLEAR,
+        NONE
+    }
 
     public enum RegionPermission {
         BLOCK_BREAK,
@@ -46,6 +54,23 @@ public final class WDProtectedRegion {
         this.permissions = permissions.clone();
         this.active = active;
         register(this);
+    }
+
+    public WDProtectedRegion(ResourceKey<Level> dimension, List<BoundingBox> boxes, RegionRule rule, boolean active) {
+        this.dimension = dimension;
+        this.boxes = new ArrayList<>(boxes);
+        this.active = active;
+        register(this);
+
+        switch (rule) {
+            case SHELL, SHELL_CLEAR -> {
+                this.toShell();
+                this.setPermissions(EnumSet.of(WDProtectedRegion.RegionPermission.NONE));
+            }
+            case PROTECT_ALL_CLEAR, PROTECT_ALL -> {
+                this.setPermissions(EnumSet.of(WDProtectedRegion.RegionPermission.NONE));
+            }
+        }
     }
 
     public ResourceKey<Level> getDimension() {

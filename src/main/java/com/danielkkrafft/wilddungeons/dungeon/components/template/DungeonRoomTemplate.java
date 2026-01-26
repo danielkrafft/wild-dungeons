@@ -32,11 +32,6 @@ public final class DungeonRoomTemplate implements DungeonRegistration.DungeonCom
     private List<StructureTemplate.StructureBlockInfo> dataMarkers;
     private WDStructureTemplate wdStructureTemplate;
 
-
-    public enum DestructionRule {
-        SHELL, NONE, SHELL_CLEAR, PROTECT_BREAK, PROTECT_ALL, PROTECT_ALL_CLEAR
-    }
-
     public HashMap<HierarchicalProperty<?>, Object> PROPERTIES = new HashMap<>();
     public <T> DungeonRoomTemplate set(HierarchicalProperty<T> property, T value) { this.PROPERTIES.put(property, value); return this; }
     public <T> T get(HierarchicalProperty<T> property) { return (T) this.PROPERTIES.get(property); }

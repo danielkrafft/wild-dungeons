@@ -160,27 +160,8 @@ public class DungeonRoom {
 
         updateChunksAndLighting(false, 2, 2.5f);
 
-        DungeonRoomTemplate.DestructionRule rule = getProperty(DESTRUCTION_RULE);
-
-        WDProtectedRegion region = new WDProtectedRegion(getBranch().getFloor().getLevel().dimension(), this.boundingBoxes, EnumSet.allOf(WDProtectedRegion.RegionPermission.class), true);
-
-        switch (rule) {
-            case SHELL, SHELL_CLEAR -> {
-                region.toShell();
-                region.setPermissions(EnumSet.of(WDProtectedRegion.RegionPermission.NONE));
-                this.protectedRegion = region;
-            }
-            case PROTECT_ALL_CLEAR, PROTECT_ALL -> {
-                region.setPermissions(EnumSet.of(WDProtectedRegion.RegionPermission.NONE));
-                this.protectedRegion = region;
-            }
-            case PROTECT_BREAK -> {
-                region.setPermissions(EnumSet.allOf(WDProtectedRegion.RegionPermission.class));
-                region.deny(WDProtectedRegion.RegionPermission.BLOCK_BREAK);
-                region.deny(WDProtectedRegion.RegionPermission.EXPLOSION);
-                this.protectedRegion = region;
-            }
-        }
+        WDProtectedRegion.RegionRule rule = getProperty(DESTRUCTION_RULE);
+        this.protectedRegion = new WDProtectedRegion(getBranch().getFloor().getLevel().dimension(), this.boundingBoxes, rule, true);
     }
 
     public void onClear() {
