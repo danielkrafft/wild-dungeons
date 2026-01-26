@@ -572,7 +572,7 @@ public class DungeonRoomRegistry { //TODO this should probably be a json/nbt bas
             .set(DESTRUCTION_RULE, DestructionRule.PROTECT_ALL_CLEAR);//so they can't tunnel through the wall and cheat the keys
     public static final DungeonRoomTemplate VILLAGE_METRO_TOWER_STAIRS = createSimple("village/tower/tower_connection")
             .set(DO_PLACEMENT_MIRROR, false)
-            .set(DESTRUCTION_RULE, DestructionRule.PROTECT_BREAK);//so they can't tunnel through the wall and skip levels
+            .set(DESTRUCTION_RULE, DestructionRule.PROTECT_ALL);
     public static final DungeonRoomTemplate VILLAGE_METRO_CHLTER121_TWR_CUBICLES = createCombat("village/metro/chlter121/twr/cubicles")
             .set(DO_PLACEMENT_MIRROR, false)
             .set(POST_GEN_PROCESSING_STEPS, List.of(new AddEmeraldPiles(1)));

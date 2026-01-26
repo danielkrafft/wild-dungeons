@@ -5,6 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
@@ -20,15 +21,13 @@ import java.util.*;
 
 @EventBusSubscriber(modid = WildDungeons.MODID)
 public final class WDProtectedRegion {
+    private static final Map<ResourceKey<Level>, List<WDProtectedRegion>> PROTECTED_REGIONS = new HashMap<>();
+    private static final Map<ResourceKey<Level>, Map<Long, List<WDProtectedRegion>>> CHUNK_REGIONS = new HashMap<>();
 
     private boolean active;
     private final ResourceKey<Level> dimension;
     private final List<BoundingBox> boxes;
     private final EnumSet<RegionPermission> permissions;
-
-    public void setActive(boolean active) {
-        this.active = active;
-    }
 
     public enum RegionPermission {
         BLOCK_BREAK,
@@ -40,8 +39,6 @@ public final class WDProtectedRegion {
         FIRE,
         NONE
     }
-
-    private static final Map<ResourceKey<Level>, List<WDProtectedRegion>> PROTECTED_REGIONS = new HashMap<>();
 
     public WDProtectedRegion(ResourceKey<Level> dimension, List<BoundingBox> boxes, EnumSet<RegionPermission> permissions, boolean active) {
         this.dimension = dimension;
@@ -57,6 +54,22 @@ public final class WDProtectedRegion {
 
     public static void register(WDProtectedRegion region) {
         PROTECTED_REGIONS.computeIfAbsent(region.dimension, d -> new ArrayList<>()).add(region);
+
+        Map<Long, List<WDProtectedRegion>> chunkMap = CHUNK_REGIONS.computeIfAbsent(region.dimension, d -> new HashMap<>());
+
+        //boxes -> chunks for chunkmap
+        for (BoundingBox box : region.boxes) {
+            for (int cx = (box.minX() >> 4); cx <= (box.maxX() >> 4); cx++) {
+                for (int cz = (box.minZ() >> 4); cz <= (box.maxZ() >> 4); cz++) {
+                    long key = ChunkPos.asLong(cx, cz);
+                    chunkMap.computeIfAbsent(key, k -> new ArrayList<>()).add(region);
+                }
+            }
+        }
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     private boolean denies(RegionPermission permission) {
@@ -64,12 +77,21 @@ public final class WDProtectedRegion {
     }
 
     private static boolean denies(Level level, BlockPos pos, RegionPermission permission) {
-        List<WDProtectedRegion> list = PROTECTED_REGIONS.get(level.dimension());
-        if (list == null || list.isEmpty()) return false;
+        Map<Long, List<WDProtectedRegion>> chunkMap = CHUNK_REGIONS.get(level.dimension()); //list of all registered chunks in the level passed as arg
+        if (chunkMap == null || chunkMap.isEmpty()) return false;
 
-        for (WDProtectedRegion region : list) {
+        int chunkX = pos.getX() >> 4;
+        int chunkZ = pos.getZ() >> 4;
+        long key = ChunkPos.asLong(chunkX, chunkZ); //the chunk that we are checking
+
+        List<WDProtectedRegion> regions = chunkMap.get(key); //list of regions in the chunk we are checking
+        if (regions == null || regions.isEmpty()) return false;
+
+        for (WDProtectedRegion region : regions) { //loops through regions in chunk containing pos
             if (!region.active) continue;
-            if (region.contains(pos) && region.denies(permission)) return true;
+            if (region.contains(pos) && region.denies(permission)) {
+                return true;
+            }
         }
         return false;
     }
@@ -102,97 +124,51 @@ public final class WDProtectedRegion {
 
     public static void clearAllRegions() {
         PROTECTED_REGIONS.clear();
+        CHUNK_REGIONS.clear();
+    }
+
+    private boolean hasNeighbor(BoundingBox box, int dx, int dy, int dz) {
+        for (BoundingBox otherBox : this.boxes) {
+            if (otherBox == box || otherBox.intersects(box)) continue;
+
+            if (otherBox.moved(dx, dy, dz).intersects(box)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void toShell() {
         List<BoundingBox> newBoxes = new ArrayList<>();
 
         for (BoundingBox box : this.boxes) {
-            boolean bottomFaceAdjacent = false;
-            for (BoundingBox otherBox : this.boxes) {
-                if (otherBox == box) continue;
-                if (otherBox.maxY() == box.minY() - 1 &&
-                    otherBox.minX() <= box.maxX() && otherBox.maxX() >= box.minX() &&
-                    otherBox.minZ() <= box.maxZ() && otherBox.maxZ() >= box.minZ()) {
-                    bottomFaceAdjacent = true;
-                    break;
-                }
-            }
-            if (!bottomFaceAdjacent) {
+            boolean tall = box.maxY() > box.minY();
+            boolean deep = box.maxZ() > box.minZ();
+
+            if (!hasNeighbor(box, 0, 1, 0)) { //Y-
                 newBoxes.add(new BoundingBox(box.minX(), box.minY(), box.minZ(), box.maxX(), box.minY(), box.maxZ()));
             }
 
-            boolean topFaceAdjacent = false;
-            for (BoundingBox otherBox : this.boxes) {
-                if (otherBox == box) continue;
-                if (otherBox.minY() == box.maxY() + 1 &&
-                    otherBox.minX() <= box.maxX() && otherBox.maxX() >= box.minX() &&
-                    otherBox.minZ() <= box.maxZ() && otherBox.maxZ() >= box.minZ()) {
-                    topFaceAdjacent = true;
-                    break;
-                }
-            }
-            if (!topFaceAdjacent) {
+            if (!hasNeighbor(box, 0, -1, 0)) { //Y+
                 newBoxes.add(new BoundingBox(box.minX(), box.maxY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ()));
             }
 
-            boolean northFaceAdjacent = false;
-            for (BoundingBox otherBox : this.boxes) {
-                if (otherBox == box) continue;
-                if (otherBox.maxZ() == box.minZ() - 1 &&
-                    otherBox.minX() <= box.maxX() && otherBox.maxX() >= box.minX() &&
-                    otherBox.minY() <= box.maxY() && otherBox.maxY() >= box.minY()) {
-                    northFaceAdjacent = true;
-                    break;
-                }
-            }
-            if (!northFaceAdjacent && box.maxY() > box.minY()) {
+            if (tall && !hasNeighbor(box, 0, 0, 1)) { //Z-
                 newBoxes.add(new BoundingBox(box.minX(), box.minY() + 1, box.minZ(), box.maxX(), box.maxY() - 1, box.minZ()));
             }
 
-            boolean southFaceAdjacent = false;
-            for (BoundingBox otherBox : this.boxes) {
-                if (otherBox == box) continue;
-                if (otherBox.minZ() == box.maxZ() + 1 &&
-                    otherBox.minX() <= box.maxX() && otherBox.maxX() >= box.minX() &&
-                    otherBox.minY() <= box.maxY() && otherBox.maxY() >= box.minY()) {
-                    southFaceAdjacent = true;
-                    break;
-                }
-            }
-            if (!southFaceAdjacent && box.maxY() > box.minY()) {
+            if (tall && !hasNeighbor(box, 0, 0, -1)) { //Z+
                 newBoxes.add(new BoundingBox(box.minX(), box.minY() + 1, box.maxZ(), box.maxX(), box.maxY() - 1, box.maxZ()));
             }
 
-            boolean westFaceAdjacent = false;
-            for (BoundingBox otherBox : this.boxes) {
-                if (otherBox == box) continue;
-                if (otherBox.maxX() == box.minX() - 1 &&
-                    otherBox.minZ() <= box.maxZ() && otherBox.maxZ() >= box.minZ() &&
-                    otherBox.minY() <= box.maxY() && otherBox.maxY() >= box.minY()) {
-                    westFaceAdjacent = true;
-                    break;
-                }
-            }
-            if (!westFaceAdjacent && box.maxY() > box.minY() && box.maxZ() > box.minZ()) {
+            if (tall && deep && !hasNeighbor(box, 1, 0, 0)) { //X-
                 newBoxes.add(new BoundingBox(box.minX(), box.minY() + 1, box.minZ() + 1, box.minX(), box.maxY() - 1, box.maxZ() - 1));
             }
 
-            boolean eastFaceAdjacent = false;
-            for (BoundingBox otherBox : this.boxes) {
-                if (otherBox == box) continue;
-                if (otherBox.minX() == box.maxX() + 1 &&
-                    otherBox.minZ() <= box.maxZ() && otherBox.maxZ() >= box.minZ() &&
-                    otherBox.minY() <= box.maxY() && otherBox.maxY() >= box.minY()) {
-                    eastFaceAdjacent = true;
-                    break;
-                }
-            }
-            if (!eastFaceAdjacent && box.maxY() > box.minY() && box.maxZ() > box.minZ()) {
+            if (tall && deep && !hasNeighbor(box, -1, 0, 0)) { //X+
                 newBoxes.add(new BoundingBox(box.maxX(), box.minY() + 1, box.minZ() + 1, box.maxX(), box.maxY() - 1, box.maxZ() - 1));
             }
         }
-        
         this.boxes.clear();
         this.boxes.addAll(newBoxes);
     }
