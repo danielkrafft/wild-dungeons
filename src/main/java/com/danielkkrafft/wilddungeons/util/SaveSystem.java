@@ -8,6 +8,9 @@ import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
+import com.danielkkrafft.wilddungeons.registry.WDProtectedRegion;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.Level;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -42,6 +45,7 @@ public class SaveSystem {
     public static void failLoading() {
         DungeonSessionManager.getInstance().setSessions(new HashMap<>());
         WDPlayerManager.getInstance().setServerPlayers(new HashMap<>());
+        WDProtectedRegion.clearAllRegions();
         INSTANCE.loaded = true;
         INSTANCE.loading = false;
     }
@@ -66,6 +70,7 @@ public class SaveSystem {
             }
         });
         saveFile.AddPlayers(WDPlayerManager.getInstance().getServerPlayers());
+        saveFile.AddProtectedRegions(WDProtectedRegion.getAllRegions());
 
         while (sessions.iterator().hasNext()) {
             DungeonSession session = sessions.pop();
@@ -128,6 +133,7 @@ public class SaveSystem {
         loading = true;
         WDPlayerManager.getInstance().setServerPlayers(new HashMap<>());
         DungeonSessionManager.getInstance().setSessions(new HashMap<>());
+        WDProtectedRegion.clearAllRegions();
         SaveFile saveFile = Serializer.fromCompoundTag(FileUtil.readNbt(FileUtil.getWorldPath().resolve("data").resolve("dungeons.nbt").toFile()));
         if (saveFile == null) {
             WildDungeons.getLogger().error("NO DUNGEON FILES FOUND");
@@ -183,6 +189,13 @@ public class SaveSystem {
             sessions.put(session.getSessionKey(), session);
         });
         WDPlayerManager.getInstance().setServerPlayers(players);
+
+        if (saveFile.protectedRegions != null) {
+            for (WDProtectedRegion region : saveFile.protectedRegions) {
+                WDProtectedRegion.register(region);
+            }
+        }
+
         WildDungeons.getLogger().info("Loaded {} players", players.size());
         WildDungeons.getLogger().info("Loaded {} sessions", sessions.size());
         WildDungeons.getLogger().info("Loaded {} floors", sessions.values().stream().mapToInt(session -> session.getFloors().size()).sum());
@@ -195,10 +208,15 @@ public class SaveSystem {
 
     public static class SaveFile {
         public Map<String, WDPlayer> players = null;
+        public Set<WDProtectedRegion> protectedRegions = null;
         public List<String> sessionFilePaths = new ArrayList<>();
 
         public void AddPlayers(Map<String, WDPlayer> players) {
             this.players = players;
+        }
+
+        public void AddProtectedRegions(Set<WDProtectedRegion> protectedRegions) {
+            this.protectedRegions = protectedRegions;
         }
 
         public void AddSessionFile(Path sessionFile){

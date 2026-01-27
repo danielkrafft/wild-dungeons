@@ -4,7 +4,6 @@ import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.components.process.PostProcessingStep;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.LockableEventRoom;
-import com.danielkkrafft.wilddungeons.dungeon.components.room.TargetPurgeRoom;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
@@ -16,6 +15,7 @@ import com.danielkkrafft.wilddungeons.entity.Offering;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
+import com.danielkkrafft.wilddungeons.registry.WDProtectedRegion;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
 import com.danielkkrafft.wilddungeons.util.Serializer;
 import com.mojang.datafixers.util.Pair;
@@ -79,6 +79,7 @@ public class DungeonRoom {
     private boolean lightRegenerated = false;
     @Serializer.IgnoreSerialization protected DungeonBranch branch = null;
     @Serializer.IgnoreSerialization public List<CompletableFuture<?>> futures = new ArrayList<>();
+    @Serializer.IgnoreSerialization private WDProtectedRegion protectedRegion = null;
 
     public <T> T getProperty(HierarchicalProperty<T> property) { return this.getTemplate().get(property) == null ? this.getBranch().getProperty(property) : this.getTemplate().get(property); }
     public DungeonRoomTemplate getTemplate() {return DUNGEON_ROOM_REGISTRY.get(this.templateKey);}
@@ -128,6 +129,7 @@ public class DungeonRoom {
         WildDungeons.getLogger().info("FINISHED ROOM: {}", getTemplate().name());
     }
 
+
     public void actuallyPlaceInWorld() {
         if (getTemplate().spawnPoint() != null) {
             this.spawnPoint = TemplateHelper.transform(getTemplate().spawnPoint(), this);
@@ -156,9 +158,17 @@ public class DungeonRoom {
         this.processConnectionPoints(getBranch().getFloor());
         this.onBranchComplete();
 
-        updateChunksAndLighting(false,2,2.5f);
+        updateChunksAndLighting(false, 2, 2.5f);
 
-        WildDungeons.getLogger().info("FINISHED ACTUALLY PLACING ROOM: {}", getTemplate().name());
+        WDProtectedRegion.RegionRule rule = getProperty(DESTRUCTION_RULE);
+        this.protectedRegion = new WDProtectedRegion(getBranch().getFloor().getLevel().dimension(), this.boundingBoxes, rule, true);
+    }
+
+    public void onClear() {
+        this.clear = true;
+        if (this.protectedRegion != null) {
+            this.protectedRegion.setActive(false);
+        }
     }
 
     public static void forceUpdateChunk(ServerLevel level, ChunkPos chunkPos) {
@@ -662,57 +672,9 @@ public class DungeonRoom {
         this.playersInside.put(player.getUUID(), false);
     }
 
-    public void onClear() {
-        this.clear = true;
-    }
-
     public void reset() {
     }
 
     public void tick() {
-    }
-
-
-    public boolean canBreakBlock(BlockPos pos, BlockState blockState) {
-        if (this instanceof TargetPurgeRoom) {
-            if (blockState.is(Blocks.SPAWNER)) {
-                return true;
-            }
-        }
-        boolean isInRoom = this.getBoundingBoxes().stream().anyMatch(box -> box.isInside(pos));
-        if (!isInRoom) {
-            return true;
-        }
-        DungeonRoomTemplate.DestructionRule rule = this.getProperty(DESTRUCTION_RULE);
-        return switch (rule) {
-            case PROTECT_ALL, PROTECT_BREAK -> false;
-            case SHELL -> !isPosInsideShell(pos);
-            case SHELL_CLEAR -> {
-                if (!isPosInsideShell(pos)){
-                    yield isClear();
-                } else {
-                    yield true;
-                }
-            }
-            case PROTECT_ALL_CLEAR -> isClear();
-            case null, default -> true;
-        };
-    }
-
-    public boolean canPlaceBlock(BlockPos pos, BlockState placedBlock) {
-        DungeonRoomTemplate.DestructionRule rule = this.getProperty(DESTRUCTION_RULE);
-        return switch (rule) {
-            case PROTECT_ALL, PROTECT_PLACE -> false;
-            case SHELL -> !isPosInsideShell(pos);
-            case SHELL_CLEAR -> {
-                if (!isPosInsideShell(pos)){
-                    yield isClear();
-                } else {
-                    yield true;
-                }
-            }
-            case PROTECT_ALL_CLEAR -> isClear();
-            case null, default -> true;
-        };
     }
 }
