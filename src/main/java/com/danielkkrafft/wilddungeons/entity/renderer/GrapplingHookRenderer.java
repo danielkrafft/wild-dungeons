@@ -7,7 +7,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -23,14 +24,19 @@ import org.jetbrains.annotations.NotNull;
  * @param <T>
  */
 @OnlyIn(Dist.CLIENT)
-public class GrapplingHookRenderer<T extends GrapplingHook> extends EntityRenderer<T> {
-    private static final ResourceLocation HOOKS = WildDungeons.rl("textures/entity/grapplinghook_hooks.png");
-    private static final ResourceLocation BODY = WildDungeons.rl("textures/entity/grapplinghook_body.png");
-    private static final ResourceLocation CHAIN = WildDungeons.rl("textures/entity/grapplinghook_chain.png");
+public class GrapplingHookRenderer<T extends GrapplingHook> extends EntityRenderer<T, EntityRenderState> {
+    private static final Identifier HOOKS = WildDungeons.rl("textures/entity/grapplinghook_hooks.png");
+    private static final Identifier BODY = WildDungeons.rl("textures/entity/grapplinghook_body.png");
+    private static final Identifier CHAIN = WildDungeons.rl("textures/entity/grapplinghook_chain.png");
     private static final float chainSegmentLength = 0.5f;
 
     public GrapplingHookRenderer(EntityRendererProvider.Context c) {
         super(c);
+    }
+
+    @Override
+    public EntityRenderState createRenderState() {
+        return null;
     }
 
     public void render(T grapplingHookEntity, float p_114081_, float deltaTime, PoseStack pose, MultiBufferSource buffer, int light) {
@@ -61,11 +67,11 @@ public class GrapplingHookRenderer<T extends GrapplingHook> extends EntityRender
         CubeRenderer.cube(0, 0.3f, new Vec3(0, 0.25, 0), 0.07f, HOOKS, pose, buffer, grapplingHookEntity.getYRot() + yawDisp, -grapplingHookEntity.getXRot() - 45, 0, 1, 1, 1, 1);
         CubeRenderer.cube(0, 0.3f, new Vec3(0, 0.25, 0), 0.07f, HOOKS, pose, buffer, grapplingHookEntity.getYRot() + yawDisp + 45, -grapplingHookEntity.getXRot(), 0, 1, 1, 1, 1);
         CubeRenderer.cube(0, 0.3f, new Vec3(0, 0.25, 0), 0.07f, HOOKS, pose, buffer, grapplingHookEntity.getYRot() + yawDisp - 45, -grapplingHookEntity.getXRot(), 0, 1, 1, 1, 1);
-        super.render(grapplingHookEntity, p_114081_, deltaTime, pose, buffer, light);
+        //super.render(grapplingHookEntity, p_114081_, deltaTime, pose, buffer, light);//TODO - Find fix on 1.21.11
     }
 
-    @Override
-    public @NotNull ResourceLocation getTextureLocation(@NotNull T g) {
+    // @Override //TODO - Find fix on 1.21.11
+    public @NotNull Identifier getTextureLocation(@NotNull T g) {
         return BODY;
     }
     //@Override public boolean shouldRender(@NotNull T g, @NotNull Frustum p_114492_, double p_114493_, double p_114494_, double p_114495_) {return true;}

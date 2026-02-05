@@ -36,7 +36,7 @@ import static com.danielkkrafft.wilddungeons.dungeon.components.template.Hierarc
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonFloorRegistry.DUNGEON_FLOOR_REGISTRY;
 import static com.danielkkrafft.wilddungeons.registry.WDDimensions.WILDDUNGEON;
 
-public class DungeonFloor {
+public class DungeonFloor { //TODO - Uncomment once DungeonRoom is fixed for 1.21.11 - Though other fixes will also be needed
 
     @Serializer.IgnoreSerialization private List<DungeonBranch> dungeonBranches = new ArrayList<>();
     private final String templateKey;

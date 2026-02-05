@@ -1,19 +1,19 @@
 package com.danielkkrafft.wilddungeons.api.client;
 
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class DelayedRenderTypes {
 
-    public static List<RenderType> ALL_ENTITY = new ArrayList<>();
-    public static List<RenderType> TRANSLUCENT_ENTITY = new ArrayList<>();
-    public static List<RenderType> ADDITIVE_ENTITY = new ArrayList<>();
+    public static List<RenderTypes> ALL_ENTITY = new ArrayList<>();
+    public static List<RenderTypes> TRANSLUCENT_ENTITY = new ArrayList<>();
+    public static List<RenderTypes> ADDITIVE_ENTITY = new ArrayList<>();
 
-    public static List<RenderType> ALL_PARTICLES = new ArrayList<>();
-    public static List<RenderType> TRANSLUCENT_PARTICLES = new ArrayList<>();
-    public static List<RenderType> ADDITIVE_PARTICLES = new ArrayList<>();
+    public static List<RenderTypes> ALL_PARTICLES = new ArrayList<>();
+    public static List<RenderTypes> TRANSLUCENT_PARTICLES = new ArrayList<>();
+    public static List<RenderTypes> ADDITIVE_PARTICLES = new ArrayList<>();
 
 
     /**
@@ -22,7 +22,7 @@ public class DelayedRenderTypes {
      * @param target Render Target type : Either a Particle or an Entity , defaulted to Entity
      * @param render The Render Method used : Normal , Additive , Translucent , defaulted to Normal
      */
-    public static void registerDelayedRenderType(RenderType renderType, TargetType target, RenderMethod render) {
+    public static void registerDelayedRenderType(RenderTypes renderType, TargetType target, RenderMethod render) {
         if (target == TargetType.PARTICLE) {
             switch (render) {
                 case NONE -> ALL_PARTICLES.add(renderType);
@@ -40,15 +40,15 @@ public class DelayedRenderTypes {
         }
     }
 
-    public static void registerDelayedRenderType(RenderType renderType, RenderMethod render) {
+    public static void registerDelayedRenderType(RenderTypes renderType, RenderMethod render) {
         registerDelayedRenderType(renderType,TargetType.ENTITY,render);
     }
 
-    public static void registerDelayedRenderType(RenderType renderType, TargetType target) {
+    public static void registerDelayedRenderType(RenderTypes renderType, TargetType target) {
         registerDelayedRenderType(renderType,target,RenderMethod.NONE);
     }
 
-    public static void registerDelayedRenderType(RenderType renderType) {
+    public static void registerDelayedRenderType(RenderTypes renderType) {
         registerDelayedRenderType(renderType,TargetType.ENTITY,RenderMethod.NONE);
     }
 

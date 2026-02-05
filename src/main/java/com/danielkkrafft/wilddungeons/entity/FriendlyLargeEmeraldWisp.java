@@ -17,7 +17,7 @@ public class FriendlyLargeEmeraldWisp extends LargeEmeraldWisp{
     protected void registerSpecificGoals() {
         this.goalSelector.addGoal(1, new AvoidEntityGoal<>(this, Monster.class, 16f, 0.6, 1.0F));
         this.goalSelector.addGoal(2, new SummonMoreGoal(this));
-        this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Monster.class, true, (target) -> target != this.getOwner()));
+        this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Monster.class, true));
     }
 
     @Override

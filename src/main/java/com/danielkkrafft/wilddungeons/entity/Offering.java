@@ -25,7 +25,7 @@ import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -33,6 +33,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
@@ -43,6 +44,8 @@ import net.minecraft.world.item.component.FireworkExplosion;
 import net.minecraft.world.item.component.Fireworks;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -102,7 +105,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     public Item getCostItem() {
         Item item = Items.AIR;
         try {
-            item = BuiltInRegistries.ITEM.getOptional(ResourceLocation.parse(this.costItemID)).orElse(Items.AIR);
+            item = BuiltInRegistries.ITEM.getOptional(Identifier.parse(this.costItemID)).orElse(Items.AIR);
         } catch (Exception e) {
             WildDungeons.getLogger().info("Failed to get cost item: {}", this.costItemID);
         }
@@ -248,6 +251,11 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
         return 0.03;
     }
 
+    @Override //TODO - Implement (correctly) for 1.21.11
+    public boolean hurtServer(ServerLevel serverLevel, DamageSource damageSource, float v) {
+        return false;
+    }
+
     @Override
     public boolean isAttackable() {
         return false;
@@ -265,29 +273,27 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag compound) {
-//        WildDungeons.getLogger().info("ADDING ADDITIONAL SAVE DATA");
-        compound.putString("type", this.type);
-        compound.putString("costType", this.costType);
-        compound.putString("offerID", this.offerID);
-        compound.putInt("amount", this.amount);
-        compound.putInt("costAmount", this.getCostAmount());
-        compound.putBoolean("purchased", this.purchased);
-        compound.putFloat("renderScale", this.renderScale);
-        compound.putInt("primaryColor", this.primaryColor);
-        compound.putInt("secondaryColor", this.secondaryColor);
-        compound.putInt("soundLoop", this.soundLoop);
-        compound.putBoolean("highlightItem", this.entityData.get(highlightItem));
+    protected void addAdditionalSaveData(ValueOutput output) {
+        output.putString("type", this.type);
+        output.putString("costType", this.costType);
+        output.putString("offerID", this.offerID);
+        output.putInt("amount", this.amount);
+        output.putInt("costAmount", this.getCostAmount());
+        output.putBoolean("purchased", this.purchased);
+        output.putFloat("renderScale", this.renderScale);
+        output.putInt("primaryColor", this.primaryColor);
+        output.putInt("secondaryColor", this.secondaryColor);
+        output.putInt("soundLoop", this.soundLoop);
+        output.putBoolean("highlightItem", this.entityData.get(highlightItem));
         if (this.costItemID == null) {
             this.costItemID = "minecraft:air";
         }
-        compound.putString("costItemID", this.costItemID);
+        output.putString("costItemID", this.costItemID);
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag compound) {
-//        WildDungeons.getLogger().info("READING ADDITIONAL SAVE DATA");
-        if (compound.getString("type").isEmpty()) {
+    protected void readAdditionalSaveData(ValueInput input) {
+        if (input.getString("type").isEmpty()) {
             this.type = Type.ITEM.toString();
             this.costType = CostType.OVERWORLD.toString();
             this.offerID = "dirt";
@@ -301,18 +307,18 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
             this.entityData.set(highlightItem, false);
             this.setCostItemID("minecraft:air");
         } else {
-            this.type = compound.getString("type");
-            this.costType = compound.getString("costType");
-            this.offerID = compound.getString("offerID");
-            this.amount = compound.getInt("amount");
-            this.setCostAmount(compound.getInt("costAmount"));
-            this.setCostItemID(compound.getString("costItemID"));
-            this.purchased = compound.getBoolean("purchased");
-            this.renderScale = compound.getFloat("renderScale");
-            this.primaryColor = compound.getInt("primaryColor");
-            this.secondaryColor = compound.getInt("secondaryColor");
-            this.soundLoop = compound.getInt("soundLoop");
-            this.entityData.set(highlightItem, compound.getBoolean("highlightItem"));
+            this.type = input.getStringOr("type", "");
+            this.costType = input.getStringOr("costType", "");
+            this.offerID = input.getStringOr("offerID", "");
+            this.amount = input.getIntOr("amount", 0);
+            this.setCostAmount(input.getIntOr("costAmount", 0));
+            this.setCostItemID(input.getStringOr("costItemID", ""));
+            this.purchased = input.getBooleanOr("purchased", false);
+            this.renderScale = input.getFloatOr("renderScale", 0F);
+            this.primaryColor = input.getIntOr("primaryColor", 0);
+            this.secondaryColor = input.getIntOr("secondaryColor", 0);
+            this.soundLoop = input.getIntOr("soundLoop", 0);
+            this.entityData.set(highlightItem, input.getBooleanOr("highlightItem", false));
         }
     }
 
@@ -409,31 +415,31 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
                 // For Type.ITEM, check inventory space first before committing to purchase
                 if (this.getOfferingType() == Type.ITEM) {
                     ItemStack itemStack = this.getItemStack().copy();
-                    boolean isFireworkGun = itemStack.is(WDItems.FIREWORK_GUN_ITEM.get());// could be expanded in the future for an offering that gives multiple items instead
+//                    boolean isFireworkGun = itemStack.is(WDItems.FIREWORK_GUN_ITEM.get());// could be expanded in the future for an offering that gives multiple items instead
 
                     int openSlots = 0;
-                    for (ItemStack stack : player.getServerPlayer().getInventory().items) {
+                    for (ItemStack stack : player.getServerPlayer().getInventory().getNonEquipmentItems()) {
                         if (stack.isEmpty()) {
                             openSlots++;
                         }
                     }
 
-                    if (isFireworkGun && openSlots <= 1) {
-                        player.getServerPlayer().sendSystemMessage(Component.translatable("wilddungeons.offering.inventory_full"),true);
-                        return false;
-                    }
+//                    if (isFireworkGun && openSlots <= 1) {
+//                        player.getServerPlayer().sendSystemMessage(Component.translatable("wilddungeons.offering.inventory_full"),true); TODO - Uncomment once Firework gun is fixed for 1.21.11
+//                        return false;
+//                    }
 
                     if (!player.getServerPlayer().getInventory().add(itemStack)) {
                         player.getServerPlayer().sendSystemMessage(Component.translatable("wilddungeons.offering.inventory_full"),true);
                         return false;
                     }
 
-                    if (isFireworkGun) {
-                        ItemStack firework = new ItemStack(Items.FIREWORK_ROCKET);
-                        firework.set(DataComponents.FIREWORKS, new Fireworks(1, List.of(new FireworkExplosion(FireworkExplosion.Shape.CREEPER, IntList.of(Color.GREEN.getRGB()), IntList.of(Color.RED.getRGB()), true, true))));
-                        firework.setCount(64);
-                        player.getServerPlayer().getInventory().add(firework.copy());
-                    }
+//                    if (isFireworkGun) {
+//                        ItemStack firework = new ItemStack(Items.FIREWORK_ROCKET);
+//                        firework.set(DataComponents.FIREWORKS, new Fireworks(1, List.of(new FireworkExplosion(FireworkExplosion.Shape.CREEPER, IntList.of(Color.GREEN.getRGB()), IntList.of(Color.RED.getRGB()), true, true))));
+//                        firework.setCount(64);
+//                        player.getServerPlayer().getInventory().add(firework.copy());
+//                    }
                 }
 
                 // If we reached here, the purchase can proceed
@@ -504,7 +510,7 @@ public class Offering extends Entity implements IEntityWithComplexSpawn {
                     case ITEM -> {
                         Item item = this.getCostItem();
                         if (item != null) {
-                            player.getServerPlayer().sendSystemMessage(Component.translatable("wilddungeons.offering.not_enough_items", item.getDescription(), this.getCostAmount()),true);
+                            player.getServerPlayer().sendSystemMessage(Component.translatable("wilddungeons.offering.not_enough_items", item.getDescriptionId(), this.getCostAmount()),true);
                         } else {
                             player.getServerPlayer().sendSystemMessage(Component.translatable("wilddungeons.offering.not_enough_items", "unknown item", this.getCostAmount()),true);
                         }

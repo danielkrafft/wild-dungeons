@@ -23,7 +23,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
@@ -35,7 +35,7 @@ import javax.annotation.Nullable;
 public class DetoniteClusterBlock extends AmethystBlock implements SimpleWaterloggedBlock {
     public static final MapCodec<DetoniteClusterBlock> CODEC = RecordCodecBuilder.mapCodec((p_308798_) -> p_308798_.group(Codec.FLOAT.fieldOf("height").forGetter((p_304411_) -> p_304411_.height), Codec.FLOAT.fieldOf("aabb_offset").forGetter((p_304908_) -> p_304908_.aabbOffset), propertiesCodec()).apply(p_308798_, DetoniteClusterBlock::new));
     public static final BooleanProperty WATERLOGGED;
-    public static final DirectionProperty FACING;
+    public static final EnumProperty<Direction> FACING;
     private final float height;
     private final float aabbOffset;
     protected final VoxelShape northAabb;
@@ -88,7 +88,7 @@ public class DetoniteClusterBlock extends AmethystBlock implements SimpleWaterlo
 
     @Override
     public void stepOn(Level level, BlockPos pos, BlockState state, Entity entity) {
-        if (level.isClientSide) return;
+        if (level.isClientSide()) return;
         if (state.getValue(COOLDOWN)) return;
         if (entity instanceof Player player && player.isCrouching()) return;
         triggerExplosion(level, pos, state, null);
@@ -101,7 +101,7 @@ public class DetoniteClusterBlock extends AmethystBlock implements SimpleWaterlo
                 WildDungeons.getEnchantment(Enchantments.SILK_TOUCH), player.getMainHandItem()) > 0;
         if (player.isCreative()) return super.playerWillDestroy(level, pos, state, player);
 
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             if (!silkTouch) {
                 level.explode(
                         null,
@@ -148,13 +148,13 @@ public class DetoniteClusterBlock extends AmethystBlock implements SimpleWaterlo
         return level.getBlockState(blockpos).isFaceSturdy(level, blockpos, direction);
     }
 
-    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
-        if ((Boolean)state.getValue(WATERLOGGED)) {
-            level.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
-        }
-
-        return direction == ((Direction)state.getValue(FACING)).getOpposite() && !state.canSurvive(level, pos) ? Blocks.AIR.defaultBlockState() : super.updateShape(state, direction, neighborState, level, pos, neighborPos);
-    }
+//    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) { TODO - Fix for 1.21.11
+//        if ((Boolean)state.getValue(WATERLOGGED)) {
+//            level.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
+//        }
+//
+//        return direction == ((Direction)state.getValue(FACING)).getOpposite() && !state.canSurvive(level, pos) ? Blocks.AIR.defaultBlockState() : super.updateShape(state, level, direction, level.ScheduledTickAccess, level, pos, neighborPos);
+//    }
 
     @Nullable
     public BlockState getStateForPlacement(BlockPlaceContext context) {

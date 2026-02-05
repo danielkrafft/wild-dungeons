@@ -40,8 +40,8 @@ public class RiftStructure extends Structure {
     }
 
     private static int findSuitableY(WorldgenRandom random, ChunkGenerator chunkGenerator, int x, int z, LevelHeightAccessor heightAccessor, RandomState randomState) {
-        int randomHeight = random.nextIntBetweenInclusive(36, heightAccessor.getMaxBuildHeight());
-        int baseHeight = heightAccessor.getMinBuildHeight() + 16;
+        int randomHeight = random.nextIntBetweenInclusive(36, heightAccessor.getMaxY());
+        int baseHeight = heightAccessor.getMinY() + 16;
 
         NoiseColumn noiseColumn = chunkGenerator.getBaseColumn(x, z, heightAccessor, randomState);
 

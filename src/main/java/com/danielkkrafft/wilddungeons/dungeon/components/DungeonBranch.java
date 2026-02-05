@@ -21,7 +21,7 @@ import java.util.*;
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonBranchRegistry.DUNGEON_BRANCH_REGISTRY;
 
-public class DungeonBranch {
+public class DungeonBranch { //TODO - Fix for 1.21.11 - primarily needs a fixed implementation of DUngeonRoom
 
     private static final int OPEN_CONNECTIONS_TARGET = 6;
 
@@ -173,7 +173,7 @@ public class DungeonBranch {
                 ConnectionPoint exitPoint = exitPoints.removeLast();
                 TemplateOrientation orientation = TemplateHelper.handleRoomTransformation(entrancePoint, exitPoint, nextRoom);
                 ConnectionPoint proposedPoint = ConnectionPoint.copy(entrancePoint);
-                position.set(ConnectionPoint.getOffset(orientation, TemplateHelper.EMPTY_BLOCK_POS, proposedPoint, exitPoint).offset(exitPoint.getDirection(exitPoint.getRoom().getOrientation()).getNormal()));
+                position.set(ConnectionPoint.getOffset(orientation, TemplateHelper.EMPTY_BLOCK_POS, proposedPoint, exitPoint).offset(exitPoint.getDirection(exitPoint.getRoom().getOrientation()).getUnitVec3i()));
                 if (exitPoint.isInner() || getFloor().areBoundingBoxesValid(this, nextRoom.getBoundingBoxes(orientation, position))) {
                     exitPoint.tempOrientation = orientation;
                     validPoints.add(exitPoint);
@@ -236,7 +236,7 @@ public class DungeonBranch {
      * @param nextRoom The DungeonRoomTemplate for the room to be placed
      */
     public void placeRoom(ConnectionPoint exitPoint, ConnectionPoint entrancePoint, DungeonRoomTemplate nextRoom) {
-        BlockPos position = ConnectionPoint.getOffset(exitPoint.tempOrientation, TemplateHelper.EMPTY_BLOCK_POS, entrancePoint, exitPoint).offset(exitPoint.getDirection(exitPoint.getRoom().getOrientation()).getNormal().multiply(1));
+        BlockPos position = ConnectionPoint.getOffset(exitPoint.tempOrientation, TemplateHelper.EMPTY_BLOCK_POS, entrancePoint, exitPoint).offset(exitPoint.getDirection(exitPoint.getRoom().getOrientation()).getUnitVec3i().multiply(1));
         DungeonRoom room = nextRoom.placeInWorld(this, position, exitPoint.tempOrientation);
         if (room == null) {
             return;

@@ -1,7 +1,7 @@
 package com.danielkkrafft.wilddungeons.item;
 
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -17,9 +17,9 @@ public class InstantLoadout extends Item {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
+    public InteractionResult use(Level level, Player player, InteractionHand usedHand) {
         ItemStack itemStack = player.getItemInHand(usedHand);
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             if (player.getInventory().contains(itemStack)) {
                 player.getInventory().removeItem(itemStack);
             }
@@ -74,7 +74,7 @@ public class InstantLoadout extends Item {
             player.addItem(new ItemStack(Items.COOKED_BEEF, 16));
             player.addItem(new ItemStack(Items.COBBLESTONE.asItem(), 64));
         }
-        return InteractionResultHolder.consume(itemStack);
+        return InteractionResult.CONSUME;
     }
 
     public enum Type {

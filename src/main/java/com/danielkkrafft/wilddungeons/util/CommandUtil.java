@@ -32,7 +32,7 @@ public class CommandUtil {
         if (player == null) return;
 
         String command;
-        String targetDim = transform.getDimension().location().toString();
+        String targetDim = transform.getDimension().identifier().toString();
         double targetX = transform.getX();
         double targetY = transform.getY();
         double targetZ = transform.getZ();

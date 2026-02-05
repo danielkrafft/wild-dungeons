@@ -12,7 +12,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -33,9 +33,9 @@ public class EssenceOrb extends ExperienceOrb implements IEntityWithComplexSpawn
     public enum Type { OVERWORLD, NETHER, END }
     public Type essence_type = Type.NETHER;
 
-    public static final ResourceLocation NETHER_ESSENCE_BAR = WildDungeons.rl("hud/nether_essence_bar_background");
-    public static final ResourceLocation END_ESSENCE_BAR = WildDungeons.rl("hud/end_essence_bar_background");
-    public static ResourceLocation getBarBackground(Type type) {
+    public static final Identifier NETHER_ESSENCE_BAR = WildDungeons.rl("hud/nether_essence_bar_background");
+    public static final Identifier END_ESSENCE_BAR = WildDungeons.rl("hud/end_essence_bar_background");
+    public static Identifier getBarBackground(Type type) {
         return switch(type) {
             case OVERWORLD -> null;
             case NETHER -> NETHER_ESSENCE_BAR;
@@ -43,9 +43,9 @@ public class EssenceOrb extends ExperienceOrb implements IEntityWithComplexSpawn
         };
     }
 
-    public static final ResourceLocation NETHER_ESSENCE_PROGRESS = WildDungeons.rl("hud/nether_essence_bar_progress");
-    public static final ResourceLocation END_ESSENCE_PROGRESS = WildDungeons.rl("hud/end_essence_bar_progress");
-    public static ResourceLocation getBarProgress(Type type) {
+    public static final Identifier NETHER_ESSENCE_PROGRESS = WildDungeons.rl("hud/nether_essence_bar_progress");
+    public static final Identifier END_ESSENCE_PROGRESS = WildDungeons.rl("hud/end_essence_bar_progress");
+    public static Identifier getBarProgress(Type type) {
         return switch(type) {
             case OVERWORLD -> null;
             case NETHER -> NETHER_ESSENCE_PROGRESS;
@@ -90,7 +90,7 @@ public class EssenceOrb extends ExperienceOrb implements IEntityWithComplexSpawn
         this.setPos(x, y, z);
         this.setYRot((float)(this.random.nextDouble() * (double)360.0F));
         this.setDeltaMovement((this.random.nextDouble() * (double)0.2F - (double)0.1F) * (double)2.0F, this.random.nextDouble() * 0.2 * (double)2.0F, (this.random.nextDouble() * (double)0.2F - (double)0.1F) * (double)2.0F);
-        this.value = value;
+        this.setValue(value);
         this.essence_type = type;
     }
 
@@ -102,13 +102,13 @@ public class EssenceOrb extends ExperienceOrb implements IEntityWithComplexSpawn
     @Override
     public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
         buffer.writeUtf(essence_type.toString());
-        buffer.writeInt(this.value);
+        buffer.writeInt(this.getValue());
     }
 
     @Override
     public void readSpawnData(RegistryFriendlyByteBuf additionalData) {
         this.essence_type = Type.valueOf(additionalData.readUtf());
-        this.value = additionalData.readInt();
+        this.setValue(additionalData.readInt());
     }
 
     @Override
@@ -117,7 +117,7 @@ public class EssenceOrb extends ExperienceOrb implements IEntityWithComplexSpawn
             if (entity.takeXpDelay == 0) {
                 entity.takeXpDelay = 2;
                 entity.take(this, 1);
-                giveEssence(serverplayer, this.essence_type, this.value);
+                giveEssence(serverplayer, this.essence_type, this.getValue());
                 offsetCount(this,-1, false);
             }
         }
@@ -172,7 +172,7 @@ public class EssenceOrb extends ExperienceOrb implements IEntityWithComplexSpawn
         boolean removedCondition = !orb.isRemoved();
         boolean typeCondition = type.equals(orb.essence_type);
         boolean randCondition = (orb.getId() - rand) % 40 == 0;
-        boolean valueCondition = orb.value == other;
+        boolean valueCondition = orb.getValue() == other;
         return removedCondition && typeCondition && randCondition && valueCondition;
     }
 
@@ -183,6 +183,14 @@ public class EssenceOrb extends ExperienceOrb implements IEntityWithComplexSpawn
         tag.putString("packet", ClientPacketHandler.Packets.UPDATE_WD_PLAYER.toString());
         tag.put("player", Serializer.toCompoundTag(wdPlayer));
         PacketDistributor.sendToPlayer(player, new SimplePacketManager.ClientboundTagPacket(tag));
+    }
+
+    public int getValue() {
+        return (Integer)this.entityData.get(DATA_VALUE);
+    }
+
+    public void setValue(int value) {
+        this.entityData.set(DATA_VALUE, value);
     }
 }
 

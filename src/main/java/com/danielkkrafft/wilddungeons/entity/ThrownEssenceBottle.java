@@ -2,12 +2,14 @@ package com.danielkkrafft.wilddungeons.entity;
 
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
 import com.danielkkrafft.wilddungeons.registry.WDItems;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
+import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.Level;
@@ -23,11 +25,11 @@ public class ThrownEssenceBottle extends ThrowableItemProjectile implements IEnt
     }
 
     public ThrownEssenceBottle(Level level, LivingEntity shooter) {
-        super(WDEntities.ESSENCE_BOTTLE.get(), shooter, level);
+        super(WDEntities.ESSENCE_BOTTLE.get(), shooter, level, new ItemStack(WDItems.ESSENCE_BOTTLE.get()));
     }
 
     public ThrownEssenceBottle(Level level, double x, double y, double z) {
-        super(WDEntities.ESSENCE_BOTTLE.get(), x, y, z, level);
+        super(WDEntities.ESSENCE_BOTTLE.get(), x, y, z, level, new ItemStack(WDItems.ESSENCE_BOTTLE.get()));
     }
 
     @Override
@@ -44,7 +46,7 @@ public class ThrownEssenceBottle extends ThrowableItemProjectile implements IEnt
     protected void onHit(HitResult result) {
         super.onHit(result);
         if (this.level() instanceof ServerLevel) {
-            this.level().levelEvent(2002, this.blockPosition(), PotionContents.getColor(Potions.WATER));
+            //this.level().levelEvent(2002, this.blockPosition(),  PotionContents.getColor(Potions.WATER)); TODO - Fix for 1.21.11
             int i = 3 + this.level().random.nextInt(5) + this.level().random.nextInt(5);
             EssenceOrb.award((ServerLevel) this.level(), this.position(), this.essenceType, i);
             this.discard();

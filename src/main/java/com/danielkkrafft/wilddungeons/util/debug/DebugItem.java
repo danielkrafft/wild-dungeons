@@ -12,22 +12,21 @@ import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
-public class DebugItem extends Item {
+public class DebugItem extends Item { //TODO - Confirm and fix interation results
 
     public DebugItem(Properties properties) {
         super(properties);
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
-        if (level.isClientSide) return InteractionResultHolder.pass(player.getItemInHand(usedHand));
-        if (!(player instanceof ServerPlayer serverPlayer)) return InteractionResultHolder.fail(player.getItemInHand(usedHand));
+    public InteractionResult use(Level level, Player player, InteractionHand usedHand) {
+        if (level.isClientSide()) return InteractionResult.PASS;
+        if (!(player instanceof ServerPlayer serverPlayer)) return InteractionResult.FAIL;
         WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer.getStringUUID());
 
 //        WildDungeons.getLogger().info(String.valueOf(serverPlayer.getAttribute(Attributes.ATTACK_SPEED).getBaseValue()));
@@ -43,7 +42,7 @@ public class DebugItem extends Item {
         //logNonDungeonStuff(wdPlayer);
         logDungeonStuff((ServerLevel) level, wdPlayer);
 
-        return InteractionResultHolder.pass(player.getItemInHand(usedHand));
+        return InteractionResult.PASS;
     }
 
     public void logNonDungeonStuff(WDPlayer player) {

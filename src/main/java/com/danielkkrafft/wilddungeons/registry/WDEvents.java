@@ -1,21 +1,14 @@
 package com.danielkkrafft.wilddungeons.registry;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.dungeon.components.DungeonBranch;
-import com.danielkkrafft.wilddungeons.dungeon.components.DungeonFloor;
-import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
-import com.danielkkrafft.wilddungeons.dungeon.components.room.TargetPurgeRoom;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.entity.EssenceOrb;
-import com.danielkkrafft.wilddungeons.entity.boss.BreezeGolem;
 import com.danielkkrafft.wilddungeons.entity.boss.MutantBogged;
 import com.danielkkrafft.wilddungeons.network.ClientPacketHandler;
 import com.danielkkrafft.wilddungeons.network.SimplePacketManager;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
-import com.danielkkrafft.wilddungeons.render.DecalRenderer;
 import com.danielkkrafft.wilddungeons.util.*;
-import com.danielkkrafft.wilddungeons.world.dimension.tools.ReflectionBuddy;
 import com.danielkkrafft.wilddungeons.world.structure.WDStructureTemplateManager;
 import com.mojang.datafixers.DataFixer;
 import net.minecraft.advancements.CriteriaTriggers;
@@ -23,8 +16,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.TickTask;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -32,15 +24,20 @@ import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.animal.Chicken;
-import net.minecraft.world.entity.animal.Pig;
+import net.minecraft.world.entity.animal.chicken.Chicken;
+import net.minecraft.world.entity.animal.pig.Pig;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.monster.*;
 import net.minecraft.world.entity.monster.hoglin.Hoglin;
 import net.minecraft.world.entity.monster.piglin.Piglin;
 import net.minecraft.world.entity.monster.piglin.PiglinBrute;
+import net.minecraft.world.entity.monster.skeleton.Bogged;
+import net.minecraft.world.entity.monster.skeleton.Skeleton;
+import net.minecraft.world.entity.monster.skeleton.WitherSkeleton;
+import net.minecraft.world.entity.monster.zombie.ZombifiedPiglin;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -50,11 +47,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraft.world.level.storage.LevelStorageSource;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.common.EffectCures;
-import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.entity.EntityStruckByLightningEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
@@ -69,6 +63,7 @@ import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
+import net.commoble.infiniverse.internal.ReflectionBuddy;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -90,7 +85,7 @@ public class WDEvents {
 
     @SubscribeEvent
     public static void onServerAboutToStart(ServerAboutToStartEvent event) {
-        HolderGetter<Block> blockGetter = event.getServer().registries().compositeAccess().registryOrThrow(Registries.BLOCK).asLookup().filterFeatures(event.getServer().getWorldData().enabledFeatures());
+        HolderGetter<Block> blockGetter = event.getServer().registries().compositeAccess().lookupOrThrow(Registries.BLOCK).filterFeatures(event.getServer().getWorldData().enabledFeatures());
         DataFixer dataFixer = event.getServer().getFixerUpper();
         LevelStorageSource.LevelStorageAccess storageAccess = ReflectionBuddy.MinecraftServerAccess.storageSource.apply(event.getServer());
         ResourceManager resourceManager = event.getServer().getResourceManager();
@@ -110,7 +105,7 @@ public class WDEvents {
         });
     }
 
-    public static final ResourceLocation TEST_TEXTURE = WildDungeons.rl("textures/entity/rift.png");
+    public static final Identifier TEST_TEXTURE = WildDungeons.rl("textures/entity/rift.png");
     @SubscribeEvent
     public static void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
@@ -128,12 +123,12 @@ public class WDEvents {
             tag1.putBoolean("reset", true);
             PacketDistributor.sendToPlayer(serverPlayer, new SimplePacketManager.ClientboundTagPacket(tag1));
 
-            DecalRenderer.syncClientDecals(serverPlayer);
-            event.getEntity().getServer().tell(new TickTask(1, () -> {
-                if (wdPlayer.getCurrentRoom() != null) {
-                    wdPlayer.getCurrentRoom().onEnter(wdPlayer);
-                }
-            }));
+//            DecalRenderer.syncClientDecals(serverPlayer);
+//            event.getEntity().getServer().tell(new TickTask(1, () -> { TODO - Fix for 1.21.11
+//                if (wdPlayer.getCurrentRoom() != null) {
+//                    wdPlayer.getCurrentRoom().onEnter(wdPlayer);
+//                }
+//            }));
 
         }
     }
@@ -143,8 +138,8 @@ public class WDEvents {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
             WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer.getStringUUID());
             if (wdPlayer.getCurrentRoom() != null) {
-                wdPlayer.getCurrentRoom().onExit(wdPlayer);
-                wdPlayer.getCurrentDungeon().getFloors().forEach(floor -> floor.getBranches().forEach(branch -> branch.getRooms().forEach(room -> {if (room.futures != null) room.futures.forEach(future -> future.cancel(true));})));
+                //wdPlayer.getCurrentRoom().onExit(wdPlayer); TODO - FIx for 1.21.11
+                //wdPlayer.getCurrentDungeon().getFloors().forEach(floor -> floor.getBranches().forEach(branch -> branch.getRooms().forEach(room -> {if (room.futures != null) room.futures.forEach(future -> future.cancel(true));})));
             }
         }
     }
@@ -175,7 +170,7 @@ public class WDEvents {
 
     @SubscribeEvent
     public static void onLivingDropExperience(LivingExperienceDropEvent event) {
-        if (event.getEntity().level().isClientSide) {return;}
+        if (event.getEntity().level().isClientSide()) {return;}
 
         // NETHER
 
@@ -225,13 +220,14 @@ public class WDEvents {
             BlockPos below=pos.below();
             if(level.getBlockState(below).is(WDBlocks.HEAVY_RUNE))
             {
-                BreezeGolem golem = WDEntities.BREEZE_GOLEM.get().create(level);
-                if(golem!=null)
-                {
-                    golem.moveTo(below.getX() + 0.5,below.getY() + 0.55,below.getZ() + 0.5);
-                    level.destroyBlock(pos,false);level.destroyBlock(below,false);
-                    level.addFreshEntity(golem);
-                }
+                //TODO - Uncomment when BreezeGolem is implemented for 1.21.11
+//                BreezeGolem golem = WDEntities.BREEZE_GOLEM.get().create(level);
+//                if(golem!=null)
+//                {
+//                    golem.absSnapTo(below.getX() + 0.5, below.getY() + 0.55, below.getZ() + 0.5);
+//                    level.destroyBlock(pos,false);level.destroyBlock(below,false);
+//                    level.addFreshEntity(golem);
+//                }
             }
         }
     }
@@ -241,7 +237,7 @@ public class WDEvents {
     {
         Entity en=e.getEntity();
         Level level=en.level();
-        if(!level.isClientSide)
+        if(!level.isClientSide())
         {
             Vec3 pos=en.position();
             if(en instanceof LivingEntity li)
@@ -249,7 +245,7 @@ public class WDEvents {
                 if(li instanceof Bogged b)
                 {
                     b.remove(Entity.RemovalReason.DISCARDED);
-                    MutantBogged bogged = WDEntities.MUTANT_BOGGED.get().create(level);
+                    MutantBogged bogged = WDEntities.MUTANT_BOGGED.get().create(level, EntitySpawnReason.SPAWNER);
                     if(bogged!=null)
                     {
                         bogged.setPos(pos);
@@ -280,7 +276,7 @@ public class WDEvents {
 
             CriteriaTriggers.USED_TOTEM.trigger(player, new ItemStack(Items.TOTEM_OF_UNDYING));
             player.gameEvent(GameEvent.ITEM_INTERACT_FINISH);
-            player.removeEffectsCuredBy(EffectCures.PROTECTED_BY_TOTEM);
+            //player.removeEffectsCuredBy(EffectCures.PROTECTED_BY_TOTEM); TODO - Fix for 1.21.11
             player.setHealth(1.0f);
             player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 900, 1));
             player.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 100, 1));
@@ -293,37 +289,37 @@ public class WDEvents {
             if (wdPlayer.getCurrentDungeon().getLives() > 0) {
 
                 BlockPos respawnPoint;
-                DungeonRoom room = wdPlayer.getCurrentRoom();
-                if (room == null) {
-                    DungeonFloor floor = wdPlayer.getCurrentFloor();
-                    int index = 0;
-                    for (DungeonBranch branch : floor.getBranches()) {
-                        if (branch.hasPlayerVisited(wdPlayer.getUUID())) {
-                            if (branch.getRootOrActualIndex() > index) {
-                                index = branch.getRootOrActualIndex();
-                            }
-                        }
-                    }
-                    room = floor.getBranches().get(index).getRooms().getFirst();
-                }
-
-                room.getBoundingBoxes().forEach(boundingBox -> {
-                    player.level().getEntitiesOfClass(Monster.class, AABB.of(boundingBox.inflatedBy(10))).forEach(monster -> {
-                        if (monster.getTarget() == player) {
-                            monster.setTarget(null);
-                        }
-                    });
-                });
-
-                if (room.getBranch().getIndex() == 0) {
-                    respawnPoint = room.getBranch().getRooms().getFirst().getSpawnPoint(room.getBranch().getFloor().getLevel());
-                } else {
-                    respawnPoint = room.getBranch().getFloor().getBranches().get(room.getBranch().getRootOrActualIndex()-1).getRooms().getLast().getSpawnPoint(room.getBranch().getFloor().getLevel());
-                }
-                wdPlayer.getCurrentDungeon().getPerks().forEach(perk -> perk.onPlayerRespawn(wdPlayer));
-                wdPlayer.setRiftCooldown(140);
-                player.teleportTo(respawnPoint.getX(), respawnPoint.getY(), respawnPoint.getZ());
-                wdPlayer.getCurrentDungeon().getStats(wdPlayer.getUUID()).deaths += 1;
+                //DungeonRoom room = wdPlayer.getCurrentRoom(); TODO - Uncomment when DungeonRoom is fixed for 1.21.11
+//                if (room == null) {
+//                    DungeonFloor floor = wdPlayer.getCurrentFloor();
+//                    int index = 0;
+//                    for (DungeonBranch branch : floor.getBranches()) {
+//                        if (branch.hasPlayerVisited(wdPlayer.getUUID())) {
+//                            if (branch.getRootOrActualIndex() > index) {
+//                                index = branch.getRootOrActualIndex();
+//                            }
+//                        }
+//                    }
+//                    room = floor.getBranches().get(index).getRooms().getFirst();
+//                }
+//
+//                room.getBoundingBoxes().forEach(boundingBox -> {
+//                    player.level().getEntitiesOfClass(Monster.class, AABB.of(boundingBox.inflatedBy(10))).forEach(monster -> {
+//                        if (monster.getTarget() == player) {
+//                            monster.setTarget(null);
+//                        }
+//                    });
+//                });
+//
+//                if (room.getBranch().getIndex() == 0) {
+//                    respawnPoint = room.getBranch().getRooms().getFirst().getSpawnPoint(room.getBranch().getFloor().getLevel());
+//                } else {
+//                    respawnPoint = room.getBranch().getFloor().getBranches().get(room.getBranch().getRootOrActualIndex()-1).getRooms().getLast().getSpawnPoint(room.getBranch().getFloor().getLevel());
+//                }
+//                wdPlayer.getCurrentDungeon().getPerks().forEach(perk -> perk.onPlayerRespawn(wdPlayer));
+//                wdPlayer.setRiftCooldown(140);
+//                player.teleportTo(respawnPoint.getX(), respawnPoint.getY(), respawnPoint.getZ());
+//                wdPlayer.getCurrentDungeon().getStats(wdPlayer.getUUID()).deaths += 1;
             } else {
                 wdPlayer.getCurrentDungeon().fail();
             }
@@ -335,10 +331,11 @@ public class WDEvents {
     public static void onMobDeath(LivingDeathEvent event) {
         if (event.getSource().getEntity() instanceof ServerPlayer serverPlayer) {
             WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer);
+        //TODO - Uncomment when Dungeon is fixed for 1.21.11
 
-            if (wdPlayer.getCurrentDungeon() == null) return;
-            wdPlayer.getCurrentDungeon().getStats(wdPlayer.getUUID()).mobsKilled += 1;
-            if (wdPlayer.getCurrentRoom() instanceof TargetPurgeRoom room) room.discardByUUID(event.getEntity().getStringUUID());
+//            if (wdPlayer.getCurrentDungeon() == null) return;
+//            wdPlayer.getCurrentDungeon().getStats(wdPlayer.getUUID()).mobsKilled += 1;
+//            if (wdPlayer.getCurrentRoom() instanceof TargetPurgeRoom room) room.discardByUUID(event.getEntity().getStringUUID());
         }
     }
 
@@ -360,8 +357,9 @@ public class WDEvents {
         }
     }
 
-    @SubscribeEvent
-    public static void onReloadListener(AddReloadListenerEvent event){
-        event.addListener(WDStructureTemplateManager.StructureTemplateManagerReloadListener);
-    }
+        //TODO - Fix for 1.21.11
+//    @SubscribeEvent
+//    public static void onReloadListener(AddReloadListenerEvent event){
+//        event.addListener(WDStructureTemplateManager.StructureTemplateManagerReloadListener);
+//    }
 }

@@ -1,13 +1,11 @@
 package com.danielkkrafft.wilddungeons.item;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.entity.WindChargeProjectile;
 import com.danielkkrafft.wilddungeons.entity.renderer.WindHammerRenderer;
 import com.danielkkrafft.wilddungeons.item.itemhelpers.WDWeapon;
 import com.danielkkrafft.wilddungeons.registry.WDDataComponents;
 import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
 import com.danielkkrafft.wilddungeons.util.UtilityMethods;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.particles.BlockParticleOption;
@@ -22,8 +20,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.SwordItem;
-import net.minecraft.world.item.Tiers;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
@@ -32,6 +28,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.client.GeoRenderProvider;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animatable.manager.AnimatableManager;
+//import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 import java.util.function.Consumer;
@@ -41,9 +40,8 @@ public class WindHammer extends WDWeapon {
     public static final String NAME = "wind_hammer";
     public static final float MIN_SMASH_DISTANCE=1.5f;
 
-    public WindHammer() {
-        super(NAME, new Properties().rarity(Rarity.EPIC).durability(1000).attributes(SwordItem.createAttributes(Tiers.DIAMOND, 8.0f, -3.5f)));
-
+    public WindHammer(Properties properties) {
+        super(NAME, properties);
     }
 
     @Override
@@ -51,11 +49,21 @@ public class WindHammer extends WDWeapon {
         consumer.accept(new GeoRenderProvider() {
             private final GeoItemRenderer<?> renderer = new WindHammerRenderer();
 
-            @Override
-            public BlockEntityWithoutLevelRenderer getGeoItemRenderer() {
-                return this.renderer;
-            }
+//            @Override TODO - Implement for 1.21.11
+//            public BlockEntityWithoutLevelRenderer getGeoItemRenderer() {
+//                return this.renderer;
+//            }
         });
+    }
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return null;
     }
 
     private enum SmashType {
@@ -90,8 +98,8 @@ public class WindHammer extends WDWeapon {
     @Override
     public boolean onLeftClickEntity(@NotNull ItemStack stack, @NotNull Player attacker, @NotNull Entity hurt) {
 
-        final float fallDist = attacker.fallDistance;
-        setFallDist(stack, fallDist);
+        final double fallDist = attacker.fallDistance;
+        setFallDist(stack, (float)fallDist);
 
         if(fallDist >= MIN_SMASH_DISTANCE) {
 
@@ -111,18 +119,19 @@ public class WindHammer extends WDWeapon {
                 // the calculation to for additional damage, otherwise we damage nothing.
                 // -Lawrence
 
-                float d = 1.4f *  stack.getEnchantmentLevel(WildDungeons.getEnchantment(Enchantments.DENSITY)) > 0 ? calculateAdditionalSmashDamage(fallDist) : 0;
+                float d = 1.4f *  stack.getEnchantmentLevel(WildDungeons.getEnchantment(Enchantments.DENSITY)) > 0 ? calculateAdditionalSmashDamage((float)fallDist) : 0;
                 final float shockwaveRadius = d > 5 ? 5 : d;
 
-                WindChargeProjectile.radiusHit(level,strikePosition,shockwaveRadius,1.5f,shockwaveRadius,null).forEach(
-                        l->{
-                            if(!l.equals(attacker))
-                            {
-                                l.hurt(l.damageSources().mobAttack(attacker),5);
-                                float dist=Math.max(Mth.sqrt((float)l.distanceToSqr(strikePosition)),1),kb=shockwaveRadius/dist;
-                                l.setDeltaMovement(l.getDeltaMovement().add(l.position().subtract(strikePosition).normalize().multiply(kb/5.,0,kb/5.).add(0,kb/10.,0)));
-                            }
-                        });
+                //TODO - Uncomment when WindChargeProjectile is implemented for 1.21.11
+//                WindChargeProjectile.radiusHit(level,strikePosition,shockwaveRadius,1.5f,shockwaveRadius,null).forEach(
+//                        l->{
+//                            if(!l.equals(attacker))
+//                            {
+//                                l.hurt(l.damageSources().mobAttack(attacker),5);
+//                                float dist=Math.max(Mth.sqrt((float)l.distanceToSqr(strikePosition)),1),kb=shockwaveRadius/dist;
+//                                l.setDeltaMovement(l.getDeltaMovement().add(l.position().subtract(strikePosition).normalize().multiply(kb/5.,0,kb/5.).add(0,kb/10.,0)));
+//                            }
+//                        });
             }
 
             SmashType smashType = fallDist < 8 ? SmashType.light : fallDist < 40 ? SmashType.medium : SmashType.heavy;
@@ -172,9 +181,9 @@ public class WindHammer extends WDWeapon {
         return false;
     }
 
-    public boolean hurtEnemy(ItemStack stack, @NotNull LivingEntity hurt, @NotNull LivingEntity attacker) {
+    public void hurtEnemy(ItemStack stack, @NotNull LivingEntity hurt, @NotNull LivingEntity attacker) {
         stack.hurtAndBreak(1, attacker, EquipmentSlot.MAINHAND);
-        return super.hurtEnemy(stack, hurt, attacker);
+        super.hurtEnemy(stack, hurt, attacker);
     }
 
     @Override

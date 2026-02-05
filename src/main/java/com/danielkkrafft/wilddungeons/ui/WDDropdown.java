@@ -5,6 +5,8 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
@@ -146,12 +148,12 @@ public class WDDropdown extends AbstractWidget {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyEvent keyEvent) {
         if (isExpanded) {
-            if (keyCode == 256) { // Escape
+            if (keyEvent.key() == 256) { // Escape
                 isExpanded = false;
                 return true;
-            } else if (keyCode == 265) { // Up arrow
+            } else if (keyEvent.key() == 265) { // Up arrow
                 if (selectedIndex > 0) {
                     setSelectedIndex(selectedIndex - 1);
                     if (selectedIndex < scrollOffset) {
@@ -159,7 +161,7 @@ public class WDDropdown extends AbstractWidget {
                     }
                     return true;
                 }
-            } else if (keyCode == 264) { // Down arrow
+            } else if (keyEvent.key() == 264) { // Down arrow
                 if (selectedIndex < options.size() - 1) {
                     setSelectedIndex(selectedIndex + 1);
                     if (selectedIndex >= scrollOffset + maxVisibleOptions) {
@@ -167,11 +169,11 @@ public class WDDropdown extends AbstractWidget {
                     }
                     return true;
                 }
-            } else if (keyCode == 257 || keyCode == 32) { // Enter or Space
+            } else if (keyEvent.key() == 257 || keyEvent.key() == 32) { // Enter or Space
                 isExpanded = false;
                 return true;
             }
-        } else if (keyCode == 257 || keyCode == 32) { // Enter or Space when collapsed
+        } else if (keyEvent.key() == 257 || keyEvent.key() == 32) { // Enter or Space when collapsed
             Expand();
             return true;
         }
@@ -191,11 +193,11 @@ public class WDDropdown extends AbstractWidget {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(MouseButtonEvent mouseEvent, boolean weirdAssNumberWithNoMeaning) {
         if (!active || !visible) {
             return false;
         }
-        if (isMouseOver(mouseX, mouseY)){
+        if (isMouseOver(mouseEvent.x(), mouseEvent.y())) {
             this.playDownSound(Minecraft.getInstance().getSoundManager());
         }
 
@@ -204,18 +206,18 @@ public class WDDropdown extends AbstractWidget {
             int visibleOptions = Math.min(options.size(), maxVisibleOptions);
 
             // Check if click is within the dropdown list
-            if (mouseX >= getX() && mouseX <= getX() + width &&
-                    mouseY >= dropdownY && mouseY <= dropdownY + (visibleOptions * height)) {
+            if (mouseEvent.x() >= getX() && mouseEvent.x() <= getX() + width &&
+                    mouseEvent.y() >= dropdownY && mouseEvent.y() <= dropdownY + (visibleOptions * height)) {
 
-                int clickedIndex = (int)((mouseY - dropdownY) / height) + scrollOffset;
+                int clickedIndex = (int)((mouseEvent.y() - dropdownY) / height) + scrollOffset;
                 if (clickedIndex >= 0 && clickedIndex < options.size()) {
                     setSelectedIndex(clickedIndex);
                 }
             }
             isExpanded = false;
             return true;
-        } else if (mouseX >= getX() && mouseX <= getX() + width &&
-                mouseY >= getY() && mouseY <= getY() + height) {
+        } else if (mouseEvent.x() >= getX() && mouseEvent.x() <= getX() + width &&
+                mouseEvent.y() >= getY() && mouseEvent.y() <= getY() + height) {
             // Click on closed dropdown, expand it
             Expand();
             return true;

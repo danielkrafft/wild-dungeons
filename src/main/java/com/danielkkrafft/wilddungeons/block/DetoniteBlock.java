@@ -42,7 +42,7 @@ public class DetoniteBlock extends Block {
 
     @Override
     public void stepOn(Level level, BlockPos pos, BlockState state, Entity entity) {
-        if (level.isClientSide) return;
+        if (level.isClientSide()) return;
         if (state.getValue(COOLDOWN)) return;
         if (entity instanceof Player player && player.isCrouching()) return;
         triggerExplosion(level, pos, state, null);
@@ -55,7 +55,7 @@ public class DetoniteBlock extends Block {
         if (player.isCreative()) return super.playerWillDestroy(level, pos, state, player);
 
 
-            if (!level.isClientSide) {
+            if (!level.isClientSide()) {
                 boolean silkTouch = EnchantmentHelper.getItemEnchantmentLevel(
                         WildDungeons.getEnchantment(Enchantments.SILK_TOUCH), player.getMainHandItem()) > 0;
 

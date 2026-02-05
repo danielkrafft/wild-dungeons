@@ -15,7 +15,7 @@ import com.danielkkrafft.wilddungeons.util.Serializer;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.BossEvent;
@@ -153,7 +153,7 @@ public class CombatRoom extends TargetPurgeRoom {
         this.getBranch().getFloor().getLevel().addFreshEntity(offering);
     }
 
-    @Override public ResourceLocation getDecalTexture() {return ConnectionPoint.SWORD_TEXTURE;}
+    @Override public Identifier getDecalTexture() {return ConnectionPoint.SWORD_TEXTURE;}
     @Override public int getDecalColor() {return 0xFFFF0000;}
 
 

@@ -2,7 +2,7 @@ package com.danielkkrafft.wilddungeons.registry;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.block.LifeLiquid;
-import com.danielkkrafft.wilddungeons.block.ToxicSludge;
+//import com.danielkkrafft.wilddungeons.block.ToxicSludge;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.sounds.SoundEvents;
@@ -16,7 +16,7 @@ import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import java.util.function.Supplier;
 
-public class WDFluids {
+public class WDFluids { //TODO - Uncomment toxic sludge when implemented for 1.21.11
 
     public static final DeferredRegister<FluidType> FLUID_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.FLUID_TYPES, WildDungeons.MODID);
     public static final DeferredRegister<Fluid> FLUIDS = DeferredRegister.create(Registries.FLUID, WildDungeons.MODID);
@@ -44,8 +44,8 @@ public class WDFluids {
             .density(100)
             .pathType(PathType.WATER)
             .viscosity(3000)), "toxic_sludge");
-    public static DeferredHolder<Fluid, ToxicSludge.Flowing> FLOWING_TOXIC_SLUDGE = FLUIDS.register("flowing_toxic_sludge", ToxicSludge.Flowing::new);
-    public static DeferredHolder<Fluid, ToxicSludge.Source> TOXIC_SLUDGE = FLUIDS.register("toxic_sludge", ToxicSludge.Source::new);
+//    public static DeferredHolder<Fluid, ToxicSludge.Flowing> FLOWING_TOXIC_SLUDGE = FLUIDS.register("flowing_toxic_sludge", ToxicSludge.Flowing::new);
+//    public static DeferredHolder<Fluid, ToxicSludge.Source> TOXIC_SLUDGE = FLUIDS.register("toxic_sludge", ToxicSludge.Source::new);
 
     public static DeferredHolder<FluidType, FluidType> registerFluidType(Supplier<FluidType> fluidSupplier, String name)
     {

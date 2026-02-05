@@ -10,7 +10,8 @@ import com.danielkkrafft.wilddungeons.world.structure.WDStructureTemplateManager
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.ResourceLocationException;
+import net.minecraft.IdentifierException;
+import net.minecraft.IdentifierException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -18,12 +19,12 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -67,15 +68,15 @@ public class RoomExportWand extends Item {
     }
 
     @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand usedHand) {
+    public @NotNull InteractionResult use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand usedHand) {
         ItemStack itemStack = player.getItemInHand(usedHand);
 
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             // Only open screen when right-clicking in air (not targeting a block)
             if (!player.isShiftKeyDown() && Minecraft.getInstance().hitResult.getType() == HitResult.Type.MISS) {
                 //todo fix this so that this class can run on a server
 //                Minecraft.getInstance().setScreen(new RoomExportScreen(itemStack ,this.getDungeonMaterials(itemStack, level)));
-                return InteractionResultHolder.success(itemStack);
+                return InteractionResult.SUCCESS;
             }
         } else if (player instanceof ServerPlayer serverPlayer) {
             // Server-side handling: reset positions on shift-click
@@ -89,11 +90,11 @@ public class RoomExportWand extends Item {
                     serverPlayer.sendSystemMessage(Component.translatable("message.room_export_wand.room_removed", roomPositions.size()));
                     roomPositions.removeLast();
                 }
-                return InteractionResultHolder.success(itemStack);
+                return InteractionResult.SUCCESS;
             }
         }
 
-        return InteractionResultHolder.pass(itemStack);
+        return InteractionResult.PASS;
     }
 
     @Override
@@ -172,9 +173,9 @@ public class RoomExportWand extends Item {
         }
     }
 
-    @Override
+    //@Override TODO - Fix for 1.21.11
     public void inventoryTick(@NotNull ItemStack stack, @NotNull Level level, @NotNull Entity entity, int slotId, boolean isSelected) {
-        if (isSelected && level.isClientSide && entity instanceof Player player) {
+        if (isSelected && level.isClientSide() && entity instanceof Player player) {
             if (player.tickCount % 2 == 0) {
                 ArrayList<Pair<BlockPos, BlockPos>> roomPositions = new ArrayList<>(this.roomPositions);//prevents rare concurrent modification exception that occurs when a player adds a room while the client is iterating over the list
                 if (!roomPositions.isEmpty()) {
@@ -185,7 +186,7 @@ public class RoomExportWand extends Item {
                 }
             }
         }
-        super.inventoryTick(stack, level, entity, slotId, isSelected);
+        super.inventoryTick(stack, (ServerLevel) level, entity, getEquipmentSlot(stack));
     }
 
     private void renderBoundingBoxEdges(@NotNull Level level, @NotNull BoundingBox box) {
@@ -245,13 +246,13 @@ public class RoomExportWand extends Item {
         if (getRoomName(itemStack) == null || wand.roomPositions.isEmpty()) {
             return false;
         } else {
-            ResourceLocation resourceLocation = WildDungeons.rl(getRoomName(itemStack));
+            Identifier resourceLocation = WildDungeons.rl(getRoomName(itemStack));
             WDStructureTemplateManager wdStructureTemplateManager = WDStructureTemplateManager.INSTANCE;
 
             WDStructureTemplate wdStructureTemplate;
             try {
                 wdStructureTemplate = wdStructureTemplateManager.getOrCreate(resourceLocation);
-            } catch (ResourceLocationException e) {
+            } catch (IdentifierException e) {
                 return false;
             }
             if (saveFile){
@@ -273,7 +274,7 @@ public class RoomExportWand extends Item {
                 }
                 try {
                     return wdStructureTemplateManager.save(resourceLocation);
-                } catch (ResourceLocationException e) {
+                } catch (IdentifierException e) {
                     return false;
                 }
             }
@@ -281,7 +282,8 @@ public class RoomExportWand extends Item {
         }
     }
 
-    private static final ImmutableList<Block> IGNORED_BLOCKS = ImmutableList.of(Blocks.STRUCTURE_BLOCK, Blocks.STRUCTURE_VOID, WDBlocks.SPAWN_BLOCK.get(), WDBlocks.CONNECTION_BLOCK.get(), Blocks.AIR);
+    //TODO - Fix this, SPAWN_BLOCK must be fixed first.
+    //private static final ImmutableList<Block> IGNORED_BLOCKS = ImmutableList.of(Blocks.STRUCTURE_BLOCK, Blocks.STRUCTURE_VOID, WDBlocks.SPAWN_BLOCK.get(), WDBlocks.CONNECTION_BLOCK.get(), Blocks.AIR);
 
     public List<DungeonMaterial.BlockSetting> getDungeonMaterials(ItemStack itemStack, Level level) {
         if (getRoomName(itemStack) == null || this.roomPositions.isEmpty()) {
@@ -298,9 +300,9 @@ public class RoomExportWand extends Item {
             for (Palette palette : palettes) {
                 palette.blocks().forEach(structureBlockInfo -> {
                     BlockState defaultBlockState = structureBlockInfo.state().getBlock().defaultBlockState();
-                    if (IGNORED_BLOCKS.contains(defaultBlockState.getBlock())) {
-                        return;
-                    }
+//                    if (IGNORED_BLOCKS.contains(defaultBlockState.getBlock())) {
+//                        return;
+//                    }
                     DungeonMaterial.BlockSetting newMaterial = new DungeonMaterial.BlockSetting(defaultBlockState,0);
                     for (DungeonMaterial.BlockSetting dungeonMaterial : loadedMaterials) {
                         if (dungeonMaterial.blockState.equals(defaultBlockState)) {
@@ -342,19 +344,19 @@ public class RoomExportWand extends Item {
                 BlockEntity blockentity = level.getBlockEntity(blockPos);
                 StructureBlockInfo structuretemplate$structureblockinfo;
                 if (blockentity != null) {
-                    structuretemplate$structureblockinfo = new StructureBlockInfo(blockPos1, blockstate, blockentity.saveWithId(level.registryAccess()));
+                    //structuretemplate$structureblockinfo = new StructureBlockInfo(blockPos1, blockstate, blockentity.saveWithId(level.registryAccess())); TODO - Fix for 1.21.11
                 } else {
                     structuretemplate$structureblockinfo = new StructureBlockInfo(blockPos1, blockstate, null);
                 }
 
-                StructureTemplate.addToLists(structuretemplate$structureblockinfo, normalBlocks, blocksWithNbt, blocksWithSpecialShape);
+//                StructureTemplate.addToLists(structuretemplate$structureblockinfo, normalBlocks, blocksWithNbt, blocksWithSpecialShape);
             }
         }
 
         structureTemplate.palettes.clear();
         structureTemplate.palettes.add(new Palette(StructureTemplate.buildInfoList(normalBlocks,blocksWithNbt,blocksWithSpecialShape)));
         if (withEntities) {
-            structureTemplate.fillEntityList(level, minPos, maxPos);
+            //structureTemplate.fillEntityList(level, minPos, maxPos); TODO - Fix for 1.21.11
         } else {
             structureTemplate.entityInfoList.clear();
         }

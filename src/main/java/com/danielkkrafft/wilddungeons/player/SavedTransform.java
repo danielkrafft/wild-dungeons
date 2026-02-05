@@ -29,7 +29,7 @@ public class SavedTransform {
     }
 
     public static SavedTransform fromRespawn(ServerPlayer player) {
-        return new SavedTransform(player.position(), MathUtil.round(WDPlayer.calcYaw(player), 2), MathUtil.round(WDPlayer.calcPitch(player), 2), player.getRespawnDimension());
+        return new SavedTransform(player.position(), MathUtil.round(WDPlayer.calcYaw(player), 2), MathUtil.round(WDPlayer.calcPitch(player), 2), player.getRespawnConfig().respawnData().dimension());
     }
 
     public double getX() {

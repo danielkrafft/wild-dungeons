@@ -11,11 +11,11 @@ import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-public class WDDataPackProvider extends DatapackBuiltinEntriesProvider {
-    public static final RegistrySetBuilder BUILDER = new RegistrySetBuilder()
-            .add(Registries.ENCHANTMENT, WDEnchantments::bootstrap);
-
-    public WDDataPackProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
-        super(output, registries, BUILDER, Set.of(WildDungeons.MODID));
-    }
-}
+//public class WDDataPackProvider extends DatapackBuiltinEntriesProvider {
+//    public static final RegistrySetBuilder BUILDER = new RegistrySetBuilder()
+//            .add(Registries.ENCHANTMENT, WDEnchantments::bootstrap);
+//
+//    public WDDataPackProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
+//        super(output, registries, BUILDER, Set.of(WildDungeons.MODID));
+//    }
+//}

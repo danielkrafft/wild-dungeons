@@ -8,19 +8,22 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.boss.EnderDragonPart;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragonPart;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.Fireball;
+import net.minecraft.world.entity.projectile.hurtingprojectile.Fireball;
 import net.minecraft.world.entity.projectile.ThrowableProjectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -37,7 +40,7 @@ public class GrapplingHook extends ThrowableProjectile {
 
     public GrapplingHook(Player player, Vec3 pos) {
         super(WDEntities.GRAPPLING_HOOK.get(), player.level());
-        moveTo(pos);
+        absSnapTo(pos.x, pos.y, pos.z);
         setPlayer(player);
     }
 
@@ -56,27 +59,22 @@ public class GrapplingHook extends ThrowableProjectile {
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
-        if (tag.contains("OwnerUUID")) getEntityData().set(OWNER, tag.getString("OwnerUUID"));
-        if (tag.contains("HookDisp")) getEntityData().set(HOOKDISP, tag.getString("HookDisp"));
+    protected void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
+        getEntityData().set(OWNER, input.getStringOr("OwnerUUID", ""));
+        getEntityData().set(HOOKDISP, input.getStringOr("HookDisp", ""));
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
-        tag.putString("HookDisp", getEntityData().get(HOOKDISP));
-        tag.putString("OwnerUUID", getEntityData().get(OWNER));
+    public void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.putString("HookDisp", getEntityData().get(HOOKDISP));
+        output.putString("OwnerUUID", getEntityData().get(OWNER));
     }
 
     @Override
     public boolean canCollideWith(@NotNull Entity en) {
         return getPlayer() == null || (getPlayer() != null && !en.equals(getPlayerOwner(en.level())));
-    }
-
-    @Override
-    public boolean canBeCollidedWith() {
-        return false;
     }
 
     private static final Predicate<Entity> canHit = e -> e instanceof LivingEntity ||
@@ -213,7 +211,7 @@ public class GrapplingHook extends ThrowableProjectile {
                                 if (hook != null && !hook.isRemoved() &&
                                         (hook instanceof LivingEntity && !((LivingEntity) hook).isDeadOrDying()) &&
                                         hook.level().equals(this.level())) {
-                                    moveTo(hook.position().add(getHookDisp()));
+                                    absSnapTo(hook.position().add(getHookDisp()).x, hook.position().add(getHookDisp()).y, hook.position().add(getHookDisp()).z);
                                 } else {
                                     Meathook.resetHook(playerOwner, itemStack);
                                     if (Meathook.getHookUUID(itemStack) == null) {
@@ -221,7 +219,7 @@ public class GrapplingHook extends ThrowableProjectile {
                                     }
                                 }
                             } else {
-                                moveTo(getHookDisp());
+                                absSnapTo(getHookDisp().x, getHookDisp().y, getHookDisp().z);
                             }
                         }
                     }
@@ -242,15 +240,15 @@ public class GrapplingHook extends ThrowableProjectile {
     }
 
     @Override
-    public void kill() {
-        if (getPlayer() != null && getPlayerOwner(this.level()) != null) {
+    public void kill(ServerLevel serverLevel) {
+        if (getPlayer() != null && getPlayerOwner(serverLevel) != null) {
             Player p = getPlayerOwner(this.level());
             if (p != null) {
                 ItemStack it = lookForStack(p);
                 if (it != null) Meathook.resetHook(p, it);
             }
         }
-        super.kill();
+        super.kill((ServerLevel) level());
     }
 
     @Override

@@ -7,7 +7,7 @@ import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.neoforged.api.distmarker.Dist;
@@ -22,7 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 
-@EventBusSubscriber(value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber
 public class SoundscapeHandler {
 
     public static HashSet<SynchronizedSoundLoop> currentlyPlayingSounds = new HashSet<>();
@@ -39,7 +39,7 @@ public class SoundscapeHandler {
         }
 
         currentIntensity = intensity;
-        HashSet<ResourceLocation> soundRLs = new HashSet<>();
+        HashSet<Identifier> soundRLs = new HashSet<>();
         HashSet<SynchronizedSoundLoop> toPlay = new HashSet<>();
 
         addSoundsToPlay(template.soundsList, soundRLs, toPlay, currentlyPlayingSounds);
@@ -90,14 +90,14 @@ public class SoundscapeHandler {
         stopAndClearSoundSet(currentlyPlayingUnderwaterSounds);
     }
 
-    public static void addSoundsToPlay(List<List<Holder<SoundEvent>>> rawSoundList, HashSet<ResourceLocation> inSoundRLs, HashSet<SynchronizedSoundLoop> inToPlay, HashSet<SynchronizedSoundLoop> registryCheck) {
+    public static void addSoundsToPlay(List<List<Holder<SoundEvent>>> rawSoundList, HashSet<Identifier> inSoundRLs, HashSet<SynchronizedSoundLoop> inToPlay, HashSet<SynchronizedSoundLoop> registryCheck) {
 
         for (int i = 0; i < rawSoundList.size(); i++) {
             for (int j = 0; j < rawSoundList.get(i).size(); j++) {
                 SoundEvent soundEvent = rawSoundList.get(i).get(j).value();
-                inSoundRLs.add(soundEvent.getLocation());
+                inSoundRLs.add(soundEvent.location());
 
-                if (registryCheck.stream().noneMatch(sound -> sound.getLocation().equals(soundEvent.getLocation()))) {
+                if (registryCheck.stream().noneMatch(sound -> sound.getIdentifier().equals(soundEvent.location()))) {
                     SynchronizedSoundLoop sound = new SynchronizedSoundLoop(soundEvent, SoundSource.MUSIC, i);
                     inToPlay.add(sound);
                 }
@@ -113,11 +113,11 @@ public class SoundscapeHandler {
         });
     }
 
-    public static void removeSounds(HashSet<ResourceLocation> soundLocationSet, HashSet<SynchronizedSoundLoop> SyncSoundLoopSet) {
+    public static void removeSounds(HashSet<Identifier> soundLocationSet, HashSet<SynchronizedSoundLoop> SyncSoundLoopSet) {
 
         List<SynchronizedSoundLoop> toRemove = new ArrayList<>();
         SyncSoundLoopSet.forEach(soundLoop -> {
-            if (!soundLocationSet.contains(soundLoop.getLocation())) {
+            if (!soundLocationSet.contains(soundLoop.getIdentifier())) {
                 toRemove.add(soundLoop);
                 Minecraft.getInstance().getSoundManager().stop(soundLoop);
             }
@@ -137,11 +137,11 @@ public class SoundscapeHandler {
 //            WildDungeons.getLogger().info("PLAYING SOUND: {}", event.getName());
             return;
         }
-        if (event.getSound().getLocation().toString().contains(WildDungeons.MODID)) {
+        if (event.getSound().getIdentifier().toString().contains(WildDungeons.MODID)) {
 //            WildDungeons.getLogger().info("PLAYING SOUND: {}", event.getName());
             return;
         }
-        if (event.getSound().getLocation().toString().contains("music")) {
+        if (event.getSound().getIdentifier().toString().contains("music")) {
 //            WildDungeons.getLogger().info("CANCELLING SOUND: {}", event.getName());
             event.setSound(null);
         }

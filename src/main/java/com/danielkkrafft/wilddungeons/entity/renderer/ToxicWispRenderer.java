@@ -6,13 +6,15 @@ import com.danielkkrafft.wilddungeons.entity.model.ToxicWispModel;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 
-public class ToxicWispRenderer extends MobRenderer<ToxicWisp, ToxicWispModel<ToxicWisp>> {
-    private static final ResourceLocation TOXIC_WISP = WildDungeons.rl("textures/entity/toxic_wisp.png");
-    private static final ResourceLocation LARGE_TOXIC_WISP = WildDungeons.rl("textures/entity/large_toxic_wisp.png");
+public class ToxicWispRenderer extends MobRenderer<ToxicWisp, LivingEntityRenderState, ToxicWispModel<ToxicWisp>> {
+    private static final Identifier TOXIC_WISP = WildDungeons.rl("textures/entity/toxic_wisp.png");
+    private static final Identifier LARGE_TOXIC_WISP = WildDungeons.rl("textures/entity/large_toxic_wisp.png");
     private static final float BASE_SCALE = 1.0F;
 
     private final boolean isLarge;
@@ -23,13 +25,13 @@ public class ToxicWispRenderer extends MobRenderer<ToxicWisp, ToxicWispModel<Tox
         this.isLarge = isLarge;
     }
 
-    @Override
+    //@Override
     protected float getWhiteOverlayProgress(ToxicWisp livingEntity, float partialTicks) {
         float swelling = livingEntity.getSwelling(partialTicks);
         return (int) (swelling * 10.0F) % 2 == 0 ? 0.0F : Mth.clamp(swelling, 0.5F, 1.0F);
     }
 
-    @Override
+    //@Override
     protected void scale(ToxicWisp livingEntity, PoseStack poseStack, float partialTickTime) {
         float swelling = livingEntity.getSwelling(partialTickTime);
         float oscillation = BASE_SCALE + Mth.sin(swelling * 100.0F) * swelling * 0.01F;
@@ -41,7 +43,12 @@ public class ToxicWispRenderer extends MobRenderer<ToxicWisp, ToxicWispModel<Tox
     }
 
     @Override
-    public @NotNull ResourceLocation getTextureLocation(@NotNull ToxicWisp entity) {
+    public Identifier getTextureLocation(LivingEntityRenderState livingEntityRenderState) {
         return isLarge ? LARGE_TOXIC_WISP : TOXIC_WISP;
+    }
+
+    @Override
+    public LivingEntityRenderState createRenderState() {
+        return null;
     }
 }

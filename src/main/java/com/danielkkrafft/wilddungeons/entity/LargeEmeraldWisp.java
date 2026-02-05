@@ -6,6 +6,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
@@ -30,21 +31,21 @@ public class LargeEmeraldWisp extends EmeraldWisp {
     protected void registerSpecificGoals() {
         this.goalSelector.addGoal(1, new AvoidEntityGoal<>(this, Player.class, 16f, 0.6, 1.0F));
         this.goalSelector.addGoal(2, new SummonMoreGoal(this));
-        this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, true, (target) -> target != this.getOwner()));
+        //this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, true, (target) -> target != this.getOwner())); TODO - Fix mustReach for 1.21.11
     }
 
     @Override
     protected void dropAllDeathLoot(@NotNull ServerLevel level, @NotNull DamageSource source) {
-        spawnAtLocation(new ItemStack(Items.EMERALD, UtilityMethods.RNG(0, 3)));
+        spawnAtLocation(level, new ItemStack(Items.EMERALD, UtilityMethods.RNG(0, 3)));
     }
 
     @Override
     public void explodeWisp() {
         this.extinguish();
-        if (!this.level().isClientSide) {
+        if (!this.level().isClientSide()) {
             //summon two small wisps
             for (int i = 0; i < 2 ; i++) {
-                EmeraldWisp smallWisp = (EmeraldWisp) getSummonType().create(this.level());
+                EmeraldWisp smallWisp = (EmeraldWisp) getSummonType().create(this.level(), EntitySpawnReason.BUCKET); // TODO - Correct EntitySpawnReason for 1.21.11 (This needs to be done in other places but seems rather abritrary and low importance)
                 if (smallWisp != null) {
                     BlockPos pos = this.blockPosition().offset(-2 + random.nextInt(5),1, -2 + random.nextInt(5));
                     smallWisp.setPos(pos.getCenter());

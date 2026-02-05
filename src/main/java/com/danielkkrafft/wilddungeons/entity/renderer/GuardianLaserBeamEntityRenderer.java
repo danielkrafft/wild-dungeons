@@ -5,21 +5,23 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-public class GuardianLaserBeamEntityRenderer extends EntityRenderer<GuardianLaserBeamEntity> {
-    private static final ResourceLocation GUARDIAN_LOCATION = ResourceLocation.withDefaultNamespace("textures/entity/guardian.png");
-    private static final ResourceLocation GUARDIAN_BEAM_LOCATION = ResourceLocation.withDefaultNamespace("textures/entity/guardian_beam.png");
+public class GuardianLaserBeamEntityRenderer extends EntityRenderer<GuardianLaserBeamEntity, EntityRenderState> {
+    private static final Identifier GUARDIAN_LOCATION = Identifier.withDefaultNamespace("textures/entity/guardian.png");
+    private static final Identifier GUARDIAN_BEAM_LOCATION = Identifier.withDefaultNamespace("textures/entity/guardian_beam.png");
     private static final RenderType BEAM_RENDER_TYPE;
 
     public GuardianLaserBeamEntityRenderer(EntityRendererProvider.Context context) {
@@ -44,6 +46,12 @@ public class GuardianLaserBeamEntityRenderer extends EntityRenderer<GuardianLase
         }
     }
 
+    //TODO - Implement for 1.21.11
+    @Override
+    public EntityRenderState createRenderState() {
+        return null;
+    }
+
     private Vec3 getPosition(Entity livingEntity, double yOffset, float partialTick) {
         double d0 = Mth.lerp((double)partialTick, livingEntity.xOld, livingEntity.getX());
         double d1 = Mth.lerp((double)partialTick, livingEntity.yOld, livingEntity.getY()) + yOffset;
@@ -52,7 +60,7 @@ public class GuardianLaserBeamEntityRenderer extends EntityRenderer<GuardianLase
     }
 
     public void render(GuardianLaserBeamEntity entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
-        super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
+        // super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight); TODO - Find fix on 1.21.11
         LivingEntity livingentity = entity.getTarget();
         if (livingentity != null) {
             float f = entity.getAttackAnimationScale(partialTicks);
@@ -126,11 +134,11 @@ public class GuardianLaserBeamEntityRenderer extends EntityRenderer<GuardianLase
         consumer.addVertex(pose, x, y, z).setColor(red, green, blue, 255).setUv(u, v).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(pose, 0.0F, 1.0F, 0.0F);
     }
 
-    public ResourceLocation getTextureLocation(GuardianLaserBeamEntity entity) {
+    public Identifier getTextureLocation(GuardianLaserBeamEntity entity) {
         return GUARDIAN_LOCATION;
     }
 
     static {
-        BEAM_RENDER_TYPE = RenderType.entityCutoutNoCull(GUARDIAN_BEAM_LOCATION);
+        BEAM_RENDER_TYPE = RenderTypes.entityCutoutNoCull(GUARDIAN_BEAM_LOCATION);
     }
 }

@@ -5,23 +5,24 @@ import com.danielkkrafft.wilddungeons.util.ColorUtil;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.ExperienceOrbRenderer;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.ExperienceOrb;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import org.joml.Quaternionfc;
 
 public class EssenceOrbRenderer extends ExperienceOrbRenderer {
-    private static final ResourceLocation EXPERIENCE_ORB_LOCATION = ResourceLocation.withDefaultNamespace("textures/entity/experience_orb.png");
-    private static final RenderType RENDER_TYPE = RenderType.itemEntityTranslucentCull(EXPERIENCE_ORB_LOCATION);
+    private static final Identifier EXPERIENCE_ORB_LOCATION = Identifier.withDefaultNamespace("textures/entity/experience_orb.png");
+    private static final RenderType RENDER_TYPE = RenderTypes.itemEntityTranslucentCull(EXPERIENCE_ORB_LOCATION);
 
     public EssenceOrbRenderer(EntityRendererProvider.Context context) {
         super(context);
     }
 
-    @Override
     public void render(ExperienceOrb entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
         EssenceOrb essenceOrb = (EssenceOrb) entity;
         int hueOffset = EssenceOrb.getHueOffset(essenceOrb.essence_type);
@@ -40,7 +41,7 @@ public class EssenceOrbRenderer extends ExperienceOrbRenderer {
         int k = 255;
         int l = (int)((Mth.sin(f8 + (float) (Math.PI * 4.0 / 3.0)) + 1.0F) * 0.1F * 255.0F);
         poseStack.translate(0.0F, 0.1F, 0.0F);
-        poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
+        poseStack.mulPose(this.entityRenderDispatcher.camera.rotation());
         float f9 = 0.3F;
         poseStack.scale(0.3F, 0.3F, 0.3F);
         VertexConsumer vertexconsumer = buffer.getBuffer(RENDER_TYPE);

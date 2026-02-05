@@ -6,10 +6,10 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Unit;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.projectile.AbstractArrow;
-import net.minecraft.world.entity.projectile.Arrow;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
@@ -17,7 +17,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import org.jetbrains.annotations.Nullable;
 
-public class EggSacArrow extends AbstractArrow {
+public class EggSacArrow extends AbstractArrow { //TODO - Fix for 1.21.11
 
     @Nullable
     private ItemStack firedFromWeapon;
@@ -82,16 +82,16 @@ public class EggSacArrow extends AbstractArrow {
 
     @Override
     protected void onHitBlock(BlockHitResult result) {
-        //summon 1-3 spiderlings that wander around
-        int count = 1 + this.random.nextInt(3);
-        for (int i = 0; i < count; i++) {
-            FriendlySpiderling spiderling = WDEntities.FRIENDLY_SPIDERLING.get().create(this.level());
-            if (spiderling != null) {
-                spiderling.moveTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), 0);
-                spiderling.setOwner(this.getOwner());
-            }
-            this.level().addFreshEntity(spiderling);
-        }
+//        //summon 1-3 spiderlings that wander around
+//        int count = 1 + this.random.nextInt(3);
+//        for (int i = 0; i < count; i++) {
+//            FriendlySpiderling spiderling = WDEntities.FRIENDLY_SPIDERLING.get().create(this.level(), EntitySpawnReason.SPAWN_ITEM_USE);
+//            if (spiderling != null) {
+//                spiderling.absSnapTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), 0);
+//                spiderling.setOwner(this.getOwner());
+//            }
+//            this.level().addFreshEntity(spiderling);
+//        }
         super.onHitBlock(result);
     }
 
@@ -104,17 +104,15 @@ public class EggSacArrow extends AbstractArrow {
     protected void onHitEntity(EntityHitResult result) {
         //summon 1-3 spiderlings that attack the hit entity
         int count = 1 + this.random.nextInt(3);
-        for (int i = 0; i < count; i++) {
-            FriendlySpiderling spiderling = WDEntities.FRIENDLY_SPIDERLING.get().create(this.level());
-            if (spiderling != null) {
-                spiderling.moveTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), 0);
-                spiderling.setTarget((LivingEntity) result.getEntity());
-                spiderling.setOwner(this.getOwner());
-            }
-            this.level().addFreshEntity(spiderling);
-        }
+//        for (int i = 0; i < count; i++) {
+//            FriendlySpiderling spiderling = WDEntities.FRIENDLY_SPIDERLING.get().create(this.level());
+//            if (spiderling != null) {
+//                spiderling.moveTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), 0);
+//                spiderling.setTarget((LivingEntity) result.getEntity());
+//                spiderling.setOwner(this.getOwner());
+//            }
+//            this.level().addFreshEntity(spiderling);
+//        }
         super.onHitEntity(result);
     }
-
-
 }

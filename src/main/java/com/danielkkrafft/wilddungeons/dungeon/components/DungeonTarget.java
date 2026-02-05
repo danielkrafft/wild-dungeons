@@ -7,10 +7,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -69,7 +66,7 @@ public class DungeonTarget {
 
         if (type.equals(Type.ENTITY.toString()))
         {
-            Entity entity = EntityType.byString(this.entityTypeKey).get().create(room.getBranch().getFloor().getLevel());
+            Entity entity = EntityType.byString(this.entityTypeKey).get().create(room.getBranch().getFloor().getLevel(), EntitySpawnReason.CHUNK_GENERATION);
             if (helmetItem != -1) entity.getSlot(100 + EquipmentSlot.HEAD.getIndex()).set(new ItemStack(Item.byId(helmetItem), 1));
             if (chestItem != -1) entity.getSlot(100 + EquipmentSlot.CHEST.getIndex()).set(new ItemStack(Item.byId(chestItem), 1));
             if (legsItem != -1) entity.getSlot(100 + EquipmentSlot.LEGS.getIndex()).set(new ItemStack(Item.byId(legsItem), 1));

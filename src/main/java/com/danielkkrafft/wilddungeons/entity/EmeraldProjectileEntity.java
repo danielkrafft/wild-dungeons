@@ -8,7 +8,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.projectile.Fireball;
+import net.minecraft.world.entity.projectile.hurtingprojectile.Fireball;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -42,7 +42,7 @@ public class EmeraldProjectileEntity extends Fireball  {
 
     protected void onHit(@NotNull HitResult result) {
         super.onHit(result);
-        if (!this.level().isClientSide) {
+        if (!this.level().isClientSide()) {
             this.discard();
         }
     }
@@ -63,7 +63,7 @@ public class EmeraldProjectileEntity extends Fireball  {
     @Override
     protected void onHitBlock(BlockHitResult result) {
         super.onHitBlock(result);
-        if (!this.level().isClientSide) {
+        if (!this.level().isClientSide()) {
             ItemStack itemstack = this.getDefaultItem();
             BlockPos blockpos = result.getBlockPos();
             ItemEntity itemEntity = new ItemEntity(this.level(), blockpos.getX() + 0.5,

@@ -5,12 +5,12 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import org.joml.Matrix4f;
 
 public class WDFont {
-    private static final ResourceLocation FONT_TEXTURE = ResourceLocation.fromNamespaceAndPath("minecraft", "textures/font/ascii.png");
+    private static final Identifier FONT_TEXTURE = Identifier.fromNamespaceAndPath("minecraft", "textures/font/ascii.png"); //TODO - Fix rendering stuff for 1.21.11
 
     private static final int[] characterSizes = {
             0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -56,9 +56,9 @@ public class WDFont {
     public static void drawString(GuiGraphics guiGraphics, String text, int minX, int minY, int maxX, int maxY, int color) {
         if (text.length() <= 0) return;
 
-        PoseStack poseStack = guiGraphics.pose();
-        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-        RenderSystem.setShaderTexture(0, FONT_TEXTURE);
+//        PoseStack poseStack = guiGraphics.pose();
+//        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+//        RenderSystem.setShaderTexture(0, FONT_TEXTURE);
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
 
@@ -72,10 +72,10 @@ public class WDFont {
             int subWidth = width(subString);
             int charMinX = Mth.lerpInt((float) (subWidth) / width, minX, maxX);
             int charMaxX = Mth.lerpInt((float) (subWidth+charWidth) / width, minX, maxX);
-            drawCharacter(poseStack.last().pose(), buffer, c, charMinX, minY, charMaxX, maxY + (height / 7), color);
+//            drawCharacter(poseStack.last().pose(), buffer, c, charMinX, minY, charMaxX, maxY + (height / 7), color);
         }
 
-        BufferUploader.drawWithShader(buffer.buildOrThrow());
+//        BufferUploader.drawWithShader(buffer.buildOrThrow());
     }
 
     private static void drawCharacter(Matrix4f pose, BufferBuilder buffer, char c, int minX, int minY, int maxX, int maxY, int color) {

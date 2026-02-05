@@ -4,14 +4,14 @@ import com.danielkkrafft.wilddungeons.entity.PrimedDenseTnt;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
@@ -21,7 +21,6 @@ import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.TntBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -46,8 +45,9 @@ public class DenseTNTBlock extends Block {
         this.registerDefaultState((BlockState)this.defaultBlockState().setValue(UNSTABLE, false));
     }
 
-    public void onCaughtFire(BlockState state, Level world, BlockPos pos, @Nullable Direction face, @Nullable LivingEntity igniter) {
+    public boolean onCaughtFire(BlockState state, Level world, BlockPos pos, @Nullable Direction face, @Nullable LivingEntity igniter) {
         explode(world, pos, igniter);
+        return false;
     }
 
     protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean isMoving) {
@@ -75,7 +75,7 @@ public class DenseTNTBlock extends Block {
     }
 
     public void wasExploded(Level level, BlockPos pos, Explosion explosion) {
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             PrimedDenseTnt primedtnt = new PrimedDenseTnt(level, (double)pos.getX() + (double)0.5F, (double)pos.getY(), (double)pos.getZ() + (double)0.5F, explosion.getIndirectSourceEntity());
             int i = primedtnt.getFuse();
             primedtnt.setFuse((short)(level.random.nextInt(i / 4) + i / 8));
@@ -93,7 +93,7 @@ public class DenseTNTBlock extends Block {
     /** @deprecated */
     @Deprecated
     private static void explode(Level level, BlockPos pos, @Nullable LivingEntity entity) {
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             PrimedDenseTnt primedtnt = new PrimedDenseTnt(level, (double)pos.getX() + (double)0.5F, (double)pos.getY(), (double)pos.getZ() + (double)0.5F, entity);
             level.addFreshEntity(primedtnt);
             level.playSound((Player)null, primedtnt.getX(), primedtnt.getY(), primedtnt.getZ(), SoundEvents.TNT_PRIMED, SoundSource.BLOCKS, 1.0F, 1.0F);
@@ -102,7 +102,7 @@ public class DenseTNTBlock extends Block {
 
     }
 
-    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         if (!stack.is(Items.FLINT_AND_STEEL) && !stack.is(Items.FIRE_CHARGE)) {
             return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
         } else {
@@ -110,21 +110,21 @@ public class DenseTNTBlock extends Block {
             level.setBlock(pos, Blocks.AIR.defaultBlockState(), 11);
             Item item = stack.getItem();
             if (stack.is(Items.FLINT_AND_STEEL)) {
-                stack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand));
+                stack.hurtAndBreak(1, player, hand.asEquipmentSlot());
             } else {
                 stack.consume(1, player);
             }
 
             player.awardStat(Stats.ITEM_USED.get(item));
-            return ItemInteractionResult.sidedSuccess(level.isClientSide);
+            return InteractionResult.SUCCESS;
         }
     }
 
     protected void onProjectileHit(Level level, BlockState state, BlockHitResult hit, Projectile projectile) {
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             BlockPos blockpos = hit.getBlockPos();
             Entity entity = projectile.getOwner();
-            if (projectile.isOnFire() && projectile.mayInteract(level, blockpos)) {
+            if (projectile.isOnFire() && projectile.mayInteract((ServerLevel) level, blockpos)) {
                 this.onCaughtFire(state, level, blockpos, (Direction)null, entity instanceof LivingEntity ? (LivingEntity)entity : null);
                 level.removeBlock(blockpos, false);
             }

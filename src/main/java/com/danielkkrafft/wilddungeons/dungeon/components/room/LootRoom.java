@@ -11,7 +11,7 @@ import com.danielkkrafft.wilddungeons.dungeon.registries.OfferingTemplateTableRe
 import com.danielkkrafft.wilddungeons.dungeon.registries.PerkRegistry;
 import com.danielkkrafft.wilddungeons.entity.Offering;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.phys.Vec3;
 
@@ -60,7 +60,7 @@ public class LootRoom extends TargetPurgeRoom {
         }
     }
 
-    @Override public ResourceLocation getDecalTexture() {return ConnectionPoint.CHEST_TEXTURE;}
+    @Override public Identifier getDecalTexture() {return ConnectionPoint.CHEST_TEXTURE;}
     @Override public int getDecalColor() {return 0xFFffdd00;}
 
 }

@@ -3,79 +3,119 @@ package com.danielkkrafft.wilddungeons.registry;
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.item.*;
 import com.danielkkrafft.wilddungeons.util.debug.DebugItem;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.*;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-import java.awt.*;
+public class WDItems { //TODO - Uncomment Items as they are fixed to work with 1.21.11
+    public static final ResourceKey<Item> DEBUG_ITEM_ID = createItemKey("debug_item");
+    public static final ResourceKey<Item> OFFERING_ITEM_ID = createItemKey("offering_item");
+    public static final ResourceKey<Item> RIFT_ITEM_ID = createItemKey("rift_item");
+    public static final ResourceKey<Item> PERK_TESTER_ID = createItemKey("perk_tester");
+    public static final ResourceKey<Item> MEATHOOK_ITEM_ID = createItemKey("meathook");
+    public static final ResourceKey<Item> ESSENCE_BOTTLE_ID = createItemKey("essence_bottle");
+    public static final ResourceKey<Item> AMOGUS_STAFF_ID = createItemKey("amogus_staff");
+    public static final ResourceKey<Item> WIND_HAMMER_ITEM_ID = createItemKey("wind_hammer");
+    public static final ResourceKey<Item> FIREWORK_GUN_ITEM_ID = createItemKey("firework_gun");
+    public static final ResourceKey<Item> LIFE_LIQUID_BUCKET_ID = createItemKey("life_liquid_bucket");
+    public static final ResourceKey<Item> WD_DUNGEON_KEY_ID = createItemKey("wd_dungeon_key");
+    public static final ResourceKey<Item> ROOM_EXPORT_WAND_ID = createItemKey("room_export_wand");
+    public static final ResourceKey<Item> INSTANT_LOADOUT_LEATHER_ID = createItemKey("instant_loadout_leather");
+    public static final ResourceKey<Item> INSTANT_LOADOUT_IRON_ID = createItemKey("instant_loadout_iron");
+    public static final ResourceKey<Item> INSTANT_LOADOUT_DIAMOND_ID = createItemKey("instant_loadout_diamond");
+    public static final ResourceKey<Item> INSTANT_LOADOUT_NETHERITE_ID = createItemKey("instant_loadout_netherite");
+    public static final ResourceKey<Item> INSTANT_LOADOUT_GOLD_ID = createItemKey("instant_loadout_gold");
+    public static final ResourceKey<Item> BOSS_KEY_ID = createItemKey("boss_key");
+    public static final ResourceKey<Item> DETONITE_CRYSTAL_ID = createItemKey("detonite_crystal");
+    public static final ResourceKey<Item> WATCHFUL_EYE_ID = createItemKey("watchful_eye");
+    public static final ResourceKey<Item> OVERFLOW_MUSIC_DISC_ID = createItemKey("overflow_music_disc");
+    public static final ResourceKey<Item> OVERFLOW_SAFE_MUSIC_DISC_ID = createItemKey("overflow_safe_music_disc");
+    public static final ResourceKey<Item> OVERFLOW_UNDERWATER_MUSIC_DISC_ID = createItemKey("overflow_underwater_music_disc");
+    public static final ResourceKey<Item> OVERFLOW_UNDERWATER_SAFE_MUSIC_DISC_ID = createItemKey("overflow_underwater_safe_music_disc");
+    public static final ResourceKey<Item> ANGEL_INVESTOR_MUSIC_DISC_ID = createItemKey("angel_investor_music_disc");
+    public static final ResourceKey<Item> ANGEL_INVESTOR_SAFE_MUSIC_DISC_ID = createItemKey("angel_investor_safe_music_disc");
+    public static final ResourceKey<Item> THE_CAPITAL_MUSIC_DISC_ID = createItemKey("the_capital_music_disc");
+    public static final ResourceKey<Item> THE_CAPITAL_SAFE_MUSIC_DISC_ID = createItemKey("the_capital_safe_music_disc");
+    public static final ResourceKey<Item> EMERALD_STAFF_ID = createItemKey("emerald_staff");
+    public static final ResourceKey<Item> STAR_CANNON_ID = createItemKey("star_cannon");
+    public static final ResourceKey<Item> EGG_SAC_ARROWS_ID = createItemKey("egg_sac_arrow");
+    public static final ResourceKey<Item> NAUTILUS_SHIELD_ID = createItemKey("nautilus_shield");
 
-public class WDItems {
+
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(WildDungeons.MODID);
 
-    public static final DeferredItem<Item> DEBUG_ITEM = ITEMS.register("debug_item", () -> new DebugItem(new Item.Properties()));
-    public static final DeferredItem<Item> OFFERING_ITEM = ITEMS.register("offering_item", () -> new OfferingItem(new Item.Properties()));
-    public static final DeferredItem<Item> RIFT_ITEM = ITEMS.register("rift_item", () -> new RiftItem(new Item.Properties()));
-    public static final DeferredItem<Item> PERK_TESTER = ITEMS.register("perk_tester", () -> new PerkTesterItem(new Item.Properties()));
+    public static final DeferredItem<Item> DEBUG_ITEM = ITEMS.register("debug_item", () -> new DebugItem(new Item.Properties().setId(DEBUG_ITEM_ID)));
+    public static final DeferredItem<Item> OFFERING_ITEM = ITEMS.register("offering_item", () -> new OfferingItem(new Item.Properties().setId(OFFERING_ITEM_ID)));
+    public static final DeferredItem<Item> RIFT_ITEM = ITEMS.register("rift_item", () -> new RiftItem(new Item.Properties().setId(RIFT_ITEM_ID)));
+    public static final DeferredItem<Item> PERK_TESTER = ITEMS.register("perk_tester", () -> new PerkTesterItem(new Item.Properties().setId(PERK_TESTER_ID)));
 
-    public static final DeferredItem<Item> MEATHOOK_ITEM = ITEMS.register("meathook", Meathook::new);
-    public static final DeferredItem<Item> ESSENCE_BOTTLE = ITEMS.register("essence_bottle", EssenceBottleItem::new);
-    public static final DeferredItem<Item> AMOGUS_STAFF = ITEMS.register("amogus_staff", AmogusStaff::new);
-    public static final DeferredItem<Item> LASER_SWORD_ITEM = ITEMS.register("laser_sword", LaserSword::new);
-    public static final DeferredItem<Item> WIND_MACE_ITEM = ITEMS.register("wind_mace", WindMace::new);
-    public static final DeferredItem<Item> WIND_CANNON_ITEM = ITEMS.register("wind_cannon", WindCannon::new);
-    public static final DeferredItem<Item> WIND_HAMMER_ITEM = ITEMS.register("wind_hammer", WindHammer::new);
-    public static final DeferredItem<Item> FIREWORK_GUN_ITEM = ITEMS.register("firework_gun", FireworkGun::new);
-    public static final DeferredItem<Item> LIFE_LIQUID_BUCKET = ITEMS.register("life_liquid_bucket", () -> new BucketItem(WDFluids.LIFE_LIQUID.get(), (new Item.Properties()).craftRemainder(Items.BUCKET).stacksTo(1)));
-    public static final DeferredItem<Item> TOXIC_SLUDGE_BUCKET = ITEMS.register("toxic_sludge_bucket", () -> new BucketItem(WDFluids.TOXIC_SLUDGE.get(), (new Item.Properties()).craftRemainder(Items.BUCKET).stacksTo(1)));
-    public static final DeferredItem<Item> WD_DUNGEON_KEY = ITEMS.register("wd_dungeon_key", () -> new Item(new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.RARE)));
-    public static final DeferredItem<Item> ROOM_EXPORT_WAND = ITEMS.register("room_export_wand", () -> new RoomExportWand(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC).component(WDDataComponents.WAND_MODE.get(),0).component(WDDataComponents.WAND_ROOM_NAME.get(),"room")));
-    public static final DeferredItem<Item> INSTANT_LOADOUT_LEATHER = ITEMS.register("instant_loadout_leather", () -> new InstantLoadout(new Item.Properties().stacksTo(1).rarity(Rarity.COMMON), InstantLoadout.Type.Leather));
-    public static final DeferredItem<Item> INSTANT_LOADOUT_IRON = ITEMS.register("instant_loadout_iron", () -> new InstantLoadout(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON), InstantLoadout.Type.Iron));
-    public static final DeferredItem<Item> INSTANT_LOADOUT_DIAMOND = ITEMS.register("instant_loadout_diamond", () -> new InstantLoadout(new Item.Properties().stacksTo(1).rarity(Rarity.RARE), InstantLoadout.Type.Diamond));
-    public static final DeferredItem<Item> INSTANT_LOADOUT_NETHERITE = ITEMS.register("instant_loadout_netherite", () -> new InstantLoadout(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), InstantLoadout.Type.Netherite));
-    public static final DeferredItem<Item> INSTANT_LOADOUT_GOLD = ITEMS.register("instant_loadout_gold", () -> new InstantLoadout(new Item.Properties().stacksTo(1).rarity(Rarity.RARE), InstantLoadout.Type.Gold));
-    public static final DeferredItem<Item> BOSS_KEY = ITEMS.register("boss_key", () -> new Item(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)));
+    public static final DeferredItem<Item> MEATHOOK_ITEM = ITEMS.register("meathook", () -> new Meathook(new Item.Properties().stacksTo(1).rarity(Rarity.RARE).durability(1000).setId(MEATHOOK_ITEM_ID)));
+    public static final DeferredItem<Item> AMOGUS_STAFF = ITEMS.register("amogus_staff", () -> new AmogusStaff(new Item.Properties().durability(80).setId(AMOGUS_STAFF_ID)));
+    public static final DeferredItem<Item> ESSENCE_BOTTLE = ITEMS.register("essence_bottle", () -> new EssenceBottleItem(new Item.Properties().setId(ESSENCE_BOTTLE_ID)));
+//    public static final DeferredItem<Item> LASER_SWORD_ITEM = ITEMS.register("laser_sword", LaserSword::new);
+//    public static final DeferredItem<Item> WIND_MACE_ITEM = ITEMS.register("wind_mace", WindMace::new);
+//    public static final DeferredItem<Item> WIND_CANNON_ITEM = ITEMS.register("wind_cannon", WindCannon::new);
+    public static final DeferredItem<Item> WIND_HAMMER_ITEM = ITEMS.register("wind_hammer", () -> new WindHammer(new Item.Properties().rarity(Rarity.EPIC).durability(1000).sword(ToolMaterial.DIAMOND, 8.0f, -3.5f).setId(WIND_HAMMER_ITEM_ID)));
+    //public static final DeferredItem<Item> FIREWORK_GUN_ITEM = ITEMS.register("firework_gun", FireworkGun::new);
+    public static final DeferredItem<Item> LIFE_LIQUID_BUCKET = ITEMS.register("life_liquid_bucket", () -> new BucketItem(WDFluids.LIFE_LIQUID.get(), (new Item.Properties()).craftRemainder(Items.BUCKET).stacksTo(1).setId(LIFE_LIQUID_BUCKET_ID)));
+//    public static final DeferredItem<Item> TOXIC_SLUDGE_BUCKET = ITEMS.register("toxic_sludge_bucket", () -> new BucketItem(WDFluids.TOXIC_SLUDGE.get(), (new Item.Properties()).craftRemainder(Items.BUCKET).stacksTo(1)));
+    public static final DeferredItem<Item> WD_DUNGEON_KEY = ITEMS.register("wd_dungeon_key", () -> new Item(new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.RARE).setId(WD_DUNGEON_KEY_ID)));
+    public static final DeferredItem<Item> ROOM_EXPORT_WAND = ITEMS.register("room_export_wand", () -> new RoomExportWand(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC).component(WDDataComponents.WAND_MODE.get(),0).component(WDDataComponents.WAND_ROOM_NAME.get(),"room").setId(ROOM_EXPORT_WAND_ID)));
+    public static final DeferredItem<Item> INSTANT_LOADOUT_LEATHER = ITEMS.register("instant_loadout_leather", () -> new InstantLoadout(new Item.Properties().stacksTo(1).rarity(Rarity.COMMON).setId(INSTANT_LOADOUT_LEATHER_ID), InstantLoadout.Type.Leather));
+    public static final DeferredItem<Item> INSTANT_LOADOUT_IRON = ITEMS.register("instant_loadout_iron", () -> new InstantLoadout(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON).setId(INSTANT_LOADOUT_IRON_ID), InstantLoadout.Type.Iron));
+    public static final DeferredItem<Item> INSTANT_LOADOUT_DIAMOND = ITEMS.register("instant_loadout_diamond", () -> new InstantLoadout(new Item.Properties().stacksTo(1).rarity(Rarity.RARE).setId(INSTANT_LOADOUT_DIAMOND_ID), InstantLoadout.Type.Diamond));
+    public static final DeferredItem<Item> INSTANT_LOADOUT_NETHERITE = ITEMS.register("instant_loadout_netherite", () -> new InstantLoadout(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC).setId(INSTANT_LOADOUT_NETHERITE_ID), InstantLoadout.Type.Netherite));
+    public static final DeferredItem<Item> INSTANT_LOADOUT_GOLD = ITEMS.register("instant_loadout_gold", () -> new InstantLoadout(new Item.Properties().stacksTo(1).rarity(Rarity.RARE).setId(INSTANT_LOADOUT_GOLD_ID), InstantLoadout.Type.Gold));
+    public static final DeferredItem<Item> BOSS_KEY = ITEMS.register("boss_key", () -> new Item(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC).setId(BOSS_KEY_ID)));
 
-    public static final DeferredItem<Item> DETONITE_CRYSTAL = ITEMS.register("detonite_crystal", () -> new Item( new Item.Properties()));
-    public static final DeferredItem<Item> WATCHFUL_EYE = ITEMS.register("watchful_eye", () -> new WatchfulEyeItem( new Item.Properties().stacksTo(1)));
+    public static final DeferredItem<Item> DETONITE_CRYSTAL = ITEMS.register("detonite_crystal", () -> new Item( new Item.Properties().setId(DETONITE_CRYSTAL_ID)));
+    public static final DeferredItem<Item> WATCHFUL_EYE = ITEMS.register("watchful_eye", () -> new WatchfulEyeItem( new Item.Properties().stacksTo(1).setId(WATCHFUL_EYE_ID)));
 
 
     //------- MUSIC DISCS -------//
-    public static final DeferredItem<Item> OVERFLOW_MUSIC_DISC = ITEMS.register("overflow_music_disc", () -> new Item( new Item.Properties().jukeboxPlayable(WDSoundEvents.OVERFLOW_KEY).stacksTo(1).rarity(Rarity.EPIC)));
-    public static final DeferredItem<Item> OVERFLOW_SAFE_MUSIC_DISC = ITEMS.register("overflow_safe_music_disc", () -> new Item( new Item.Properties().jukeboxPlayable(WDSoundEvents.OVERFLOW_SAFE_KEY).stacksTo(1).rarity(Rarity.EPIC)));
-    public static final DeferredItem<Item> OVERFLOW_UNDERWATER_MUSIC_DISC = ITEMS.register("overflow_underwater_music_disc", () -> new Item( new Item.Properties().jukeboxPlayable(WDSoundEvents.OVERFLOW_UNDERWATER_KEY).stacksTo(1).rarity(Rarity.EPIC)));
-    public static final DeferredItem<Item> OVERFLOW_UNDERWATER_SAFE_MUSIC_DISC = ITEMS.register("overflow_underwater_safe_music_disc", () -> new Item( new Item.Properties().jukeboxPlayable(WDSoundEvents.OVERFLOW_UNDERWATER_SAFE_KEY).stacksTo(1).rarity(Rarity.EPIC)));
-    public static final DeferredItem<Item> ANGEL_INVESTOR_MUSIC_DISC = ITEMS.register("angel_investor_music_disc", () -> new Item( new Item.Properties().jukeboxPlayable(WDSoundEvents.ANGEL_INVESTOR_KEY).stacksTo(1).rarity(Rarity.EPIC)));
-    public static final DeferredItem<Item> ANGEL_INVESTOR_SAFE_MUSIC_DISC = ITEMS.register("angel_investor_safe_music_disc", () -> new Item( new Item.Properties().jukeboxPlayable(WDSoundEvents.ANGEL_INVESTOR_SAFE_KEY).stacksTo(1).rarity(Rarity.EPIC)));
-    public static final DeferredItem<Item> THE_CAPITAL_MUSIC_DISC = ITEMS.register("the_capital_music_disc", () -> new Item( new Item.Properties().jukeboxPlayable(WDSoundEvents.THE_CAPITAL_KEY).stacksTo(1).rarity(Rarity.EPIC)));
-    public static final DeferredItem<Item> THE_CAPITAL_SAFE_MUSIC_DISC = ITEMS.register("the_capital_safe_music_disc", () -> new Item( new Item.Properties().jukeboxPlayable(WDSoundEvents.THE_CAPITAL_SAFE_KEY).stacksTo(1).rarity(Rarity.EPIC)));
+    public static final DeferredItem<Item> OVERFLOW_MUSIC_DISC = ITEMS.register("overflow_music_disc", () -> new Item( new Item.Properties().jukeboxPlayable(WDSoundEvents.OVERFLOW_KEY).stacksTo(1).rarity(Rarity.EPIC).setId(OVERFLOW_MUSIC_DISC_ID)));
+    public static final DeferredItem<Item> OVERFLOW_SAFE_MUSIC_DISC = ITEMS.register("overflow_safe_music_disc", () -> new Item( new Item.Properties().jukeboxPlayable(WDSoundEvents.OVERFLOW_SAFE_KEY).stacksTo(1).rarity(Rarity.EPIC).setId(OVERFLOW_SAFE_MUSIC_DISC_ID)));
+    public static final DeferredItem<Item> OVERFLOW_UNDERWATER_MUSIC_DISC = ITEMS.register("overflow_underwater_music_disc", () -> new Item( new Item.Properties().jukeboxPlayable(WDSoundEvents.OVERFLOW_UNDERWATER_KEY).stacksTo(1).rarity(Rarity.EPIC).setId(OVERFLOW_UNDERWATER_MUSIC_DISC_ID)));
+    public static final DeferredItem<Item> OVERFLOW_UNDERWATER_SAFE_MUSIC_DISC = ITEMS.register("overflow_underwater_safe_music_disc", () -> new Item( new Item.Properties().jukeboxPlayable(WDSoundEvents.OVERFLOW_UNDERWATER_SAFE_KEY).stacksTo(1).rarity(Rarity.EPIC).setId(OVERFLOW_UNDERWATER_SAFE_MUSIC_DISC_ID)));
+    public static final DeferredItem<Item> ANGEL_INVESTOR_MUSIC_DISC = ITEMS.register("angel_investor_music_disc", () -> new Item( new Item.Properties().jukeboxPlayable(WDSoundEvents.ANGEL_INVESTOR_KEY).stacksTo(1).rarity(Rarity.EPIC).setId(ANGEL_INVESTOR_MUSIC_DISC_ID)));
+    public static final DeferredItem<Item> ANGEL_INVESTOR_SAFE_MUSIC_DISC = ITEMS.register("angel_investor_safe_music_disc", () -> new Item( new Item.Properties().jukeboxPlayable(WDSoundEvents.ANGEL_INVESTOR_SAFE_KEY).stacksTo(1).rarity(Rarity.EPIC).setId(ANGEL_INVESTOR_SAFE_MUSIC_DISC_ID)));
+    public static final DeferredItem<Item> THE_CAPITAL_MUSIC_DISC = ITEMS.register("the_capital_music_disc", () -> new Item( new Item.Properties().jukeboxPlayable(WDSoundEvents.THE_CAPITAL_KEY).stacksTo(1).rarity(Rarity.EPIC).setId(THE_CAPITAL_MUSIC_DISC_ID)));
+    public static final DeferredItem<Item> THE_CAPITAL_SAFE_MUSIC_DISC = ITEMS.register("the_capital_safe_music_disc", () -> new Item( new Item.Properties().jukeboxPlayable(WDSoundEvents.THE_CAPITAL_SAFE_KEY).stacksTo(1).rarity(Rarity.EPIC).setId(THE_CAPITAL_SAFE_MUSIC_DISC_ID)));
 
-    public static final DeferredItem<Item> WIND_BOW_ITEM = ITEMS.register("wind_bow", WindBow::new);
-    public static final DeferredItem<Item> EMERALD_STAFF = ITEMS.register("emerald_staff", EmeraldStaff::new);
-    public static final DeferredItem<Item> STAR_CANNON = ITEMS.register("star_cannon", StarCannon::new);
-    public static final DeferredItem<Item> EGG_SAC_ARROWS = ITEMS.register("egg_sac_arrow", () -> new EggSacArrowItem(new Item.Properties().rarity(Rarity.UNCOMMON)));
+//    public static final DeferredItem<Item> WIND_BOW_ITEM = ITEMS.register("wind_bow", WindBow::new);
+//    public static final DeferredItem<Item> EMERALD_STAFF = ITEMS.register("emerald_staff", EmeraldStaff::new);
+//    public static final DeferredItem<Item> STAR_CANNON = ITEMS.register("star_cannon", StarCannon::new);
+    public static final DeferredItem<Item> EGG_SAC_ARROWS = ITEMS.register("egg_sac_arrow", () -> new EggSacArrowItem(new Item.Properties().rarity(Rarity.UNCOMMON).setId(EGG_SAC_ARROWS_ID)));
 
     //------- WAR SPEAR ITEMS -------//
-    public static final DeferredItem<Item> WOODEN_WAR_SPEAR = ITEMS.register("wooden_war_spear", () -> new WarSpearItem(WarSpearItem.SpearType.WOOD,new Item.Properties().rarity(Rarity.COMMON).rarity(Rarity.EPIC).durability(500).attributes(SwordItem.createAttributes(Tiers.WOOD, 0.2f, 2.5f))));
-    public static final DeferredItem<Item> STONE_WAR_SPEAR = ITEMS.register("stone_war_spear", () -> new WarSpearItem(WarSpearItem.SpearType.STONE,new Item.Properties().rarity(Rarity.COMMON).durability(500).attributes(SwordItem.createAttributes(Tiers.STONE, 0.5f, 0.5f))));
-    public static final DeferredItem<Item> IRON_WAR_SPEAR = ITEMS.register("iron_war_spear", () -> new WarSpearItem(WarSpearItem.SpearType.IRON,new Item.Properties().rarity(Rarity.UNCOMMON).durability(700).attributes(SwordItem.createAttributes(Tiers.IRON, 1.2f, -0.8f))));
-    public static final DeferredItem<Item> GOLD_WAR_SPEAR = ITEMS.register("gold_war_spear", () -> new WarSpearItem(WarSpearItem.SpearType.GOLD,new Item.Properties().rarity(Rarity.RARE).durability(300).attributes(SwordItem.createAttributes(Tiers.GOLD, 1.5f, 0.f))));
-    public static final DeferredItem<Item> DIAMOND_WAR_SPEAR = ITEMS.register("diamond_war_spear", () -> new WarSpearItem(WarSpearItem.SpearType.DIAMOND,new Item.Properties().rarity(Rarity.RARE).durability(900).attributes(SwordItem.createAttributes(Tiers.DIAMOND, 2.2f, -2f))));
-    public static final DeferredItem<Item> NETHERITE_WAR_SPEAR = ITEMS.register("netherite_war_spear", () -> new WarSpearItem(WarSpearItem.SpearType.NETHERITE,new Item.Properties().rarity(Rarity.RARE).durability(1100).attributes(SwordItem.createAttributes(Tiers.NETHERITE, 3.f, -2.5f))));
-    public static final DeferredItem<Item> HEAVY_WAR_SPEAR = ITEMS.register("heavy_war_spear", () -> new WarSpearItem(WarSpearItem.SpearType.HEAVY,new Item.Properties().rarity(Rarity.EPIC).durability(1200).attributes(SwordItem.createAttributes(Tiers.DIAMOND, 5f, -3.5f))));
+//    public static final DeferredItem<Item> WOODEN_WAR_SPEAR = ITEMS.register("wooden_war_spear", () -> new WarSpearItem(WarSpearItem.SpearType.WOOD,new Item.Properties().rarity(Rarity.COMMON).rarity(Rarity.EPIC).durability(500).attributes(SwordItem.createAttributes(Tiers.WOOD, 0.2f, 2.5f))));
+//    public static final DeferredItem<Item> STONE_WAR_SPEAR = ITEMS.register("stone_war_spear", () -> new WarSpearItem(WarSpearItem.SpearType.STONE,new Item.Properties().rarity(Rarity.COMMON).durability(500).attributes(SwordItem.createAttributes(Tiers.STONE, 0.5f, 0.5f))));
+//    public static final DeferredItem<Item> IRON_WAR_SPEAR = ITEMS.register("iron_war_spear", () -> new WarSpearItem(WarSpearItem.SpearType.IRON,new Item.Properties().rarity(Rarity.UNCOMMON).durability(700).attributes(SwordItem.createAttributes(Tiers.IRON, 1.2f, -0.8f))));
+//    public static final DeferredItem<Item> GOLD_WAR_SPEAR = ITEMS.register("gold_war_spear", () -> new WarSpearItem(WarSpearItem.SpearType.GOLD,new Item.Properties().rarity(Rarity.RARE).durability(300).attributes(SwordItem.createAttributes(Tiers.GOLD, 1.5f, 0.f))));
+//    public static final DeferredItem<Item> DIAMOND_WAR_SPEAR = ITEMS.register("diamond_war_spear", () -> new WarSpearItem(WarSpearItem.SpearType.DIAMOND,new Item.Properties().rarity(Rarity.RARE).durability(900).attributes(SwordItem.createAttributes(Tiers.DIAMOND, 2.2f, -2f))));
+//    public static final DeferredItem<Item> NETHERITE_WAR_SPEAR = ITEMS.register("netherite_war_spear", () -> new WarSpearItem(WarSpearItem.SpearType.NETHERITE,new Item.Properties().rarity(Rarity.RARE).durability(1100).attributes(SwordItem.createAttributes(Tiers.NETHERITE, 3.f, -2.5f))));
+//    public static final DeferredItem<Item> HEAVY_WAR_SPEAR = ITEMS.register("heavy_war_spear", () -> new WarSpearItem(WarSpearItem.SpearType.HEAVY,new Item.Properties().rarity(Rarity.EPIC).durability(1200).attributes(SwordItem.createAttributes(Tiers.DIAMOND, 5f, -3.5f))));
 
-    public static final DeferredItem<Item> NAUTILUS_SHIELD = ITEMS.register("nautilus_shield", () -> new NautilusShieldItem(new Item.Properties().rarity(Rarity.EPIC).durability(1200)));
+    public static final DeferredItem<Item> NAUTILUS_SHIELD = ITEMS.register("nautilus_shield", () -> new NautilusShieldItem(new Item.Properties().rarity(Rarity.EPIC).durability(1200).setId(NAUTILUS_SHIELD_ID)));
 
 
-    public static final DeferredItem<Item> BREEZE_GOLEM_SPAWN_EGG = ITEMS.register("breeze_golem_spawn_egg", () -> new SpawnEggItem(WDEntities.BREEZE_GOLEM.get(), new Color(115, 124, 255).getRGB(), new Color(0, 255, 233).getRGB(), new Item.Properties()));
-    public static final DeferredItem<Item> MUTANT_BOGGED_SPAWN_EGG = ITEMS.register("mutant_bogged_spawn_egg", () -> new SpawnEggItem(WDEntities.MUTANT_BOGGED.get(), new Color(62, 162, 0).getRGB(), new Color(110, 71, 56).getRGB(), new Item.Properties()));
-    public static final DeferredItem<Item> NETHER_DRAGON_SPAWN_EGG = ITEMS.register("nether_dragon_spawn_egg", () -> new SpawnEggItem(WDEntities.NETHER_DRAGON.get(), new Color(134, 0, 19).getRGB(), new Color(255, 136, 0).getRGB(), new Item.Properties()));
-    public static final DeferredItem<Item> SKELEPEDE_SPAWN_EGG = ITEMS.register("skelepede_spawn_egg", () -> new SpawnEggItem(WDEntities.SKELEPEDE.get(), new Color(255, 255, 255).getRGB(), new Color(0, 0, 0).getRGB(), new Item.Properties()));
-    public static final DeferredItem<Item> SPIDERLING_SPAWN_EGG = ITEMS.register("spiderling_spawn_egg", () -> new SpawnEggItem(WDEntities.SPIDERLING.get(), new Color(65, 0, 70).getRGB(), new Color(8, 8, 8).getRGB(), new Item.Properties()));
-    public static final DeferredItem<Item> COPPER_SENTINEL_SPAWN_EGG = ITEMS.register("copper_sentinel_spawn_egg", () -> new SpawnEggItem(WDEntities.COPPER_SENTINEL.get(), new Color(255, 102, 0).getRGB(), new Color(29, 176, 84).getRGB(), new Item.Properties()));
-    public static final DeferredItem<Item> TOXIC_WISP_SPAWN_EGG = ITEMS.register("toxic_wisp_spawn_egg", () -> new SpawnEggItem(WDEntities.SMALL_TOXIC_WISP.get(), new Color(162, 255, 0).getRGB(), new Color(107, 73, 0).getRGB(), new Item.Properties()));
-    public static final DeferredItem<Item> PRIMAL_CREEPER_SPAWN_EGG = ITEMS.register("primal_creeper_spawn_egg", () -> new SpawnEggItem(WDEntities.PRIMAL_CREEPER.get(), new Color(60, 94, 64).getRGB(), new Color(34, 55, 45).getRGB(), new Item.Properties()));
-    public static final DeferredItem<Item> CONDEMNED_GUARDIAN_SPAWN_EGG = ITEMS.register("condemned_guardian_spawn_egg", () -> new SpawnEggItem(WDEntities.CONDEMNED_GUARDIAN.get(), new Color(85, 204, 169).getRGB(), new Color(255, 137, 0).getRGB(), new Item.Properties()));
+//    public static final DeferredItem<Item> BREEZE_GOLEM_SPAWN_EGG = ITEMS.register("breeze_golem_spawn_egg", () -> new SpawnEggItem(WDEntities.BREEZE_GOLEM.get(), new Color(115, 124, 255).getRGB(), new Color(0, 255, 233).getRGB(), new Item.Properties()));
+//    public static final DeferredItem<Item> MUTANT_BOGGED_SPAWN_EGG = ITEMS.register("mutant_bogged_spawn_egg", () -> new SpawnEggItem(WDEntities.MUTANT_BOGGED.get(), new Color(62, 162, 0).getRGB(), new Color(110, 71, 56).getRGB(), new Item.Properties()));
+//    public static final DeferredItem<Item> NETHER_DRAGON_SPAWN_EGG = ITEMS.register("nether_dragon_spawn_egg", () -> new SpawnEggItem(WDEntities.NETHER_DRAGON.get(), new Color(134, 0, 19).getRGB(), new Color(255, 136, 0).getRGB(), new Item.Properties()));
+//    public static final DeferredItem<Item> SKELEPEDE_SPAWN_EGG = ITEMS.register("skelepede_spawn_egg", () -> new SpawnEggItem(WDEntities.SKELEPEDE.get(), new Color(255, 255, 255).getRGB(), new Color(0, 0, 0).getRGB(), new Item.Properties()));
+//    public static final DeferredItem<Item> SPIDERLING_SPAWN_EGG = ITEMS.register("spiderling_spawn_egg", () -> new SpawnEggItem(WDEntities.SPIDERLING.get(), new Color(65, 0, 70).getRGB(), new Color(8, 8, 8).getRGB(), new Item.Properties()));
+//    public static final DeferredItem<Item> COPPER_SENTINEL_SPAWN_EGG = ITEMS.register("copper_sentinel_spawn_egg", () -> new SpawnEggItem(WDEntities.COPPER_SENTINEL.get(), new Color(255, 102, 0).getRGB(), new Color(29, 176, 84).getRGB(), new Item.Properties()));
+//    public static final DeferredItem<Item> TOXIC_WISP_SPAWN_EGG = ITEMS.register("toxic_wisp_spawn_egg", () -> new SpawnEggItem(WDEntities.SMALL_TOXIC_WISP.get(), new Color(162, 255, 0).getRGB(), new Color(107, 73, 0).getRGB(), new Item.Properties()));
+//    public static final DeferredItem<Item> PRIMAL_CREEPER_SPAWN_EGG = ITEMS.register("primal_creeper_spawn_egg", () -> new SpawnEggItem(WDEntities.PRIMAL_CREEPER.get(), new Color(60, 94, 64).getRGB(), new Color(34, 55, 45).getRGB(), new Item.Properties()));
+//    public static final DeferredItem<Item> CONDEMNED_GUARDIAN_SPAWN_EGG = ITEMS.register("condemned_guardian_spawn_egg", () -> new SpawnEggItem(WDEntities.CONDEMNED_GUARDIAN.get(), new Color(85, 204, 169).getRGB(), new Color(255, 137, 0).getRGB(), new Item.Properties()));
 
+    private static <T> ResourceKey<Item> createItemKey(String name) {
+        return ResourceKey.create(Registries.ITEM, Identifier.withDefaultNamespace(name));
+    }
 }
 

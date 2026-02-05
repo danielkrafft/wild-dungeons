@@ -8,7 +8,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.monster.Slime;
 import net.minecraft.world.item.Items;
 
-public class TargetTemplateRegistry {
+public class TargetTemplateRegistry { //TODO - Uncomment registries once fixed for 1.21.11
     public static final DungeonComponentRegistry<TargetTemplate> TARGET_TEMPLATE_REGISTRY = new DungeonComponentRegistry<>();
 
     public static final TargetTemplate ZOMBIE_NORMAL = createMob("ZOMBIE_NORMAL", EntityType.ZOMBIE);
@@ -22,11 +22,11 @@ public class TargetTemplateRegistry {
     public static final TargetTemplate SKELETON_GOLD = createMob("SKELETON_GOLD", EntityType.SKELETON).setMainHandItem(Items.GOLDEN_SWORD,true).setHelmet(Items.GOLDEN_HELMET).setChestplate(Items.GOLDEN_CHESTPLATE,true).setLeggings(Items.GOLDEN_LEGGINGS).setBoots(Items.GOLDEN_BOOTS).setRandomChance(0.2f);
     public static final TargetTemplate SPIDER = createMob("SPIDER", EntityType.SPIDER);
     public static final TargetTemplate CREEPER = createMob("CREEPER", EntityType.CREEPER);
-    public static final TargetTemplate FAST_CREEPER = createMob("FAST_CREEPER", EntityType.CREEPER).addMobEffect(MobEffects.MOVEMENT_SPEED, 2);
+    public static final TargetTemplate FAST_CREEPER = createMob("FAST_CREEPER", EntityType.CREEPER).addMobEffect(MobEffects.SPEED, 2);
     public static final TargetTemplate BLAZE = createMob("BLAZE", EntityType.BLAZE);
     public static final TargetTemplate BEEFY_BLAZE = createMob("BEEFY_BLAZE", EntityType.BLAZE).addMobEffect(MobEffects.HEALTH_BOOST, 3);
     public static final TargetTemplate CAVE_SPIDER = createMob("CAVE_SPIDER", EntityType.CAVE_SPIDER);
-    public static final TargetTemplate FAST_CAVE_SPIDER = createMob("FAST_CAVE_SPIDER", EntityType.CAVE_SPIDER).addMobEffect(MobEffects.MOVEMENT_SPEED, 2);
+    public static final TargetTemplate FAST_CAVE_SPIDER = createMob("FAST_CAVE_SPIDER", EntityType.CAVE_SPIDER).addMobEffect(MobEffects.SPEED, 2);
     public static final TargetTemplate ENDERMAN = createMob("ENDERMAN", EntityType.ENDERMAN);
     public static final TargetTemplate HUSK = createMob("HUSK", EntityType.HUSK);
     public static final TargetTemplate STRAY = createMob("STRAY", EntityType.STRAY);
@@ -69,14 +69,14 @@ public class TargetTemplateRegistry {
 
     public static final TargetTemplate WARDEN = createMob("WARDEN", EntityType.WARDEN);
     public static final TargetTemplate WITHER = createMob("WITHER", EntityType.WITHER);
-    public static final TargetTemplate NETHER_DRAGON = createMob("NETHER_DRAGON", WDEntities.NETHER_DRAGON.get());
+//    public static final TargetTemplate NETHER_DRAGON = createMob("NETHER_DRAGON", WDEntities.NETHER_DRAGON.get());
     public static final TargetTemplate MUTANT_BOGGED = createMob("MUTANT_BOGGED", WDEntities.MUTANT_BOGGED.get());
-    public static final TargetTemplate BREEZE_GOLEM = createMob("BREEZE_GOLEM", WDEntities.BREEZE_GOLEM.get());
+//    public static final TargetTemplate BREEZE_GOLEM = createMob("BREEZE_GOLEM", WDEntities.BREEZE_GOLEM.get());
 
-    public static final TargetTemplate BUSINESS_GOLEM = createMob("BUSINESS_GOLEM", WDEntities.BUSINESS_GOLEM.get());
+    //public static final TargetTemplate BUSINESS_GOLEM = createMob("BUSINESS_GOLEM", WDEntities.BUSINESS_GOLEM.get());
     public static final TargetTemplate BUSINESS_VINDICATOR = createMob("BUSINESS_VINDICATOR", WDEntities.BUSINESS_VINDICATOR.get()).setMainHandItem(Items.GOLDEN_AXE,true);
     public static final TargetTemplate BUSINESS_EVOKER = createMob("BUSINESS_EVOKER", WDEntities.BUSINESS_EVOKER.get());
-    public static final TargetTemplate BUSINESS_CEO = createMob("BUSINESS_CEO", WDEntities.BUSINESS_CEO.get());
+//    public static final TargetTemplate BUSINESS_CEO = createMob("BUSINESS_CEO", WDEntities.BUSINESS_CEO.get());
     public static final TargetTemplate EMERALD_WISP = createMob("EMERALD_WISP", WDEntities.SMALL_EMERALD_WISP.get());
     public static final TargetTemplate LARGE_EMERALD_WISP = createMob("EMERALD_WISP", WDEntities.LARGE_EMERALD_WISP.get());
 

@@ -4,7 +4,6 @@ import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.registry.WDDamageTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -23,6 +22,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -83,7 +84,7 @@ public class BlackHole extends Entity {
 
     @Override
     public void tick() {
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             if (getMass() >= MAX_MASS) {
                 hasReachedMaxSize = true;
                 handleDecay();
@@ -94,13 +95,19 @@ public class BlackHole extends Entity {
             handleFusion();
 
             if (getMass() <= MIN_MASS) {
-                triggerCollapseEffect();
+                //triggerCollapseEffect(); TODO - Uncomment when triggerCollapseEffect() is implemented for 1.21.11
                 WildDungeons.getLogger().warn("BLACK HOLE DESTROYED!");
                 discard();
                 return;
             }
         }
         super.tick();
+    }
+
+    //TODO - Properly implement for 1.21.11
+    @Override
+    public boolean hurtServer(ServerLevel serverLevel, DamageSource damageSource, float v) {
+        return false;
     }
 
     private void handleMoving() {
@@ -150,7 +157,7 @@ public class BlackHole extends Entity {
                     this.setMass(this.getMass() + drain);
 
                     if (other.getMass() <= MIN_MASS) {
-                        other.triggerCollapseEffect();
+                        //other.triggerCollapseEffect(); TODO - Uncomment when triggerCollapseEffect() is implemented for 1.21.11
                         other.discard();
                         WildDungeons.getLogger().info("Black hole fused and vanished.");
                     }
@@ -347,31 +354,31 @@ public class BlackHole extends Entity {
         // Allow more tangential movement when further away
         return alignment > -0.3 || distanceThreshold < 0.5;
     }
-
-    private void flashAbsorbEffect(BlockPos pos) {
-        if (level() instanceof ServerLevel serverLevel) {
-            serverLevel.sendParticles(
-                    ParticleTypes.FLASH,
-                    pos.getX() + 0.5 + (serverLevel.random.nextDouble() - 0.5) * 0.3,
-                    pos.getY() + 0.5 + (serverLevel.random.nextDouble() * 0.3),
-                    pos.getZ() + 0.5 + (serverLevel.random.nextDouble() - 0.5) * 0.3,
-                    1,
-                    0, 0, 0, 0
-            );
-        }
-    }
-
-    private void triggerCollapseEffect() {
-        if (level() instanceof ServerLevel serverLevel) {
-            serverLevel.sendParticles(
-                    ParticleTypes.FLASH,
-                    getX(), getY(), getZ(),
-                    1,
-                    0, 0, 0,
-                    0
-            );
-        }
-    }
+    //TODO - Fix for 1.21.11
+//    private void flashAbsorbEffect(BlockPos pos) {
+//        if (level() instanceof ServerLevel serverLevel) {
+//            serverLevel.sendParticles(
+//                    ParticleTypes.FLASH,
+//                    pos.getX() + 0.5 + (serverLevel.random.nextDouble() - 0.5) * 0.3,
+//                    pos.getY() + 0.5 + (serverLevel.random.nextDouble() * 0.3),
+//                    pos.getZ() + 0.5 + (serverLevel.random.nextDouble() - 0.5) * 0.3,
+//                    1,
+//                    0, 0, 0, 0
+//            );
+//        }
+//    }
+//
+//    private void triggerCollapseEffect() {
+//        if (level() instanceof ServerLevel serverLevel) {
+//            serverLevel.sendParticles(
+//                    ParticleTypes.FLASH,
+//                    getX(), getY(), getZ(),
+//                    1,
+//                    0, 0, 0,
+//                    0
+//            );
+//        }
+//    }
 
     public static DamageSource blackHoleDamage(DamageSources sources) {
         return sources.source(WDDamageTypes.BLACKHOLE.getKey());
@@ -396,26 +403,26 @@ public class BlackHole extends Entity {
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag tag) {
-        this.mass = tag.contains("mass") ? tag.getFloat("mass") : 1.0f;
+    protected void readAdditionalSaveData(ValueInput input) {
+        this.mass = input.getFloatOr("mass", 1.0F);
         decayCooldownTicks = 0;
         pendingDestruction = new ArrayDeque<>();
         destructionSpreadTickCounter = 0;                           // Ticks remaining for this destruction round
         damageCooldowns = new HashMap<>();  // Tracks cooldowns for entity damage
-        hasReachedMaxSize = tag.getBoolean("hasReachedMaxSize");
-        firedDirection = new Vec3(tag.getFloat("x"), tag.getFloat("y"), tag.getFloat("z"));
-        initialSpeed = tag.getFloat("initialSpeed");
+        hasReachedMaxSize = input.getBooleanOr("hasReachedMaxSize", false);
+        firedDirection = new Vec3(input.getFloatOr("x", 0), input.getFloatOr("y", 0), input.getFloatOr("z", 0));
+        initialSpeed = input.getFloatOr("initialSpeed", 0);
         setMass(mass);
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag tag) {
-        tag.putFloat("mass", this.mass);
-        tag.putBoolean("hasReachedMaxSize", this.hasReachedMaxSize);
-        tag.putFloat("x", (float) this.firedDirection.x);
-        tag.putFloat("y", (float) this.firedDirection.y);
-        tag.putFloat("z", (float) this.firedDirection.z);
-        tag.putFloat("initialSpeed", this.initialSpeed);
+    protected void addAdditionalSaveData(ValueOutput output) {
+        output.putFloat("mass", this.mass);
+        output.putBoolean("hasReachedMaxSize", this.hasReachedMaxSize);
+        output.putFloat("x", (float) this.firedDirection.x);
+        output.putFloat("y", (float) this.firedDirection.y);
+        output.putFloat("z", (float) this.firedDirection.z);
+        output.putFloat("initialSpeed", this.initialSpeed);
     }
 
     public float getMass() {

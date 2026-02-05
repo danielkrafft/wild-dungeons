@@ -9,7 +9,7 @@ import net.minecraft.world.level.chunk.LevelChunkSection;
 
 import java.util.List;
 
-public abstract class PostProcessingStep {
+public abstract class PostProcessingStep { //TODO - Uncomment once DungeonRoom is fixed for 1.21.11
     public abstract void handle(List<DungeonRoom> rooms);
 
     public void setBlockFast(ServerLevel level, BlockPos pos, BlockState state) {

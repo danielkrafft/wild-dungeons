@@ -37,7 +37,7 @@ public class RottenMossBlock extends Block
     {
         return SHAPE;
     }
-    @Override
+    //@Override TODO - Fix for 1.21.11
     protected void entityInside(@NotNull BlockState pState, @NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull Entity entity)
     {
         if(entity instanceof LivingEntity li)poisonEntity(li);

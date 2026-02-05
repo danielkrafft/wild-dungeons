@@ -10,7 +10,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -23,7 +23,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -32,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class LockableBlock extends Block {
     public static BooleanProperty LOCKED = BooleanProperty.create("locked");
-    public static DirectionProperty FACING = BlockStateProperties.FACING;
+    public static EnumProperty<Direction> FACING = BlockStateProperties.FACING;
     public static final VoxelShape LOCKED_NORTH_SHAPE = Block.box(2, 2, 0, 14, 16, 2);
     public static final VoxelShape LOCKED_SOUTH_SHAPE = Block.box(2, 2, 14, 14, 16, 16);
     public static final VoxelShape LOCKED_EAST_SHAPE = Block.box(14, 2, 2, 16, 16, 14);
@@ -52,30 +52,31 @@ public class LockableBlock extends Block {
     }
 
     @Override
-    protected @NotNull ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
-        if (level.isClientSide) {
-            return ItemInteractionResult.SUCCESS;
+    protected @NotNull InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        if (level.isClientSide()) {
+            return InteractionResult.SUCCESS;
         }
         Boolean locked = state.getValue(LOCKED);
         if (!locked) {
-            return ItemInteractionResult.FAIL;
+            return InteractionResult.FAIL;
         }
         if (stack.getItem().equals(WDItems.WD_DUNGEON_KEY.get())) {
             stack.shrink(1);
             level.setBlock(pos, state.setValue(LOCKED, false), 2);
             level.playSound(null, pos, SoundEvents.IRON_TRAPDOOR_OPEN, SoundSource.BLOCKS, 1.0F, 1.0F);
 
-            ServerPlayer serverPlayer = (ServerPlayer) player;
-            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer);
-            if (wdPlayer.getCurrentDungeon() != null) {
-                if (wdPlayer.getCurrentRoom() instanceof TargetPurgeRoom enemyPurgeRoom) {
-                        enemyPurgeRoom.discardByBlockPos(pos);
-                }
-            }
+                //TODO - Fix for 1.21.11
+//            ServerPlayer serverPlayer = (ServerPlayer) player;
+//            WDPlayer wdPlayer = WDPlayerManager.getInstance().getOrCreateServerWDPlayer(serverPlayer);
+//            if (wdPlayer.getCurrentDungeon() != null) {
+//                if (wdPlayer.getCurrentRoom() instanceof TargetPurgeRoom enemyPurgeRoom) {
+//                        enemyPurgeRoom.discardByBlockPos(pos);
+//                }
+//            }
 
-            return ItemInteractionResult.SUCCESS;
+            return InteractionResult.SUCCESS;
         } else {
-            return ItemInteractionResult.FAIL;
+            return InteractionResult.FAIL;
         }
     }
 

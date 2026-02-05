@@ -2,31 +2,24 @@ package com.danielkkrafft.wilddungeons.ui;
 
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.network.ServerPacketHandler;
-import com.danielkkrafft.wilddungeons.network.SimplePacketManager;
 import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
 import com.danielkkrafft.wilddungeons.util.Serializer;
 import com.mojang.authlib.properties.Property;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.GameNarrator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.resources.PlayerSkin;
 import net.minecraft.client.resources.SkinManager;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.neoforged.neoforge.network.PacketDistributor;
-import org.joml.Matrix4f;
+import net.minecraft.world.entity.player.PlayerSkin;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
-public class WDPostDungeonScreen extends Screen {
+public class WDPostDungeonScreen extends Screen { //TODO - Fix rendering logic to work with 1.21.11
 
     public final HashMap<String, DungeonSession.DungeonStats> stats;
     public final HashMap<String, DungeonSession.DungeonSkinDataHolder> skins;
@@ -49,9 +42,9 @@ public class WDPostDungeonScreen extends Screen {
     public final boolean perfectDeaths;
 
     public final int clearScore;
-    public final List<Pair<Integer, CompletableFuture<PlayerSkin>>> clearScores = new ArrayList<>();
+    public final List<Pair<Integer, CompletableFuture<Optional<PlayerSkin>>>> clearScores = new ArrayList<>();
     public final boolean perfectScore;
-    public final PlayerSkin defaultSkin;
+    public final PlayerSkin defaultSkin = null;
 
     public final List<AnimationStep> steps = new ArrayList<>();
     public int step = 0;
@@ -111,8 +104,8 @@ public class WDPostDungeonScreen extends Screen {
 
     public WDPostDungeonScreen(CompoundTag data) {
         super(GameNarrator.NO_TITLE);
+        PlayerSkin defaultSkin1 = this.defaultSkin;
         timestamp = System.currentTimeMillis();
-        defaultSkin = Minecraft.getInstance().getSkinManager().getInsecureSkin(Minecraft.getInstance().getGameProfile());
 
         DungeonSession.DungeonStatsHolder holder = Serializer.fromCompoundTag(data);
         this.stats = holder == null ? null : holder.playerStats;
@@ -189,7 +182,7 @@ public class WDPostDungeonScreen extends Screen {
         super.onClose();
         CompoundTag tag = new CompoundTag();
         tag.putString("packet", ServerPacketHandler.Packets.RESTORE_PLAYER_GAMEMODE.toString());
-        PacketDistributor.sendToServer(new SimplePacketManager.ServerboundTagPacket(tag));
+        //PacketDistributor.sendToServer(new SimplePacketManager.ServerboundTagPacket(tag));
     }
 
     @Override
@@ -354,30 +347,30 @@ public class WDPostDungeonScreen extends Screen {
         int minY = Mth.lerpInt(ratio, step.maxY() - padding * 2, step.minY() + padding * 2);
         int maxY = step.maxY() - padding * 2;
 
-        ResourceLocation skin = clearScores.get(step.id).getSecond().getNow(defaultSkin).texture();
+        //Identifier skin = clearScores.get(step.id).getSecond().getNow(defaultSkin).texture();
 
         guiGraphics.fill(minX + xOffset + this.width, Mth.lerpInt(step.completion(), maxY, minY), maxX + xOffset + this.width, maxY, this.primaryColor);
-        drawCenteredSquare(guiGraphics, skin, minX + ((maxX - minX) / 2), maxY, (int) (step.completion() * padding * 2), 8f / 64f, 8f / 64f, 16f / 64f, 16f / 64f, 0xFFFFFFFF);
+        //drawCenteredSquare(guiGraphics, skin, minX + ((maxX - minX) / 2), maxY, (int) (step.completion() * padding * 2), 8f / 64f, 8f / 64f, 16f / 64f, 16f / 64f, 0xFFFFFFFF);
         WDFont.drawCenteredString(guiGraphics, String.valueOf((int) (clearScores.get(step.id).getFirst() * step.completion())), minX + ((maxX - minX) / 2), Math.min(minY - padding, maxY - padding * 2), padding, 0xFFFFFFFF);
     }
 
-    public static void drawTexturedQuad(GuiGraphics guiGraphics, ResourceLocation texture, int minX, int minY, int maxX, int maxY, float minU, float minV, float maxU, float maxV, int color) {
-        PoseStack poseStack = guiGraphics.pose();
-        Matrix4f pose = poseStack.last().pose();
-        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-        RenderSystem.setShaderTexture(0, texture);
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-
-        buffer.addVertex(pose, minX, maxY, 0.0f).setUv(minU, maxV).setColor(color);
-        buffer.addVertex(pose, maxX, maxY, 0.0f).setUv(maxU, maxV).setColor(color);
-        buffer.addVertex(pose, maxX, minY, 0.0f).setUv(maxU, minV).setColor(color);
-        buffer.addVertex(pose, minX, minY, 0.0f).setUv(minU, minV).setColor(color);
-
-        BufferUploader.drawWithShader(buffer.buildOrThrow());
-    }
-
-    public static void drawCenteredSquare(GuiGraphics guiGraphics, ResourceLocation texture, int x, int y, int size, float minU, float minV, float maxU, float maxV, int color) {
-        drawTexturedQuad(guiGraphics, texture, x - size / 2, y - size / 2, x + size / 2, y + size / 2, minU, minV, maxU, maxV, color);
-    }
+//    public static void drawTexturedQuad(GuiGraphics guiGraphics, Identifier texture, int minX, int minY, int maxX, int maxY, float minU, float minV, float maxU, float maxV, int color) {
+//        PoseStack poseStack = guiGraphics.pose();
+//        Matrix4f pose = poseStack.last().pose();
+//        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+//        RenderSystem.setShaderTexture(0, texture);
+//        Tesselator tesselator = Tesselator.getInstance();
+//        BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+//
+//        buffer.addVertex(pose, minX, maxY, 0.0f).setUv(minU, maxV).setColor(color);
+//        buffer.addVertex(pose, maxX, maxY, 0.0f).setUv(maxU, maxV).setColor(color);
+//        buffer.addVertex(pose, maxX, minY, 0.0f).setUv(maxU, minV).setColor(color);
+//        buffer.addVertex(pose, minX, minY, 0.0f).setUv(minU, minV).setColor(color);
+//
+//        BufferUploader.drawWithShader(buffer.buildOrThrow());
+//    }
+//
+//    public static void drawCenteredSquare(GuiGraphics guiGraphics, Identifier texture, int x, int y, int size, float minU, float minV, float maxU, float maxV, int color) {
+//        drawTexturedQuad(guiGraphics, texture, x - size / 2, y - size / 2, x + size / 2, y + size / 2, minU, minV, maxU, maxV, color);
+//    }
 }

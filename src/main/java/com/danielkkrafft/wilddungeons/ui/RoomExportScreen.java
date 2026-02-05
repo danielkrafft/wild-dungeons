@@ -15,12 +15,14 @@ import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Checkbox;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -82,18 +84,18 @@ public class RoomExportScreen extends Screen {
 
     @Override
     protected void init() {
-        modeButton = addRenderableWidget(CycleButton.<StructureMode>builder(structureMode -> Component.translatable("structure_block.mode." + structureMode.getSerializedName()))
-                .withValues(ALL_MODES)
-                .displayOnlyValue()
-                .withInitialValue(mode)
-                .create(5, 15, 50, 20, Component.translatable("structure_block.mode"), (button, mode) -> {
-                    updateMode(mode);
-                }));
-        nameEdit = new EditBox(font, 60, 15, width - 120, 20, Component.translatable("structure_block.structure_name")) {
-            public boolean charTyped(char charTyped, int modifiers) {
-                return RoomExportScreen.this.isValidCharacterForName(getValue(), charTyped, getCursorPosition()) && super.charTyped(charTyped, modifiers);
-            }
-        };
+//        modeButton = addRenderableWidget(CycleButton.<StructureMode>builder(structureMode -> Component.translatable("structure_block.mode." + structureMode.getSerializedName())) TODO - Fix for 1.21.11
+//                .withValues(ALL_MODES)
+//                .displayOnlyValue()
+//                .withInitialValue(mode)
+//                .create(5, 15, 50, 20, Component.translatable("structure_block.mode"), (button, mode) -> {
+//                    updateMode(mode);
+//                }));
+//        nameEdit = new EditBox(font, 60, 15, width - 120, 20, Component.translatable("structure_block.structure_name")) {
+//            public boolean charTyped(char charTyped, int modifiers) {
+//                return RoomExportScreen.this.isValidCharacterForName(getValue(), charTyped, getCursorPosition()) && super.charTyped(charTyped, modifiers);
+//            }
+//        };
         nameEdit.setMaxLength(128);
         nameEdit.setValue(RoomExportWand.getRoomName(roomExportWand));
         addWidget(nameEdit);
@@ -134,26 +136,26 @@ public class RoomExportScreen extends Screen {
 
         resourcePackDropdown = addRenderableWidget(new WDDropdown(minecraft, width-205, 59, 200, 20, Component.translatable("room_export_wand.dungeon_materials")));
 
-        ArrayList<Component> resourceLocations = new ArrayList<>();
+        ArrayList<Component> Identifiers = new ArrayList<>();
 
         //this manager only exists on the server, and this screen only exists on the client. In a multiplayer environment, this will be null, but it will work in single player
         if (WDStructureTemplateManager.INSTANCE != null){
-            resourceLocations = WDStructureTemplateManager.INSTANCE.listGenerated().map(resourceLocation -> Component.literal(resourceLocation.getPath().replace("structure/", "").replace(".nbt", ""))).collect(Collectors.toCollection(ArrayList::new));
-            Map<ResourceLocation, Resource> resourceLocationPackResourcesMap = DungeonSessionManager.getInstance().server.getResourceManager().listResources("structure", (resourceLocation -> resourceLocation.getNamespace().equals("wilddungeons") && resourceLocation.getPath().endsWith(".nbt")));
-            for (ResourceLocation resourceLocation : resourceLocationPackResourcesMap.keySet()) {
-                resourceLocations.add(Component.literal(resourceLocation.getPath().replace("structure/", "").replace(".nbt", "")));
+            Identifiers = WDStructureTemplateManager.INSTANCE.listGenerated().map(Identifier -> Component.literal(Identifier.getPath().replace("structure/", "").replace(".nbt", ""))).collect(Collectors.toCollection(ArrayList::new));
+            Map<Identifier, Resource> IdentifierPackResourcesMap = DungeonSessionManager.getInstance().server.getResourceManager().listResources("structure", (Identifier -> Identifier.getNamespace().equals("wilddungeons") && Identifier.getPath().endsWith(".nbt")));
+            for (Identifier Identifier : IdentifierPackResourcesMap.keySet()) {
+                Identifiers.add(Component.literal(Identifier.getPath().replace("structure/", "").replace(".nbt", "")));
             }
         }
         //remove duplicates
-        resourceLocations = new ArrayList<>(resourceLocations.stream().distinct().toList());
-        resourceLocations.sort(Comparator.comparing(Component::getString));
-        resourcePackDropdown.setOptions(resourceLocations);
+        Identifiers = new ArrayList<>(Identifiers.stream().distinct().toList());
+        Identifiers.sort(Comparator.comparing(Component::getString));
+        resourcePackDropdown.setOptions(Identifiers);
         resourcePackDropdown.setMaxVisibleOptions(resourcePackDropdown.calculateMaxDisplayableOptions(this.height));
         resourcePackDropdown.setSelectionChangeListener(index -> {
             nameEdit.setValue(resourcePackDropdown.getOptions().get(index).getString());
         });
         try {
-            int selectedIndex = resourceLocations.indexOf(Component.literal(nameEdit.getValue()));
+            int selectedIndex = Identifiers.indexOf(Component.literal(nameEdit.getValue()));
             if (selectedIndex != -1) {
                 resourcePackDropdown.setSelectedIndex(selectedIndex);
             }
@@ -230,10 +232,10 @@ public class RoomExportScreen extends Screen {
     }
 
     @Override
-    public void resize(@NotNull Minecraft minecraft, int width, int height) {
+    public void resize(int width, int height) {
         String s = nameEdit.getValue();
-        super.resize(minecraft, width, height);
-        init(minecraft, width, height);
+        super.resize(width, height);
+        init(width, height);
         nameEdit.setValue(s);
     }
 
@@ -252,10 +254,11 @@ public class RoomExportScreen extends Screen {
         onDone();
     }
 
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (super.keyPressed(keyCode, scanCode, modifiers)) {
+    @Override
+    public boolean keyPressed(KeyEvent keyEvent) {
+        if (super.keyPressed(keyEvent)) {
             return true;
-        } else if (keyCode != 257 && keyCode != 335) {
+        } else if (keyEvent.key() != 257 && keyEvent.key() != 335) {
             return false;
         } else {
             confirmAction = true;
@@ -295,7 +298,7 @@ public class RoomExportScreen extends Screen {
             }
         }
 
-        PacketDistributor.sendToServer(new SimplePacketManager.ServerboundTagPacket(tag));
+        //PacketDistributor.sendToServer(new SimplePacketManager.ServerboundTagPacket(tag)); TODO - Figure out 1.21.11 equivalent
     }
 
     private ListTag getDungeonMaterialsTag() {
@@ -352,18 +355,18 @@ public class RoomExportScreen extends Screen {
             public SelectionRegionBlockEntry(DungeonMaterial.BlockSetting blockSetting) {
                 dungeonMaterialIDEdit = new EditBox(RoomExportScreen.this.font, 0, 0, 30, 20, Component.translatable("room_export_wand.dungeon_material_id")) {
                     public boolean charTyped(char charTyped, int modifiers) {
-                        return (Character.isDigit(charTyped) || charTyped == '-') && super.charTyped(charTyped, modifiers);
+                        return (Character.isDigit(charTyped) || charTyped == '-') && super.charTyped(new CharacterEvent(charTyped, modifiers));
                     }
                 };
                 dungeonMaterialIDEdit.setMaxLength(128);
                 dungeonMaterialIDEdit.setValue(Integer.toString(blockSetting.materialIndex));
-                blockTypeButton = CycleButton.<DungeonMaterial.BlockSetting.BlockType>builder(blockType -> Component.empty())
-                        .withValues(DungeonMaterial.BlockSetting.BlockType.values())
-                        .displayOnlyValue()
-                        .withInitialValue(blockSetting.blockType)
-                        .create(0, 0, 30, 20, Component.translatable("room_export_wand.block_type"), (button, blockType) -> {
-                            blockSetting.blockType = blockType;
-                        });
+//                blockTypeButton = CycleButton.<DungeonMaterial.BlockSetting.BlockType>builder(blockType -> Component.empty()) TODO - fix for 1.21.11
+//                        .withValues(DungeonMaterial.BlockSetting.BlockType.values())
+//                        .displayOnlyValue()
+//                        .withInitialValue(blockSetting.blockType)
+//                        .create(0, 0, 30, 20, Component.translatable("room_export_wand.block_type"), (button, blockType) -> {
+//                            blockSetting.blockType = blockType;
+//                        });
             }
 
             @Override
@@ -372,7 +375,7 @@ public class RoomExportScreen extends Screen {
                 return !itemStack.isEmpty() ? Component.translatable("narrator.select", itemStack.getHoverName()) : CommonComponents.EMPTY;
             }
 
-            @Override
+            //@Override TODO - Fix
             public void render(
                     @NotNull GuiGraphics guiGraphics,
                     int index,
@@ -419,11 +422,10 @@ public class RoomExportScreen extends Screen {
                 guiGraphics.renderFakeItem(itemStack, x, y);
             }
 
-            @Override
-            public boolean mouseClicked(double mouseX, double mouseY, int button) {
-                return false;
-            }
 
+            @Override // TODO - Implement this for 1.21.11
+            public void renderContent(GuiGraphics guiGraphics, int i, int i1, boolean b, float v) {
+            }
         }
     }
 
@@ -505,7 +507,7 @@ public class RoomExportScreen extends Screen {
                 return getBlockTypeComponent();
             }
 
-            @Override
+            //@Override TODO - Fix
             public void render(
                     @NotNull GuiGraphics guiGraphics,
                     int index,
@@ -542,9 +544,15 @@ public class RoomExportScreen extends Screen {
                 }
             }
 
+//            @Override
+//            public boolean mouseClicked(double mouseX, double mouseY, int button) {
+//                return false;
+//            }
+
+            //TODO - Implement this for 1.21.11
             @Override
-            public boolean mouseClicked(double mouseX, double mouseY, int button) {
-                return false;
+            public void renderContent(GuiGraphics guiGraphics, int i, int i1, boolean b, float v) {
+
             }
 
             @Override
@@ -583,7 +591,7 @@ public class RoomExportScreen extends Screen {
     }
 
     public static void blitSlot(GuiGraphics guiGraphics, int x, int y, ItemStack stack) {
-        guiGraphics.blitSprite(ResourceLocation.withDefaultNamespace("container/slot"), x + 1, y + 1, 0, 18, 18);
+        //guiGraphics.blitSprite(Identifier.withDefaultNamespace("container/slot"), x + 1, y + 1, 0, 18, 18);
         if (!stack.isEmpty()) {
             guiGraphics.renderFakeItem(stack, x + 2, y + 2);
         }

@@ -22,13 +22,13 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
@@ -309,13 +309,13 @@ public class DungeonRoom {
         chunkPosSet.forEach(chunkPos -> {
             getBranch().getFloor().getChunkMap().get(chunkPos).remove(new Vector2i(this.getBranch().getIndex(), this.getIndex()));
         });
-        getConnectionPoints().forEach(ConnectionPoint::removeDecal);
+        //getConnectionPoints().forEach(ConnectionPoint::removeDecal); TODO - Uncomment once decals are fixed for 1.21.11
     }
 
     public void unsetAttachedPoints() {
         getConnectionPoints().forEach(connectionPoint -> {
             if (connectionPoint.isConnected()) {
-                connectionPoint.getConnectedPoint().unSetConnectedPoint();
+                //connectionPoint.getConnectedPoint().unSetConnectedPoint(); TODO - Uncomment once decals are fixed for 1.21.11
             }
         });
     }
@@ -326,14 +326,14 @@ public class DungeonRoom {
             point.setupBlockstates(getOrientation(), getPosition(), this.getBranch().getFloor().getLevel());
             if (point.isConnected()) {
                 point.unBlock();
-                point.addDecal();
+                //point.addDecal(); TODO - Uncomment once decals are fixed for 1.21.11
                 if (!(point.getConnectedPoint().getRoom() instanceof LockableEventRoom)){
                     point.getConnectedPoint().unBlock();
                 };
             }
             if (!point.isConnected()) {
                 point.block(2);
-                point.removeDecal();
+                //point.removeDecal(); TODO - Uncomment once decals are fixed for 1.21.11
             }
         }
     }
@@ -444,7 +444,7 @@ public class DungeonRoom {
         this.getTemplate().dataMarkers().forEach(marker -> {
             BlockPos pos = TemplateHelper.transform(marker.pos(), this);
             assert marker.nbt() != null;//we null check when we register the template
-            processDataMarker(pos, marker.nbt().getString("metadata"));
+            processDataMarker(pos, marker.nbt().getStringOr("metadata", ""));
         });
     }
 
@@ -479,7 +479,7 @@ public class DungeonRoom {
             if (RandomUtil.sample(0.8f) || mobType == WDEntities.OFFERING.get()) {
                 for (int y = randomBox.minY(); y < randomBox.maxY(); y++) {
                     mutableBlockPos.set(randX, y, randZ);
-                    if (!SpawnPlacements.checkSpawnRules(mobType, level, MobSpawnType.REINFORCEMENT, mutableBlockPos, level.getRandom())) continue;
+                    if (!SpawnPlacements.checkSpawnRules(mobType, level, EntitySpawnReason.REINFORCEMENT, mutableBlockPos, level.getRandom())) continue;
 
                     if (level.getFluidState(mutableBlockPos).is(Fluids.LAVA)) continue;
                     mutableBlockPos.set(randX, y - 1, randZ);
@@ -495,7 +495,7 @@ public class DungeonRoom {
             } else {
                 for (int y = randomBox.maxY()-1; y > randomBox.minY(); y--) {
                     mutableBlockPos.set(randX, y, randZ);
-                    if (!SpawnPlacements.checkSpawnRules(mobType, level, MobSpawnType.REINFORCEMENT, mutableBlockPos, level.getRandom())) continue;
+                    if (!SpawnPlacements.checkSpawnRules(mobType, level, EntitySpawnReason.REINFORCEMENT, mutableBlockPos, level.getRandom())) continue;
 
                     if (level.getFluidState(mutableBlockPos).is(Fluids.LAVA)) continue;
                     mutableBlockPos.set(randX, y - 1, randZ);
@@ -551,7 +551,7 @@ public class DungeonRoom {
         }).min(Comparator.comparingInt(Pair::getSecond)).get().getFirst();
     }
 
-    public ResourceLocation getDecalTexture() {
+    public Identifier getDecalTexture() {
         return null;
     }
 

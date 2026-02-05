@@ -5,8 +5,7 @@ import com.danielkkrafft.wilddungeons.registry.WDAttachmentTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.projectile.AbstractArrow;
-import net.minecraft.world.entity.projectile.Arrow;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -54,7 +53,7 @@ public class ArrowBehaviorEvents {
                         }
 
                     } else {
-                        if (!arrow.level().isClientSide) {
+                        if (!arrow.level().isClientSide()) {
                             Entity entity = ((ServerLevel) arrow.level()).getEntity(attachmentType.getTarget().get());
                             if (entity != null) {
                                 Vec3 targetDir = entity.position()

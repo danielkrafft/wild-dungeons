@@ -1,7 +1,6 @@
 package com.danielkkrafft.wilddungeons.item;
 
 import com.danielkkrafft.wilddungeons.entity.FriendlyEmeraldWisp;
-import com.danielkkrafft.wilddungeons.item.itemhelpers.WDItemAnimator;
 import com.danielkkrafft.wilddungeons.item.itemhelpers.WDWeapon;
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
 import net.minecraft.network.chat.Component;
@@ -10,11 +9,13 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animatable.manager.AnimatableManager;
 
 public class EmeraldStaff extends WDWeapon {
     private static final String NAME = "emerald_staff";
@@ -40,14 +41,22 @@ public class EmeraldStaff extends WDWeapon {
         this.projectileRange = RANGE;
     }
 
+//    @Override TODO - Fix for 1.21.11
+//    protected void configureAnimator(WDItemAnimator animator) {
+//        animator.addLoopingAnimation("idle");
+//        animator.addAnimation("fire");
+//    }
     @Override
-    protected void configureAnimator(WDItemAnimator animator) {
-        animator.addLoopingAnimation("idle");
-        animator.addAnimation("fire");
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
     }
 
     @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return null;
+    }
+
+    @Override
+    public @NotNull InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
 
         ItemStack ammo = findAmmo(player);
@@ -55,14 +64,14 @@ public class EmeraldStaff extends WDWeapon {
 
         if (!player.getAbilities().instabuild && !hasAmmo) {
             player.displayClientMessage(
-                    Component.translatable("wilddungeons.missing_ammo", Items.EMERALD.getDescription()),
+                    Component.translatable("wilddungeons.missing_ammo", Items.EMERALD.getName()),
                     true
             );
-            return InteractionResultHolder.fail(stack);
+            return InteractionResult.FAIL;
         }
 
-        if (level.isClientSide) {
-            return InteractionResultHolder.consume(stack);
+        if (level.isClientSide()) {
+            return InteractionResult.CONSUME;
         }
 
         if (!player.getAbilities().instabuild && hasAmmo) {
@@ -80,12 +89,12 @@ public class EmeraldStaff extends WDWeapon {
         few.setYHeadRot(player.getYRot());
         few.setDeltaMovement(look.normalize().scale(PROJECTILE_SPEED));
 
-        animator.playAnimation(this, "fire", stack, player, level);
+        // animator.playAnimation(this, "fire", stack, player, level); TODO - Fix for 1.21.11
         level.playSound(null, player.blockPosition(), SoundEvents.ILLUSIONER_CAST_SPELL, SoundSource.PLAYERS, 1.0f, 1.0f);
 
-        player.getCooldowns().addCooldown(this, COOLDOWN_TICKS);
+        player.getCooldowns().addCooldown(stack, COOLDOWN_TICKS);
         player.awardStat(Stats.ITEM_USED.get(this));
 
-        return InteractionResultHolder.consume(stack);
+        return InteractionResult.CONSUME;
     }
 }

@@ -19,8 +19,8 @@ public class OfferingTemplateTableRegistry {
     public static final WeightedTable<OfferingTemplate> FREE_CUSTOM_WEAPON_TABLE = create("FREE_CUSTOM_WEAPON_TABLE")
             .add(new WeightedPool<OfferingTemplate>()
                     .add(OfferingTemplateRegistry.FREE_AMOGUS_STAFF, 1)
-                    .add(OfferingTemplateRegistry.FREE_LASER_SWORD, 1)
-                    .add(OfferingTemplateRegistry.FREE_FIREWORK_GUN, 1)
+//                    .add(OfferingTemplateRegistry.FREE_LASER_SWORD, 1)
+//                    .add(OfferingTemplateRegistry.FREE_FIREWORK_GUN, 1)
                     .add(OfferingTemplateRegistry.FREE_MEATHOOK, 1)
                     , 1);
 

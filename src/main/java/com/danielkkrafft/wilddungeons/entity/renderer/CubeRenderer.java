@@ -4,9 +4,9 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
@@ -20,7 +20,7 @@ public final class CubeRenderer
         return null;
     }
     //plane
-    public static void plane(float yOffset, Vec3 disp, float radius, ResourceLocation texture, PoseStack matrix, MultiBufferSource buffer, float yaw, float pitch, float roll, float r, float g, float b, float alpha)
+    public static void plane(float yOffset, Vec3 disp, float radius, Identifier texture, PoseStack matrix, MultiBufferSource buffer, float yaw, float pitch, float roll, float r, float g, float b, float alpha)
     {
         matrix.pushPose();
         matrix.translate(disp.x,disp.y,disp.z);
@@ -31,7 +31,7 @@ public final class CubeRenderer
         matrix.popPose();
     }
     //cube
-    public static void cube(float yOffset, float height, Vec3 disp, float radius, ResourceLocation texture, PoseStack matrix, MultiBufferSource buffer, float yaw, float pitch,float roll, float r, float g, float b, float alpha)
+    public static void cube(float yOffset, float height, Vec3 disp, float radius, Identifier texture, PoseStack matrix, MultiBufferSource buffer, float yaw, float pitch,float roll, float r, float g, float b, float alpha)
     {
         final float i=yOffset+height;
         final float textureScale=1f;
@@ -45,7 +45,7 @@ public final class CubeRenderer
         matrix.popPose();
     }
     //cross
-    public static void cross(float yOffset,float height,Vec3 disp,float radius,ResourceLocation texture,PoseStack matrix,MultiBufferSource buffer,float yaw,float pitch,float roll,float r,float g,float b,float alpha)
+    public static void cross(float yOffset,float height,Vec3 disp,float radius,Identifier texture,PoseStack matrix,MultiBufferSource buffer,float yaw,float pitch,float roll,float r,float g,float b,float alpha)
     {
         final float i=yOffset+height;
         final float textureScale=1f;
@@ -58,9 +58,9 @@ public final class CubeRenderer
         renderCross(matrix,buffer,texture,r,g,b,alpha,yOffset,i,radius,-1,f16);
         matrix.popPose();
     }
-    private static void renderPlane(PoseStack matrix,MultiBufferSource bufferIn,ResourceLocation texture,float r,float g,float b,float a,float yOffset,float radius)
+    private static void renderPlane(PoseStack matrix,MultiBufferSource bufferIn,Identifier texture,float r,float g,float b,float a,float yOffset,float radius)
     {
-        renderPlane2(matrix, bufferIn.getBuffer(RenderType.itemEntityTranslucentCull(texture)),r,g,b,a,yOffset,-radius/2f,radius/2f,0, 1);
+        renderPlane2(matrix, bufferIn.getBuffer(RenderTypes.itemEntityTranslucentCull(texture)),r,g,b,a,yOffset,-radius/2f,radius/2f,0, 1);
     }
     private static void renderPlane2(PoseStack matrix, VertexConsumer bufferIn, float red, float green, float blue, float alpha, float yMin, float x1, float z1,float u1, float u2)
     {
@@ -78,9 +78,9 @@ public final class CubeRenderer
         addVertex(matrixstack$entry, matrixPos, matrixNormal, bufferIn, red, green, blue, alpha, x1, z1, yMin, u2, u2);
         addVertex(matrixstack$entry, matrixPos, matrixNormal, bufferIn, red, green, blue, alpha, x1, x1, yMin, u2, u1);
     }
-    private static void renderCube(PoseStack matrix,MultiBufferSource bufferIn,ResourceLocation texture,float r,float g,float b,float a,float yOffset,float i,float radius,float f15,float f16)
+    private static void renderCube(PoseStack matrix,MultiBufferSource bufferIn,Identifier texture,float r,float g,float b,float a,float yOffset,float i,float radius,float f15,float f16)
     {
-        renderPartCube(matrix, bufferIn.getBuffer(RenderType.itemEntityTranslucentCull(texture)),r,g,b,a,yOffset,i,radius,0.0F, 1.0F, f16, f15);
+        renderPartCube(matrix, bufferIn.getBuffer(RenderTypes.itemEntityTranslucentCull(texture)),r,g,b,a,yOffset,i,radius,0.0F, 1.0F, f16, f15);
     }
     private static void renderPartCube(PoseStack matrix, VertexConsumer bufferIn, float red, float green, float blue, float alpha, float yMin, float yMax, float radius,float u1, float u2, float v1, float v2)
     {
@@ -104,9 +104,9 @@ public final class CubeRenderer
         addVertex(matrixstack$entry, matrix4f, matrix3f, bufferIn, red, green, blue, alpha, radius/2f, radius/2f, yMax, u1, u2);
         addVertex(matrixstack$entry, matrix4f, matrix3f, bufferIn, red, green, blue, alpha, radius/2f, -radius/2f, yMax, u1, u1);
     }
-    private static void renderCross(PoseStack matrix,MultiBufferSource bufferIn,ResourceLocation texture,float r,float g,float b,float a,float yOffset,float i,float radius,float f15,float f16)
+    private static void renderCross(PoseStack matrix, MultiBufferSource bufferIn, Identifier texture, float r, float g, float b, float a, float yOffset, float i, float radius, float f15, float f16)
     {
-        renderPartCross(matrix, bufferIn.getBuffer(RenderType.itemEntityTranslucentCull(texture)),r,g,b,a,yOffset,i,radius,0.0F, 1.0F, f16,f15);
+        renderPartCross(matrix, bufferIn.getBuffer(RenderTypes.itemEntityTranslucentCull(texture)),r,g,b,a,yOffset,i,radius,0.0F, 1.0F, f16,f15);
     }
     private static void renderPartCross(PoseStack matrix, VertexConsumer bufferIn, float red, float green, float blue, float alpha, float yMin, float yMax, float radius, float u1, float u2, float v1, float v2)
     {

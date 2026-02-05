@@ -1,7 +1,6 @@
 package com.danielkkrafft.wilddungeons.item;
 
 import com.danielkkrafft.wilddungeons.entity.BlackHole;
-import com.danielkkrafft.wilddungeons.item.itemhelpers.WDItemAnimator;
 import com.danielkkrafft.wilddungeons.item.itemhelpers.WDWeapon;
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
 import net.minecraft.network.chat.Component;
@@ -10,12 +9,14 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animatable.manager.AnimatableManager;
 
 public class StarCannon extends WDWeapon {
     private static final String NAME = "star_cannon";
@@ -39,26 +40,26 @@ public class StarCannon extends WDWeapon {
         this.ammoPredicate = stack -> stack.is(Items.NETHER_STAR);
         this.projectileRange = RANGE;
     }
+//
+//    @Override
+//    protected void configureAnimator(WDItemAnimator animator) {
+//        animator.addAnimation("fire");
+//    }
 
     @Override
-    protected void configureAnimator(WDItemAnimator animator) {
-        animator.addAnimation("fire");
-    }
-
-    @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    public @NotNull InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
 
         ItemStack ammo = findAmmo(player);
         boolean hasAmmo = !ammo.isEmpty();
 
         if (!player.getAbilities().instabuild && !hasAmmo) {
-            player.displayClientMessage(Component.translatable("wilddungeons.missing_ammo", Items.NETHER_STAR.getDescription()), true);
-            return InteractionResultHolder.fail(stack);
+            player.displayClientMessage(Component.translatable("wilddungeons.missing_ammo", Items.NETHER_STAR.getName()), true);
+            return InteractionResult.FAIL;
         }
 
-        if (level.isClientSide) {
-            return InteractionResultHolder.consume(stack);
+        if (level.isClientSide()) {
+            return InteractionResult.CONSUME;
         }
 
         // consume 1 nether star
@@ -73,13 +74,23 @@ public class StarCannon extends WDWeapon {
         BlackHole bh = summonEntity((ServerLevel) level, WDEntities.BLACK_HOLE.get(), player.getEyePosition().add(look.scale(SPAWN_DISTANCE)));
         bh.setFiredDirectionAndSpeed(look, PROJECTILE_SPEED);
 
-        animator.playAnimation(this, "fire", stack, player, level);
+        //animator.playAnimation(this, "fire", stack, player, level);
         level.playSound(null, player.blockPosition(), SoundEvents.SHULKER_SHOOT, SoundSource.PLAYERS, 1.0f, 1.0f);
 
-        player.getCooldowns().addCooldown(this, COOLDOWN_TICKS);
+        player.getCooldowns().addCooldown(stack, COOLDOWN_TICKS);
         player.awardStat(Stats.ITEM_USED.get(this));
 
-        return InteractionResultHolder.consume(stack);
+        return InteractionResult.CONSUME;
     }
 
+    //TODO - Fix animations for 1.21.11
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return null;
+    }
 }

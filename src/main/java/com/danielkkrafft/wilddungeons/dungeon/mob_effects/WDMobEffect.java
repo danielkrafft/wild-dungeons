@@ -4,6 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
@@ -11,8 +12,6 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.PrimedTnt;
-import net.minecraft.world.item.AxeItem;
-import net.minecraft.world.item.SwordItem;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.Tags;
@@ -20,7 +19,7 @@ import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber
 public class WDMobEffect extends MobEffect {
     private boolean shouldApplyEffectTickThisTick = false;//this is what MobEffect.class says
     private boolean isInstantaneous = false;
@@ -104,25 +103,20 @@ public class WDMobEffect extends MobEffect {
     }
 
     private static void processWeaponItemDamageBonus(LivingDamageEvent.Pre event, LivingEntity sourceEntity) {
-        switch (sourceEntity.getWeaponItem().getItem()) {
-            case SwordItem ignored -> {
-                MobEffectInstance swordDamagePerk = sourceEntity.getEffect(WDMobEffects.SWORD_DAMAGE);
-                if (swordDamagePerk != null) {
-                    event.setNewDamage((float) (event.getOriginalDamage() * Math.pow(1.1, swordDamagePerk.getAmplifier())));
-                }
+        if (sourceEntity.getWeaponItem().is(ItemTags.SWORDS)) {
+            MobEffectInstance swordDamagePerk = sourceEntity.getEffect(WDMobEffects.SWORD_DAMAGE);
+            if (swordDamagePerk != null) {
+                event.setNewDamage((float) (event.getOriginalDamage() * Math.pow(1.1, swordDamagePerk.getAmplifier())));
             }
-            case AxeItem ignored -> {
-                MobEffectInstance axeDamagePerk = sourceEntity.getEffect(WDMobEffects.AXE_DAMAGE);
-                if (axeDamagePerk != null) {
-                    event.setNewDamage((float) (event.getOriginalDamage() * Math.pow(1.1, axeDamagePerk.getAmplifier())));
-                }
+        } else if (sourceEntity.getWeaponItem().is(ItemTags.AXES)) {
+            MobEffectInstance axeDamagePerk = sourceEntity.getEffect(WDMobEffects.AXE_DAMAGE);
+            if (axeDamagePerk != null) {
+                event.setNewDamage((float) (event.getOriginalDamage() * Math.pow(1.1, axeDamagePerk.getAmplifier())));
             }
-            default -> {
-                if (sourceEntity.getWeaponItem().isEmpty()) {
-                    MobEffectInstance onePunchManPerk = sourceEntity.getEffect(WDMobEffects.ONE_PUNCH_MAN);
-                    if (onePunchManPerk != null) event.setNewDamage(event.getOriginalDamage() + (event.getOriginalDamage() * onePunchManPerk.getAmplifier() * 0.1f));
-//                    WildDungeons.getLogger().info("One Punch " + event.getEntity().getName().getString() + " for " + event.getNewDamage() + " damage with no weapon");
-                }
+        } else {
+            if (sourceEntity.getWeaponItem().isEmpty()) {
+                MobEffectInstance onePunchManPerk = sourceEntity.getEffect(WDMobEffects.ONE_PUNCH_MAN);
+                if (onePunchManPerk != null) event.setNewDamage(event.getOriginalDamage() + (event.getOriginalDamage() * onePunchManPerk.getAmplifier() * 0.1f));
             }
         }
     }

@@ -1,8 +1,7 @@
 package com.danielkkrafft.wilddungeons;
 
-
 import com.danielkkrafft.wilddungeons.dungeon.mob_effects.WDMobEffects;
-import com.danielkkrafft.wilddungeons.enchantment.WDEnchantmentEffects;
+//import com.danielkkrafft.wilddungeons.enchantment.WDEnchantmentEffects;
 import com.danielkkrafft.wilddungeons.entity.*;
 import com.danielkkrafft.wilddungeons.entity.boss.*;
 import com.danielkkrafft.wilddungeons.network.SimplePacketManager;
@@ -18,7 +17,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -46,7 +45,7 @@ public class WildDungeons {
         Serializer.setup();
 
         WDEntities.ENTITIES.register(modEventBus);
-        WDBlockEntities.BLOCK_ENTITY_TYPES.register(modEventBus);
+//        WDBlockEntities.BLOCK_ENTITY_TYPES.register(modEventBus);
         WDItems.ITEMS.register(modEventBus);
         WDFluids.FLUID_TYPES.register(modEventBus);
         WDFluids.FLUIDS.register(modEventBus);
@@ -56,19 +55,18 @@ public class WildDungeons {
         WDStructurePieceTypes.STRUCTURE_PIECE_TYPES.register(modEventBus);
         WDSoundEvents.SOUND_EVENTS.register(modEventBus);
         WDDataComponents.DATA_COMPONENT_TYPES.register(modEventBus);
-        WDEnchantmentEffects.ENTITY_ENCHANTMENT_EFFECTS.register(modEventBus);
+//        WDEnchantmentEffects.ENTITY_ENCHANTMENT_EFFECTS.register(modEventBus);
         WDDamageTypes.DAMAGE_TYPES.register(modEventBus);
         WDMobEffects.MOB_EFFECTS.register(modEventBus);
         WDAttachmentTypes.ATTACHMENT_TYPES.register(modEventBus);
         WDParticleTypes.PARTICLE_TYPES.register(modEventBus);
         delayedRegistry();
 
-
         modEventBus.register(WildDungeons.class);
         NeoForge.EVENT_BUS.register(WDEvents.class);
 
         // manually run client init if on client dist
-        if (FMLEnvironment.dist == Dist.CLIENT) {
+        if (FMLEnvironment.getDist() == Dist.CLIENT) {
             WildDungeonsClient.initializeClient();
         }
     }
@@ -95,57 +93,42 @@ public class WildDungeons {
 
 
     @SubscribeEvent
-    public static void entityAttributeEvent(EntityAttributeCreationEvent e)
-    {
-        e.put(WDEntities.BREEZE_GOLEM.get(), BreezeGolem.setAttributes());
+    public static void entityAttributeEvent(EntityAttributeCreationEvent e) {
+//        e.put(WDEntities.BREEZE_GOLEM.get(), BreezeGolem.setAttributes()); TODO - Uncomment as fixed for 1.21.11
         e.put(WDEntities.MUTANT_BOGGED.get(), MutantBogged.setAttributes());
         e.put(WDEntities.AMOGUS.get(), AmogusEntity.setAttributes());
-        e.put(WDEntities.NETHER_DRAGON.get(), NetherDragonEntity.setAttributes());
-        e.put(WDEntities.BUSINESS_GOLEM.get(), BusinessGolem.createAttributes().build());
+//        e.put(WDEntities.NETHER_DRAGON.get(), NetherDragonEntity.setAttributes());
+        //e.put(WDEntities.BUSINESS_GOLEM.get(), BusinessGolem.createAttributes().build());
         e.put(WDEntities.BUSINESS_VINDICATOR.get(), BusinessVindicator.createAttributes().build());
         e.put(WDEntities.BUSINESS_EVOKER.get(), BusinessEvoker.createAttributes().build());
         e.put(WDEntities.SMALL_EMERALD_WISP.get(), EmeraldWisp.createAttributes().build());
         e.put(WDEntities.LARGE_EMERALD_WISP.get(), LargeEmeraldWisp.createAttributes().build());
         e.put(WDEntities.FRIENDLY_EMERALD_WISP.get(), FriendlyEmeraldWisp.createAttributes().build());
         e.put(WDEntities.FRIENDLY_LARGE_EMERALD_WISP.get(), FriendlyLargeEmeraldWisp.createAttributes().build());
-        e.put(WDEntities.BUSINESS_CEO.get(), BusinessCEO.setAttributes());
-        e.put(WDEntities.SPIDERLING.get(), Spiderling.createSpiderling().build());
-        e.put(WDEntities.FRIENDLY_SPIDERLING.get(), FriendlySpiderling.createSpiderling().build());
-        e.put(WDEntities.SKELEPEDE.get(), SkelepedeMain.createMobAttributes().build());
-        e.put(WDEntities.SKELEPEDE_SEGMENT.get(), SkelepedeSegment.createMobAttributes().build());
+//        e.put(WDEntities.BUSINESS_CEO.get(), BusinessCEO.setAttributes());
+//        e.put(WDEntities.SPIDERLING.get(), Spiderling.createSpiderling().build());
+//        e.put(WDEntities.FRIENDLY_SPIDERLING.get(), FriendlySpiderling.createSpiderling().build());
+//        e.put(WDEntities.SKELEPEDE.get(), SkelepedeMain.createMobAttributes().build());
+//        e.put(WDEntities.SKELEPEDE_SEGMENT.get(), SkelepedeSegment.createMobAttributes().build());
         e.put(WDEntities.SMALL_TOXIC_WISP.get(), ToxicWisp.createAttributes().build());
         e.put(WDEntities.LARGE_TOXIC_WISP.get(), LargeToxicWisp.createAttributes().build());
-        e.put(WDEntities.COPPER_SENTINEL.get(), CopperSentinel.createMobAttributes().build());
-        e.put(WDEntities.PRIMAL_CREEPER.get(), PrimalCreeper.createMobAttributes().build());
-        e.put(WDEntities.CONDEMNED_GUARDIAN.get(), CondemnedGuardian.createMobAttributes().build());
-        e.put(WDEntities.CONDEMNED_GUARDIAN_SEGMENT.get(), CondemnedGuardianSegment.createAttributes().build());
+//        e.put(WDEntities.COPPER_SENTINEL.get(), CopperSentinel.createMobAttributes().build());
+//        e.put(WDEntities.PRIMAL_CREEPER.get(), PrimalCreeper.createMobAttributes().build());
+//        e.put(WDEntities.CONDEMNED_GUARDIAN.get(), CondemnedGuardian.createMobAttributes().build());
+//        e.put(WDEntities.CONDEMNED_GUARDIAN_SEGMENT.get(), CondemnedGuardianSegment.createAttributes().build());
 
     }
 
-    public static ResourceLocation rl(String path) {
-        return ResourceLocation.fromNamespaceAndPath(MODID, path);
-    }
-
-    public static ResourceLocation makeAnimationRL(String animationName) {
-        return rl("animations/" + animationName + ".animation.json");
-    }
-
-    public static ResourceLocation makeGeoModelRL(String modelName) {
-        return rl("geo/" + modelName + ".geo.json");
-    }
-
-    public static ResourceLocation makeItemTextureRL(String textureName) {
-        return rl("textures/item/" + textureName + ".png");
+    public static Identifier rl(String path) {
+        return Identifier.fromNamespaceAndPath(MODID, path);
     }
 
     public static Holder<Enchantment> getEnchantment(ResourceKey<Enchantment> key) {
-
-
         return Minecraft.getInstance()
                 .level
                 .registryAccess()
-                .registryOrThrow(Registries.ENCHANTMENT)
-                .getHolder(key)
+                .lookupOrThrow(Registries.ENCHANTMENT)
+                .get(key)
                 .orElseThrow(); // Or use a fallback default holder if needed
     }
 

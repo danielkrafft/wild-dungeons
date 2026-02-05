@@ -11,7 +11,7 @@ import com.danielkkrafft.wilddungeons.network.ClientPacketHandler;
 import com.danielkkrafft.wilddungeons.network.SimplePacketManager;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
-import com.danielkkrafft.wilddungeons.render.DecalRenderer;
+//import com.danielkkrafft.wilddungeons.render.DecalRenderer;
 import com.danielkkrafft.wilddungeons.util.FileUtil;
 import com.danielkkrafft.wilddungeons.util.SaveSystem;
 import com.danielkkrafft.wilddungeons.util.Serializer;
@@ -25,7 +25,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.players.GameProfileCache;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
@@ -147,7 +146,7 @@ public class DungeonSession {
         this.dirty = true;
         playersInside.put(wdPlayer.getUUID(), false);
         wdPlayer.getCurrentFloor().onExit(wdPlayer);
-        wdPlayer.rootRespawn(wdPlayer.getServerPlayer().getServer());
+        //wdPlayer.rootRespawn(wdPlayer.getServerPlayer().getServer()); TODO - Fix for 1.21.11
         wdPlayer.setRiftCooldown(100);
         wdPlayer.setSoundScape(null, 0, true);
         WDPlayerManager.syncAll(List.of(wdPlayer.getUUID()));
@@ -215,17 +214,17 @@ public class DungeonSession {
     public void win() {
         HashMap<String, DungeonSkinDataHolder> playerSkins = new HashMap<>();
         for (String uuid : this.playersInside.keySet()) {
-            GameProfileCache gameProfileCache = DungeonSessionManager.getInstance().server.getProfileCache();
-            if (gameProfileCache != null) {
-                gameProfileCache.get(UUID.fromString(uuid)).ifPresent(gameProfile -> {
-                    PropertyMap properties = gameProfile.getProperties();
-                    Property property = Iterables.getFirst(properties.get("textures"), null);
-                    if (property != null){
-                        DungeonSkinDataHolder dungeonSkinDataHolder = new DungeonSkinDataHolder(gameProfile.getName(), property.value(), property.signature());
-                        playerSkins.put(uuid, dungeonSkinDataHolder);
-                    }
-                });
-            }
+//            GameProfileCache gameProfileCache = DungeonSessionManager.getInstance().server.getProfileCache(); TODO - fix for 1.21.11
+//            if (gameProfileCache != null) {
+//                gameProfileCache.get(UUID.fromString(uuid)).ifPresent(gameProfile -> {
+//                    PropertyMap properties = gameProfile.getProperties();
+//                    Property property = Iterables.getFirst(properties.get("textures"), null);
+//                    if (property != null){
+//                        DungeonSkinDataHolder dungeonSkinDataHolder = new DungeonSkinDataHolder(gameProfile.getName(), property.value(), property.signature());
+//                        playerSkins.put(uuid, dungeonSkinDataHolder);
+//                    }
+//                });
+//            }
         }
         List<DungeonStatsHolder> statsHolders = new ArrayList<>();
         for (WDPlayer wdPlayer : getPlayers()) {
@@ -321,13 +320,13 @@ public class DungeonSession {
      */
     public void shutdown() {
         floors.forEach(DungeonFloor::cancelGenerations);
-        DecalRenderer.syncAllClientDecals();
-        getPlayers().forEach(this::onExit);
-        floors.forEach(floor -> {
-            floor.getBranches().forEach(dungeonBranch -> dungeonBranch.getRooms().forEach(dungeonRoom -> dungeonRoom.getConnectionPoints().forEach(ConnectionPoint::removeServerDecal)));
-            InfiniverseAPI.get().markDimensionForUnregistration(DungeonSessionManager.getInstance().server, floor.getLevelKey());
-            FileUtil.deleteDirectoryContents(FileUtil.getWorldPath().resolve("dimensions").resolve(WildDungeons.MODID).resolve(floor.getLevelKey().location().getPath()), true);
-        });
+//        DecalRenderer.syncAllClientDecals(); TODO - Fix for 1.21.11 - depends on DecalRenderer being fixed first
+//        getPlayers().forEach(this::onExit);
+//        floors.forEach(floor -> {
+//            floor.getBranches().forEach(dungeonBranch -> dungeonBranch.getRooms().forEach(dungeonRoom -> dungeonRoom.getConnectionPoints().forEach(ConnectionPoint::removeServerDecal)));
+//            InfiniverseAPI.get().markDimensionForUnregistration(DungeonSessionManager.getInstance().server, floor.getLevelKey());
+//            FileUtil.deleteDirectoryContents(FileUtil.getWorldPath().resolve("dimensions").resolve(WildDungeons.MODID).resolve(floor.getLevelKey().location().getPath()), true);
+//        });
         SaveSystem.DeleteSession(this);
         markedForShutdown = true;
     }

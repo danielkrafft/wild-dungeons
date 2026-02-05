@@ -6,7 +6,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.UUID;
@@ -17,7 +17,7 @@ import static com.danielkkrafft.wilddungeons.entity.attachmenttypes.HomingTarget
 //TODO: IMPLEMENT Payload in the style of the other packets
 public record ThrowNautilusShieldPayload(boolean isLoyal, boolean canTrack, boolean isOffHand) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<ThrowNautilusShieldPayload> TYPE =
-            new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(WildDungeons.MODID,"throw_nautilus_shield"));
+            new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(WildDungeons.MODID,"throw_nautilus_shield"));
 
     public static final StreamCodec<ByteBuf, ThrowNautilusShieldPayload> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.fromCodec(Codec.BOOL),

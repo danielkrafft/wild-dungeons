@@ -17,7 +17,7 @@ import static com.danielkkrafft.wilddungeons.dungeon.components.template.Hierarc
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonBranchRegistry.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomRegistry.BOSS_KEY_ROOM;
 
-public class DungeonFloorRegistry {
+public class DungeonFloorRegistry { //TODO - Uncomment once DungeonRoom is fixed for 1.21.11
     public static final DungeonRegistration.DungeonComponentRegistry<DungeonFloorTemplate> DUNGEON_FLOOR_REGISTRY = new DungeonRegistration.DungeonComponentRegistry<>();
 
     public static final DungeonFloorTemplate TEST_FLOOR = create("test_floor")//must be lowercase or the game will crash
@@ -96,11 +96,11 @@ public class DungeonFloorRegistry {
                             .addSimple(VILLAGE_SEWER_ALL)
                             .addSimple(VILLAGE_SEWER_ALL)
                             .addSimple(VILLAGE_SEWER_ENDING_BRANCH)
-                            .addSimple(VILLAGE_METRO_START_BRANCH)
-                            .addSimple(VILLAGE_METRO_ENDING_BRANCH) //todo this is first so that we don't block it with other branches, but that can cause the difficulty to be off
-                            .addSimple(VILLAGE_METRO_STREETS_BRANCH)
-                            .addSimple(VILLAGE_MEDIUM_BRANCH)
-                            .addSimple(VILLAGE_SMALL_BRANCH)
+//                            .addSimple(VILLAGE_METRO_START_BRANCH)TODO - Uncomment once village rooms are fixed for 1.21.11
+//                            .addSimple(VILLAGE_METRO_ENDING_BRANCH) //todo this is first so that we don't block it with other branches, but that can cause the difficulty to be off
+//                            .addSimple(VILLAGE_METRO_STREETS_BRANCH)
+//                            .addSimple(VILLAGE_MEDIUM_BRANCH)
+//                            .addSimple(VILLAGE_SMALL_BRANCH)
             )
             .addLimitedRoom(BOSS_KEY_ROOM, 1)
             .set(HierarchicalProperty.PRE_ROOM_GEN_PROCESSING_STEPS, List.of(new AddBedrockShellStep()))
@@ -117,14 +117,14 @@ public class DungeonFloorRegistry {
                             .addSimple(VILLAGE_SEWER_ALL)
                             .addSimple(VILLAGE_SEWER_ALL)
                             .addSimple(VILLAGE_SEWER_ENDING_BRANCH)
-                            .addSimple(VILLAGE_METRO_START_BRANCH)
-                            .addSimple(VILLAGE_METRO_ENDING_GAUNTLET_BRANCH)
-                            .addSimple(VILLAGE_METRO_STREETS_GAUNTLET_BRANCH)
-                            .addSimple(VILLAGE_METRO_STREETS_GAUNTLET_BRANCH)
-                            .addSimple(VILLAGE_MEDIUM_GAUNTLET_BRANCH)
-                            .addSimple(VILLAGE_MEDIUM_GAUNTLET_BRANCH)
-                            .addSimple(VILLAGE_SMALL_GAUNTLET_BRANCH)
-                            .addSimple(VILLAGE_SMALL_GAUNTLET_BRANCH)
+//                            .addSimple(VILLAGE_METRO_START_BRANCH)TODO - Uncomment once village rooms are fixed for 1.21.11
+//                            .addSimple(VILLAGE_METRO_ENDING_GAUNTLET_BRANCH)
+//                            .addSimple(VILLAGE_METRO_STREETS_GAUNTLET_BRANCH)
+//                            .addSimple(VILLAGE_METRO_STREETS_GAUNTLET_BRANCH)
+//                            .addSimple(VILLAGE_MEDIUM_GAUNTLET_BRANCH)
+//                            .addSimple(VILLAGE_MEDIUM_GAUNTLET_BRANCH)
+//                            .addSimple(VILLAGE_SMALL_GAUNTLET_BRANCH)
+//                            .addSimple(VILLAGE_SMALL_GAUNTLET_BRANCH)
             )
             .addLimitedRoom(BOSS_KEY_ROOM, 1)
             .set(HierarchicalProperty.PRE_ROOM_GEN_PROCESSING_STEPS, List.of(new AddBedrockShellStep()))
@@ -138,7 +138,7 @@ public class DungeonFloorRegistry {
                             .addSimple(GAUNTLET_SCIFI_LOOT_BRANCH)
                             .addSimple(GAUNTLET_SCIFI_LOOT_BRANCH)
                             .addSimple(GAUNTLET_SCIFI_LOOT_BRANCH)
-                            .addSimple(GAUNTLET_SCIFI_COMBAT_BRANCH)
+//                            .addSimple(GAUNTLET_SCIFI_COMBAT_BRANCH)
                             .addSimple(GAUNTLET_SCIFI_EXIT_BRANCH)
             )
             .setOrigin(new BlockPos(0,30,0))

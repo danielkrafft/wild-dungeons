@@ -9,6 +9,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -34,16 +35,16 @@ public class ToxicSludgeBlock extends LiquidBlock {
         }
     }
 
-    @Override
-    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
-        super.entityInside(state, level, pos, entity);
-
-        if (entity instanceof LivingEntity livingEntity) {
-            if (!livingEntity.hasEffect(MobEffects.POISON)) {
-                livingEntity.addEffect(new MobEffectInstance(MobEffects.POISON, 100, 4));
-            }
-        }
-    }
+//    @Override TODO - Fix for 1.21.11
+//    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+//        super.entityInside(state, level, pos, entity);
+//
+//        if (entity instanceof LivingEntity livingEntity) {
+//            if (!livingEntity.hasEffect(MobEffects.POISON)) {
+//                livingEntity.addEffect(new MobEffectInstance(MobEffects.POISON, 100, 4));
+//            }
+//        }
+//    }
 
 
     @Override
@@ -64,7 +65,7 @@ public class ToxicSludgeBlock extends LiquidBlock {
                 return; // did not pass the random chance check
             }
             //spawn a wisp
-            ToxicWisp wisp = WDEntities.SMALL_TOXIC_WISP.get().create(level);
+            ToxicWisp wisp = WDEntities.SMALL_TOXIC_WISP.get().create(level, EntitySpawnReason.SPAWNER);
             wisp.setPos(above.getX() + 0.5, above.getY() + 0.5, above.getZ() + 0.5);
             level.addFreshEntity(wisp);
         }
@@ -73,7 +74,7 @@ public class ToxicSludgeBlock extends LiquidBlock {
     private void spawnGasBlockRandomly(Level level, BlockPos pos) {
         BlockPos above = pos.above();
         if (level.isEmptyBlock(above) && level.random.nextFloat() < 0.1f) {
-            level.setBlockAndUpdate(above, WDBlocks.TOXIC_GAS.get().defaultBlockState());
+//            level.setBlockAndUpdate(above, WDBlocks.TOXIC_GAS.get().defaultBlockState());
         }
     }
 }

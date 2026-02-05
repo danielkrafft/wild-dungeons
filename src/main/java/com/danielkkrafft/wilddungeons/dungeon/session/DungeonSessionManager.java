@@ -46,14 +46,14 @@ public class DungeonSessionManager {
     }
 
     public DungeonSession getFromKey(ResourceKey<Level> levelKey) {
-        String sessionKey = levelKey.location().getPath().split("___")[0];
+        String sessionKey = levelKey.identifier().getPath().split("___")[0];
         return this.getDungeonSession(sessionKey);
     }
 
     public DungeonFloor getFloorFromKey(ResourceKey<Level> levelKey) {
         DungeonSession session = this.getFromKey(levelKey);
         if (session != null) {
-            return session.getFloors().get(Integer.parseInt(levelKey.location().getPath().split("___")[2]));
+            return session.getFloors().get(Integer.parseInt(levelKey.identifier().getPath().split("___")[2]));
         }
         return null;
     }

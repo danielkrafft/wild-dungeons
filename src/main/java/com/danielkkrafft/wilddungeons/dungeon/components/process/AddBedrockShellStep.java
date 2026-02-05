@@ -7,7 +7,7 @@ import java.util.List;
 
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.HAS_BEDROCK_SHELL;
 
-public class AddBedrockShellStep extends PostProcessingStep {
+public class AddBedrockShellStep extends PostProcessingStep { //TODO - Uncomment once DungeonRoom is fixed for 1.21.11
 
     @Override
     public void handle(List<DungeonRoom> rooms) {

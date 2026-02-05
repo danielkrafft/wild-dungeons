@@ -10,7 +10,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -45,18 +45,18 @@ public class WDStructureTemplate {
 
     public void load(@NotNull HolderGetter<Block> blockGetter, @NotNull CompoundTag tag) {
         if (tag.contains("inner_templates")) {
-            ListTag innerTagList = tag.getList("inner_templates", 10);
+            ListTag innerTagList = tag.getListOrEmpty("inner_templates");
             for (int i = 0; i < innerTagList.size(); i++) {
-                CompoundTag innerTag = innerTagList.getCompound(i);
+                CompoundTag innerTag = innerTagList.getCompoundOrEmpty(i);
                 StructureTemplate innerTemplate = new StructureTemplate();
                 innerTemplate.load(blockGetter, innerTag);
-                ListTag originOffset = innerTag.getList("originOffset", 3);
-                Pair<StructureTemplate, BlockPos> innerTemplatePair = Pair.of(innerTemplate, new BlockPos(originOffset.getInt(0), originOffset.getInt(1), originOffset.getInt(2)));
+                ListTag originOffset = innerTag.getListOrEmpty("originOffset");
+                Pair<StructureTemplate, BlockPos> innerTemplatePair = Pair.of(innerTemplate, new BlockPos(originOffset.getIntOr(0, 0), originOffset.getIntOr(1, 0), originOffset.getIntOr(2, 0)));
                 innerTemplates.add(innerTemplatePair);
             }
         }
         if (tag.contains("dungeon_materials")) {
-            dungeonMaterials = tag.getList("dungeon_materials", 10);
+            dungeonMaterials = tag.getListOrEmpty("dungeon_materials");
         }
     }
 
@@ -65,10 +65,10 @@ public class WDStructureTemplate {
         dungeonMaterials.forEach(tag -> {
             CompoundTag compoundTag = (CompoundTag) tag;
             BlockState blockState = readBlockState(WDStructureTemplateManager.INSTANCE.getBlockLookup(), compoundTag);
-            int dungeonMaterialId = compoundTag.getInt("dungeon_material_id");
+            int dungeonMaterialId = compoundTag.getIntOr("dungeon_material_id", 0);
             DungeonMaterial.BlockSetting blockSetting = new DungeonMaterial.BlockSetting(blockState, dungeonMaterialId);
             if (compoundTag.contains("blockType")){
-                blockSetting.setBlockType(DungeonMaterial.BlockSetting.BlockType.values()[compoundTag.getInt("blockType")]);
+                blockSetting.setBlockType(DungeonMaterial.BlockSetting.BlockType.values()[compoundTag.getIntOr("blockType", 0)]);
             }
             loadedMaterials.add(blockSetting);
         });
@@ -76,11 +76,11 @@ public class WDStructureTemplate {
     }
 
     public static BlockState readBlockState(HolderGetter<Block> blockGetter, CompoundTag tag) {
-        if (!tag.contains("Name", 8)) {
+        if (!tag.contains("Name")) {
             return Blocks.AIR.defaultBlockState();
         } else {
-            ResourceLocation resourcelocation = ResourceLocation.parse(tag.getString("Name"));
-            Optional<? extends Holder<Block>> optional = blockGetter.get(ResourceKey.create(Registries.BLOCK, resourcelocation));
+            Identifier resourceLocation = Identifier.parse(tag.getStringOr("Name", ""));
+            Optional<? extends Holder<Block>> optional = blockGetter.get(ResourceKey.create(Registries.BLOCK, resourceLocation));
             if (optional.isEmpty()) {
                 return Blocks.AIR.defaultBlockState();
             } else {

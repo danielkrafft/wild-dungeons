@@ -10,6 +10,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Checkbox;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -100,24 +101,12 @@ public class ConnectionBlockEditScreen extends Screen {
     }
 
     @Override
-    public void resize(Minecraft minecraft, int width, int height) {
+    public void resize(int width, int height) {
         String s1 = this.unblockedEdit.getValue();
         String s2 = this.poolEdit.getValue();
-        this.init(minecraft, width, height);
+        this.init(width, height);
         this.unblockedEdit.setValue(s1);
         this.poolEdit.setValue(s2);
-    }
-
-    @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (super.keyPressed(keyCode, scanCode, modifiers)) {
-            return true;
-        } else if (!this.doneButton.active || keyCode != 257 && keyCode != 335) {
-            return false;
-        } else {
-            this.onDone();
-            return true;
-        }
     }
 
     @Override
@@ -141,7 +130,7 @@ public class ConnectionBlockEditScreen extends Screen {
         tag.putInt("y", this.y);
         tag.putInt("z", this.z);
 
-        PacketDistributor.sendToServer(new SimplePacketManager.ServerboundTagPacket(tag));
+        //PacketDistributor.sendToServer(new SimplePacketManager.ServerboundTagPacket(tag)); TODO - Fix for 1.21.11
     }
 
     private void handleCheckboxes(Checkbox box, boolean value) {

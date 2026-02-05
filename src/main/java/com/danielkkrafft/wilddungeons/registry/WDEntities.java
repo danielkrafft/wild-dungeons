@@ -3,14 +3,15 @@ package com.danielkkrafft.wilddungeons.registry;
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.entity.*;
 import com.danielkkrafft.wilddungeons.entity.boss.*;
-import com.danielkkrafft.wilddungeons.entity.boss.CopperSentinel;
+//import com.danielkkrafft.wilddungeons.entity.boss.CopperSentinel;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-public class WDEntities {
+public class WDEntities { //TODO - Uncomment entities as they are implemented for 1.21.11
     public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(Registries.ENTITY_TYPE, WildDungeons.MODID);
 
     public static final DeferredHolder<EntityType<?>, EntityType<EssenceOrb>> ESSENCE_ORB = ENTITIES.register("essence_orb", () -> EntityType.Builder
@@ -18,128 +19,128 @@ public class WDEntities {
             .sized(0.5F, 0.5F)
             .clientTrackingRange(6)
             .updateInterval(20)
-            .build(WildDungeons.rl("essence_orb").toString()));
+            .build(ResourceKey.create(Registries.ENTITY_TYPE, WildDungeons.rl("essence_orb"))));
 
     public static final DeferredHolder<EntityType<?>, EntityType<ThrownEssenceBottle>> ESSENCE_BOTTLE = ENTITIES.register("essence_bottle", () -> EntityType.Builder
             .<ThrownEssenceBottle>of(ThrownEssenceBottle::new, MobCategory.MISC)
             .sized(0.25F, 0.25F)
             .clientTrackingRange(4)
             .updateInterval(10)
-            .build(WildDungeons.rl("essence_bottle").toString()));
+            .build(ResourceKey.create(Registries.ENTITY_TYPE, WildDungeons.rl("essence_bottle"))));
 
     public static final DeferredHolder<EntityType<?>, EntityType<Offering>> OFFERING = ENTITIES.register("offering", () -> EntityType.Builder
             .<Offering>of(Offering::new, MobCategory.MISC)
             .sized(1, 1)
             .clientTrackingRange(6)
             .updateInterval(20)
-            .build(WildDungeons.rl("offering").toString()));
+            .build(ResourceKey.create(Registries.ENTITY_TYPE, WildDungeons.rl("offering"))));
 
-    public static final DeferredHolder<EntityType<?>, EntityType<WindChargeProjectile>> WIND_CHARGE_PROJECTILE = ENTITIES.register("wind_charge_projectile", () -> EntityType.Builder
-            .of(WindChargeProjectile::new, MobCategory.MISC)
-            .sized(0.3125f, 0.3125f)
-            .build("wind_charge_projectile"));
+//    public static final DeferredHolder<EntityType<?>, EntityType<WindChargeProjectile>> WIND_CHARGE_PROJECTILE = ENTITIES.register("wind_charge_projectile", () -> EntityType.Builder
+//            .of(WindChargeProjectile::new, MobCategory.MISC)
+//            .sized(0.3125f, 0.3125f)
+//            .build(ResourceKey.create(Registries.ENTITY_TYPE, WildDungeons.rl("wind_charge_projectile"))));
 
     public static final DeferredHolder<EntityType<?>, EntityType<GrapplingHook>> GRAPPLING_HOOK = ENTITIES.register("grappling_hook", () -> EntityType.Builder
             .<GrapplingHook>of(GrapplingHook::new, MobCategory.MISC)
             .sized(0.4f, 0.4f)
-            .build(WildDungeons.rl("grappling_hook").toString()));
+            .build(ResourceKey.create(Registries.ENTITY_TYPE, WildDungeons.rl("grappling_hook"))));
 
-    public static final DeferredHolder<EntityType<?>, EntityType<Laserbeam>> LASER_BEAM = ENTITIES.register("laserbeam", () -> EntityType.Builder
-            .<Laserbeam>of(Laserbeam::new, MobCategory.MISC)
-            .sized(0.1f, 0.1f)
-            .build(WildDungeons.rl("laserbeam").toString()));
+//    public static final DeferredHolder<EntityType<?>, EntityType<Laserbeam>> LASER_BEAM = ENTITIES.register("laserbeam", () -> EntityType.Builder
+//            .<Laserbeam>of(Laserbeam::new, MobCategory.MISC)
+//            .sized(0.1f, 0.1f)
+//            .build(ResourceKey.create(Registries.ENTITY_TYPE, WildDungeons.rl("laserbeam"))));
+//
+//    public static final DeferredHolder<EntityType<?>, EntityType<PiercingArrow>> PIERCING_ARROW = ENTITIES.register("piercing_arrow",
+//            () -> EntityType.Builder
+//                    .<PiercingArrow>of(PiercingArrow::new, MobCategory.MISC)
+//                    .sized(0.5f, 0.5f)
+//                    .build(ResourceKey.create(Registries.ENTITY_TYPE, WildDungeons.rl("piercing_arrow"))));
 
-    public static final DeferredHolder<EntityType<?>, EntityType<PiercingArrow>> PIERCING_ARROW = ENTITIES.register("piercing_arrow",
-            () -> EntityType.Builder
-                    .<PiercingArrow>of(PiercingArrow::new, MobCategory.MISC)
-                    .sized(0.5f, 0.5f)
-                    .build("piercing_arrow"));
-
-    public static final DeferredHolder<EntityType<?>, EntityType<BreezeGolem>> BREEZE_GOLEM = ENTITIES.register("breeze_golem", () -> EntityType.Builder
-            .of(BreezeGolem::new, MobCategory.MONSTER)
-            .sized(2f, 3.7f)
-            .build("breeze_golem"));
+//    public static final DeferredHolder<EntityType<?>, EntityType<BreezeGolem>> BREEZE_GOLEM = ENTITIES.register("breeze_golem", () -> EntityType.Builder
+//            .of(BreezeGolem::new, MobCategory.MONSTER)
+//            .sized(2f, 3.7f)
+//            .build(ResourceKey.create(Registries.ENTITY_TYPE, WildDungeons.rl("breeze_golem"))));
 
     public static final DeferredHolder<EntityType<?>, EntityType<MutantBogged>> MUTANT_BOGGED = ENTITIES.register("mutant_bogged", () -> EntityType.Builder
             .of(MutantBogged::new, MobCategory.MONSTER)
             .sized(1f, 3.6f)
-            .build("mutant_bogged"));
+            .build(ResourceKey.create(Registries.ENTITY_TYPE, WildDungeons.rl("mutant_bogged"))));
 
     public static final DeferredHolder<EntityType<?>, EntityType<AmogusEntity>> AMOGUS = ENTITIES.register("amogus", () -> EntityType.Builder
             .of(AmogusEntity::new, MobCategory.CREATURE)
             .sized(1f, 1.0f)
-            .build(WildDungeons.rl("amogus").toString()));
+            .build(ResourceKey.create(Registries.ENTITY_TYPE, WildDungeons.rl("amogus"))));
 
-    public static final DeferredHolder<EntityType<?>, EntityType<NetherDragonEntity>> NETHER_DRAGON = ENTITIES.register("nether_dragon", () -> EntityType.Builder
-            .of(NetherDragonEntity::new, MobCategory.MONSTER)
-            .sized(5, 2)
-            .fireImmune()
-            .build(WildDungeons.rl("nether_dragon").toString()));
+//    public static final DeferredHolder<EntityType<?>, EntityType<NetherDragonEntity>> NETHER_DRAGON = ENTITIES.register("nether_dragon", () -> EntityType.Builder
+//            .of(NetherDragonEntity::new, MobCategory.MONSTER)
+//            .sized(5, 2)
+//            .fireImmune()
+//            .build(ResourceKey.create(Registries.ENTITY_TYPE, WildDungeons.rl("nether_dragon"))));
 
-    public static final DeferredHolder<EntityType<?>, EntityType<BusinessGolem>> BUSINESS_GOLEM = ENTITIES.register("business_golem", () -> EntityType.Builder
-            .of(BusinessGolem::new, MobCategory.MONSTER)
-            .sized(1.4f, 2.7f)
-            .build(WildDungeons.rl("business_golem").toString()));
+//    public static final DeferredHolder<EntityType<?>, EntityType<BusinessGolem>> BUSINESS_GOLEM = ENTITIES.register("business_golem", () -> EntityType.Builder
+//            .of(BusinessGolem::new, MobCategory.MONSTER)
+//            .sized(1.4f, 2.7f)
+//            .build(WildDungeons.rl("business_golem").toString()));
 
     public static final DeferredHolder<EntityType<?>, EntityType<BusinessVindicator>> BUSINESS_VINDICATOR = ENTITIES.register("business_vindicator", () -> EntityType.Builder
             .of(BusinessVindicator::new, MobCategory.MONSTER)
             .sized(0.6f, 1.8f)
-            .build(WildDungeons.rl("business_vindicator").toString()));
+            .build(ResourceKey.create(Registries.ENTITY_TYPE, WildDungeons.rl("business_vindicator"))));
 
     public static final DeferredHolder<EntityType<?>, EntityType<BusinessEvoker>> BUSINESS_EVOKER = ENTITIES.register("business_evoker", () -> EntityType.Builder
             .of(BusinessEvoker::new, MobCategory.MONSTER)
             .sized(0.6f, 1.8f)
-            .build(WildDungeons.rl("business_evoker").toString()));
+            .build(ResourceKey.create(Registries.ENTITY_TYPE, WildDungeons.rl("business_evoker"))));
 
     public static final DeferredHolder<EntityType<?>, EntityType<EmeraldWisp>> SMALL_EMERALD_WISP = ENTITIES.register("small_emerald_wisp", () -> EntityType.Builder
             .of(EmeraldWisp::new, MobCategory.MONSTER)
             .sized(0.6f, 0.3f)
-            .build(WildDungeons.rl("small_emerald_wisp").toString()));
+            .build(ResourceKey.create(Registries.ENTITY_TYPE, WildDungeons.rl("small_emerald_wisp"))));
 
     public static final DeferredHolder<EntityType<?>, EntityType<LargeEmeraldWisp>> LARGE_EMERALD_WISP = ENTITIES.register("large_emerald_wisp", () -> EntityType.Builder
             .of(LargeEmeraldWisp::new, MobCategory.MONSTER)
             .sized(1f, 0.5f)
-            .build(WildDungeons.rl("large_emerald_wisp").toString()));
+            .build(ResourceKey.create(Registries.ENTITY_TYPE, WildDungeons.rl("large_emerald_wisp"))));
 
     public static final DeferredHolder<EntityType<?>, EntityType<FriendlyEmeraldWisp>> FRIENDLY_EMERALD_WISP = ENTITIES.register("friendly_emerald_wisp", () -> EntityType.Builder
             .of(FriendlyEmeraldWisp::new, MobCategory.MONSTER)
             .sized(0.6f, 0.3f)
-            .build(WildDungeons.rl("friendly_emerald_wisp").toString()));
+            .build(ResourceKey.create(Registries.ENTITY_TYPE, WildDungeons.rl("friendly_emerald_wisp"))));
 
     public static final DeferredHolder<EntityType<?>, EntityType<FriendlyLargeEmeraldWisp>> FRIENDLY_LARGE_EMERALD_WISP = ENTITIES.register("large_friendly_emerald_wisp", () -> EntityType.Builder
             .of(FriendlyLargeEmeraldWisp::new, MobCategory.MONSTER)
             .sized(1f, 0.5f)
-            .build(WildDungeons.rl("large_friendly_emerald_wisp").toString()));
-
-    public static final DeferredHolder<EntityType<?>, EntityType<BusinessCEO>> BUSINESS_CEO = ENTITIES.register("business_ceo", () -> EntityType.Builder
-            .of(BusinessCEO::new, MobCategory.MONSTER)
-            .sized(1.1f, 2.8f)
-            .build(WildDungeons.rl("business_ceo").toString()));
+            .build(ResourceKey.create(Registries.ENTITY_TYPE, WildDungeons.rl("large_friendly_emerald_wisp"))));
+//
+//    public static final DeferredHolder<EntityType<?>, EntityType<BusinessCEO>> BUSINESS_CEO = ENTITIES.register("business_ceo", () -> EntityType.Builder
+//            .of(BusinessCEO::new, MobCategory.MONSTER)
+//            .sized(1.1f, 2.8f)
+//            .build(ResourceKey.create(Registries.ENTITY_TYPE, WildDungeons.rl("business_ceo"))));
 
     public static final DeferredHolder<EntityType<?>, EntityType<EmeraldProjectileEntity>> EMERALD_PROJECTILE = ENTITIES.register("emerald_projectile", () -> EntityType.Builder
             .<EmeraldProjectileEntity>of(EmeraldProjectileEntity::new, MobCategory.MISC)
             .sized(0.3125F, 0.3125F)
             .clientTrackingRange(4)
             .updateInterval(10)
-            .build(WildDungeons.rl("emerald_projectile").toString()));
+            .build(ResourceKey.create(Registries.ENTITY_TYPE, WildDungeons.rl("emerald_projectile"))));
 
-    public static final DeferredHolder<EntityType<?>, EntityType<WindArrow>> WIND_ARROW = ENTITIES.register("wind_arrow",
-            () -> EntityType.Builder
-                    .<WindArrow>of(WindArrow::new, MobCategory.MISC)
-                    .sized(1f, 1f)
-                    .build(WildDungeons.rl("wind_arrow").toString()));
+//    public static final DeferredHolder<EntityType<?>, EntityType<WindArrow>> WIND_ARROW = ENTITIES.register("wind_arrow",
+//            () -> EntityType.Builder
+//                    .<WindArrow>of(WindArrow::new, MobCategory.MISC)
+//                    .sized(1f, 1f)
+//                    .build(WildDungeons.rl("wind_arrow").toString()));
 
     public static final DeferredHolder<EntityType<?>, EntityType<PrimedDenseTnt>> PRIMED_DENSE_TNT = ENTITIES.register("primed_dense_tnt",
             () -> EntityType.Builder
                     .<PrimedDenseTnt>of(PrimedDenseTnt::new, MobCategory.MISC)
                     .sized(1f, 1f)
-                    .build(WildDungeons.rl("primed_dense_tnt").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, WildDungeons.rl("primed_dense_tnt"))));
 
     public static final DeferredHolder<EntityType<?>, EntityType<GuardianLaserBeamEntity>> GUARDIAN_LASER_BEAM = ENTITIES.register("guardian_laser_beam",
             () -> EntityType.Builder
                     .<GuardianLaserBeamEntity>of(GuardianLaserBeamEntity::new, MobCategory.MISC)
                     .sized(0.5f, 0.5f)
-                    .build(WildDungeons.rl("guardian_laser_beam").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, WildDungeons.rl("guardian_laser_beam"))));
 
     public static final DeferredHolder<EntityType<?>, EntityType<BlackHole>> BLACK_HOLE = ENTITIES.register("black_hole",
             () -> EntityType.Builder
@@ -147,71 +148,71 @@ public class WDEntities {
                     .sized(1.0f, 1.0f)
                     .updateInterval(1)
                     .clientTrackingRange(80)
-                    .build(WildDungeons.rl("black_hole").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, WildDungeons.rl("black_hole"))));
 
-    public static final DeferredHolder<EntityType<?>, EntityType<Spiderling>> SPIDERLING = ENTITIES.register("spiderling", () -> EntityType.Builder
-            .of(Spiderling::new, MobCategory.MONSTER)
-            .sized(0.65F, 0.4F)
-            .eyeHeight(0.2F)
-            .build(WildDungeons.rl("spiderling").toString()));
-
-    public static final DeferredHolder<EntityType<?>, EntityType<FriendlySpiderling>> FRIENDLY_SPIDERLING = ENTITIES.register("friendly_spiderling", () -> EntityType.Builder
-            .of(FriendlySpiderling::new, MobCategory.MONSTER)
-            .sized(0.65F, 0.4F)
-            .eyeHeight(0.2F)
-            .build(WildDungeons.rl("friendly_spiderling").toString()));
-
-    public static final DeferredHolder<EntityType<?>, EntityType<SkelepedeMain>> SKELEPEDE = ENTITIES.register("skelepede_main", () -> EntityType.Builder
-            .of(SkelepedeMain::new, MobCategory.MONSTER)
-            .sized(1, 0.6F)
-            .eyeHeight(0.2F)
-            .build(WildDungeons.rl("skelepede_main").toString()));
-
-    public static final DeferredHolder<EntityType<?>, EntityType<SkelepedeSegment>> SKELEPEDE_SEGMENT = ENTITIES.register("skelepede_segment", () -> EntityType.Builder
-            .of(SkelepedeSegment::new, MobCategory.MONSTER)
-            .sized(1.3f, 0.8F)
-            .eyeHeight(0.2F)
-            .build(WildDungeons.rl("skelepede_segment").toString()));
+//    public static final DeferredHolder<EntityType<?>, EntityType<Spiderling>> SPIDERLING = ENTITIES.register("spiderling", () -> EntityType.Builder
+//            .of(Spiderling::new, MobCategory.MONSTER)
+//            .sized(0.65F, 0.4F)
+//            .eyeHeight(0.2F)
+//            .build(ResourceKey.create(Registries.ENTITY_TYPE, WildDungeons.rl("spiderling"))));
+//
+//    public static final DeferredHolder<EntityType<?>, EntityType<FriendlySpiderling>> FRIENDLY_SPIDERLING = ENTITIES.register("friendly_spiderling", () -> EntityType.Builder
+//            .of(FriendlySpiderling::new, MobCategory.MONSTER)
+//            .sized(0.65F, 0.4F)
+//            .eyeHeight(0.2F)
+//            .build(ResourceKey.create(Registries.ENTITY_TYPE, WildDungeons.rl("friendly_spiderling"))));
+//
+//    public static final DeferredHolder<EntityType<?>, EntityType<SkelepedeMain>> SKELEPEDE = ENTITIES.register("skelepede_main", () -> EntityType.Builder
+//            .of(SkelepedeMain::new, MobCategory.MONSTER)
+//            .sized(1, 0.6F)
+//            .eyeHeight(0.2F)
+//            .build(ResourceKey.create(Registries.ENTITY_TYPE, WildDungeons.rl("skelepede_main"))));
+//
+//    public static final DeferredHolder<EntityType<?>, EntityType<SkelepedeSegment>> SKELEPEDE_SEGMENT = ENTITIES.register("skelepede_segment", () -> EntityType.Builder
+//            .of(SkelepedeSegment::new, MobCategory.MONSTER)
+//            .sized(1.3f, 0.8F)
+//            .eyeHeight(0.2F)
+//            .build(ResourceKey.create(Registries.ENTITY_TYPE, WildDungeons.rl("skelepede_segment"))));
 
     public static final DeferredHolder<EntityType<?>, EntityType<ToxicWisp>> SMALL_TOXIC_WISP = ENTITIES.register("small_toxic_wisp", () -> EntityType.Builder
             .of(ToxicWisp::new, MobCategory.MONSTER)
             .sized(0.4f, 1f)
-            .build(WildDungeons.rl("small_toxic_wisp").toString()));
+            .build(ResourceKey.create(Registries.ENTITY_TYPE, WildDungeons.rl("small_toxic_wisp"))));
 
     public static final DeferredHolder<EntityType<?>, EntityType<LargeToxicWisp>> LARGE_TOXIC_WISP = ENTITIES.register("large_toxic_wisp", () -> EntityType.Builder
             .of(LargeToxicWisp::new, MobCategory.MONSTER)
             .sized(0.8f, 1f)
-            .build(WildDungeons.rl("large_toxic_wisp").toString()));
+            .build(ResourceKey.create(Registries.ENTITY_TYPE, WildDungeons.rl("large_toxic_wisp"))));
 
-    public static final DeferredHolder<EntityType<?>, EntityType<CopperSentinel>> COPPER_SENTINEL = ENTITIES.register("copper_sentinel", () -> EntityType.Builder
-            .of(CopperSentinel::new, MobCategory.MONSTER)
-            .sized(2.5f, 4.5f)
-            .build(WildDungeons.rl("copper_sentinel").toString()));
-
-    public static final DeferredHolder<EntityType<?>, EntityType<PrimalCreeper>> PRIMAL_CREEPER = ENTITIES.register("primal_creeper", () -> EntityType.Builder
-            .of(PrimalCreeper::new, MobCategory.MONSTER)
-            .sized(1.f, 2.2f)
-            .build(WildDungeons.rl("primal_creeper").toString()));
-
-    public static final DeferredHolder<EntityType<?>, EntityType<CondemnedGuardian>> CONDEMNED_GUARDIAN = ENTITIES.register("condemned_guardian", () -> EntityType.Builder
-            .of(CondemnedGuardian::new, MobCategory.MONSTER)
-            .sized(2f, 2f)
-            .build(WildDungeons.rl("condemned_guardian").toString()));
-
-    public static final DeferredHolder<EntityType<?>, EntityType<CondemnedGuardianSegment>> CONDEMNED_GUARDIAN_SEGMENT = ENTITIES.register("condemned_guardian_segment", () -> EntityType.Builder
-            .of(CondemnedGuardianSegment::new, MobCategory.MONSTER)
-            .sized(2f, 2f)
-            .build(WildDungeons.rl("condemned_guardian_segment").toString()));
+//    public static final DeferredHolder<EntityType<?>, EntityType<CopperSentinel>> COPPER_SENTINEL = ENTITIES.register("copper_sentinel", () -> EntityType.Builder
+//            .of(CopperSentinel::new, MobCategory.MONSTER)
+//            .sized(2.5f, 4.5f)
+//            .build(ResourceKey.create(Registries.ENTITY_TYPE, WildDungeons.rl("copper_sentinel"))));
+//
+//    public static final DeferredHolder<EntityType<?>, EntityType<PrimalCreeper>> PRIMAL_CREEPER = ENTITIES.register("primal_creeper", () -> EntityType.Builder
+//            .of(PrimalCreeper::new, MobCategory.MONSTER)
+//            .sized(1.f, 2.2f)
+//            .build(ResourceKey.create(Registries.ENTITY_TYPE, WildDungeons.rl("primal_creeper"))));
+//
+//    public static final DeferredHolder<EntityType<?>, EntityType<CondemnedGuardian>> CONDEMNED_GUARDIAN = ENTITIES.register("condemned_guardian", () -> EntityType.Builder
+//            .of(CondemnedGuardian::new, MobCategory.MONSTER)
+//            .sized(2f, 2f)
+//            .build(ResourceKey.create(Registries.ENTITY_TYPE, WildDungeons.rl("condemned_guardian"))));
+//
+//    public static final DeferredHolder<EntityType<?>, EntityType<CondemnedGuardianSegment>> CONDEMNED_GUARDIAN_SEGMENT = ENTITIES.register("condemned_guardian_segment", () -> EntityType.Builder
+//            .of(CondemnedGuardianSegment::new, MobCategory.MONSTER)
+//            .sized(2f, 2f)
+//            .build(ResourceKey.create(Registries.ENTITY_TYPE, WildDungeons.rl("condemned_guardian_segment"))));
 
     public static final DeferredHolder<EntityType<?>, EntityType<EggSacArrow>> EGG_SAC_ARROW = ENTITIES.register("egg_sac_arrow",
             () -> EntityType.Builder.<EggSacArrow>of(EggSacArrow::new, MobCategory.MISC)
                     .sized(0.5F, 0.5F)
-                    .build("egg_sac_arrow"));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, WildDungeons.rl("egg_sac_arrow"))));
 
     public static final DeferredHolder<EntityType<?>, EntityType<ThrownNautilusShield>> THROWN_NAUTILUS_SHIELD = ENTITIES.register("thrown_nautilus_shield",
             () -> EntityType.Builder.<ThrownNautilusShield>of(ThrownNautilusShield::new, MobCategory.MISC)
                     .sized(1.1F, 0.2F)
                     .clientTrackingRange(64)
                     .updateInterval(1)
-                    .build("thrown_nautilus_shield"));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, WildDungeons.rl("thrown_nautilus_shield"))));
 }

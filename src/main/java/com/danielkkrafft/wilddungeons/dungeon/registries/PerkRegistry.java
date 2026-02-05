@@ -7,7 +7,7 @@ import com.danielkkrafft.wilddungeons.dungeon.components.perk.ExtraLifePerk;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonPerkTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.mob_effects.WDMobEffects;
 import net.minecraft.core.Holder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffects;
 
@@ -16,13 +16,13 @@ public class PerkRegistry {
 
     public static final DungeonPerkTemplate EXTRA_LIFE = create(ExtraLifePerk.class, WildDungeons.rl("textures/gui/sprites/hud/totem.png"));
 
-    public static final DungeonPerkTemplate FIRE_RESIST = create(MobEffects.FIRE_RESISTANCE,  ResourceLocation.withDefaultNamespace("textures/mob_effect/fire_resistance.png"),"PermanentFireResistPerk").setUnique();
-    public static final DungeonPerkTemplate STRENGTH = create(MobEffects.DAMAGE_BOOST,  ResourceLocation.withDefaultNamespace("textures/mob_effect/strength.png"),"PermanentStrengthPerk");
-    public static final DungeonPerkTemplate NIGHT_VISION = create(MobEffects.NIGHT_VISION,  ResourceLocation.withDefaultNamespace("textures/mob_effect/night_vision.png"),"PermanentNightVisionPerk").setUnique();
-    public static final DungeonPerkTemplate HEALTH_BOOST = create(MobEffects.HEALTH_BOOST,  ResourceLocation.withDefaultNamespace("textures/mob_effect/health_boost.png"), "PermanentHealthBoostPerk");
-    public static final DungeonPerkTemplate MOVEMENT_SPEED = create(MobEffects.MOVEMENT_SPEED, ResourceLocation.withDefaultNamespace("textures/mob_effect/speed.png"),  "PermanentMovementSpeedPerk");
-    public static final DungeonPerkTemplate HASTE = create(MobEffects.DIG_SPEED, ResourceLocation.withDefaultNamespace("textures/mob_effect/haste.png"),"PermanentDigSpeedPerk");
-    public static final DungeonPerkTemplate BIG_ABSORPTION = create(MobEffects.ABSORPTION,19, ResourceLocation.withDefaultNamespace("textures/mob_effect/absorption.png"),"BigAbsorptionPerk");
+    public static final DungeonPerkTemplate FIRE_RESIST = create(MobEffects.FIRE_RESISTANCE,  Identifier.withDefaultNamespace("textures/mob_effect/fire_resistance.png"),"PermanentFireResistPerk").setUnique();
+    public static final DungeonPerkTemplate STRENGTH = create(MobEffects.STRENGTH,  Identifier.withDefaultNamespace("textures/mob_effect/strength.png"),"PermanentStrengthPerk");
+    public static final DungeonPerkTemplate NIGHT_VISION = create(MobEffects.NIGHT_VISION,  Identifier.withDefaultNamespace("textures/mob_effect/night_vision.png"),"PermanentNightVisionPerk").setUnique();
+    public static final DungeonPerkTemplate HEALTH_BOOST = create(MobEffects.HEALTH_BOOST,  Identifier.withDefaultNamespace("textures/mob_effect/health_boost.png"), "PermanentHealthBoostPerk");
+    public static final DungeonPerkTemplate MOVEMENT_SPEED = create(MobEffects.SPEED, Identifier.withDefaultNamespace("textures/mob_effect/speed.png"),  "PermanentMovementSpeedPerk");
+    public static final DungeonPerkTemplate HASTE = create(MobEffects.HASTE, Identifier.withDefaultNamespace("textures/mob_effect/haste.png"),"PermanentDigSpeedPerk");
+    public static final DungeonPerkTemplate BIG_ABSORPTION = create(MobEffects.ABSORPTION,19, Identifier.withDefaultNamespace("textures/mob_effect/absorption.png"),"BigAbsorptionPerk");
 
     public static final DungeonPerkTemplate SWORD_DAMAGE = create(WDMobEffects.SWORD_DAMAGE, WildDungeons.rl("textures/mob_effect/sword_damage.png"),"SwordDamagePerk");
     public static final DungeonPerkTemplate AXE_DAMAGE = create(WDMobEffects.AXE_DAMAGE, WildDungeons.rl("textures/mob_effect/axe_damage.png"),"AxeDamagePerk");
@@ -94,19 +94,19 @@ public class PerkRegistry {
     //Midas Touch
 
 
-    public static DungeonPerkTemplate create(Class<? extends DungeonPerk> clazz, ResourceLocation texture) {
+    public static DungeonPerkTemplate create(Class<? extends DungeonPerk> clazz, Identifier texture) {
         DungeonPerkTemplate perk = new DungeonPerkTemplate(clazz, texture);
         DUNGEON_PERK_REGISTRY.add(perk);
         return perk;
     }
 
-    public static DungeonPerkTemplate create(Holder<MobEffect> effect, ResourceLocation texture, String name) {
+    public static DungeonPerkTemplate create(Holder<MobEffect> effect, Identifier texture, String name) {
         DungeonPerkTemplate perk = new DungeonPerkTemplate(effect, texture).setName(name);
         DUNGEON_PERK_REGISTRY.add(perk);
         return perk;
     }
 
-    public static DungeonPerkTemplate create(Holder<MobEffect> effect, int amplifier, ResourceLocation texture, String name) {
+    public static DungeonPerkTemplate create(Holder<MobEffect> effect, int amplifier, Identifier texture, String name) {
         DungeonPerkTemplate perk = new DungeonPerkTemplate(effect, amplifier, texture).setName(name);
         DUNGEON_PERK_REGISTRY.add(perk);
         return perk;

@@ -12,7 +12,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class LockableEventRoom extends DungeonRoom {
+public class LockableEventRoom extends DungeonRoom { //TODO - Uncomment once DungeonRoom is fixed for 1.21.11
 
     public static final int START_COOLDOWN = 100;
     public int startCooldown = START_COOLDOWN;
@@ -34,7 +34,7 @@ public class LockableEventRoom extends DungeonRoom {
         this.getConnectionPoints().forEach(point -> {
             if (point.isConnected()) {
                 point.block(2);
-                point.removeDecal();
+                //point.removeDecal(); TODO - Uncomment once decals are fixed for 1.21.11
             }
         });
     }
@@ -111,10 +111,10 @@ public class LockableEventRoom extends DungeonRoom {
                 if (point.getConnectedPoint().getBranchIndex() > this.getBranch().getIndex() ||
                         (point.getConnectedPoint().getRoom().getIndex() > this.getIndex() && point.getConnectedPoint().getBranchIndex() == this.getBranch().getIndex())) {
                     point.block(2);
-                    point.removeDecal();
+                    //point.removeDecal(); TODO - Uncomment once decals are fixed for 1.21.11
                 } else {
                     point.unBlock();
-                    point.addDecal();
+                    //point.addDecal(); TODO - Uncomment once decals are fixed for 1.21.11
                 }
             }
         });

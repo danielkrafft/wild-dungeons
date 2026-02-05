@@ -2,6 +2,7 @@ package com.danielkkrafft;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import org.lwjgl.glfw.GLFW;
 
@@ -11,6 +12,6 @@ public class KeyBindings {
             KeyConflictContext.IN_GAME,
             InputConstants.Type.KEYSYM,
             GLFW.GLFW_KEY_V,
-            "key.categories.wilddungeons"
+            KeyMapping.Category.register(Identifier.parse("key.categories.wilddungeons"))
     );
 }

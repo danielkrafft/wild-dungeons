@@ -13,7 +13,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
 
 @OnlyIn(Dist.CLIENT)
-@EventBusSubscriber(modid = WildDungeons.MODID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber
 public class CustomHUDHandler {
 
     @SubscribeEvent
@@ -29,7 +29,7 @@ public class CustomHUDHandler {
         }
 
         if (event.getName().getPath().equals("crosshair") ) {
-            event.setCanceled(ItemPreviewTooltipLayer.INSTANCE.shouldCancelRender());
+            //event.setCanceled(ItemPreviewTooltipLayer.INSTANCE.shouldCancelRender()); TODO - Fix this
         }
     }
 }

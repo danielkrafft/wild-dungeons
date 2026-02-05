@@ -1,13 +1,8 @@
 package com.danielkkrafft.wilddungeons.api.client;
 
-import com.mojang.blaze3d.shaders.Shader;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.irisshaders.iris.Iris;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ShaderInstance;
 import net.neoforged.fml.ModList;
-
-import java.util.Objects;
 
 public class ShadersIntegration {
     public static boolean LOADED;

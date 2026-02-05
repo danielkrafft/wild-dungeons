@@ -14,6 +14,7 @@ import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
@@ -27,6 +28,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -37,7 +40,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
-public class ThrownNautilusShield extends Entity {
+public class ThrownNautilusShield extends Entity { //TODO - Fix for 1.21.11 - Needs living.hurt to return a boolean and new initialvelocity as well as some other stuff
 
     private static final EntityDataAccessor<Boolean> LOYAL =
             SynchedEntityData.defineId(ThrownNautilusShield.class, EntityDataSerializers.BOOLEAN);
@@ -47,8 +50,8 @@ public class ThrownNautilusShield extends Entity {
             SynchedEntityData.defineId(ThrownNautilusShield.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Integer> OWNER_ID =
             SynchedEntityData.defineId(ThrownNautilusShield.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Vector3f> INITIAL_VEL =
-            SynchedEntityData.defineId(ThrownNautilusShield.class, EntityDataSerializers.VECTOR3);
+//    private static final EntityDataAccessor<Vector3f> INITIAL_VEL =
+//            SynchedEntityData.defineId(ThrownNautilusShield.class, EntityDataSerializers.VECTOR3);
     private static final EntityDataAccessor<ItemStack> STACK =
             SynchedEntityData.defineId(ThrownNautilusShield.class, EntityDataSerializers.ITEM_STACK);
     private static final double PUSH_OUT = 0.15;
@@ -76,7 +79,7 @@ public class ThrownNautilusShield extends Entity {
         this.entityData.set(HOMING, homing);
         this.entityData.set(SPIN, false);
         this.entityData.set(OWNER_ID, owner.getId());
-        this.entityData.set(INITIAL_VEL, initialVelocity);
+        //this.entityData.set(INITIAL_VEL, initialVelocity);
     }
 
     @Override
@@ -86,7 +89,7 @@ public class ThrownNautilusShield extends Entity {
         builder.define(HOMING, false);
         builder.define(SPIN, false);
         builder.define(OWNER_ID, -1);
-        builder.define(INITIAL_VEL, new Vector3f());
+        //builder.define(INITIAL_VEL, new Vector3f());
     }
 
     private void handleBounce(Vec3 oldPos, Vec3 newPos) {
@@ -105,35 +108,35 @@ public class ThrownNautilusShield extends Entity {
         Vec3 vel = this.getDeltaMovement();
 
         ItemStack stack = this.getStack();
-        boolean hasHoming = stack.getEnchantmentLevel(WildDungeons.getEnchantment(WDEnchantments.HOMING)) > 0;
+        //boolean hasHoming = stack.getEnchantmentLevel(WildDungeons.getEnchantment(WDEnchantments.HOMING)) > 0;
 
 
         //Thingy for the detection of the hit surface so it reflect the right position
-        if (!hasHoming) {
-            switch (side) {
-                case UP, DOWN -> vel = new Vec3(vel.x, -vel.y, vel.z);
-                case EAST, WEST -> vel = new Vec3(-vel.x, vel.y, vel.z);
-                case NORTH, SOUTH -> vel = new Vec3(vel.x, vel.y, -vel.z);
-            }
-            vel = vel.scale(1f);
-        }else {
-            LivingEntity target = findNearestTarget(20);
-
-            if (target != null) {
-                Vec3 dir = target.position().add(0,0.7,0).subtract(this.position()).normalize();
-                vel = dir.scale(1f);
-            } else {
-                vel = this.getDeltaMovement().scale(-0.75);
-            }
-
-        }
-        this.setPos(hit.getLocation().add(Vec3.atLowerCornerOf(side.getNormal()).scale(PUSH_OUT)));
+//        if (!hasHoming) {
+//            switch (side) {
+//                case UP, DOWN -> vel = new Vec3(vel.x, -vel.y, vel.z);
+//                case EAST, WEST -> vel = new Vec3(-vel.x, vel.y, vel.z);
+//                case NORTH, SOUTH -> vel = new Vec3(vel.x, vel.y, -vel.z);
+//            }
+//            vel = vel.scale(1f);
+//        }else {
+//            LivingEntity target = findNearestTarget(20);
+//
+//            if (target != null) {
+//                Vec3 dir = target.position().add(0,0.7,0).subtract(this.position()).normalize();
+//                vel = dir.scale(1f);
+//            } else {
+//                vel = this.getDeltaMovement().scale(-0.75);
+//            }
+//
+//        }
+        this.setPos(hit.getLocation().add(Vec3.atLowerCornerOf(side.getUnitVec3i()).scale(PUSH_OUT)));
         this.setDeltaMovement(vel);
         this.hurtMarked = true;
 
         Vector3f newInit = new Vector3f((float) vel.x, (float) vel.y, (float) vel.z);
         this.initialVelocity = newInit;
-        this.entityData.set(INITIAL_VEL, newInit);
+        //this.entityData.set(INITIAL_VEL, newInit);
 
         float pitch = 0.8f + (this.random.nextFloat() * 0.5f);
 
@@ -179,203 +182,218 @@ public class ThrownNautilusShield extends Entity {
 
     @Override
     public void tick() {
-        if (level().isClientSide) {
+        if (level().isClientSide()) {
             if (this.owner == null) {
                 Entity e = level().getEntity(this.entityData.get(OWNER_ID));
                 if (e instanceof Player p) this.owner = p;
             }
-            this.initialVelocity = this.entityData.get(INITIAL_VEL);
+            //this.initialVelocity = this.entityData.get(INITIAL_VEL);
         }
 
         if (this.owner != null) {
             ItemStack stack = this.entityData.get(STACK);
 
-            int range = stack.getEnchantmentLevel(WildDungeons.getEnchantment(WDEnchantments.RANGE)) * 10;
+            //int range = stack.getEnchantmentLevel(WildDungeons.getEnchantment(WDEnchantments.RANGE)) * 10;
 
-            int timeA = 8 + range;
-            int timeB = 58 + range;
-
-
-
-            if (stack.getEnchantmentLevel(WildDungeons.getEnchantment(Enchantments.LOYALTY)) > 0) {
-                if (this.tickCount < timeA) {
-                    this.setDeltaMovement(new Vec3(
-                            this.initialVelocity.x(),
-                            this.initialVelocity.y(),
-                            this.initialVelocity.z()));
-                    List<LivingEntity> livingList = level().getEntitiesOfClass(
-                            LivingEntity.class, this.getBoundingBox().inflate(1f)
-                    );
-                    for (LivingEntity living : livingList) {
-                        if (!living.equals(this.owner)) {
-                            Vec3 dir = living.position().subtract(this.position()).normalize();
-                            living.addDeltaMovement(dir.scale(0.2f));
-                            if (living.hurt(this.owner.damageSources().mobAttack(living), 2f)) {
-                                if (!this.owner.isCreative()) {
-                                    ItemStack c = stack.copy();
-                                    c.setDamageValue(stack.getDamageValue() + 1);
-                                    this.entityData.set(STACK, c);
-                                }
-                            }
-                        }
-                    }
-                } else if (this.tickCount < timeB) {
-                    setDeltaMovement(Vec3.ZERO);
-                    this.entityData.set(SPIN, true);
-
-                    List<LivingEntity> livingList = level().getEntitiesOfClass(
-                            LivingEntity.class, this.getBoundingBox().inflate(1f)
-                    );
-                    for (LivingEntity living : livingList) {
-                        if (!living.getUUID().equals(this.owner.getUUID())) {
-                            Vec3 dir = living.position().subtract(this.position()).normalize();
-                            living.addDeltaMovement(dir.scale(0.2f));
-                        if (living.hurt(this.owner.damageSources().mobAttack(living), 2f)) {
-                            if (!this.owner.isCreative()) {
-                                ItemStack c = stack.copy();
-                                c.setDamageValue(stack.getDamageValue() + 1);
-                                this.entityData.set(STACK, c);
-                            }
-                        }
-                        }
-                    }
-                    this.spinTicks++;
-                } else {
-                    if (this.entityData.get(SPIN)) this.entityData.set(SPIN, false);
-                    this.doLoyaltyReturn();
-                    List<LivingEntity> livingList = level().getEntitiesOfClass(
-                            LivingEntity.class, this.getBoundingBox().inflate(1f)
-                    );
-                    for (LivingEntity living : livingList) {
-                        if (!living.getUUID().equals(this.owner.getUUID())) {
-                            Vec3 dir = living.position().subtract(this.position()).normalize();
-                            living.addDeltaMovement(dir.scale(0.2f));
-                            if (living.hurt(this.owner.damageSources().mobAttack(living), 2f)) {
-                                if (!this.owner.isCreative()) {
-                                    ItemStack c = stack.copy();
-                                    c.setDamageValue(stack.getDamageValue() + 1);
-                                    this.entityData.set(STACK, c);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            //int timeA = 8 + range;
+            //int timeB = 58 + range;
 
 
 
-            else {
-                if (this.tickCount < timeA) {
-                    this.setDeltaMovement(new Vec3(
-                            this.initialVelocity.x(),
-                            this.initialVelocity.y(),
-                            this.initialVelocity.z()
-                    ));
-
-                    List<LivingEntity> livingList = level().getEntitiesOfClass(
-                            LivingEntity.class, this.getBoundingBox().inflate(1f)
-                    );
-                    for (LivingEntity living : livingList) {
-                        if (!living.getUUID().equals(this.owner.getUUID())) {
-                            Vec3 dir = living.position().subtract(this.position()).normalize();
-                            living.addDeltaMovement(dir.scale(0.2f));
-                            if (living.hurt(this.owner.damageSources().mobAttack(living), 2f)) {
-                                if (!this.owner.isCreative()) {
-                                    ItemStack c = stack.copy();
-                                    c.setDamageValue(stack.getDamageValue() + 1);
-                                    this.entityData.set(STACK, c);
-                                }
-                            }
-                        }
-                    }
-                }
-
-                else if (this.tickCount < timeB) {
-                    setDeltaMovement(Vec3.ZERO);
-                    this.entityData.set(SPIN, true);
-
-                    List<LivingEntity> livingList = level().getEntitiesOfClass(
-                            LivingEntity.class, this.getBoundingBox().inflate(1f)
-                    );
-                    for (LivingEntity living : livingList) {
-                        if (!living.getUUID().equals(this.owner.getUUID())) {
-                            Vec3 dir = living.position().subtract(this.position()).normalize();
-                            living.addDeltaMovement(dir.scale(0.2f));
-                        if (living.hurt(this.owner.damageSources().mobAttack(living), 2f)) {
-                            if (!this.owner.isCreative()) {
-                                ItemStack c = stack.copy();
-                                c.setDamageValue(stack.getDamageValue() + 1);
-                                this.entityData.set(STACK, c);
-                            }
-                        }
-                        }
-                    }
-                    this.spinTicks++;
-                }
-
-                else {
-                    if (this.shouldSpin()) {
-                        this.entityData.set(SPIN, false);
-                        if (!stack.isEmpty()) {
-                            level().addFreshEntity(new ItemEntity(
-                                    level(), getX(), getY(), getZ(), stack
-                            ));
-                        }
-                        this.remove(RemovalReason.DISCARDED);
-                    }
-                }
-            }
-            if (this.tickCount >= 5 && this.tickCount <= timeB) {
-                List<LivingEntity> livingList = level().getEntitiesOfClass(
-                        LivingEntity.class, this.getBoundingBox().inflate(0.2, 1.5, 0.2)
-                );
-                for (LivingEntity living : livingList) {
-                    if (living instanceof Player player) {
-                        Vec3 vec3 = player.getDeltaMovement();
-                        player.setDeltaMovement(player.getDeltaMovement().x,1.2f,player.getDeltaMovement().z);
-                        player.hurt(this.damageSources().sting(player),2f);
-                        if (!stack.isEmpty()) {
-                            if (!this.owner.addItem(stack)) {
-                                this.level().addFreshEntity(new ItemEntity(level(), this.owner.getX(), this.owner.getY(), this.owner.getZ(), stack));
-                            }
-                        }
-                        this.remove(RemovalReason.DISCARDED);
-                    }
-                }
-            }
-
-            Vec3 oldPos = this.position();
-            Vec3 mov = getDeltaMovement();
-            if (!this.shouldSpin()) {
-                for (int i = 0; i < 2; i++) {
-                    double posX = this.getX() + (this.random.nextDouble() - 0.5) * 0.2;
-                    double posY = this.getY() + (this.random.nextDouble() - 0.5) * 0.2;
-                    double posZ = this.getZ() + (this.random.nextDouble() - 0.5) * 0.2;
-                    double velocityX = (this.random.nextDouble() - 0.5) * 0.1;
-                    double velocityY = (this.random.nextDouble() - 0.5) * 0.1;
-                    double velocityZ = (this.random.nextDouble() - 0.5) * 0.1;
-                    this.level().addParticle(WDParticleTypes.SPARK_PARTICLE.get(),
-                            posX,
-                            posY,
-                            posZ,
-                            velocityX,
-                            velocityY,
-                            velocityZ);
-                }
-            }
-            this.setOldPosAndRot();
-            Vec3 newPos = this.position().add(mov);
-            if (this.tickCount < timeB) handleBounce(oldPos, newPos);
-            mov = this.getDeltaMovement();
-            this.setPos(
-                    getX() + mov.x,
-                    getY() + mov.y,
-                    getZ() + mov.z
-            );
-
+//            if (stack.getEnchantmentLevel(WildDungeons.getEnchantment(Enchantments.LOYALTY)) > 0) {
+//                if (this.tickCount < timeA) {
+//                    this.setDeltaMovement(new Vec3(
+//                            this.initialVelocity.x(),
+//                            this.initialVelocity.y(),
+//                            this.initialVelocity.z()));
+//                    List<LivingEntity> livingList = level().getEntitiesOfClass(
+//                            LivingEntity.class, this.getBoundingBox().inflate(1f)
+//                    );
+//                    for (LivingEntity living : livingList) {
+//                        if (!living.equals(this.owner)) {
+//                            Vec3 dir = living.position().subtract(this.position()).normalize();
+//                            living.addDeltaMovement(dir.scale(0.2f));
+////                            if (living.hurt(this.owner.damageSources().mobAttack(living), 2f)) {
+////                                if (!this.owner.isCreative()) {
+////                                    ItemStack c = stack.copy();
+////                                    c.setDamageValue(stack.getDamageValue() + 1);
+////                                    this.entityData.set(STACK, c);
+////                                }
+////                            }
+//                        }
+//                    }
+//                } else if (this.tickCount < timeB) {
+//                    setDeltaMovement(Vec3.ZERO);
+//                    this.entityData.set(SPIN, true);
+//
+//                    List<LivingEntity> livingList = level().getEntitiesOfClass(
+//                            LivingEntity.class, this.getBoundingBox().inflate(1f)
+//                    );
+//                    for (LivingEntity living : livingList) {
+//                        if (!living.getUUID().equals(this.owner.getUUID())) {
+//                            Vec3 dir = living.position().subtract(this.position()).normalize();
+//                            living.addDeltaMovement(dir.scale(0.2f));
+////                        if (living.hurt(this.owner.damageSources().mobAttack(living), 2f)) {
+////                            if (!this.owner.isCreative()) {
+////                                ItemStack c = stack.copy();
+////                                c.setDamageValue(stack.getDamageValue() + 1);
+////                                this.entityData.set(STACK, c);
+////                            }
+////                        }
+//                        }
+//                    }
+//                    this.spinTicks++;
+//                } else {
+//                    if (this.entityData.get(SPIN)) this.entityData.set(SPIN, false);
+//                    this.doLoyaltyReturn();
+//                    List<LivingEntity> livingList = level().getEntitiesOfClass(
+//                            LivingEntity.class, this.getBoundingBox().inflate(1f)
+//                    );
+//                    for (LivingEntity living : livingList) {
+//                        if (!living.getUUID().equals(this.owner.getUUID())) {
+//                            Vec3 dir = living.position().subtract(this.position()).normalize();
+//                            living.addDeltaMovement(dir.scale(0.2f));
+////                            if (living.hurt(this.owner.damageSources().mobAttack(living), 2f)) {
+////                                if (!this.owner.isCreative()) {
+////                                    ItemStack c = stack.copy();
+////                                    c.setDamageValue(stack.getDamageValue() + 1);
+////                                    this.entityData.set(STACK, c);
+////                                }
+////                            }
+//                        }
+//                    }
+//                }
+//            }
+//
+//
+//
+//            else {
+//                if (this.tickCount < timeA) {
+//                    this.setDeltaMovement(new Vec3(
+//                            this.initialVelocity.x(),
+//                            this.initialVelocity.y(),
+//                            this.initialVelocity.z()
+//                    ));
+//
+//                    List<LivingEntity> livingList = level().getEntitiesOfClass(
+//                            LivingEntity.class, this.getBoundingBox().inflate(1f)
+//                    );
+//                    for (LivingEntity living : livingList) {
+//                        if (!living.getUUID().equals(this.owner.getUUID())) {
+//                            Vec3 dir = living.position().subtract(this.position()).normalize();
+//                            living.addDeltaMovement(dir.scale(0.2f));
+////                            if (living.hurt(this.owner.damageSources().mobAttack(living), 2f)) {
+////                                if (!this.owner.isCreative()) {
+////                                    ItemStack c = stack.copy();
+////                                    c.setDamageValue(stack.getDamageValue() + 1);
+////                                    this.entityData.set(STACK, c);
+////                                }
+////                            }
+//                        }
+//                    }
+//                }
+//
+//                else if (this.tickCount < timeB) {
+//                    setDeltaMovement(Vec3.ZERO);
+//                    this.entityData.set(SPIN, true);
+//
+//                    List<LivingEntity> livingList = level().getEntitiesOfClass(
+//                            LivingEntity.class, this.getBoundingBox().inflate(1f)
+//                    );
+//                    for (LivingEntity living : livingList) {
+//                        if (!living.getUUID().equals(this.owner.getUUID())) {
+//                            Vec3 dir = living.position().subtract(this.position()).normalize();
+//                            living.addDeltaMovement(dir.scale(0.2f));
+////                        if (living.hurt(this.owner.damageSources().mobAttack(living), 2f)) {
+////                            if (!this.owner.isCreative()) {
+////                                ItemStack c = stack.copy();
+////                                c.setDamageValue(stack.getDamageValue() + 1);
+////                                this.entityData.set(STACK, c);
+////                            }
+////                        }
+//                        }
+//                    }
+//                    this.spinTicks++;
+//                }
+//
+//                else {
+//                    if (this.shouldSpin()) {
+//                        this.entityData.set(SPIN, false);
+//                        if (!stack.isEmpty()) {
+//                            level().addFreshEntity(new ItemEntity(
+//                                    level(), getX(), getY(), getZ(), stack
+//                            ));
+//                        }
+//                        this.remove(RemovalReason.DISCARDED);
+//                    }
+//                }
+//            }
+//            if (this.tickCount >= 5 && this.tickCount <= timeB) {
+//                List<LivingEntity> livingList = level().getEntitiesOfClass(
+//                        LivingEntity.class, this.getBoundingBox().inflate(0.2, 1.5, 0.2)
+//                );
+//                for (LivingEntity living : livingList) {
+//                    if (living instanceof Player player) {
+//                        Vec3 vec3 = player.getDeltaMovement();
+//                        player.setDeltaMovement(player.getDeltaMovement().x,1.2f,player.getDeltaMovement().z);
+//                        player.hurt(this.damageSources().sting(player),2f);
+//                        if (!stack.isEmpty()) {
+//                            if (!this.owner.addItem(stack)) {
+//                                this.level().addFreshEntity(new ItemEntity(level(), this.owner.getX(), this.owner.getY(), this.owner.getZ(), stack));
+//                            }
+//                        }
+//                        this.remove(RemovalReason.DISCARDED);
+//                    }
+//                }
+//            }
+//
+//            Vec3 oldPos = this.position();
+//            Vec3 mov = getDeltaMovement();
+//            if (!this.shouldSpin()) {
+//                for (int i = 0; i < 2; i++) {
+//                    double posX = this.getX() + (this.random.nextDouble() - 0.5) * 0.2;
+//                    double posY = this.getY() + (this.random.nextDouble() - 0.5) * 0.2;
+//                    double posZ = this.getZ() + (this.random.nextDouble() - 0.5) * 0.2;
+//                    double velocityX = (this.random.nextDouble() - 0.5) * 0.1;
+//                    double velocityY = (this.random.nextDouble() - 0.5) * 0.1;
+//                    double velocityZ = (this.random.nextDouble() - 0.5) * 0.1;
+//                    this.level().addParticle(WDParticleTypes.SPARK_PARTICLE.get(),
+//                            posX,
+//                            posY,
+//                            posZ,
+//                            velocityX,
+//                            velocityY,
+//                            velocityZ);
+//                }
+//            }
+//            this.setOldPosAndRot();
+//            Vec3 newPos = this.position().add(mov);
+//            if (this.tickCount < timeB) handleBounce(oldPos, newPos);
+//            mov = this.getDeltaMovement();
+//            this.setPos(
+//                    getX() + mov.x,
+//                    getY() + mov.y,
+//                    getZ() + mov.z
+//            );
+//
         }
 
         super.tick();
+    }
+
+    @Override
+    public boolean hurtServer(ServerLevel serverLevel, DamageSource damageSource, float v) {
+        return false;
+    }
+
+    @Override
+    protected void readAdditionalSaveData(ValueInput valueInput) {
+
+    }
+
+    @Override
+    protected void addAdditionalSaveData(ValueOutput valueOutput) {
+
     }
 
     private void doLoyaltyReturn() {
@@ -397,7 +415,7 @@ public class ThrownNautilusShield extends Entity {
         Vec3 newVel = dir.scale(0.65);
         this.setDeltaMovement(newVel);
         Vector3f newInit = new Vector3f((float)newVel.x, (float)newVel.y, (float)newVel.z);
-        this.entityData.set(INITIAL_VEL, newInit);
+        //this.entityData.set(INITIAL_VEL, newInit);
         this.initialVelocity = newInit;
     }
 
@@ -445,10 +463,4 @@ public class ThrownNautilusShield extends Entity {
     public Player getOwner() {
         return this.owner;
     }
-
-    @Override
-    protected void readAdditionalSaveData(CompoundTag tag) {}
-
-    @Override
-    protected void addAdditionalSaveData(CompoundTag tag) {}
 }

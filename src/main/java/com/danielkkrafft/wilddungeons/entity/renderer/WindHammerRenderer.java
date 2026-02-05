@@ -20,15 +20,15 @@ public class WindHammerRenderer extends GeoItemRenderer<WindHammer> {
         super( new ClientModel<>(null, WildDungeons.rl("geo/item/wind_hammer.geo.json"), WildDungeons.rl("textures/item/wind_hammer.png")));
     }
 
-
-    @Override
-    public GeoModel<WindHammer> getGeoModel() {
-        int breaching = currentItemStack.getEnchantmentLevel(WildDungeons.getEnchantment(Enchantments.BREACH));
-        int density = currentItemStack.getEnchantmentLevel(WildDungeons.getEnchantment(Enchantments.DENSITY));
-        int wind = currentItemStack.getEnchantmentLevel(WildDungeons.getEnchantment(Enchantments.WIND_BURST));
-
-        return (breaching > 0 ||
-                density > 0 ||
-                wind > 0) ? wind > 0 ? WIND_MOD : (breaching > 0 ? (breaching >= 2 ? BRE2_MOD : BRE1_MOD) : (density >= 2 ? DEN2_MOD : DEN1_MOD)) : DEF_MOD;
-    }
+    //TODO - Fix for 1.21.11
+//    @Override
+//    public GeoModel<WindHammer> getGeoModel() {
+//        int breaching = currentItemStack.getEnchantmentLevel(WildDungeons.getEnchantment(Enchantments.BREACH));
+//        int density = currentItemStack.getEnchantmentLevel(WildDungeons.getEnchantment(Enchantments.DENSITY));
+//        int wind = currentItemStack.getEnchantmentLevel(WildDungeons.getEnchantment(Enchantments.WIND_BURST));
+//
+//        return (breaching > 0 ||
+//                density > 0 ||
+//                wind > 0) ? wind > 0 ? WIND_MOD : (breaching > 0 ? (breaching >= 2 ? BRE2_MOD : BRE1_MOD) : (density >= 2 ? DEN2_MOD : DEN1_MOD)) : DEF_MOD;
+//    }
 }

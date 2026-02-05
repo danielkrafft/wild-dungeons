@@ -1,6 +1,6 @@
 package com.danielkkrafft.wilddungeons.entity.boss;
 
-import com.danielkkrafft.wilddungeons.entity.PiercingArrow;
+//import com.danielkkrafft.wilddungeons.entity.PiercingArrow; TODO - Uncomment when PiercingArrow is fixed for 1.21.11
 import com.danielkkrafft.wilddungeons.registry.WDBlocks;
 import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
 import com.danielkkrafft.wilddungeons.util.UtilityMethods;
@@ -41,7 +41,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animatable.manager.AnimatableManager;
 import software.bernie.geckolib.animation.AnimationController;
 import software.bernie.geckolib.animation.RawAnimation;
 
@@ -57,7 +57,7 @@ public class MutantBogged extends WDBoss implements RangedAttackMob, GeoEntity {
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(new AnimationController<>(this, CONTROLLER, 2,
+        controllers.add(new AnimationController<>(
                 state -> state.setAndContinue(state.isMoving() ? walkAnim : idleAnim)).
                 triggerableAnim(idle, idleAnim).
                 triggerableAnim(walk, walkAnim).
@@ -111,8 +111,8 @@ public class MutantBogged extends WDBoss implements RangedAttackMob, GeoEntity {
         goalSelector.addGoal(4, new WaterAvoidingRandomStrollGoal(this, 1));
         goalSelector.addGoal(5, new LookAtPlayerGoal(this, Player.class, 8));
         goalSelector.addGoal(5, new RandomLookAroundGoal(this));
-        targetSelector.addGoal(1, new HurtByTargetGoal(this, MutantBogged.class, BreezeGolem.class));
-        targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 0, false, false, li -> !(li instanceof MutantBogged)));
+        //targetSelector.addGoal(1, new HurtByTargetGoal(this, MutantBogged.class, BreezeGolem.class)); TODO - Uncomment when BreezeGolem is fixed for 1.21.11
+        targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, LivingEntity.class, false, false));
     }
 
     @Override
@@ -136,10 +136,10 @@ public class MutantBogged extends WDBoss implements RangedAttackMob, GeoEntity {
         Level level = level();
         bossEvent.setVisible(true);
         updateBossBar();
-        if (level.isClientSide || isDeadOrDying()) return;
+        if (level.isClientSide() || isDeadOrDying()) return;
 
         Vec3 pos = position();
-        List<LivingEntity> nearby = level.getNearbyEntities(LivingEntity.class, TargetingConditions.DEFAULT, this, AABB.ofSize(new Vec3(pos.x, pos.y + getEyeHeight() / 2f, pos.z), 4, 4, 4));
+        List<LivingEntity> nearby = ((ServerLevel) level).getNearbyEntities(LivingEntity.class, TargetingConditions.DEFAULT, this, AABB.ofSize(new Vec3(pos.x, pos.y + getEyeHeight() / 2f, pos.z), 4, 4, 4));
         nearby.forEach(li -> {
             int amplifier = li.distanceToSqr(this) < 1.3 ? 3 : 1;
             MobEffectInstance poisonEffect = li.getEffect(MobEffects.POISON);
@@ -167,13 +167,13 @@ public class MutantBogged extends WDBoss implements RangedAttackMob, GeoEntity {
                     case ARROWVOLLEY:
                         if (attackTicks == 20) {
                             for (int i = -1; i <= 1; i++) {
-                                createArrow(level, 1.8f, 0, i);
+                                //createArrow(level, 1.8f, 0, i);
                             }
                         }
                         break;
                     case CHARGEDARROW:
                         if (attackTicks == 30) {
-                            createArrow(level, 1.6f, 2.5f, 0);
+                            //createArrow(level, 1.6f, 2.5f, 0);
                         }
                         break;
                     case DIG:
@@ -236,27 +236,28 @@ public class MutantBogged extends WDBoss implements RangedAttackMob, GeoEntity {
         }
     }
 
-    public void createArrow(Level level, float velocity, float pierceAmount, double yDisplacement) {
-        if (!level.isClientSide) {
-            PiercingArrow arrow = new PiercingArrow(level, this, pierceAmount);
-            double xDiff = currentTarget.getX() - arrow.getX();
-            double yDiff = currentTarget.getY(0.333) - arrow.getY();
-            double zDiff = currentTarget.getZ() - arrow.getZ();
-            double xzLength = Math.sqrt(xDiff * xDiff + zDiff * zDiff);
-            arrow.shoot(xDiff, (yDiff + yDisplacement) + xzLength * 0.2f, zDiff, velocity, 0.05f);
-            level.addFreshEntity(arrow);
-        }
-    }
+    //TODO - Uncomment when Piercing Arrow is updated for 1.21.11
+//    public void createArrow(Level level, float velocity, float pierceAmount, double yDisplacement) {
+//        if (!level.isClientSide()) {
+//            PiercingArrow arrow = new PiercingArrow(level, this, pierceAmount);
+//            double xDiff = currentTarget.getX() - arrow.getX();
+//            double yDiff = currentTarget.getY(0.333) - arrow.getY();
+//            double zDiff = currentTarget.getZ() - arrow.getZ();
+//            double xzLength = Math.sqrt(xDiff * xDiff + zDiff * zDiff);
+//            arrow.shoot(xDiff, (yDiff + yDisplacement) + xzLength * 0.2f, zDiff, velocity, 0.05f);
+//            level.addFreshEntity(arrow);
+//        }
+//    }
 
     private void EndAttack() {
         attacking = false;
         currentTarget = null;
     }
-
-    @Override
-    public boolean hurt(@NotNull DamageSource source, float damage) {
-        return super.hurt(source, damage * 0.5f);
-    }
+    //TODO - Fix for 1.21.11
+//    @Override
+//    public boolean hurt(@NotNull DamageSource source, float damage) {
+//        return super.hurt(source, damage * 0.5f);
+//    }
 
     private static final BossSounds SOUNDS = new BossSounds(
             WDSoundEvents.MUTANT_BOGGED_GROWL.value(),
@@ -281,12 +282,12 @@ public class MutantBogged extends WDBoss implements RangedAttackMob, GeoEntity {
         level().setBlockAndUpdate(blockPosition(), WDBlocks.ROTTEN_MOSS.get().defaultBlockState());
         ItemStack tippedArrow = new ItemStack(Items.TIPPED_ARROW, UtilityMethods.RNG(32, 64));
         tippedArrow.set(DataComponents.POTION_CONTENTS, new PotionContents(Potions.POISON));
-        spawnAtLocation(tippedArrow);
+        spawnAtLocation((ServerLevel) level(), tippedArrow);
     }
 
     @Override
     public void performRangedAttack(@NotNull LivingEntity target, float vel) {
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             if (!attacking) {
                 attacking = true;
                 attackTicks = 0;

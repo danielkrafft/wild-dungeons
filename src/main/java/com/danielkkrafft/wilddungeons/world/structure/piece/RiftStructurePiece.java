@@ -9,7 +9,7 @@ import com.danielkkrafft.wilddungeons.registry.WDStructurePieceTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -26,13 +26,13 @@ import static com.danielkkrafft.wilddungeons.dungeon.registries.RiftPoolRegistry
 import static com.danielkkrafft.wilddungeons.dungeon.registries.RiftPoolRegistry.OVERWORLD_RIFT_POOL;
 
 public class RiftStructurePiece extends TemplateStructurePiece {
-    public RiftStructurePiece(StructureTemplateManager structureTemplateManager, ResourceLocation location, BlockPos templatePosition) {
+    public RiftStructurePiece(StructureTemplateManager structureTemplateManager, Identifier location, BlockPos templatePosition) {
         super(WDStructurePieceTypes.RIFT.value(), 0, structureTemplateManager, location, location.toString(), new StructurePlaceSettings(), templatePosition);
         WildDungeons.getLogger().info("PLACED RIFT STRUCTURE AT {}", templatePosition);
     }
 
     public RiftStructurePiece(StructurePieceSerializationContext context, CompoundTag tag) {
-        super(WDStructurePieceTypes.RIFT.value(), tag, context.structureTemplateManager(), resourceLocation -> makeSettings());
+        super(WDStructurePieceTypes.RIFT.value(), tag, context.structureTemplateManager(), Identifier -> makeSettings());
     }
 
     @Override

@@ -5,8 +5,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.DataFixer;
-import net.minecraft.FileUtil;
-import net.minecraft.ResourceLocationException;
+import net.minecraft.IdentifierException;
 import net.minecraft.SharedConstants;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.gametest.framework.StructureUtils;
@@ -15,10 +14,11 @@ import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.resources.FileToIdConverter;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.FastBufferedInputStream;
+import net.minecraft.util.FileUtil;
 import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.level.block.Block;
@@ -43,7 +43,7 @@ public class WDStructureTemplateManager {
     private static final String STRUCTURE_GENERATED_DIRECTORY_NAME = "structures";
     private static final String STRUCTURE_FILE_EXTENSION = ".nbt";
     private static final String STRUCTURE_TEXT_FILE_EXTENSION = ".snbt";
-    private final Map<ResourceLocation, Optional<WDStructureTemplate>> structureRepository = Maps.newConcurrentMap();
+    private final Map<Identifier, Optional<WDStructureTemplate>> structureRepository = Maps.newConcurrentMap();
     private final DataFixer fixerUpper;
     private ResourceManager resourceManager;
     private final Path generatedDir;
@@ -70,7 +70,7 @@ public class WDStructureTemplateManager {
         INSTANCE = new WDStructureTemplateManager(resourceManager, levelStorageAccess, fixerUpper, blockLookup);
     }
 
-    public WDStructureTemplate getOrCreate(ResourceLocation id) {
+    public WDStructureTemplate getOrCreate(Identifier id) {
         Optional<WDStructureTemplate> optional = this.get(id);
         if (optional.isPresent()) {
             return optional.get();
@@ -81,12 +81,12 @@ public class WDStructureTemplateManager {
         }
     }
 
-    public Optional<WDStructureTemplate> get(ResourceLocation id) {
+    public Optional<WDStructureTemplate> get(Identifier id) {
 //        return tryLoad(id);
         return this.structureRepository.computeIfAbsent(id, this::tryLoad);
     }
 
-    private Optional<WDStructureTemplate> tryLoad(ResourceLocation id) {
+    private Optional<WDStructureTemplate> tryLoad(Identifier id) {
         for(Source structuretemplatemanager$source : this.sources) {
             try {
                 Optional<WDStructureTemplate> optional = structuretemplatemanager$source.loader().apply(id);
@@ -102,31 +102,24 @@ public class WDStructureTemplateManager {
 
     public static PreparableReloadListener StructureTemplateManagerReloadListener = new PreparableReloadListener() {
         @Override
-        public @NotNull CompletableFuture<Void> reload(@NotNull PreparationBarrier preparationBarrier, @NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profilerFiller, @NotNull ProfilerFiller profilerFiller1, @NotNull Executor executor, @NotNull Executor executor1) {
-            profilerFiller.startTick();
-            profilerFiller.push("structure_template_reload");
+        public CompletableFuture<Void> reload(SharedState sharedState, Executor executor, PreparationBarrier preparationBarrier, Executor executor1) {
+            ResourceManager resourceManager = sharedState.resourceManager();
 
-            // Use the background executor for preparation work
-            return CompletableFuture.supplyAsync(() -> {
+            return CompletableFuture
+                    .supplyAsync(() -> {
                         if (WDStructureTemplateManager.INSTANCE != null) {
                             WDStructureTemplateManager.INSTANCE.onResourceManagerReload(resourceManager);
                         }
                         return null;
                     }, executor)
-                    .thenCompose(preparationBarrier::wait)  // Wait for all preparation work to complete
-                    .thenAcceptAsync(unused -> {
-                        // Apply phase runs on the game thread (executor1)
-                        profilerFiller1.startTick();
-                        profilerFiller1.push("apply_structure_templates");
-                        profilerFiller1.pop();
-                        profilerFiller1.endTick();
+
+                    .thenCompose(preparationBarrier::wait)
+                    .thenRunAsync(() -> {
                     }, executor1)
                     .whenComplete((unused, throwable) -> {
                         if (throwable != null) {
                             WildDungeons.getLogger().error("Failed to reload structure templates", throwable);
                         }
-                        profilerFiller.pop();
-                        profilerFiller.endTick();
                     });
         }
     };
@@ -136,34 +129,34 @@ public class WDStructureTemplateManager {
         this.structureRepository.clear();
     }
 
-    private Optional<WDStructureTemplate> loadFromResource(ResourceLocation id) {
-        ResourceLocation resourcelocation = RESOURCE_LISTER.idToFile(id);
-        return this.load(() -> this.resourceManager.open(resourcelocation), (p_230366_) ->  WildDungeons.getLogger().error("Couldn't load structure {}", id, p_230366_));
+    private Optional<WDStructureTemplate> loadFromResource(Identifier id) {
+        Identifier Identifier = RESOURCE_LISTER.idToFile(id);
+        return this.load(() -> this.resourceManager.open(Identifier), (p_230366_) ->  WildDungeons.getLogger().error("Couldn't load structure {}", id, p_230366_));
     }
 
 
-    public Stream<ResourceLocation> listResources() {
+    public Stream<Identifier> listResources() {
         return RESOURCE_LISTER.listMatchingResources(this.resourceManager).keySet().stream()
                 .map(RESOURCE_LISTER::fileToId);
     }
 
-    private Optional<WDStructureTemplate> loadFromTestStructures(ResourceLocation id) {
-        return this.loadFromSnbt(id, Paths.get(StructureUtils.testStructuresDir));
+    private Optional<WDStructureTemplate> loadFromTestStructures(Identifier id) {
+        return this.loadFromSnbt(id, Paths.get(StructureUtils.testStructuresDir.toUri()));
     }
 
-    private Stream<ResourceLocation> listTestStructures() {
-        Path path = Paths.get(StructureUtils.testStructuresDir);
+    private Stream<Identifier> listTestStructures() {
+        Path path = Paths.get(StructureUtils.testStructuresDir.toUri());
         if (!Files.isDirectory(path)) {
             return Stream.empty();
         } else {
-            List<ResourceLocation> list = new ArrayList<>();
+            List<Identifier> list = new ArrayList<>();
             Objects.requireNonNull(list);
             this.listFolderContents(path, "minecraft", STRUCTURE_TEXT_FILE_EXTENSION, list::add);
             return list.stream();
         }
     }
 
-    private Optional<WDStructureTemplate> loadFromGenerated(ResourceLocation id) {
+    private Optional<WDStructureTemplate> loadFromGenerated(Identifier id) {
         if (!Files.isDirectory(this.generatedDir)) {
             return Optional.empty();
         } else {
@@ -172,12 +165,12 @@ public class WDStructureTemplateManager {
         }
     }
 
-    public Stream<ResourceLocation> listGenerated() {
+    public Stream<Identifier> listGenerated() {
         if (!Files.isDirectory(this.generatedDir)) {
             return Stream.empty();
         } else {
             try {
-                List<ResourceLocation> list = new ArrayList<>();
+                List<Identifier> list = new ArrayList<>();
 
                 try (DirectoryStream<Path> directorystream = Files.newDirectoryStream(this.generatedDir, Files::isDirectory)) {
                     for(Path path : directorystream) {
@@ -197,16 +190,16 @@ public class WDStructureTemplateManager {
         }
     }
 
-    private void listFolderContents(Path folder, String namespace, String extension, Consumer<ResourceLocation> output) {
+    private void listFolderContents(Path folder, String namespace, String extension, Consumer<Identifier> output) {
         int i = extension.length();
         Function<String, String> function = (p_230358_) -> p_230358_.substring(0, p_230358_.length() - i);
 
         try (Stream<Path> stream = Files.find(folder, Integer.MAX_VALUE, (p_352038_, p_352039_) -> p_352039_.isRegularFile() && p_352038_.toString().endsWith(extension))) {
             stream.forEach((p_352044_) -> {
                 try {
-                    output.accept(ResourceLocation.fromNamespaceAndPath(namespace, function.apply(this.relativize(folder, p_352044_))));
-                } catch (ResourceLocationException resourcelocationexception) {
-                    WildDungeons.getLogger().error("Invalid location while listing folder {} contents", folder, resourcelocationexception);
+                    output.accept(Identifier.fromNamespaceAndPath(namespace, function.apply(this.relativize(folder, p_352044_))));
+                } catch (IdentifierException Identifierexception) {
+                    WildDungeons.getLogger().error("Invalid location while listing folder {} contents", folder, Identifierexception);
                 }
 
             });
@@ -220,7 +213,7 @@ public class WDStructureTemplateManager {
         return root.relativize(path).toString().replace(File.separator, "/");
     }
 
-    private Optional<WDStructureTemplate> loadFromSnbt(ResourceLocation id, Path p_path) {
+    private Optional<WDStructureTemplate> loadFromSnbt(Identifier id, Path p_path) {
         if (!Files.isDirectory(p_path)) {
             return Optional.empty();
         } else {
@@ -271,7 +264,7 @@ public class WDStructureTemplateManager {
         return structuretemplate;
     }
 
-    public boolean save(ResourceLocation id) {
+    public boolean save(Identifier id) {
         Optional<WDStructureTemplate> optional = this.structureRepository.get(id);
         if (optional.isEmpty()) {
             return false;
@@ -304,9 +297,9 @@ public class WDStructureTemplateManager {
         }
     }
 
-    public Path createAndValidatePathToGeneratedStructure(ResourceLocation location, String extension) {
+    public Path createAndValidatePathToGeneratedStructure(Identifier location, String extension) {
         if (location.getPath().contains("//")) {
-            throw new ResourceLocationException("Invalid resource path: " + location);
+            throw new IdentifierException("Invalid resource path: " + location);
         } else {
             try {
                 Path path = this.generatedDir.resolve(location.getNamespace());
@@ -315,21 +308,21 @@ public class WDStructureTemplateManager {
                 if (path2.startsWith(this.generatedDir) && FileUtil.isPathNormalized(path2) && FileUtil.isPathPortable(path2)) {
                     return path2;
                 } else {
-                    throw new ResourceLocationException("Invalid resource path: " + path2);
+                    throw new IdentifierException("Invalid resource path: " + path2);
                 }
             } catch (InvalidPathException invalidpathexception) {
-                throw new ResourceLocationException("Invalid resource path: " + location, invalidpathexception);
+                throw new IdentifierException("Invalid resource path: " + location, invalidpathexception);
             }
         }
     }
 
-    public void remove(ResourceLocation id) {
+    public void remove(Identifier id) {
         this.structureRepository.remove(id);
     }
 
-    record Source(Function<ResourceLocation, Optional<WDStructureTemplate>> loader, Supplier<Stream<ResourceLocation>> lister) {
+    record Source(Function<Identifier, Optional<WDStructureTemplate>> loader, Supplier<Stream<Identifier>> lister) {
 
-        public Function<ResourceLocation, Optional<WDStructureTemplate>> loader() {
+        public Function<Identifier, Optional<WDStructureTemplate>> loader() {
             return this.loader;
         }
     }

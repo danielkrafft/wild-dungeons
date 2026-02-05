@@ -6,27 +6,39 @@ import com.danielkkrafft.wilddungeons.registry.WDDataComponents;
 import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
 import com.danielkkrafft.wilddungeons.util.MathUtil;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.Nullable;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animatable.manager.AnimatableManager;
 
-import java.util.List;
 import java.util.UUID;
 
 public class Meathook extends WDWeapon {
 
     public static final String NAME = "meathook";
+
+    //TODO - Fix animations to match 1.21.11
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return null;
+    }
 
     public enum AnimationList {idle, charge, hold, fire}
 
@@ -38,33 +50,37 @@ public class Meathook extends WDWeapon {
                 .rarity(Rarity.RARE)
                 .durability(1000)
         );
-        this.animator.addLoopingAnimation(AnimationList.idle.toString());//0s long
-        this.animator.addAnimation(AnimationList.charge.toString(), 2.13f / chargeSeconds);//2.13s long
-        this.animator.addLoopingAnimation(AnimationList.hold.toString());//0s long
-        this.animator.addAnimation(AnimationList.fire.toString());//0.25s long
+//        this.animator.addLoopingAnimation(AnimationList.idle.toString());//0s long TODO - Fix animations to match 1.21.11
+//        this.animator.addAnimation(AnimationList.charge.toString(), 2.13f / chargeSeconds);//2.13s long
+//        this.animator.addLoopingAnimation(AnimationList.hold.toString());//0s long
+//        this.animator.addAnimation(AnimationList.fire.toString());//0.25s long
+    }
+
+    public Meathook(Properties properties) {
+        super(NAME, properties);
     }
 
     @Override
-    public void inventoryTick(@NotNull ItemStack itemStack, @NotNull Level world, @NotNull Entity en, int slot, boolean inMainHand) {
-        if (en instanceof Player p) {
-            if (Meathook.getHookUUID(itemStack) == null) {
-                if (!inMainHand && !p.getItemInHand(InteractionHand.OFF_HAND).equals(itemStack)) {
-                    if (Meathook.isCharged(itemStack)) {
-                        Meathook.setCharged(itemStack, false);
+    public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, @Nullable EquipmentSlot slot) {
+        if (entity instanceof Player player) {
+            if (Meathook.getHookUUID(stack) == null) {
+                if (!player.getItemInHand(InteractionHand.OFF_HAND).equals(stack)) {
+                    if (Meathook.isCharged(stack)) {
+                        Meathook.setCharged(stack, false);
                     }
-                    if (Meathook.isCharging(itemStack)) {
-                        Meathook.setCharging(itemStack, false);
+                    if (Meathook.isCharging(stack)) {
+                        Meathook.setCharging(stack, false);
                     }
-                    this.animator.playAnimation(this, AnimationList.idle.toString(), itemStack, p, p.level());
-                } else if (!Meathook.isCharging(itemStack) && !Meathook.isCharged(itemStack))
-                    this.animator.playAnimation(this, AnimationList.idle.toString(), itemStack, p, p.level());
+                    //this.animator.playAnimation(this, AnimationList.idle.toString(), itemStack, player, player.level()); TODO - Fix animations to match 1.21.11
+                } //else if (!Meathook.isCharging(itemStack) && !Meathook.isCharged(itemStack))
+                    //this.animator.playAnimation(this, AnimationList.idle.toString(), itemStack, player, player.level());
             } else {
-                if (!world.isClientSide) {
-                    MinecraftServer server = en.getServer();
+                if (!level.isClientSide()) {
+                    MinecraftServer server = entity.level().getServer();
                     if (server != null) {
                         for (ServerLevel l : server.getAllLevels()) {
-                            Entity enn = l.getEntity(Meathook.getHookUUID(itemStack));
-                            if (enn != null && !enn.level().equals(world)) Meathook.resetHook(p, itemStack);
+                            Entity enn = l.getEntity(Meathook.getHookUUID(stack));
+                            if (enn != null && !enn.level().equals(level)) Meathook.resetHook(player, stack);
                         }
                     }
                 }
@@ -74,37 +90,37 @@ public class Meathook extends WDWeapon {
 
     @Override
     public boolean onDroppedByPlayer(@NotNull ItemStack it, Player p) {
-        if (!p.level().isClientSide) {
+        if (!p.level().isClientSide()) {
             resetHook(p, it);
-            this.animator.playAnimation(this, AnimationList.idle.toString(), it, p, p.level());
+            //this.animator.playAnimation(this, AnimationList.idle.toString(), it, p, p.level()); TODO - Fix animations to match 1.21.11
             return super.onDroppedByPlayer(it, p);
         }
         return false;
     }
 
-    public static void resetHook(Player p, ItemStack it) {
-        if (it != null && !p.level().isClientSide) {
-            setCharged(it, false);
-            setCharging(it, false);
-            if (getHookUUID(it) != null) {
-                p.level().playSound(null, p.blockPosition(), retractMeathook(), SoundSource.PLAYERS, 1f, 1f);
-                setHook(it, null);
-                if (!p.isCreative()) it.setDamageValue(it.getDamageValue() + 1);
+    public static void resetHook(Player player, ItemStack stack) {
+        if (stack != null && !player.level().isClientSide()) {
+            setCharged(stack, false);
+            setCharging(stack, false);
+            if (getHookUUID(stack) != null) {
+                player.level().playSound(null, player.blockPosition(), retractMeathook(), SoundSource.PLAYERS, 1f, 1f);
+                setHook(stack, null);
+                if (!player.isCreative()) stack.setDamageValue(stack.getDamageValue() + 1);
             }
-            p.getCooldowns().addCooldown(it.getItem(), 20);
+            player.getCooldowns().addCooldown(stack, 20);
         }
     }
 
     @Override
     @NotNull
-    public InteractionResultHolder<ItemStack> use(@NotNull Level world, Player p, @NotNull InteractionHand hand) {
+    public InteractionResult use(@NotNull Level world, Player p, @NotNull InteractionHand hand) {
         ItemStack it = p.getItemInHand(hand);
         if (getHookUUID(it) == null) {
             p.startUsingItem(hand);
-            return InteractionResultHolder.consume(it);
+            return InteractionResult.CONSUME;
         } else {
             resetHook(p, it);
-            return InteractionResultHolder.fail(it);
+            return InteractionResult.FAIL;
         }
     }
 
@@ -115,8 +131,8 @@ public class Meathook extends WDWeapon {
         if (i >= chargeSeconds * 20) {
             if (i == chargeSeconds * 20) {
                 level.playSound(null, livingEntity.blockPosition(), loadMeathook(), SoundSource.PLAYERS, 1f, 1f);
-                if (livingEntity instanceof Player)
-                    this.animator.playAnimation(this, AnimationList.charge.toString(), itemStack, (Player) livingEntity, level);
+                //if (livingEntity instanceof Player)
+                    //this.animator.playAnimation(this, AnimationList.charge.toString(), itemStack, (Player) livingEntity, level); TODO - Fix animations to match 1.21.11
             }
             setCharged(itemStack, true);
         } else {
@@ -124,22 +140,23 @@ public class Meathook extends WDWeapon {
             if (i % 8 == 0)
                 level.playSound(null, livingEntity.blockPosition(), chargeMeathook(i), SoundSource.PLAYERS, 1f, 1f);
             if (i == 0) {
-                if (livingEntity instanceof Player)
-                    this.animator.playAnimation(this, AnimationList.charge.toString(), itemStack, (Player) livingEntity, level);
+                //if (livingEntity instanceof Player)
+                    //this.animator.playAnimation(this, AnimationList.charge.toString(), itemStack, (Player) livingEntity, level); TODO - Fix animations to match 1.21.11
             }
         }
     }
 
     @Override
-    public void releaseUsing(@NotNull ItemStack it, @NotNull Level world, @NotNull LivingEntity p, int count) {
+    public boolean releaseUsing(@NotNull ItemStack it, @NotNull Level world, @NotNull LivingEntity p, int count) {
         if (p instanceof Player p2) {
             if (isCharged(it)) {
                 setCharging(it, false);
                 setCharged(it, false);
                 shoot(world, p2, it, p.getYRot(), p.getXRot());
-                this.animator.playAnimation(this, AnimationList.fire.toString(), it, p2, world);
-            } else this.animator.playAnimation(this, AnimationList.idle.toString(), it, p2, world);
+                //this.animator.playAnimation(this, AnimationList.fire.toString(), it, p2, world); TODO - Fix animations to match 1.21.11
+            } // else this.animator.playAnimation(this, AnimationList.idle.toString(), it, p2, world);
         }
+        return false; // TODO - Implement actual return logic for 1.21.11
     }
 
     public void shoot(Level level, Player p, ItemStack it, float yaw, float pitch) {
@@ -210,10 +227,10 @@ public class Meathook extends WDWeapon {
         }
     }
 
-    @Override
-    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag tooltipFlag) {
-        tooltipComponents.add(Component.translatable("tooltip.wilddungeons.meathook_1"));
-        tooltipComponents.add(Component.translatable("tooltip.wilddungeons.meathook_2"));
-        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
-    }
+//    @Override TODO - Fix for 1.21.11
+//    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag tooltipFlag) {
+//        tooltipComponents.add(Component.translatable("tooltip.wilddungeons.meathook_1"));
+//        tooltipComponents.add(Component.translatable("tooltip.wilddungeons.meathook_2"));
+//        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
+//    }
 }

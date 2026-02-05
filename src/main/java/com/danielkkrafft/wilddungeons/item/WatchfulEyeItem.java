@@ -2,11 +2,15 @@ package com.danielkkrafft.wilddungeons.item;
 
 import com.danielkkrafft.wilddungeons.entity.GuardianLaserBeamEntity;
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
@@ -17,8 +21,8 @@ public class WatchfulEyeItem extends Item {
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slot, boolean selected) {
-        if (level.isClientSide) return;
+    public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, EquipmentSlot slot) {
+        if (level.isClientSide()) return;
         if (!(entity instanceof Player player)) return;
 
         int wantedLasers = countInInventory(player);
@@ -42,7 +46,7 @@ public class WatchfulEyeItem extends Item {
 
     private int countInInventory(Player player) {
         int count = 0;
-        for (ItemStack stack : player.getInventory().items) {
+        for (ItemStack stack : player.getInventory().getNonEquipmentItems()) {
             if (stack.is(this)) {
                 count += stack.getCount();
             }
@@ -60,7 +64,7 @@ public class WatchfulEyeItem extends Item {
 
     private void spawnLaser(Level level, Player player) {
         GuardianLaserBeamEntity laser =
-                WDEntities.GUARDIAN_LASER_BEAM.get().create(level);
+                WDEntities.GUARDIAN_LASER_BEAM.get().create(level, EntitySpawnReason.SPAWN_ITEM_USE);
 
         if (laser == null) return;
 

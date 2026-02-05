@@ -8,6 +8,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.Item;
@@ -49,11 +50,6 @@ public abstract class LifeLiquid extends FlowingFluid {
     @Nullable
     @Override
     public ParticleOptions getDripParticle() {return ParticleTypes.HEART;}
-
-    @Override
-    public boolean canConvertToSource(FluidState state, Level level, BlockPos pos) {
-        return false;
-    }
 
     @Override
     protected void beforeDestroyingBlock(LevelAccessor levelAccessor, BlockPos blockPos, BlockState blockState) {
@@ -110,7 +106,7 @@ public abstract class LifeLiquid extends FlowingFluid {
         }
 
         @Override
-        protected boolean canConvertToSource(Level level) {
+        protected boolean canConvertToSource(ServerLevel serverLevel) {
             return false;
         }
 
@@ -126,7 +122,7 @@ public abstract class LifeLiquid extends FlowingFluid {
     public static class Source extends LifeLiquid
     {
         @Override
-        protected boolean canConvertToSource(Level level) {
+        protected boolean canConvertToSource(ServerLevel serverLevel) {
             return false;
         }
 

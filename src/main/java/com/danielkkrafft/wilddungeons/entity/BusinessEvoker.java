@@ -7,6 +7,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
@@ -16,8 +18,8 @@ import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
-import net.minecraft.world.entity.monster.Evoker;
-import net.minecraft.world.entity.monster.SpellcasterIllager;
+import net.minecraft.world.entity.monster.illager.Evoker;
+import net.minecraft.world.entity.monster.illager.SpellcasterIllager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -26,7 +28,7 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.scores.PlayerTeam;
 import org.jetbrains.annotations.NotNull;
 
-import static com.danielkkrafft.wilddungeons.entity.boss.BusinessCEO.FRIENDLIES;
+//import static com.danielkkrafft.wilddungeons.entity.boss.BusinessCEO.FRIENDLIES;
 
 public class BusinessEvoker extends Evoker {
     private static final int LARGE_WISP_CAP = 3;
@@ -43,14 +45,14 @@ public class BusinessEvoker extends Evoker {
         this.goalSelector.addGoal(8, new RandomStrollGoal(this, 0.6));
         this.goalSelector.addGoal(9, new LookAtPlayerGoal(this, Player.class, 3.0F, 1.0F));
         this.goalSelector.addGoal(10, new LookAtPlayerGoal(this, Mob.class, 8.0F));
-        this.targetSelector.addGoal(1, (new HurtByTargetGoal(this,FRIENDLIES)).setAlertOthers(FRIENDLIES));
+        //this.targetSelector.addGoal(1, (new HurtByTargetGoal(this,FRIENDLIES)).setAlertOthers(FRIENDLIES));
         this.targetSelector.addGoal(2, (new NearestAttackableTargetGoal(this, Player.class, true)).setUnseenMemoryTicks(300));
 
     }
 
     @Override
     protected void dropAllDeathLoot(@NotNull ServerLevel level, @NotNull DamageSource source) {
-        spawnAtLocation(new ItemStack(Items.EMERALD, UtilityMethods.RNG(0, 3)));
+        spawnAtLocation(level, new ItemStack(Items.EMERALD, UtilityMethods.RNG(0, 3)));
     }
 
     class BusinessEvokerSummonSpellGoal extends SpellcasterIllager.SpellcasterUseSpellGoal {
@@ -70,7 +72,7 @@ public class BusinessEvoker extends Evoker {
             }
 
             // Check if we have room for more wisps
-            int largeWispCount = BusinessEvoker.this.level().getNearbyEntities(
+            int largeWispCount = ((ServerLevel) BusinessEvoker.this.level()).getNearbyEntities(
                     LargeEmeraldWisp.class, this.wispCountTargeting, BusinessEvoker.this,
                     BusinessEvoker.this.getBoundingBox().inflate(32)).size();
 
@@ -94,7 +96,7 @@ public class BusinessEvoker extends Evoker {
             PlayerTeam playerTeam = BusinessEvoker.this.getTeam();
 
             // Count current large wisps
-            int largeWispCount = BusinessEvoker.this.level().getNearbyEntities(
+            int largeWispCount = ((ServerLevel) BusinessEvoker.this.level()).getNearbyEntities(
                     LargeEmeraldWisp.class, this.wispCountTargeting, BusinessEvoker.this,
                     BusinessEvoker.this.getBoundingBox().inflate(32f)).size();
 
@@ -111,15 +113,15 @@ public class BusinessEvoker extends Evoker {
 
                 EmeraldWisp wisp;
                 if (summonLargeWisp) {
-                    wisp = WDEntities.LARGE_EMERALD_WISP.get().create(BusinessEvoker.this.level());
+                    wisp = WDEntities.LARGE_EMERALD_WISP.get().create(BusinessEvoker.this.level(), EntitySpawnReason.EVENT);
                     largeWispCount++; // Increment count for next iteration
                 } else {
-                    wisp = WDEntities.SMALL_EMERALD_WISP.get().create(BusinessEvoker.this.level());
+                    wisp = WDEntities.SMALL_EMERALD_WISP.get().create(BusinessEvoker.this.level(), EntitySpawnReason.EVENT);
                 }
 
                 if (wisp != null) {
                     wisp.setPos(blockPos.getCenter());
-                    wisp.moveTo(blockPos, 0.0F, 0.0F);
+                    wisp.absSnapTo(blockPos.getX(), blockPos.getY(), blockPos.getZ(), 0.0F, 0.0F);
                     wisp.setOwner(BusinessEvoker.this);
                     wisp.setTarget(BusinessEvoker.this.getTarget());
 

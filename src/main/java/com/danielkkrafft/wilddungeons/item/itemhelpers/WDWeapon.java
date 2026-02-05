@@ -1,30 +1,28 @@
 package com.danielkkrafft.wilddungeons.item.itemhelpers;
 
 import com.danielkkrafft.wilddungeons.entity.model.ClientModel;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.UseAnim;
+//import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoAnimatable;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.SingletonGeoAnimatable;
 import software.bernie.geckolib.animatable.client.GeoRenderProvider;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.AnimatableManager;
+//import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animatable.manager.AnimatableManager;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
-import software.bernie.geckolib.renderer.layer.AutoGlowingGeoLayer;
+//import software.bernie.geckolib.renderer.layer.AutoGlowingGeoLayer;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -32,9 +30,10 @@ import java.util.function.Predicate;
 
 import static net.minecraft.world.item.Items.ARROW;
 
+//TODO - Fix animation logic for 1.21.11
 public abstract class WDWeapon extends Item implements GeoAnimatable, GeoItem {
     public final String name;
-    protected final WDItemAnimator animator;
+    //protected final WDItemAnimator animator;
     protected final ClientModel<WDWeapon> model;
     protected boolean hasIdle = true;
     protected boolean hasEmissive = false;
@@ -53,16 +52,16 @@ public abstract class WDWeapon extends Item implements GeoAnimatable, GeoItem {
         this.name = name;
 
         this.model = new ClientModel<>(name, "item");
-        this.animator = new WDItemAnimator(name, this);
+        //this.animator = new WDItemAnimator(name, this);
         SingletonGeoAnimatable.registerSyncedAnimatable(this);
 
         configureModel(model);
-        configureAnimator(animator);
+        //configureAnimator(animator);
     }
 
     protected void configureModel(ClientModel<WDWeapon> model) {}
 
-    protected void configureAnimator(WDItemAnimator animator) {}
+    //protected void configureAnimator(WDItemAnimator animator) {}
 
     /* -- overrides -- */
 
@@ -70,32 +69,32 @@ public abstract class WDWeapon extends Item implements GeoAnimatable, GeoItem {
         return 72000; // same as bow
     }
 
-    protected UseAnim getDefaultUseAnim() {
-        return UseAnim.NONE;
-    }
+//    protected UseAnim getDefaultUseAnim() {
+//        return UseAnim.NONE;
+//    }
+
+//    @Override
+//    public final int getUseDuration(@NotNull ItemStack stack, @NotNull LivingEntity entity) {
+//        return getMaxUseDuration();
+//    }
+//
+//    @Override
+//    public final @NotNull UseAnim getUseAnimation(@NotNull ItemStack stack) {
+//        return getDefaultUseAnim();
+//    }
 
     @Override
-    public final int getUseDuration(@NotNull ItemStack stack, @NotNull LivingEntity entity) {
-        return getMaxUseDuration();
-    }
-
-    @Override
-    public final @NotNull UseAnim getUseAnimation(@NotNull ItemStack stack) {
-        return getDefaultUseAnim();
-    }
-
-    @Override
-    public void inventoryTick(@NotNull ItemStack stack, @NotNull Level level, @NotNull Entity entity, int slot, boolean selected) {
+    public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, @Nullable EquipmentSlot slot) {
         if (!(entity instanceof Player player)) return;
         if (!hasIdle) return;
-        if (player.getCooldowns().isOnCooldown(this)) return;
+        if (player.getCooldowns().isOnCooldown(stack)) return;
         if (player.isUsingItem()) return;
-        if (animator == null) return;
-
-        String idleName = animator.getAnimationName(0);
-        if (idleName != null) {
-            animator.playAnimation(this, idleName, stack, player, level);
-        }
+//        if (animator == null) return;
+//
+//        String idleName = animator.getAnimationName(0);
+//        if (idleName != null) {
+//            animator.playAnimation(this, idleName, stack, player, level);
+//        }
     }
 
     /* -- ranged logic -- */
@@ -138,7 +137,7 @@ public abstract class WDWeapon extends Item implements GeoAnimatable, GeoItem {
     }
 
     protected Projectile createProjectile(Level level, LivingEntity owner, EntityType<? extends Projectile> type, boolean isCrit) {
-        Projectile projectile = type.create(level);
+        Projectile projectile = type.create(level, EntitySpawnReason.SPAWN_ITEM_USE);
         if (projectile == null) return null;
 
         projectile.setOwner(owner);
@@ -156,7 +155,7 @@ public abstract class WDWeapon extends Item implements GeoAnimatable, GeoItem {
     }
 
     protected <E extends Entity> E summonEntity(ServerLevel level, EntityType<E> type, Vec3 pos) {
-        E e = type.create(level);
+        E e = type.create(level, EntitySpawnReason.SPAWN_ITEM_USE);
         if (e == null) return null;
 
         e.setPos(pos);
@@ -167,32 +166,33 @@ public abstract class WDWeapon extends Item implements GeoAnimatable, GeoItem {
 
     /* -- rendering -- */
 
-    public static class WDWeaponRenderer<T extends WDWeapon> extends GeoItemRenderer<T> {
-        public WDWeaponRenderer(ClientModel<T> model, boolean hasEmissive) {
-            super(model);
-            if (hasEmissive) this.addRenderLayer(new AutoGlowingGeoLayer<>(this));
-        }
-    }
-
-    @Override
-    public void createGeoRenderer(Consumer<GeoRenderProvider> consumer) {
-        consumer.accept(new GeoRenderProvider() {
-            private final BlockEntityWithoutLevelRenderer renderer = new WDWeaponRenderer<>(model, hasEmissive);
-
-            @Override
-            public BlockEntityWithoutLevelRenderer getGeoItemRenderer() {
-                return this.renderer;
-            }
-        });
-    }
-
+//    public static class WDWeaponRenderer<T extends WDWeapon> extends GeoItemRenderer<T> {
+//        public WDWeaponRenderer(ClientModel<T> model, boolean hasEmissive) {
+//            super(model);
+//            if (hasEmissive) this.addRenderLayer(new AutoGlowingGeoLayer<>(this));
+//        }
+//    }
+//
+//    @Override
+//    public void createGeoRenderer(Consumer<GeoRenderProvider> consumer) {
+//        consumer.accept(new GeoRenderProvider() {
+//            private final BlockEntityWithoutLevelRenderer renderer = new WDWeaponRenderer<>(model, hasEmissive);
+//
+//            @Override
+//            public BlockEntityWithoutLevelRenderer getGeoItemRenderer() {
+//                return this.renderer;
+//            }
+//        });
+//    }
+//
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        animator.registerControllersFromAnimator(this, controllers);
+        //animator.registerControllersFromAnimator(this, controllers);
     }
 
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return animator.getCache();
+        //return animator.getCache();
+        return null;
     }
 }

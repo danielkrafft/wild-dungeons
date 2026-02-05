@@ -54,8 +54,8 @@ public class EnemyPoolRegistry {
     public static final WeightedPool<DungeonRegistration.TargetTemplate> VERY_HARD_ENEMY_POOL = create("VERY_HARD_ENEMY_POOL")
             .add(WITHER, 1)
             .add(WARDEN, 1)
-            .add(MUTANT_BOGGED, 1)
-            .add(BREEZE_GOLEM, 1);
+            .add(MUTANT_BOGGED, 1);
+//            .add(BREEZE_GOLEM, 1); TODO - Uncomment once BREEZE_GOLEM is fixed for 1.21.11
 
     public static final WeightedPool<DungeonRegistration.TargetTemplate> VILLAGE_ENEMY_POOL_EASY = create("VILLAGE_ENEMY_POOL_EASY")
             .add(BUSINESS_VINDICATOR, 2)
@@ -66,7 +66,7 @@ public class EnemyPoolRegistry {
     public static final WeightedPool<DungeonRegistration.TargetTemplate> VILLAGE_ENEMY_POOL_MEDIUM = create("VILLAGE_ENEMY_POOL_MEDIUM")
             .add(BUSINESS_VINDICATOR, 2)
             .add(VINDICATOR, 2)
-            .add(BUSINESS_GOLEM, 2)
+            //.add(BUSINESS_GOLEM, 2) TODO - Uncomment once BUSINESS_GOLEM is fixed for 1.21.11
             .add(EMERALD_WISP, 2)
             .add(LARGE_EMERALD_WISP, 1)
             .add(WITCH, 2);
@@ -76,7 +76,7 @@ public class EnemyPoolRegistry {
             .add(BUSINESS_EVOKER, 1)
             .add(EVOKER, 1)
             .add(ILLUSIONER, 1)
-            .add(BUSINESS_GOLEM, 2)
+            //.add(BUSINESS_GOLEM, 2) TODO - Uncomment once BUSINESS_GOLEM is fixed for 1.21.11
             .add(EMERALD_WISP, 1)
             .add(LARGE_EMERALD_WISP, 2)
             .add(RAVAGER, 1)

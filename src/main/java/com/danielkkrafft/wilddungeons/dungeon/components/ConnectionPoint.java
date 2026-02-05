@@ -7,8 +7,8 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateOrientation;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.entity.blockentity.ConnectionBlockEntity;
-import com.danielkkrafft.wilddungeons.render.DecalRenderer;
-import com.danielkkrafft.wilddungeons.render.DecalRenderer.Decal;
+//import com.danielkkrafft.wilddungeons.render.DecalRenderer;
+//import com.danielkkrafft.wilddungeons.render.DecalRenderer.Decal;
 import com.danielkkrafft.wilddungeons.util.Serializer;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.util.Pair;
@@ -18,7 +18,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.Blocks;
@@ -36,8 +36,8 @@ import java.util.*;
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.BLOCKING_BLOCK;
 
 public class ConnectionPoint {
-    public static final ResourceLocation SWORD_TEXTURE = WildDungeons.rl("textures/item/white_sword.png");
-    public static final ResourceLocation CHEST_TEXTURE = WildDungeons.rl("textures/item/white_chest.png");
+    public static final Identifier SWORD_TEXTURE = WildDungeons.rl("textures/item/white_sword.png");
+    public static final Identifier CHEST_TEXTURE = WildDungeons.rl("textures/item/white_chest.png");
 
     private String pool = "all";
     private String type = "both";
@@ -151,7 +151,7 @@ public class ConnectionPoint {
 
     public static BlockState blockStateFromString(String state) {
         STRINGS_TO_BLOCKSTATES.computeIfAbsent(state, key -> {
-            try { return BlockStateParser.parseForBlock(BuiltInRegistries.BLOCK.asLookup(), key, true).blockState();
+            try { return BlockStateParser.parseForBlock(BuiltInRegistries.BLOCK, key, true).blockState();
             } catch (CommandSyntaxException e) { return Blocks.AIR.defaultBlockState();}
         });
         return STRINGS_TO_BLOCKSTATES.get(state);
@@ -242,12 +242,12 @@ public class ConnectionPoint {
             ServerPlayer player = wdPlayer.getServerPlayer();
             if (player != null && this.getRealBoundingBox().isInside(player.blockPosition())) {
                 Vec3 position = wdPlayer.getServerPlayer().position();
-                Vec3i normal = this.getConnectedPoint().getDirection(this.getConnectedPoint().getRoom().getOrientation()).getNormal();
+                Vec3i normal = this.getConnectedPoint().getDirection(this.getConnectedPoint().getRoom().getOrientation()).getUnitVec3i();
                 Vec3 newPosition = new Vec3(
                         position.get(Direction.Axis.X) + normal.getX() * 1.5f,
                         position.get(Direction.Axis.Y) + normal.getY() * 1.5f,
                         position.get(Direction.Axis.Z) + normal.getZ() * 1.5f);
-                wdPlayer.getServerPlayer().moveTo(newPosition);
+                wdPlayer.getServerPlayer().absSnapTo(newPosition.x, newPosition.y, newPosition.z);
             }
         });
         ServerLevel level = this.getRoom().getBranch().getFloor().getLevel();
@@ -271,61 +271,61 @@ public class ConnectionPoint {
         unBlockedBlockStates.forEach((pos, blockState) -> level.setBlock(pos, TemplateHelper.fixBlockStateProperties(blockStateFromString(blockState), this.getRoom().getSettings()), 2));
     }
 
-    public void addDecal() {
-        Decal decal = this.getDecal();
-        if (decal != null) {
-            DecalRenderer.addServerDecal(decal);
-            DecalRenderer.sendClientAdditionPacket(decal);
-        }
-    }
-
-    public void removeDecal() {
-        Decal decal = this.getDecal();
-        if (decal != null) {
-            DecalRenderer.removeServerDecal(decal);
-            DecalRenderer.sendClientRemovalPacket(decal);
-        }
-    }
-
-    public void removeServerDecal() {
-        Decal decal = this.getDecal();
-        if (decal != null) {
-            DecalRenderer.removeServerDecal(decal);
-        }
-    }
-
-    public Decal getDecal() {
-        return this.getDecal(this.getRoom().getDecalTexture(), this.getRoom().getDecalColor());
-    }
-
-    public Decal getDecal(ResourceLocation texture, int color) {
-        if (texture == null) return null;
-        Vector3f avgPosition = this.getAveragePosition();
-        BoundingBox box = this.getRealBoundingBox();
-        Direction.Axis axis = this.getDirection(this.getRoom().getOrientation()).getAxis();
-        float width = 1.0f;
-        float height = 1.0f;
-        switch (axis) {
-            case X -> {
-                width = box.getZSpan();
-                height = box.getYSpan();
-            }
-            case Y -> {
-                width = box.getXSpan();
-                height = box.getZSpan();
-            }
-            case Z -> {
-                width = box.getXSpan();
-                height = box.getYSpan();
-            }
-        }
-        return new Decal(texture, avgPosition.x, avgPosition.y, avgPosition.z, Math.min(width, height) * 0.75f, Math.min(width, height) * 0.75f, axis, color, this.getRoom().getBranch().getFloor().getLevelKey());
-    }
-
-    public void unSetConnectedPoint() {
-        removeDecal();
-        this.connectedPointIndex = -1;
-        this.connectedBranchIndex = -1;
-        this.connectedRoomIndex = -1;
-    }
+//    public void addDecal() { TODO - Uncomment once DecalRenderer is fixed for 1.21.11
+//        Decal decal = this.getDecal();
+//        if (decal != null) {
+//            DecalRenderer.addServerDecal(decal);
+//            DecalRenderer.sendClientAdditionPacket(decal);
+//        }
+//    }
+//
+//    public void removeDecal() {
+//        Decal decal = this.getDecal();
+//        if (decal != null) {
+//            DecalRenderer.removeServerDecal(decal);
+//            DecalRenderer.sendClientRemovalPacket(decal);
+//        }
+//    }
+//
+//    public void removeServerDecal() {
+//        Decal decal = this.getDecal();
+//        if (decal != null) {
+//            DecalRenderer.removeServerDecal(decal);
+//        }
+//    }
+//
+//    public Decal getDecal() {
+//        return this.getDecal(this.getRoom().getDecalTexture(), this.getRoom().getDecalColor());
+//    }
+//
+//    public Decal getDecal(Identifier texture, int color) {
+//        if (texture == null) return null;
+//        Vector3f avgPosition = this.getAveragePosition();
+//        BoundingBox box = this.getRealBoundingBox();
+//        Direction.Axis axis = this.getDirection(this.getRoom().getOrientation()).getAxis();
+//        float width = 1.0f;
+//        float height = 1.0f;
+//        switch (axis) {
+//            case X -> {
+//                width = box.getZSpan();
+//                height = box.getYSpan();
+//            }
+//            case Y -> {
+//                width = box.getXSpan();
+//                height = box.getZSpan();
+//            }
+//            case Z -> {
+//                width = box.getXSpan();
+//                height = box.getYSpan();
+//            }
+//        }
+//        return new Decal(texture, avgPosition.x, avgPosition.y, avgPosition.z, Math.min(width, height) * 0.75f, Math.min(width, height) * 0.75f, axis, color, this.getRoom().getBranch().getFloor().getLevelKey());
+//    }
+//
+//    public void unSetConnectedPoint() {
+//        removeDecal();
+//        this.connectedPointIndex = -1;
+//        this.connectedBranchIndex = -1;
+//        this.connectedRoomIndex = -1;
+//    }
 }

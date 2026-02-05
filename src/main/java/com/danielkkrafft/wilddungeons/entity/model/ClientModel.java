@@ -1,25 +1,26 @@
 package com.danielkkrafft.wilddungeons.entity.model;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoAnimatable;
 import software.bernie.geckolib.model.GeoModel;
-import software.bernie.geckolib.renderer.GeoRenderer;
+import software.bernie.geckolib.renderer.base.GeoRenderState;
+import software.bernie.geckolib.renderer.base.GeoRenderer;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
 public class ClientModel<T extends GeoAnimatable> extends GeoModel<T> {
-    protected ResourceLocation animation;
-    protected ResourceLocation model;
-    protected ResourceLocation texture;
+    protected Identifier animation;
+    protected Identifier model;
+    protected Identifier texture;
 
     protected List<ConditionalResource<T>> conditionalResources = new ArrayList<>();
 
-    public ClientModel(ResourceLocation a, ResourceLocation m, ResourceLocation t) {
+    public ClientModel(Identifier a, Identifier m, Identifier t) {
         animation = a;
         model = m;
         texture = t;
@@ -33,11 +34,22 @@ public class ClientModel<T extends GeoAnimatable> extends GeoModel<T> {
         );
     }
 
+    //TODO - Figure out how to implement this in 1.21.1 and not just return null. Likely need a deep dive into RenderState, GeoRenderState, and overall new render system. This whole class is COOKED.
     @Override
-    public ResourceLocation getAnimationResource(@NotNull T t){return animation;}
+    public Identifier getModelResource(GeoRenderState renderState) {
+        return null;
+    }
 
-    public ResourceLocation getModelResource(T animatable, @Nullable GeoRenderer<T> renderer) {
-        ResourceLocation result = model;
+    @Override
+    public Identifier getTextureResource(GeoRenderState renderState) {
+        return null;
+    }
+
+    @Override
+    public Identifier getAnimationResource(@NotNull T t){return animation;}
+
+    public <R extends GeoRenderState, O> Identifier getModelResource(T animatable, @Nullable GeoRenderer<T, O, R> renderer) {
+        Identifier result = model;
 
         for (ConditionalResource<T> conditional : conditionalResources) {
             if (conditional.condition.test(animatable) && conditional.model != null) {
@@ -48,8 +60,8 @@ public class ClientModel<T extends GeoAnimatable> extends GeoModel<T> {
         return result;
     }
 
-    public ResourceLocation getTextureResource(T animatable, @Nullable GeoRenderer<T> renderer) {
-        ResourceLocation result = texture;
+    public <R extends GeoRenderState, O> Identifier getTextureResource(T animatable, @Nullable GeoRenderer<T, O, R> renderer) {
+        Identifier result = texture;
 
         for (ConditionalResource<T> conditional : conditionalResources) {
             if (conditional.condition.test(animatable) && conditional.texture != null) {
@@ -60,24 +72,12 @@ public class ClientModel<T extends GeoAnimatable> extends GeoModel<T> {
         return result;
     }
 
-    @Override
-    @SuppressWarnings("removal")
-    public ResourceLocation getModelResource(T animatable) {
-        return getModelResource(animatable, null);
-    }
-
-    @Override
-    @SuppressWarnings("removal")
-    public ResourceLocation getTextureResource(T animatable) {
-        return getTextureResource(animatable, null);
-    }
-
     protected static class ConditionalResource<T extends GeoAnimatable> {
         final Predicate<T> condition;
-        final @Nullable ResourceLocation texture;
-        final @Nullable ResourceLocation model;
+        final @Nullable Identifier texture;
+        final @Nullable Identifier model;
 
-        ConditionalResource(Predicate<T> condition, @Nullable ResourceLocation texture, @Nullable ResourceLocation model) {
+        ConditionalResource(Predicate<T> condition, @Nullable Identifier texture, @Nullable Identifier model) {
             this.condition = condition;
             this.texture = texture;
             this.model = model;

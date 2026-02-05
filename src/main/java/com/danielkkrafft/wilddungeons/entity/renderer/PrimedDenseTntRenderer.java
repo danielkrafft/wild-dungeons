@@ -7,20 +7,26 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.TntMinecartRenderer;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class PrimedDenseTntRenderer extends EntityRenderer<PrimedDenseTnt> {
+public class PrimedDenseTntRenderer extends EntityRenderer<PrimedDenseTnt, EntityRenderState> {
     private final BlockRenderDispatcher blockRenderer;
 
     public PrimedDenseTntRenderer(EntityRendererProvider.Context context) {
         super(context);
         this.shadowRadius = 0.5F;
         this.blockRenderer = context.getBlockRenderDispatcher();
+    }
+
+    // TODO - Implement for 1.21.11
+    @Override
+    public EntityRenderState createRenderState() {
+        return null;
     }
 
     public void render(PrimedDenseTnt entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
@@ -41,7 +47,7 @@ public class PrimedDenseTntRenderer extends EntityRenderer<PrimedDenseTnt> {
         poseStack.mulPose(Axis.YP.rotationDegrees(90.0F));
         PrimedDenseTntRenderer.renderWhiteSolidBlock(this.blockRenderer, entity.getBlockState(), poseStack, buffer, packedLight, i / 5 % 2 == 0);
         poseStack.popPose();
-        super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
+        //super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight); TODO - fix for 1.21.11
     }
 
     public static void renderWhiteSolidBlock(BlockRenderDispatcher blockRenderDispatcher, BlockState state, PoseStack poseStack, MultiBufferSource buffer, int packedLight, boolean whiteOverlay) {
@@ -58,7 +64,7 @@ public class PrimedDenseTntRenderer extends EntityRenderer<PrimedDenseTnt> {
     /**
      * Returns the location of an entity's texture.
      */
-    public ResourceLocation getTextureLocation(PrimedDenseTnt entity) {
+    public Identifier getTextureLocation(PrimedDenseTnt entity) {
         return TextureAtlas.LOCATION_BLOCKS;
     }
 }

@@ -8,7 +8,7 @@ import net.minecraft.core.BlockPos;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LootChoiceRoom extends LootRoom {
+public class LootChoiceRoom extends LootRoom { //TODO - Uncomment whne dungeon rooms are fixed for 1.21.11
     public LootChoiceRoom(DungeonBranch branch, String templateKey, BlockPos position, TemplateOrientation orientation) {
         super(branch, templateKey, position, orientation);
     }

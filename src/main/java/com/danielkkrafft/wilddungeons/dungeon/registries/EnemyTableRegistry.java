@@ -17,19 +17,19 @@ public class EnemyTableRegistry {
             .add(HARD_ENEMY_POOL,20)
             .add(VERY_HARD_ENEMY_POOL, 400);
 
-    public static final WeightedTable<TargetTemplate> NETHER_DRAGON_ARENA = create("NETHER_DRAGON_ARENA")
-            .add(new WeightedPool<TargetTemplate>().add(NETHER_DRAGON, 1), 1);
-
-    public static final WeightedTable<TargetTemplate> BREEZE_GOLEM_ARENA = create("BREEZE_GOLEM_ARENA")
-            .add(new WeightedPool<TargetTemplate>().add(BREEZE_GOLEM, 1), 1);
+//    public static final WeightedTable<TargetTemplate> NETHER_DRAGON_ARENA = create("NETHER_DRAGON_ARENA") TODO - Uncomment as fixed for 1.21.11
+//            .add(new WeightedPool<TargetTemplate>().add(NETHER_DRAGON, 1), 1);
+//
+//    public static final WeightedTable<TargetTemplate> BREEZE_GOLEM_ARENA = create("BREEZE_GOLEM_ARENA")
+//            .add(new WeightedPool<TargetTemplate>().add(BREEZE_GOLEM, 1), 1);
 
     public static final WeightedTable<TargetTemplate> VILLAGE_ENEMY_TABLE = create("VILLAGE_ENEMY_TABLE")
             .add(VILLAGE_ENEMY_POOL_EASY, 1)
             .add(VILLAGE_ENEMY_POOL_MEDIUM, 5)
             .add(VILLAGE_ENEMY_POOL_HARD, 15);
 
-    public static final WeightedTable<TargetTemplate> VILLAGER_CEO_ARENA = create("VILLAGE_BOSS_TABLE")
-            .add(new WeightedPool<TargetTemplate>().add(BUSINESS_CEO, 1), 1);
+//    public static final WeightedTable<TargetTemplate> VILLAGER_CEO_ARENA = create("VILLAGE_BOSS_TABLE")
+//            .add(new WeightedPool<TargetTemplate>().add(BUSINESS_CEO, 1), 1);
 
     public static final WeightedTable<TargetTemplate> VILLAGE_GRAVEYARD = create("VILLAGE_GRAVEYARD")
             .add(new WeightedPool<TargetTemplate>()

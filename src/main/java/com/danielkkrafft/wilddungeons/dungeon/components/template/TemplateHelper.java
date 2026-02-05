@@ -19,7 +19,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -81,8 +81,8 @@ public class TemplateHelper {
 
                 if (targetPoint == null) {
                     targetPoint = ConnectionPoint.create(block.pos(), blockDirection);
-                    targetPoint.setPool(block.nbt().getString("pool"));
-                    targetPoint.setType(block.nbt().getString("type"));
+                    targetPoint.setPool(block.nbt().getStringOr("pool", ""));
+                    targetPoint.setType(block.nbt().getStringOr("type", ""));
                     targetPoint.setInner(inner);
                     targetPoint.setIndex(connectionPoints.size());
                     connectionPoints.add(targetPoint);
@@ -165,7 +165,7 @@ public class TemplateHelper {
     public static List<BlockPos> locateSpawnPoint(List<Pair<StructureTemplate, BlockPos>> templates) {
         List<StructureTemplate.StructureBlockInfo> SPAWN_BLOCKS = new ArrayList<>();
         templates.forEach(template -> {
-            SPAWN_BLOCKS.addAll(template.getFirst().filterBlocks(template.getSecond(), new StructurePlaceSettings(), WDBlocks.SPAWN_BLOCK.get()));
+//            SPAWN_BLOCKS.addAll(template.getFirst().filterBlocks(template.getSecond(), new StructurePlaceSettings(), WDBlocks.SPAWN_BLOCK.get()));
         });
         List<BlockPos> result = new ArrayList<>();
         SPAWN_BLOCKS.forEach(block -> {
@@ -179,13 +179,13 @@ public class TemplateHelper {
         List<Vec3> result = new ArrayList<>();
         templates.forEach(template -> {
             template.getFirst().entityInfoList.forEach(structureEntityInfo -> {
-                Optional<EntityType<?>> type = EntityType.by(structureEntityInfo.nbt);
-                if (type.isPresent() && type.get().equals(WDEntities.OFFERING.get())) {
-                    if (structureEntityInfo.nbt.getString("type").equals("RIFT")) {
-                        WildDungeons.getLogger().info("FOUND RIFT WITH KEYS: {}", structureEntityInfo.nbt.getAllKeys());
-                        result.add(structureEntityInfo.pos.add(template.getSecond().getX(), template.getSecond().getY(), template.getSecond().getZ()));
-                    }
-                }
+//                Optional<EntityType<?>> type = EntityType.by(structureEntityInfo.nbt); TODO - Fix for 1.21.11
+//                if (type.isPresent() && type.get().equals(WDEntities.OFFERING.get())) {
+//                    if (structureEntityInfo.nbt.getString("type").equals("RIFT")) {
+//                        WildDungeons.getLogger().info("FOUND RIFT WITH KEYS: {}", structureEntityInfo.nbt.keySet());
+//                        result.add(structureEntityInfo.pos.add(template.getSecond().getX(), template.getSecond().getY(), template.getSecond().getZ()));
+//                    }
+//                }
             });
         });
         return result;
@@ -195,13 +195,13 @@ public class TemplateHelper {
         List<Vec3> result = new ArrayList<>();
         templates.forEach(template -> {
             template.getFirst().entityInfoList.forEach(structureEntityInfo -> {
-                Optional<EntityType<?>> type = EntityType.by(structureEntityInfo.nbt);
-                if (type.isPresent() && type.get().equals(WDEntities.OFFERING.get())) {
-                    if (structureEntityInfo.nbt.getString("type").equals("ITEM") || structureEntityInfo.nbt.getString("type").equals("PERK")) {
-                        WildDungeons.getLogger().info("FOUND OFFERING WITH KEYS: {}", structureEntityInfo.nbt.getAllKeys());
-                        result.add(structureEntityInfo.pos.add(template.getSecond().getX(), template.getSecond().getY(), template.getSecond().getZ()));
-                    }
-                }
+//                Optional<EntityType<?>> type = EntityType.by(structureEntityInfo.nbt); TODO - Fix for 1.21.11
+//                if (type.isPresent() && type.get().equals(WDEntities.OFFERING.get())) {
+//                    if (structureEntityInfo.nbt.getString("type").equals("ITEM") || structureEntityInfo.nbt.getString("type").equals("PERK")) {
+//                        WildDungeons.getLogger().info("FOUND OFFERING WITH KEYS: {}", structureEntityInfo.nbt.keySet());
+//                        result.add(structureEntityInfo.pos.add(template.getSecond().getX(), template.getSecond().getY(), template.getSecond().getZ()));
+//                    }
+//                }
             });
         });
         return result;
@@ -385,9 +385,9 @@ public class TemplateHelper {
                     if (structuretemplate$structureblockinfo.nbt() != null) {
                         BlockEntity blockentity1 = serverLevel.getBlockEntity(structuretemplate$structureblockinfo.pos());
                         if (blockentity1 != null) {
-                            blockentity1.loadWithComponents(structuretemplate$structureblockinfo.nbt(), serverLevel.registryAccess());
+                            //blockentity1.loadWithComponents(structuretemplate$structureblockinfo.nbt(), serverLevel.registryAccess()); TODO - Fix for 1.21.11
                             if (blockentity1 instanceof SpawnerBlockEntity spawnerBlockEntity) {//todo replace this with the special spawner block entity that has more control over the spawn data
-                                UtilityMethods.setSpawnPotentials(room, spawnerBlockEntity.getSpawner(), UtilityMethods.createSpawnDataWeightedList(room.getProperty(HierarchicalProperty.ENEMY_TABLE).getLowestWeightedPool()));//todo consider grabbing higher pools?
+//                                UtilityMethods.setSpawnPotentials(room, spawnerBlockEntity.getSpawner(), UtilityMethods.createSpawnDataWeightedList(room.getProperty(HierarchicalProperty.ENEMY_TABLE).getLowestWeightedPool()));//todo consider grabbing higher pools?
                             }
                         }
                     }
@@ -476,7 +476,7 @@ public class TemplateHelper {
                         if (structureBlockInfo.nbt() != null) {
                             BlockEntity blockentity1 = serverLevel.getBlockEntity(pos);
                             if (blockentity1 != null) {
-                                blockentity1.loadWithComponents(structureBlockInfo.nbt(), serverLevel.registryAccess());
+                                //blockentity1.loadWithComponents(structureBlockInfo.nbt(), serverLevel.registryAccess()); TODO - Fix for 1.21.11
                             }
                         }
 
@@ -515,16 +515,16 @@ public class TemplateHelper {
                     compoundtag.putInt("TileY", blockpos.getY());
                     compoundtag.putInt("TileZ", blockpos.getZ());
                 }
-                StructureTemplate.createEntityIgnoreException(serverLevelAccessor, compoundtag).ifPresent((entity) -> {
-                    float f = entity.rotate(placementIn.getRotation());
-                    f += entity.mirror(placementIn.getMirror()) - entity.getYRot();
-                    entity.moveTo(vec31.x, vec31.y, vec31.z, f, entity.getXRot());
-                    if (placementIn.shouldFinalizeEntities() && entity instanceof Mob) {
-                        ((Mob)entity).finalizeSpawn(serverLevelAccessor, serverLevelAccessor.getCurrentDifficultyAt(BlockPos.containing(vec31)), MobSpawnType.STRUCTURE, null);
-                    }
-
-                    serverLevelAccessor.addFreshEntityWithPassengers(entity);
-                });
+//                StructureTemplate.createEntityIgnoreException(serverLevelAccessor, compoundtag).ifPresent((entity) -> { TODO - Fix for 1.21.11
+//                    float f = entity.rotate(placementIn.getRotation());
+//                    f += entity.mirror(placementIn.getMirror()) - entity.getYRot();
+//                    entity.absSnapTo(vec31.x, vec31.y, vec31.z, f, entity.getXRot());
+//                    if (placementIn.shouldFinalizeEntities() && entity instanceof Mob) {
+//                        ((Mob)entity).finalizeSpawn(serverLevelAccessor, serverLevelAccessor.getCurrentDifficultyAt(BlockPos.containing(vec31)), EntitySpawnReason.STRUCTURE, null);
+//                    }
+//
+//                    serverLevelAccessor.addFreshEntityWithPassengers(entity);
+//                });
             }
         }
 

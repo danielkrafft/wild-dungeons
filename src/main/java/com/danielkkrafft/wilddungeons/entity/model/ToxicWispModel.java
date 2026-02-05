@@ -9,15 +9,18 @@ import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import org.jetbrains.annotations.NotNull;
 
-public class ToxicWispModel<T extends ToxicWisp> extends EntityModel<ToxicWisp> {
+public class ToxicWispModel<T extends ToxicWisp> extends EntityModel<EntityRenderState> {
     public static final ModelLayerLocation SMALL_LAYER_LOCATION = new ModelLayerLocation(WildDungeons.rl("toxic_wisp"), "small");
     public static final ModelLayerLocation LARGE_LAYER_LOCATION = new ModelLayerLocation(WildDungeons.rl("toxic_wisp"), "large");
     private final ModelPart body;
     private final ModelPart rightWing;
     private final ModelPart leftWing;
     public ToxicWispModel(ModelPart root) {
+        super(root);
         this.body = root.getChild("body");
         this.rightWing = body.getChild("rightWing");
         this.leftWing = body.getChild("leftWing");
@@ -50,18 +53,18 @@ public class ToxicWispModel<T extends ToxicWisp> extends EntityModel<ToxicWisp> 
         return LayerDefinition.create(meshdefinition, 64, 64);
     }
 
-    @Override
-    public void setupAnim(@NotNull ToxicWisp toxicWisp, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-        this.rightWing.yRot = (float) ((float) Math.toRadians(-30) - (float) Math.toRadians(30) * Math.sin(ageInTicks * 0.2f));
-        this.leftWing.yRot = (float) ((float) Math.toRadians(30) + (float) Math.toRadians(30) * Math.sin(ageInTicks * 0.2f));
-        this.body.yRot = netHeadYaw * ((float) Math.PI / 180F);
-        this.body.xRot = headPitch * ((float) Math.PI / 180F);
-        this.rightWing.zRot = (float) (Math.cos(limbSwing * 0.6662F + (float) Math.PI) * limbSwingAmount);
-        this.leftWing.zRot = (float) (Math.cos(limbSwing * 0.6662F) * limbSwingAmount);
-    }
+//    @Override TODO - Fix for 1.21.11
+//    public void setupAnim(@NotNull ToxicWisp toxicWisp, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+//        this.rightWing.yRot = (float) ((float) Math.toRadians(-30) - (float) Math.toRadians(30) * Math.sin(ageInTicks * 0.2f));
+//        this.leftWing.yRot = (float) ((float) Math.toRadians(30) + (float) Math.toRadians(30) * Math.sin(ageInTicks * 0.2f));
+//        this.body.yRot = netHeadYaw * ((float) Math.PI / 180F);
+//        this.body.xRot = headPitch * ((float) Math.PI / 180F);
+//        this.rightWing.zRot = (float) (Math.cos(limbSwing * 0.6662F + (float) Math.PI) * limbSwingAmount);
+//        this.leftWing.zRot = (float) (Math.cos(limbSwing * 0.6662F) * limbSwingAmount);
+//    }
 
-    @Override
-    public void renderToBuffer(@NotNull PoseStack poseStack, @NotNull VertexConsumer vertexConsumer, int i, int i1, int i2) {
-        body.render(poseStack, vertexConsumer, i, i1, i2);
-    }
+//    @Override
+//    public void renderToBuffer(@NotNull PoseStack poseStack, @NotNull VertexConsumer vertexConsumer, int i, int i1, int i2) {
+//        body.render(poseStack, vertexConsumer, i, i1, i2);
+//    }
 }

@@ -1,12 +1,15 @@
 package com.danielkkrafft.wilddungeons.entity;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -39,14 +42,6 @@ public class GuardianLaserBeamEntity extends Entity implements Targeting, Ownabl
         builder.define(ATTACK_TIME, 0);
     }
 
-    @Override
-    protected void readAdditionalSaveData(CompoundTag tag) {
-    }
-
-    @Override
-    protected void addAdditionalSaveData(CompoundTag tag) {
-    }
-
     public int getAttackDuration() {
         return 80;
     }
@@ -64,7 +59,7 @@ public class GuardianLaserBeamEntity extends Entity implements Targeting, Ownabl
     public void tick() {
         super.tick();
 
-        if (!this.level().isClientSide) {
+        if (!this.level().isClientSide()) {
             this.entityData.set(ATTACK_TIME, this.entityData.get(ATTACK_TIME) + 1);
         }
 
@@ -74,16 +69,31 @@ public class GuardianLaserBeamEntity extends Entity implements Targeting, Ownabl
             this.setPos(owner.getX(), owner.getEyeY() - 0.15, owner.getZ());
         }
 
-        if (!this.level().isClientSide && getTarget() == null) {
+        if (!this.level().isClientSide() && getTarget() == null) {
             findTarget();
         }
 
-        if (!this.level().isClientSide && this.tickCount >= 60) {
+        if (!this.level().isClientSide() && this.tickCount >= 60) {
             if (owner != null && getTarget() != null) {
                 getTarget().hurt(owner.damageSources().mobAttack(owner), 3.5f);
             }
             this.discard();
         }
+    }
+
+    @Override
+    public boolean hurtServer(ServerLevel serverLevel, DamageSource damageSource, float v) {
+        return false;
+    }
+
+    @Override
+    protected void readAdditionalSaveData(ValueInput valueInput) {
+
+    }
+
+    @Override
+    protected void addAdditionalSaveData(ValueOutput valueOutput) {
+
     }
 
     private void findTarget() {
@@ -104,6 +114,11 @@ public class GuardianLaserBeamEntity extends Entity implements Targeting, Ownabl
         }
 
         setTarget(found);
+    }
+
+    @Override
+    public @org.jspecify.annotations.Nullable EntityReference<LivingEntity> getOwnerReference() {
+        return null;
     }
 
     @Override
@@ -140,7 +155,7 @@ public class GuardianLaserBeamEntity extends Entity implements Targeting, Ownabl
         this.entityData.set(TARGET_ID, target != null ? target.getId() : -1);
     }
 
-    @Override
+    //@Override TODO - Fix for 1.21.11
     public @Nullable UUID getOwnerUUID() {
         LivingEntity owner = getOwner();
         return owner != null ? owner.getUUID() : null;

@@ -26,6 +26,8 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
@@ -88,7 +90,7 @@ public abstract class WDBoss extends Monster implements GeoEntity {
     protected PathNavigation createAerialPath(Level level) {
         FlyingPathNavigation path = new FlyingPathNavigation(this, level);
         path.setCanFloat(true);
-        path.setCanPassDoors(true);
+        //path.setCanPassDoors(true); TODO - Fix for 1.21.11
         return path;
     }
 
@@ -131,33 +133,33 @@ public abstract class WDBoss extends Monster implements GeoEntity {
     }
 
     @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-        compound.putInt("InvulnerableTicks", getTicksInvulnerable());
+    public void addAdditionalSaveData(@NotNull ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.putInt("InvulnerableTicks", getTicksInvulnerable());
         if (hasCustomName()) {
             bossEvent.setName(getDisplayName());
         }
-        saveBossData(compound);
+        saveBossData(output);
     }
     
     @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-        setTicksInvulnerable(compound.getInt("InvulnerableTicks"));
+    public void readAdditionalSaveData(@NotNull ValueInput input) {
+        super.readAdditionalSaveData(input);
+        setTicksInvulnerable(input.getIntOr("InvulnerableTicks", 0));
         if (hasCustomName()) {
             bossEvent.setName(getDisplayName());
         }
-        loadBossData(compound);
+        loadBossData(input);
     }
 
-    protected void saveBossData(CompoundTag compound) {}
+    protected void saveBossData(ValueOutput output) {}
 
-    protected void loadBossData(CompoundTag compound) {}
+    protected void loadBossData(ValueInput input) {}
 
     @Override
     protected void dropAllDeathLoot(@NotNull ServerLevel level, @NotNull DamageSource source) {
         super.dropAllDeathLoot(level, source);
-        spawnAtLocation(WDItems.BOSS_KEY);
+        spawnAtLocation(level, WDItems.BOSS_KEY);
     }
 
     @Override
@@ -356,7 +358,7 @@ public abstract class WDBoss extends Monster implements GeoEntity {
         return false;
     }
 
-    @Override
+    //@Override TODO - Fic for 1.21.11
     public boolean canHaveALeashAttachedToIt() {
         return false;
     }
@@ -369,13 +371,13 @@ public abstract class WDBoss extends Monster implements GeoEntity {
         return 1.0f;
     }
 
-    @Override
-    public boolean hurt(@NotNull DamageSource source, float amount) {
-        if (isImmuneToDamageType(source)) {
-            return false;
-        }
-        return super.hurt(source, amount * getDamageMultiplier(source));
-    }
+//    @Override TODO - Fix for 1.21.11
+//    public boolean hurt(@NotNull DamageSource source, float amount) {
+//        if (isImmuneToDamageType(source)) {
+//            return false;
+//        }
+//        return super.hurt(source, amount * getDamageMultiplier(source));
+//    }
 
     @Override
     public void die(@NotNull DamageSource source) {

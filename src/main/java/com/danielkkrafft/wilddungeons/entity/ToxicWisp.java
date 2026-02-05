@@ -1,6 +1,6 @@
 package com.danielkkrafft.wilddungeons.entity;
 
-import com.danielkkrafft.wilddungeons.entity.boss.CopperSentinel;
+//import com.danielkkrafft.wilddungeons.entity.boss.CopperSentinel; TODO - Uncomment when CopperSentinel is fixed for 1.21.11
 import com.danielkkrafft.wilddungeons.registry.WDBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -29,7 +29,7 @@ public class ToxicWisp extends EmeraldWisp{
     public void explodeWisp() {
         if ((this.level() instanceof ServerLevel serverLevel)){
             this.dead = true;
-            this.triggerOnDeathMobEffects(RemovalReason.KILLED);
+            this.triggerOnDeathMobEffects(serverLevel, RemovalReason.KILLED);
             this.discard();
             //play sound
             this.playSound(SoundEvents.GENERIC_EXPLODE.value(), 1.0F, 1.0F);
@@ -42,7 +42,7 @@ public class ToxicWisp extends EmeraldWisp{
             for (int i = 0; i < amount; i++) {
                 BlockPos pos = this.blockPosition().offset(this.random.nextInt(3) - 1, this.random.nextInt(3) - 1,this.random.nextInt(3) - 1);
                 if (serverLevel.isEmptyBlock(pos)) {
-                    serverLevel.setBlockAndUpdate(pos, WDBlocks.TOXIC_GAS.get().defaultBlockState());
+//                    serverLevel.setBlockAndUpdate(pos, WDBlocks.TOXIC_GAS.get().defaultBlockState());
                 }
             }
         }
@@ -52,13 +52,14 @@ public class ToxicWisp extends EmeraldWisp{
     @Override
     public void tick() {
         super.tick();
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             for (Entity entity : level().getEntities(this, this.getBoundingBox())) {
-                if (entity instanceof CopperSentinel copperSentinel) {
-                    explodeWisp();
-                    copperSentinel.hurt(this.damageSources().explosion(this,this),100);
-                    break;
-                }
+                // TODO - Uncomment when CopperSentinel is fixed for 1.21.11
+//                if (entity instanceof CopperSentinel copperSentinel) {
+//                    explodeWisp();
+//                    copperSentinel.hurt(this.damageSources().explosion(this,this),100);
+//                    break;
+//                }
             }
         }
     }

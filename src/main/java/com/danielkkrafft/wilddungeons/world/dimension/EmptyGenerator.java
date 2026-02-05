@@ -59,13 +59,13 @@ public class EmptyGenerator extends ChunkGenerator {
         return CODEC;
     }
 
-    public BiomeSource getBiomeSource() {return this.biomeSource;}
-    public BlockState[] getBlockStates() {return this.blockStates;}
-
     @Override
-    public void applyCarvers(WorldGenRegion p_223043_, long p_223044_, RandomState p_223045_, BiomeManager p_223046_, StructureManager p_223047_, ChunkAccess p_223048_, GenerationStep.Carving p_223049_) {
+    public void applyCarvers(WorldGenRegion worldGenRegion, long l, RandomState randomState, BiomeManager biomeManager, StructureManager structureManager, ChunkAccess chunkAccess) {
 
     }
+
+    public BiomeSource getBiomeSource() {return this.biomeSource;}
+    public BlockState[] getBlockStates() {return this.blockStates;}
 
     @Override
     public void buildSurface(WorldGenRegion p_223050_, StructureManager p_223051_, RandomState p_223052_, ChunkAccess chunkAccess) {
@@ -91,10 +91,10 @@ public class EmptyGenerator extends ChunkGenerator {
         BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
 
         for (int i = 0; i < chunk.getHeight(); i++) {
-            int j = chunk.getMinBuildHeight() + i;
+            int j = chunk.getMinY() + i;
             for (int k = 0; k < 16; k++) {
                 for (int l = 0; l < 16; l++) {
-                    chunk.setBlockState(blockpos$mutableblockpos.set(k, j, l), this.blockStates[i], false);
+                    chunk.setBlockState(blockpos$mutableblockpos.set(k, j, l), this.blockStates[i], i);
                 }
             }
         }

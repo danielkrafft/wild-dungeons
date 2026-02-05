@@ -7,7 +7,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -18,7 +17,7 @@ import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.BlockHitResult;
@@ -37,7 +36,7 @@ public class EmeraldPileBlock extends Block {
     public static final int MAX_EMERALD_COUNT = 64;
     public static final IntegerProperty EMERALD_COUNT = IntegerProperty.create("emerald_count", 0, MAX_EMERALD_COUNT);
     public static final IntegerProperty MODEL = IntegerProperty.create("model", 1, 7);
-    public static final DirectionProperty FACING = BlockStateProperties.FACING;
+    public static final EnumProperty<Direction> FACING = BlockStateProperties.FACING;
     protected static final VoxelShape ONE_AABB = Block.box(3, 0, 3, 12, 1, 12);
     protected static final VoxelShape TWO_AABB = Block.box(2, 0, 2, 13, 1, 13);
     protected static final VoxelShape THREE_AABB = Block.box(2, 0, 2, 13, 1, 13);
@@ -52,7 +51,7 @@ public class EmeraldPileBlock extends Block {
     }
 
     @Override
-    protected @NotNull ItemInteractionResult useItemOn(@NotNull ItemStack stack, @NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hitResult) {
+    protected @NotNull InteractionResult useItemOn(@NotNull ItemStack stack, @NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hitResult) {
         level.addParticle(ParticleTypes.COMPOSTER, pos.getX() + level.random.nextFloat(), pos.getY() + level.random.nextFloat(), pos.getZ() + level.random.nextFloat(), 0, 0, 0);
         return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
     }
@@ -113,32 +112,34 @@ public class EmeraldPileBlock extends Block {
         builder.add(FACING);
     }
 
-    @Override
-    public boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
-        if (willHarvest) {
-            int count = state.getValue(EMERALD_COUNT);
-            for (int i = 0; i < count; i++) {
-                Block.popResource(level, pos, Items.EMERALD.getDefaultInstance());
-            }
-        }
-        return super.onDestroyedByPlayer(state, level, pos, player, willHarvest, fluid);
 
-    }
-
-    @Override
-    public void onBlockExploded(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Explosion explosion) {
-        int count = state.getValue(EMERALD_COUNT);
-        for (int i = 0; i < count; i++) {
-            Block.popResource(level, pos, Items.EMERALD.getDefaultInstance());
-        }
-        super.onBlockExploded(state, level, pos, explosion);
-    }
-
-    @Override
-    public @NotNull ItemStack getCloneItemStack(@NotNull BlockState state, @NotNull HitResult target, @NotNull LevelReader level, @NotNull BlockPos pos, @NotNull Player player) {
-        int count = state.getValue(EMERALD_COUNT);
-        return new ItemStack(Items.EMERALD, count);
-    }
+    //TODO - Figure out how to implement on 1.21.11
+//    @Override
+//    public boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
+//        if (willHarvest) {
+//            int count = state.getValue(EMERALD_COUNT);
+//            for (int i = 0; i < count; i++) {
+//                Block.popResource(level, pos, Items.EMERALD.getDefaultInstance());
+//            }
+//        }
+//        return super.onDestroyedByPlayer(state, level, pos, player, willHarvest, fluid);
+//
+//    }
+//
+//    @Override
+//    public void onBlockExploded(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Explosion explosion) {
+//        int count = state.getValue(EMERALD_COUNT);
+//        for (int i = 0; i < count; i++) {
+//            Block.popResource(level, pos, Items.EMERALD.getDefaultInstance());
+//        }
+//        super.onBlockExploded(state, level, pos, explosion);
+//    }
+//
+//    @Override
+//    public @NotNull ItemStack getCloneItemStack(@NotNull BlockState state, @NotNull HitResult target, @NotNull LevelReader level, @NotNull BlockPos pos, @NotNull Player player) {
+//        int count = state.getValue(EMERALD_COUNT);
+//        return new ItemStack(Items.EMERALD, count);
+//    }
 
     @SubscribeEvent
     public static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {

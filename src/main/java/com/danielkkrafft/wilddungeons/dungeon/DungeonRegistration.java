@@ -260,7 +260,7 @@ public class DungeonRegistration {
 
         public ItemStack asItemStack() {
             if (potionIndex != -1) {
-                return PotionContents.createItemStack(Items.POTION, BuiltInRegistries.POTION.getHolder(potionIndex).get());
+                //return PotionContents.createItemStack(Items.POTION, BuiltInRegistries.POTION.getHolder(potionIndex).get()); TODO - Fix for 1.21.11
             }
             return new ItemStack(Item.byId(itemID), getDeviatedCount());
         }

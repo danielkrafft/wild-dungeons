@@ -1,6 +1,6 @@
 package com.danielkkrafft.wilddungeons.entity;
 
-import com.danielkkrafft.wilddungeons.entity.boss.CopperSentinel;
+//import com.danielkkrafft.wilddungeons.entity.boss.CopperSentinel; TODO - Uncomment once CopperSentinel is fixed for 1.21.11
 import com.danielkkrafft.wilddungeons.util.UtilityMethods;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -27,6 +27,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
 import org.jetbrains.annotations.NotNull;
@@ -63,14 +65,14 @@ public class EmeraldWisp extends PathfinderMob implements TraceableEntity {
         this.goalSelector.addGoal(9, new LookAtPlayerGoal(this, Player.class, 3.0F, 1.0F));
         this.goalSelector.addGoal(10, new LookAtPlayerGoal(this, Mob.class, 8.0F));
         this.goalSelector.addGoal(11, new RandomLookAroundGoal(this));
-        this.targetSelector.addGoal(2, new HurtByTargetGoal(this, CopperSentinel.class));
+        //this.targetSelector.addGoal(2, new HurtByTargetGoal(this, CopperSentinel.class)); TODO - Uncomment when CopperSentinel is fixed for 1.21.11
         registerSpecificGoals();
     }
 
     protected void registerSpecificGoals() {
         this.goalSelector.addGoal(2, new SwellGoal(this));
         this.goalSelector.addGoal(4, new MeleeAttackGoal(this, 1.0F, false));
-        this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, true, (target) -> target != this.getOwner()));
+        //this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, true, (target) -> target != this.getOwner())); TODO - Fix mustReach arg logic for 1.21.11
     }
 
     public int getMaxSwell() {
@@ -83,22 +85,20 @@ public class EmeraldWisp extends PathfinderMob implements TraceableEntity {
         builder.define(DATA_IS_IGNITED, false);
     }
 
-    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
+    public void addAdditionalSaveData(@NotNull ValueOutput output) {
+        super.addAdditionalSaveData(output);
 
-        compound.putByte("ExplosionRadius", (byte) this.explosionRadius);
-        compound.putBoolean("ignited", this.isIgnited());
+        output.putByte("ExplosionRadius", (byte) this.explosionRadius);
+        output.putBoolean("ignited", this.isIgnited());
     }
 
-    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
+    public void readAdditionalSaveData(@NotNull ValueInput input) {
+        super.readAdditionalSaveData(input);
 
 
-        if (compound.contains("ExplosionRadius", 99)) {
-            this.explosionRadius = compound.getByte("ExplosionRadius");
-        }
-
-        if (compound.getBoolean("ignited")) {
+        this.explosionRadius = input.getByteOr("ExplosionRadius", (byte) 0);
+        boolean ignited = input.getBooleanOr("ignited", false);
+        if (ignited) {
             this.ignite();
         }
 
@@ -106,7 +106,7 @@ public class EmeraldWisp extends PathfinderMob implements TraceableEntity {
 
     @Override
     protected void dropAllDeathLoot(@NotNull ServerLevel level, @NotNull DamageSource source) {
-        spawnAtLocation(new ItemStack(Items.EMERALD, UtilityMethods.RNG(1, 2)));
+        spawnAtLocation(level, new ItemStack(Items.EMERALD, UtilityMethods.RNG(1, 2)));
     }
 
     public boolean isIgnited() {
@@ -126,10 +126,10 @@ public class EmeraldWisp extends PathfinderMob implements TraceableEntity {
     }
 
     public void explodeWisp() {
-        if (!this.level().isClientSide) {
+        if (!this.level().isClientSide()) {
             this.dead = true;
             this.level().explode(this, this.getX(), this.getY(), this.getZ(), (float) this.explosionRadius, Level.ExplosionInteraction.MOB);
-            this.triggerOnDeathMobEffects(RemovalReason.KILLED);
+            this.triggerOnDeathMobEffects((ServerLevel) this.level(), RemovalReason.KILLED);
             this.discard();
         }
     }
@@ -201,23 +201,24 @@ public class EmeraldWisp extends PathfinderMob implements TraceableEntity {
                 .add(Attributes.FOLLOW_RANGE, 48.0F);
     }
 
-    @Override
-    protected int calculateFallDamage(float fallDistance, float damageMultiplier) {
-        return 0;
-    }
+    // TODO - Fix for 1.21.11
+//    @Override
+//    protected int calculateFallDamage(float fallDistance, float damageMultiplier) {
+//        return 0;
+//    }
 
     @Override
     protected @NotNull PathNavigation createNavigation(@NotNull Level level) {
         FlyingPathNavigation flyingpathnavigation = new FlyingPathNavigation(this, level);
         flyingpathnavigation.setCanOpenDoors(false);
         flyingpathnavigation.setCanFloat(true);
-        flyingpathnavigation.setCanPassDoors(true);
+        //flyingpathnavigation.setCanPassDoors(true); TODO - Fix for 1.21.11
         return flyingpathnavigation;
     }
 
     @Override
     public void travel(@NotNull Vec3 travelVector) {
-        if (this.isControlledByLocalInstance()) {
+        if (this.isLocalClientAuthoritative()) {
             if (this.isInWater()) {
                 this.moveRelative(0.02F, travelVector);
                 this.move(MoverType.SELF, this.getDeltaMovement());
@@ -278,12 +279,13 @@ public class EmeraldWisp extends PathfinderMob implements TraceableEntity {
         }
     }
 
-    @Override
-    public boolean isDamageSourceBlocked(DamageSource damageSource) {
-        if (damageSource.is(DamageTypes.EXPLOSION))
-            return true;
-        return super.isDamageSourceBlocked(damageSource);
-    }
+    // TODO - Fix for 1.21.11
+//    @Override
+//    public boolean isDamageSourceBlocked(DamageSource damageSource) {
+//        if (damageSource.is(DamageTypes.EXPLOSION))
+//            return true;
+//        return super.isDamageSourceBlocked(damageSource);
+//    }
 
     @Override
     public void handleDamageEvent(DamageSource damageSource) {

@@ -1,7 +1,7 @@
 package com.danielkkrafft.wilddungeons.block;
 
-import com.danielkkrafft.wilddungeons.entity.blockentity.GasBlockEntity;
-import com.danielkkrafft.wilddungeons.registry.WDBlockEntities;
+//import com.danielkkrafft.wilddungeons.entity.blockentity.GasBlockEntity;
+//import com.danielkkrafft.wilddungeons.registry.WDBlockEntities;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -11,16 +11,12 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.ChangeOverTimeBlock;
@@ -35,7 +31,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.function.BiConsumer;
 
 public class ToxicGasBlock extends BaseEntityBlock {
     public ToxicGasBlock(Properties properties) {
@@ -50,10 +45,12 @@ public class ToxicGasBlock extends BaseEntityBlock {
 
     private static final int TICKS_PER_SPREAD = 20; // Spread every 20 ticks (1 second)
 
-    @Override
-    protected void onExplosionHit(BlockState state, Level level, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> dropConsumer) {
-        Explode(level, pos);
-    }
+
+    //TODO - Figure out how to re-implement this in 1.21.11
+//    @Override
+//    protected void onExplosionHit(BlockState state, Level level, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> dropConsumer) {
+//        Explode(level, pos);
+//    }
 
     public void Explode(Level level, BlockPos pos) {
         level.removeBlock(pos, false);
@@ -87,18 +84,19 @@ public class ToxicGasBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         //igniting with flint and steel or fire charge should cause an explosion
         if (stack.is(Items.FLINT_AND_STEEL)){
             Explode(level, pos);
-            return ItemInteractionResult.sidedSuccess(level.isClientSide);
+            return InteractionResult.SUCCESS;
         }
         return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
     }
 
     @Override
-    public void onCaughtFire(BlockState state, Level level, BlockPos pos, @Nullable Direction direction, @Nullable LivingEntity igniter) {
+    public boolean onCaughtFire(BlockState state, Level level, BlockPos pos, @Nullable Direction direction, @Nullable LivingEntity igniter) {
         Explode(level, pos);
+        return false;
     }
 
     @Override
@@ -149,7 +147,7 @@ public class ToxicGasBlock extends BaseEntityBlock {
             level.removeBlock(pos, false);
             level.setBlockAndUpdate(above, this.defaultBlockState());
         } else {
-            if (pos.getY()>= level.getMaxBuildHeight()-1){
+            if (pos.getY()>= level.getMaxY()-1){
                 //if we are at the top of the world, just remove the block
                 level.removeBlock(pos, false);
                 return;
@@ -175,15 +173,16 @@ public class ToxicGasBlock extends BaseEntityBlock {
         }
     }
 
-    @Override
-    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
-        super.entityInside(state, level, pos, entity);
-        if (entity instanceof LivingEntity livingEntity) {
-            if (!livingEntity.hasEffect(MobEffects.POISON)) {
-                livingEntity.addEffect(new MobEffectInstance(MobEffects.POISON, 100, 4));
-            }
-        }
-    }
+    //TODO - Figure out how to re-implement this in 1.21.11
+//    @Override
+//    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+//        super.entityInside(state, level, pos, entity);
+//        if (entity instanceof LivingEntity livingEntity) {
+//            if (!livingEntity.hasEffect(MobEffects.POISON)) {
+//                livingEntity.addEffect(new MobEffectInstance(MobEffects.POISON, 100, 4));
+//            }
+//        }
+//    }
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
@@ -191,16 +190,21 @@ public class ToxicGasBlock extends BaseEntityBlock {
         return Shapes.empty();
     }
 
-
     @Override
-    public @Nullable BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
-        GasBlockEntity gasBlockEntity = new GasBlockEntity(blockPos, blockState);
-        gasBlockEntity.setTickAge(0);
-        return gasBlockEntity;
+    public @org.jspecify.annotations.Nullable BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
+        return null;
     }
 
-    @Override
-    public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
-        return createTickerHelper(blockEntityType, WDBlockEntities.TOXIC_GAS_ENTITY.get(), GasBlockEntity::tick);
-    }
+
+//    @Override
+//    public @Nullable BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
+//        GasBlockEntity gasBlockEntity = new GasBlockEntity(blockPos, blockState);
+//        gasBlockEntity.setTickAge(0);
+//        return gasBlockEntity;
+//    }
+
+//    @Override
+//    public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
+//        return createTickerHelper(blockEntityType, WDBlockEntities.TOXIC_GAS_ENTITY.get(), GasBlockEntity::tick);
+//    }
 }

@@ -3,7 +3,7 @@ package com.danielkkrafft.wilddungeons.network;
 import com.danielkkrafft.wilddungeons.dungeon.registries.SoundscapeTemplateRegistry;
 import com.danielkkrafft.wilddungeons.item.RoomExportWand;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
-import com.danielkkrafft.wilddungeons.render.DecalRenderer;
+//import com.danielkkrafft.wilddungeons.render.DecalRenderer;
 import com.danielkkrafft.wilddungeons.sound.DynamicPitchSound;
 import com.danielkkrafft.wilddungeons.sound.SoundscapeHandler;
 import com.danielkkrafft.wilddungeons.ui.ConnectionBlockEditScreen;
@@ -22,7 +22,7 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.HashSet;
 
-public class ClientPacketHandler {
+public class ClientPacketHandler { //TODO - Set correct defaults for data getters, uncomment decal renderer lines when decal renderer is fixed for 1.21.11
     public enum Packets {
         REMOVE_DECAL, ADD_DECAL, SYNC_DECALS, SWITCH_SOUNDSCAPE, PLAY_DYNAMIC_SOUND, POST_DUNGEON_SCREEN, LOADING_SCREEN, NULL_SCREEN, OPEN_CONNECTION_BLOCK_UI, UPDATE_WD_PLAYER, OPEN_WAND_SCREEN, IS_UNDERWATER;
 
@@ -35,36 +35,36 @@ public class ClientPacketHandler {
 
     public static HashSet<Integer> loopingSounds = new HashSet<>();
     public static void handleInbound(CompoundTag data) {
-        switch (Packets.valueOf(data.getString("packet"))) {
+        switch (Packets.valueOf(data.getStringOr("packet", ""))) {
             case REMOVE_DECAL -> {
-                DecalRenderer.removeClientDecal(Serializer.fromCompoundTag(data.getCompound("decal")));
+                //DecalRenderer.removeClientDecal(Serializer.fromCompoundTag(data.getCompound("decal")));
             }
             case ADD_DECAL -> {
-                DecalRenderer.addClientDecal(Serializer.fromCompoundTag(data.getCompound("decal")));
+                //DecalRenderer.addClientDecal(Serializer.fromCompoundTag(data.getCompound("decal")));
             }
             case SYNC_DECALS -> {
-                DecalRenderer.CLIENT_DECALS_MAP = Serializer.fromCompoundTag(data.getCompound("decal"));
+                //DecalRenderer.CLIENT_DECALS_MAP = Serializer.fromCompoundTag(data.getCompound("decal"));
             }
             case SWITCH_SOUNDSCAPE -> {
                 SoundscapeHandler.handleSwitchSoundscape(
-                        SoundscapeTemplateRegistry.SOUNDSCAPE_TEMPLATE_REGISTRY.get(data.getString("sound_key")),
-                        data.getInt("intensity"),
-                        data.getBoolean("reset"));
+                        SoundscapeTemplateRegistry.SOUNDSCAPE_TEMPLATE_REGISTRY.get(data.getStringOr("sound_key", "")),
+                        data.getIntOr("intensity", 0),
+                        data.getBooleanOr("reset", false));
             }
             case PLAY_DYNAMIC_SOUND -> {
-                SoundEvent soundEvent = BuiltInRegistries.SOUND_EVENT.byId(data.getInt("soundEvent"));
-                SoundSource soundSource = SoundSource.valueOf(data.getString("soundSource"));
-                Entity entity = Minecraft.getInstance().level.getEntity(data.getInt("entityId"));
-                if (entity != null && (!data.getBoolean("loop") || !loopingSounds.contains(data.getInt("soundEvent")))) {
-                    DynamicPitchSound dynamicPitchSound = new DynamicPitchSound(soundEvent, soundSource, data.getFloat("volume"), data.getFloat("pitch"), entity, data.getBoolean("loop"));
-                    loopingSounds.add(data.getInt("soundEvent"));
+                SoundEvent soundEvent = BuiltInRegistries.SOUND_EVENT.byId(data.getIntOr("soundEvent", 0));
+                SoundSource soundSource = SoundSource.valueOf(data.getStringOr("soundSource", ""));
+                Entity entity = Minecraft.getInstance().level.getEntity(data.getIntOr("entityId", 0));
+                if (entity != null && (!data.getBooleanOr("loop", false) || !loopingSounds.contains(data.getInt("soundEvent")))) {
+                    DynamicPitchSound dynamicPitchSound = new DynamicPitchSound(soundEvent, soundSource, data.getFloatOr("volume", 0), data.getFloatOr("pitch", 0), entity, data.getBooleanOr("loop", false));
+                    loopingSounds.add(data.getIntOr("soundEvent", 0));
                     Minecraft.getInstance().getSoundManager().play(dynamicPitchSound);
                 }
             }
             case POST_DUNGEON_SCREEN -> {
 //                WildDungeons.getLogger().info("POST DUNGEON SCREEN PACKET RECEIVED");
 //                WildDungeons.getLogger().info("DATA: {}", data);
-                Minecraft.getInstance().setScreen(new WDPostDungeonScreen(data.getCompound("stats")));
+                Minecraft.getInstance().setScreen(new WDPostDungeonScreen(data.getCompoundOrEmpty("stats")));
             }
             case LOADING_SCREEN -> {
                 Minecraft.getInstance().setScreen(new WDLoadingScreen());
@@ -74,15 +74,15 @@ public class ClientPacketHandler {
             }
             case OPEN_CONNECTION_BLOCK_UI -> {
                 Minecraft.getInstance().setScreen(new ConnectionBlockEditScreen(
-                        data.getString("unblockedBlockstate"),
-                        data.getString("pool"),
-                        data.getString("type"),
-                        data.getInt("x"),
-                        data.getInt("y"),
-                        data.getInt("z")));
+                        data.getStringOr("unblockedBlockstate", ""),
+                        data.getStringOr("pool", ""),
+                        data.getStringOr("type", ""),
+                        data.getIntOr("x", 0),
+                        data.getIntOr("y", 0),
+                        data.getIntOr("z" ,0)));
             }
             case UPDATE_WD_PLAYER -> {
-                WDPlayerManager.getInstance().replaceClientPlayer(Serializer.fromCompoundTag(data.getCompound("player")));
+                WDPlayerManager.getInstance().replaceClientPlayer(Serializer.fromCompoundTag(data.getCompoundOrEmpty("player")));
             }
             case OPEN_WAND_SCREEN -> {
                 assert Minecraft.getInstance().player != null;
@@ -91,7 +91,7 @@ public class ClientPacketHandler {
                 Minecraft.getInstance().setScreen(new RoomExportScreen(itemStack , ((RoomExportWand)itemStack.getItem()).getDungeonMaterials(itemStack, level)));
             }
             case IS_UNDERWATER -> {
-                SoundscapeHandler.toggleUnderwater(data.getBoolean("isUnderwater"));
+                SoundscapeHandler.toggleUnderwater(data.getBooleanOr("isUnderwater", false));
             }
         }
     }
