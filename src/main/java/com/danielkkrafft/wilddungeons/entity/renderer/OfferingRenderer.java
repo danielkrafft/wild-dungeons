@@ -30,15 +30,12 @@
 //import net.minecraft.world.item.Item;
 //import net.minecraft.world.item.ItemDisplayContext;
 //import net.minecraft.world.item.ItemStack;
-//import net.neoforged.api.distmarker.Dist;
-//import net.neoforged.api.distmarker.OnlyIn;
 //import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 //import org.joml.Vector2i;
 //
 //import java.awt.*;
 //import java.util.HexFormat;
 //
-//@OnlyIn(Dist.CLIENT)
 //public class OfferingRenderer extends EntityRenderer<Offering> { TODO - Fix for 1.21.11
 //    private final ItemRenderer itemRenderer;
 //    private final RandomSource random = RandomSource.create();

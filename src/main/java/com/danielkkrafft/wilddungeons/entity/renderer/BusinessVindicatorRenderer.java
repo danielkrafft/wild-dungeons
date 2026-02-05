@@ -10,10 +10,7 @@
 //import net.minecraft.client.renderer.entity.IllagerRenderer;
 //import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
 //import net.minecraft.resources.Identifier;
-//import net.neoforged.api.distmarker.Dist;
-//import net.neoforged.api.distmarker.OnlyIn;
 //
-//@OnlyIn(Dist.CLIENT)
 //public class BusinessVindicatorRenderer extends IllagerRenderer<BusinessVindicator> {
 //    private static final Identifier VINDICATOR = WildDungeons.rl("textures/entity/business_pillager.png");
 //

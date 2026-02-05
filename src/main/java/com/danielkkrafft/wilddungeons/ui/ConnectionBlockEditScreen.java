@@ -11,12 +11,9 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.Objects;
 
-@OnlyIn(Dist.CLIENT)
 public class ConnectionBlockEditScreen extends Screen {
     private String unblockedBlockstate;
     private String pool;

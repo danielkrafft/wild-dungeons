@@ -11,14 +11,11 @@
 //import net.minecraft.util.Mth;
 //import net.minecraft.world.entity.LivingEntity;
 //import net.minecraft.world.phys.Vec3;
-//import net.neoforged.api.distmarker.Dist;
-//import net.neoforged.api.distmarker.OnlyIn;
 //import org.jetbrains.annotations.Nullable;
 //import software.bernie.geckolib.cache.object.BakedGeoModel;
 //import software.bernie.geckolib.renderer.GeoEntityRenderer;
 //import software.bernie.geckolib.renderer.layer.GeoRenderLayer;
 //
-//@OnlyIn(Dist.CLIENT)
 //public class CondemnedGuardianLaserLayer extends GeoRenderLayer<CondemnedGuardian> {
 //    private static final ResourceLocation GUARDIAN_BEAM_LOCATION = ResourceLocation.withDefaultNamespace("textures/entity/guardian_beam.png");
 //    private static final RenderType LASER_RENDER_TYPE = RenderType.entityCutoutNoCull(GUARDIAN_BEAM_LOCATION);

@@ -9,6 +9,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientPauseChangeEvent;
@@ -18,7 +19,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-@EventBusSubscriber
+@EventBusSubscriber(Dist.CLIENT)
 public class SoundscapeHandler {
 
     public static HashSet<SynchronizedSoundLoop> currentlyPlayingSounds = new HashSet<>();

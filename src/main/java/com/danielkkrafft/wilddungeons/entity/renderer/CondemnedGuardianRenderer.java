@@ -6,11 +6,8 @@
 //import com.mojang.math.Axis;
 //import net.minecraft.client.renderer.MultiBufferSource;
 //import net.minecraft.client.renderer.entity.EntityRendererProvider;
-//import net.neoforged.api.distmarker.Dist;
-//import net.neoforged.api.distmarker.OnlyIn;
 //import software.bernie.geckolib.renderer.GeoEntityRenderer;
 //
-//@OnlyIn(Dist.CLIENT)
 //public class CondemnedGuardianRenderer extends GeoEntityRenderer<CondemnedGuardian> {
 //    private static final ClientModel<CondemnedGuardian> MODEL = new ClientModel<CondemnedGuardian>("condemned_guardian_head", "entity")
 //            .withConditionalTexture(CondemnedGuardian::isShiny, "condemned_guardian_shiny", "entity");

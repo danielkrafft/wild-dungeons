@@ -29,8 +29,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.StructureBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.StructureMode;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -318,10 +316,6 @@ public class RoomExportScreen extends Screen {
         return listTag;
     }
 
-
-
-
-    @OnlyIn(Dist.CLIENT)
     public class SelectedRegionDetailList extends ObjectSelectionList<SelectedRegionDetailList.SelectionRegionBlockEntry>{
         public SelectedRegionDetailList(int width, int height, int fromTop, int itemHeight) {
             super(RoomExportScreen.this.minecraft, width, height, fromTop, itemHeight);
@@ -344,7 +338,6 @@ public class RoomExportScreen extends Screen {
             return width-20;
         }
 
-        @OnlyIn(Dist.CLIENT)
         class SelectionRegionBlockEntry extends ObjectSelectionList.Entry<SelectionRegionBlockEntry>{
             public EditBox dungeonMaterialIDEdit;
             public CycleButton<DungeonMaterial.BlockSetting.BlockType> blockTypeButton;
@@ -426,7 +419,6 @@ public class RoomExportScreen extends Screen {
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     public class SelectedMaterialDetailList extends ObjectSelectionList<SelectedMaterialDetailList.MaterialDetailEntry>{
         private int materialIndex = 0;
         public SelectedMaterialDetailList(int width, int height, int fromTop, int itemHeight, int materialIndex) {
@@ -480,7 +472,6 @@ public class RoomExportScreen extends Screen {
             return DungeonMaterialRegistry.dungeonMaterials.get(materialIndex);
         }
 
-        @OnlyIn(Dist.CLIENT)
         class MaterialDetailEntry extends ObjectSelectionList.Entry<MaterialDetailEntry>{
             private static final String BASIC = "dungeon_material.basic";
             private static final String STAIR = "dungeon_material.stair";

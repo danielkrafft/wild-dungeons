@@ -16,8 +16,6 @@
 //import net.minecraft.world.entity.Entity;
 //import net.minecraft.world.phys.EntityHitResult;
 //import net.minecraft.world.phys.HitResult;
-//import net.neoforged.api.distmarker.Dist;
-//import net.neoforged.api.distmarker.OnlyIn;
 //import net.neoforged.bus.api.SubscribeEvent;
 //import net.neoforged.fml.common.EventBusSubscriber;
 //import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
@@ -27,7 +25,6 @@
 //
 //import java.util.List;
 //
-//@OnlyIn(Dist.CLIENT)
 //@EventBusSubscriber
 //public class ItemPreviewTooltipLayer implements LayeredDraw.Layer { TODO - Fix for 1.21.11
 //    public static final ItemPreviewTooltipLayer INSTANCE = new ItemPreviewTooltipLayer();

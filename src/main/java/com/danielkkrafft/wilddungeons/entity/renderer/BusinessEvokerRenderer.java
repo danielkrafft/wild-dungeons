@@ -10,11 +10,8 @@
 //import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
 //import net.minecraft.resources.Identifier;
 //import net.minecraft.world.entity.monster.illager.SpellcasterIllager;
-//import net.neoforged.api.distmarker.Dist;
-//import net.neoforged.api.distmarker.OnlyIn;
 //import org.jetbrains.annotations.NotNull;
 //
-//@OnlyIn(Dist.CLIENT)
 //public class BusinessEvokerRenderer<T extends SpellcasterIllager> extends IllagerRenderer<T> {
 //    private static final Identifier EVOKER_ILLAGER = WildDungeons.rl("textures/entity/village/business_evoker.png");
 //

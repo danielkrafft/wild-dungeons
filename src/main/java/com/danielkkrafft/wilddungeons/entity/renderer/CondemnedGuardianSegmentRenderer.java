@@ -7,10 +7,8 @@
 //import net.minecraft.client.renderer.MultiBufferSource;
 //import net.minecraft.client.renderer.entity.EntityRendererProvider;
 //import net.neoforged.api.distmarker.Dist;
-//import net.neoforged.api.distmarker.OnlyIn;
 //import software.bernie.geckolib.renderer.GeoEntityRenderer;
 //
-//@OnlyIn(Dist.CLIENT)
 //public class CondemnedGuardianSegmentRenderer extends GeoEntityRenderer<CondemnedGuardianSegment> {
 //    public static final ClientModel<CondemnedGuardianSegment> MODEL = new ClientModel<CondemnedGuardianSegment>("condemned_guardian_segment", "entity")
 //                    .withConditionalResources(guardian -> (guardian.isWeakPoint() && guardian.isShiny()) , "condemned_guardian_shiny", "condemned_guardian_segment_2", "entity")

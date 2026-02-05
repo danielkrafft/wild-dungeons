@@ -13,10 +13,7 @@
 //import net.minecraft.util.Mth;
 //import net.minecraft.world.entity.HumanoidArm;
 //import net.minecraft.world.entity.monster.illager.AbstractIllager;
-//import net.neoforged.api.distmarker.Dist;
-//import net.neoforged.api.distmarker.OnlyIn;
 //
-//@OnlyIn(Dist.CLIENT)
 //public class BusinessIllagerModel<T extends AbstractIllager> extends HierarchicalModel<T> implements ArmedModel, HeadedModel {
 //    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(WildDungeons.rl("business_illager"), "main");
 //

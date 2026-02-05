@@ -9,10 +9,8 @@
 //import net.minecraft.resources.ResourceLocation;
 //import net.minecraft.world.phys.Vec3;
 //import net.neoforged.api.distmarker.Dist;
-//import net.neoforged.api.distmarker.OnlyIn;
 //import org.jetbrains.annotations.NotNull;
 //
-//@OnlyIn(Dist.CLIENT)
 //public class LaserbeamRenderer<T extends Laserbeam> extends EntityRenderer<T> {
 //    private static final ResourceLocation
 //            BEAM = WildDungeons.rl("textures/entity/beam.png"),

@@ -12,6 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.resources.Identifier;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
@@ -23,7 +24,7 @@ import net.neoforged.neoforge.common.NeoForge;
 
 import java.awt.*;
 
-@EventBusSubscriber
+@EventBusSubscriber(Dist.CLIENT)
 public class WildDungeonsClient {
 
     public static final String MODID = "wilddungeons";
@@ -33,6 +34,7 @@ public class WildDungeonsClient {
         NeoForge.EVENT_BUS.addListener(WildDungeonsClient::onCameraShake);
     }
 
+    // TODO crashes the server due to client code reference from main entrypoint
     public static void delayedRegistry() {
         ShadersIntegration.init();
         //Any Delayed RenderTypes get registered Here

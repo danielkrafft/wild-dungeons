@@ -9,8 +9,6 @@
 //import net.minecraft.client.Minecraft;
 //import net.minecraft.client.gui.GuiGraphics;
 //import net.minecraft.client.gui.LayeredDraw;
-//import net.neoforged.api.distmarker.Dist;
-//import net.neoforged.api.distmarker.OnlyIn;
 //import net.neoforged.bus.api.SubscribeEvent;
 //import net.neoforged.fml.common.EventBusSubscriber;
 //import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
@@ -18,7 +16,6 @@
 //
 //import java.util.HexFormat;
 //
-//@OnlyIn(Dist.CLIENT)
 //@EventBusSubscriber(modid = WildDungeons.MODID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
 //public class DungeonLifeCounter implements LayeredDraw.Layer { TODO - Fix for 1.21.11
 //    public static final DungeonLifeCounter INSTANCE = new DungeonLifeCounter();
