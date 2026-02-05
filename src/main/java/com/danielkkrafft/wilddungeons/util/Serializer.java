@@ -10,7 +10,6 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateOrient
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSession;
 import com.danielkkrafft.wilddungeons.player.SavedTransform;
 import com.danielkkrafft.wilddungeons.player.WDPlayer;
-//import com.danielkkrafft.wilddungeons.render.DecalRenderer;
 import com.danielkkrafft.wilddungeons.registry.WDProtectedRegion;
 import com.mojang.authlib.properties.Property;
 import com.mojang.datafixers.util.Pair;
@@ -18,8 +17,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;

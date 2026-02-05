@@ -3,8 +3,6 @@ package com.danielkkrafft.wilddungeons.entity.renderer;
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.entity.model.ClientModel;
 import com.danielkkrafft.wilddungeons.item.WindHammer;
-import net.minecraft.world.item.enchantment.Enchantments;
-import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 

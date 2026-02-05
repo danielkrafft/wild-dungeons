@@ -1,8 +1,5 @@
 package com.danielkkrafft.wilddungeons.util;
 
-import com.danielkkrafft.wilddungeons.WildDungeons;
-import net.minecraft.client.DeltaTracker;
-
 public class CameraShakeUtil {
 
     private static float shakeStrength = 0f;

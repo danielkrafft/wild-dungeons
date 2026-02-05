@@ -20,12 +20,10 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.FastBufferedInputStream;
 import net.minecraft.util.FileUtil;
 import net.minecraft.util.datafix.DataFixTypes;
-import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import org.apache.commons.io.IOUtils;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.nio.file.*;

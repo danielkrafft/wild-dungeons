@@ -6,15 +6,12 @@ package com.danielkkrafft.wilddungeons.entity.model;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.entity.AmogusEntity;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
-import net.minecraft.util.Mth;
 
 public class AmogusModel<T extends AmogusEntity> extends EntityModel<EntityRenderState> { //TODO - Fix for 1.21.11 specificall render/anim stuff
     // This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor

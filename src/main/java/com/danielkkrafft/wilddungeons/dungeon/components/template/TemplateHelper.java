@@ -1,6 +1,5 @@
 package com.danielkkrafft.wilddungeons.dungeon.components.template;
 
-import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.dungeon.components.ConnectionPoint;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonMaterial;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonRoom;
@@ -8,7 +7,6 @@ import com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialRegistry
 import com.danielkkrafft.wilddungeons.registry.WDBlocks;
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
 import com.danielkkrafft.wilddungeons.util.RandomUtil;
-import com.danielkkrafft.wilddungeons.util.UtilityMethods;
 import com.danielkkrafft.wilddungeons.world.structure.WDStructureTemplate;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
@@ -17,9 +15,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.DoubleTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -37,7 +32,6 @@ import net.minecraft.world.phys.Vec3;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.*;
 

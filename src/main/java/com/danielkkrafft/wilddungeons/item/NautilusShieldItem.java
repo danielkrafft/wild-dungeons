@@ -1,14 +1,10 @@
 package com.danielkkrafft.wilddungeons.item;
 
 import com.danielkkrafft.wilddungeons.entity.model.ClientModel;
-//import com.danielkkrafft.wilddungeons.entity.renderer.NautilusShieldRenderer; TODO - Uncomment once Renderer is fixed for 1.21.11
 import com.danielkkrafft.wilddungeons.item.itemhelpers.WDWeapon;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShieldItem;
-import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoAnimatable;
 import software.bernie.geckolib.animatable.GeoItem;
@@ -16,7 +12,6 @@ import software.bernie.geckolib.animatable.SingletonGeoAnimatable;
 import software.bernie.geckolib.animatable.client.GeoRenderProvider;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animatable.manager.AnimatableManager;
-import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 import java.util.function.Consumer;
     //TODO - Fix animations for 1.21.11

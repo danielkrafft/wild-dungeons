@@ -10,7 +10,6 @@ import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalPr
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
 import net.minecraft.core.BlockPos;
 
-import java.util.HashMap;
 import java.util.List;
 
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.*;

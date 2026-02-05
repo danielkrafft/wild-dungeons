@@ -1,12 +1,9 @@
 package com.danielkkrafft.wilddungeons.network.packets;
 
 import com.danielkkrafft.wilddungeons.entity.ThrownNautilusShield;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-
-import java.util.Optional;
 
 public class ThrowNautilusShieldHandler {
     public class Server {

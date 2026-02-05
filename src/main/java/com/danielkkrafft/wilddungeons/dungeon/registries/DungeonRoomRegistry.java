@@ -1,17 +1,12 @@
 package com.danielkkrafft.wilddungeons.dungeon.registries;
 
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
-//import com.danielkkrafft.wilddungeons.dungeon.components.process.AddEmeraldPiles;
-//import com.danielkkrafft.wilddungeons.dungeon.components.process.AddRandomVillagers;
-//import com.danielkkrafft.wilddungeons.dungeon.components.process.AddVillagersOfProfession;
 import com.danielkkrafft.wilddungeons.dungeon.components.room.*;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
 import com.danielkkrafft.wilddungeons.registry.WDProtectedRegion.RegionRule;
 import com.danielkkrafft.wilddungeons.util.WeightedPool;
-import com.danielkkrafft.wilddungeons.util.WeightedTable;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.npc.villager.VillagerProfession;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
@@ -19,7 +14,6 @@ import java.util.List;
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.*;
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper.EMPTY_BLOCK_POS;
 import static com.mojang.datafixers.util.Pair.of;
-import static net.minecraft.world.entity.npc.villager.VillagerProfession.*;
 
 
 public class DungeonRoomRegistry { //TODO this should probably be a json/nbt based data oriented approach, with a built-in editor item. This is already getting extremely difficult to maintain

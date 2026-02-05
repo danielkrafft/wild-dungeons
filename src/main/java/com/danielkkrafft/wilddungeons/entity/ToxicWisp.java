@@ -1,7 +1,7 @@
 package com.danielkkrafft.wilddungeons.entity;
 
 //import com.danielkkrafft.wilddungeons.entity.boss.CopperSentinel; TODO - Uncomment when CopperSentinel is fixed for 1.21.11
-import com.danielkkrafft.wilddungeons.registry.WDBlocks;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;

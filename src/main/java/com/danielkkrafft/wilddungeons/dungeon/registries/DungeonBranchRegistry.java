@@ -3,8 +3,6 @@ package com.danielkkrafft.wilddungeons.dungeon.registries;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration;
 import com.danielkkrafft.wilddungeons.dungeon.DungeonRegistration.DungeonLayout;
 import com.danielkkrafft.wilddungeons.dungeon.components.DungeonMaterial;
-//import com.danielkkrafft.wilddungeons.dungeon.components.process.BaseColumnHereStep;
-//import com.danielkkrafft.wilddungeons.dungeon.components.process.CreateBorderStep;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonBranchTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.DungeonRoomTemplate;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
@@ -14,14 +12,12 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
 import static com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonMaterialPoolRegistry.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomPoolRegistry.*;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.DungeonRoomRegistry.*;
-import static com.danielkkrafft.wilddungeons.dungeon.registries.LootTableRegistry.METRO_LOOT_TABLE;
 import static com.danielkkrafft.wilddungeons.dungeon.registries.LootTableRegistry.SEWER_LOOT_TABLE;
 import static com.danielkkrafft.wilddungeons.util.WeightedPool.combine;
 import static com.mojang.datafixers.util.Pair.of;

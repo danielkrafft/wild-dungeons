@@ -2,18 +2,13 @@ package com.danielkkrafft.wilddungeons.mixin;
 
 
 //import com.danielkkrafft.wilddungeons.entity.Spiderling;
-import com.danielkkrafft.wilddungeons.registry.WDBlocks;
-import net.minecraft.core.BlockPos;
-import net.minecraft.sounds.SoundEvents;
+
 import net.minecraft.world.entity.monster.spider.Spider;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import static com.danielkkrafft.wilddungeons.block.SpiderEggSacBlock.EGGS;
 
 @Mixin(Spider.class)
 public class SpiderEggMixin {

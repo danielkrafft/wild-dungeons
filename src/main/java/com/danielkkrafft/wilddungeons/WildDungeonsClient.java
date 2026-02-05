@@ -1,32 +1,27 @@
 package com.danielkkrafft.wilddungeons;
 
-import com.danielkkrafft.wilddungeons.api.client.DelayedRenderTypes;
 import com.danielkkrafft.wilddungeons.api.client.ShadersIntegration;
-import com.danielkkrafft.wilddungeons.entity.model.*;
+import com.danielkkrafft.wilddungeons.entity.model.AmogusModel;
+import com.danielkkrafft.wilddungeons.entity.model.EmeraldWispModel;
+import com.danielkkrafft.wilddungeons.entity.model.ToxicWispModel;
 import com.danielkkrafft.wilddungeons.entity.renderer.*;
-import com.danielkkrafft.wilddungeons.registry.WDBlocks;
 import com.danielkkrafft.wilddungeons.registry.WDEntities;
 import com.danielkkrafft.wilddungeons.registry.WDFluids;
 import com.danielkkrafft.wilddungeons.util.CameraShakeUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.resources.Identifier;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
-import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.ViewportEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
 import java.awt.*;
-
-import static com.danielkkrafft.KeyBindings.TOGGLE_ESSENCE_TYPE;
 
 @EventBusSubscriber
 public class WildDungeonsClient {

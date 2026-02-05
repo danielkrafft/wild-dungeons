@@ -6,11 +6,9 @@ import com.danielkkrafft.wilddungeons.entity.model.ToxicWispModel;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
-import org.jetbrains.annotations.NotNull;
 
 public class ToxicWispRenderer extends MobRenderer<ToxicWisp, LivingEntityRenderState, ToxicWispModel<ToxicWisp>> {
     private static final Identifier TOXIC_WISP = WildDungeons.rl("textures/entity/toxic_wisp.png");

@@ -4,6 +4,7 @@ import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.google.common.collect.Lists;
 import com.ibm.icu.impl.locale.XCldrStub.ImmutableSet;
 import com.mojang.serialization.Lifecycle;
+import net.commoble.infiniverse.internal.ReflectionBuddy;
 import net.minecraft.core.*;
 import net.minecraft.core.RegistryAccess.ImmutableRegistryAccess;
 import net.minecraft.core.registries.Registries;
@@ -29,7 +30,6 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import net.commoble.infiniverse.internal.ReflectionBuddy;
 
 import javax.annotation.Nullable;
 import java.util.*;

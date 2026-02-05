@@ -5,30 +5,21 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-//import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoAnimatable;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.SingletonGeoAnimatable;
-import software.bernie.geckolib.animatable.client.GeoRenderProvider;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-//import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.animatable.manager.AnimatableManager;
-import software.bernie.geckolib.renderer.GeoItemRenderer;
-//import software.bernie.geckolib.renderer.layer.AutoGlowingGeoLayer;
 
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
-
-import static net.minecraft.world.item.Items.ARROW;
 
 //TODO - Fix animation logic for 1.21.11
 public abstract class WDWeapon extends Item implements GeoAnimatable, GeoItem {

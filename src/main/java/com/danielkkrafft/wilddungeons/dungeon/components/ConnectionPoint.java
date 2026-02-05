@@ -1,14 +1,12 @@
 package com.danielkkrafft.wilddungeons.dungeon.components;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
-import com.danielkkrafft.wilddungeons.registry.WDProtectedRegion.RegionRule;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.HierarchicalProperty;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateHelper;
 import com.danielkkrafft.wilddungeons.dungeon.components.template.TemplateOrientation;
 import com.danielkkrafft.wilddungeons.dungeon.session.DungeonSessionManager;
 import com.danielkkrafft.wilddungeons.entity.blockentity.ConnectionBlockEntity;
-//import com.danielkkrafft.wilddungeons.render.DecalRenderer;
-//import com.danielkkrafft.wilddungeons.render.DecalRenderer.Decal;
+import com.danielkkrafft.wilddungeons.registry.WDProtectedRegion.RegionRule;
 import com.danielkkrafft.wilddungeons.util.Serializer;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.util.Pair;

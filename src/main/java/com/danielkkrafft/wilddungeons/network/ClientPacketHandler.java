@@ -3,7 +3,6 @@ package com.danielkkrafft.wilddungeons.network;
 import com.danielkkrafft.wilddungeons.dungeon.registries.SoundscapeTemplateRegistry;
 import com.danielkkrafft.wilddungeons.item.RoomExportWand;
 import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
-//import com.danielkkrafft.wilddungeons.render.DecalRenderer;
 import com.danielkkrafft.wilddungeons.sound.DynamicPitchSound;
 import com.danielkkrafft.wilddungeons.sound.SoundscapeHandler;
 import com.danielkkrafft.wilddungeons.ui.ConnectionBlockEditScreen;

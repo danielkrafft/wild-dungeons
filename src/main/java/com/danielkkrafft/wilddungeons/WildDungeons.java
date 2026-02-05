@@ -1,9 +1,8 @@
 package com.danielkkrafft.wilddungeons;
 
 import com.danielkkrafft.wilddungeons.dungeon.mob_effects.WDMobEffects;
-//import com.danielkkrafft.wilddungeons.enchantment.WDEnchantmentEffects;
 import com.danielkkrafft.wilddungeons.entity.*;
-import com.danielkkrafft.wilddungeons.entity.boss.*;
+import com.danielkkrafft.wilddungeons.entity.boss.MutantBogged;
 import com.danielkkrafft.wilddungeons.network.SimplePacketManager;
 import com.danielkkrafft.wilddungeons.registry.*;
 import com.danielkkrafft.wilddungeons.util.FileUtil;
@@ -16,8 +15,8 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;

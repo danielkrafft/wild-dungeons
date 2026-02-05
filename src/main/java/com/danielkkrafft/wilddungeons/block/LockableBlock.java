@@ -1,12 +1,8 @@
 package com.danielkkrafft.wilddungeons.block;
 
-import com.danielkkrafft.wilddungeons.dungeon.components.room.TargetPurgeRoom;
-import com.danielkkrafft.wilddungeons.player.WDPlayer;
-import com.danielkkrafft.wilddungeons.player.WDPlayerManager;
 import com.danielkkrafft.wilddungeons.registry.WDItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;

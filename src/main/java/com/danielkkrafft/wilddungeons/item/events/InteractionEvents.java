@@ -1,6 +1,5 @@
 package com.danielkkrafft.wilddungeons.item.events;
 
-import com.danielkkrafft.wilddungeons.entity.ThrownNautilusShield;
 import com.danielkkrafft.wilddungeons.item.NautilusShieldItem;
 import com.danielkkrafft.wilddungeons.network.packets.ThrowNautilusShieldPayload;
 import com.danielkkrafft.wilddungeons.registry.WDSoundEvents;
@@ -11,7 +10,6 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.InputEvent;
 
 //This class is there just cause minecraft dosen't want to register the left click on items
 @EventBusSubscriber

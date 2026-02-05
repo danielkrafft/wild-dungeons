@@ -2,7 +2,6 @@ package com.danielkkrafft.wilddungeons.registry;
 
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.block.LifeLiquid;
-//import com.danielkkrafft.wilddungeons.block.ToxicSludge;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.sounds.SoundEvents;

@@ -7,11 +7,6 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.item.ItemStack;
-
-import java.util.UUID;
-
-import static com.danielkkrafft.wilddungeons.entity.attachmenttypes.HomingTargetAttachmentType.UUID_CODEC;
 
 //I CREATED THIS CLASS CAUSE I SAW THE PAYLOAD SYSTEM WAS DIFFERENT AND I WILL RE-IMPLEMENT IT USING THE OTHER SYSTEM AFTERWARD
 //TODO: IMPLEMENT Payload in the style of the other packets
