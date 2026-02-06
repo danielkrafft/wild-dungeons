@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cross",
+  "textures": {
+    "cross": "wilddungeons:block/large_detonite_bud"
+  }
+}

@@ -34,6 +34,7 @@
 //import org.jetbrains.annotations.NotNull;
 //import software.bernie.geckolib.animatable.GeoEntity;
 //import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+//import software.bernie.geckolib.animatable.manager.AnimatableManager;
 //import software.bernie.geckolib.animation.AnimatableManager;
 //import software.bernie.geckolib.util.GeckoLibUtil;
 //
@@ -65,6 +66,12 @@
 //    }
 //    @Override
 //    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {}
+//
+//    @Override
+//    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+//
+//    }
+//
 //    public AnimatableInstanceCache getAnimatableInstanceCache() {return cache;}
 //
 //    @Override

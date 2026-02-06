@@ -40,6 +40,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.manager.AnimatableManager;
 import software.bernie.geckolib.animation.AnimationController;
@@ -49,7 +50,6 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-//543 original -> 423 now (120 saved)
 public class MutantBogged extends WDBoss implements RangedAttackMob, GeoEntity {
     private static final String CONTROLLER = "mutantboggedcontroller";
     private static final String idle = "idle", walk = "walk", arrowVolley = "arrow_volley", chargedArrow = "charged_arrow", dig = "dig";
@@ -253,11 +253,11 @@ public class MutantBogged extends WDBoss implements RangedAttackMob, GeoEntity {
         attacking = false;
         currentTarget = null;
     }
-    //TODO - Fix for 1.21.11
-//    @Override
-//    public boolean hurt(@NotNull DamageSource source, float damage) {
-//        return super.hurt(source, damage * 0.5f);
-//    }
+
+    @Override
+    public boolean hurtServer(@NonNull ServerLevel level, @NotNull DamageSource source, float damage) {
+        return super.hurtServer(level, source, damage * 0.5f);
+    }
 
     private static final BossSounds SOUNDS = new BossSounds(
             WDSoundEvents.MUTANT_BOGGED_GROWL.value(),

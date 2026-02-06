@@ -87,7 +87,7 @@ public abstract class WDBoss extends Monster implements GeoEntity {
     protected PathNavigation createAerialPath(Level level) {
         FlyingPathNavigation path = new FlyingPathNavigation(this, level);
         path.setCanFloat(true);
-        //path.setCanPassDoors(true); TODO - Fix for 1.21.11
+        //path.setCanPassDoors(true); Removed in 1.21.11
         return path;
     }
 
@@ -240,7 +240,7 @@ public abstract class WDBoss extends Monster implements GeoEntity {
                     pos.z - li.position().z).normalize().scale(2);
             li.knockback(1.5, kb.x, kb.z);
             li.setRemainingFireTicks(li.getRemainingFireTicks() + 100);
-            li.hurt(damageSources().generic(), 10);
+            li.hurtServer((ServerLevel) level(), damageSources().generic(), 10);
         }
 
         playSound(SoundEvents.GENERIC_EXPLODE.value(), 2f, 0.8f);
@@ -355,8 +355,8 @@ public abstract class WDBoss extends Monster implements GeoEntity {
         return false;
     }
 
-    //@Override TODO - Fic for 1.21.11
-    public boolean canHaveALeashAttachedToIt() {
+    @Override
+    public boolean canBeLeashed() {
         return false;
     }
 
@@ -367,14 +367,6 @@ public abstract class WDBoss extends Monster implements GeoEntity {
     protected float getDamageMultiplier(DamageSource source) {
         return 1.0f;
     }
-
-//    @Override TODO - Fix for 1.21.11
-//    public boolean hurt(@NotNull DamageSource source, float amount) {
-//        if (isImmuneToDamageType(source)) {
-//            return false;
-//        }
-//        return super.hurt(source, amount * getDamageMultiplier(source));
-//    }
 
     @Override
     public void die(@NotNull DamageSource source) {

@@ -1,29 +1,23 @@
-//package com.danielkkrafft.wilddungeons.datagen;
-//
-//import net.minecraft.core.HolderLookup;
-//import net.minecraft.data.DataGenerator;
-//import net.minecraft.data.PackOutput;
-//import net.neoforged.bus.api.SubscribeEvent;
-//import net.neoforged.fml.common.EventBusSubscriber;
-//import net.neoforged.neoforge.common.data.ExistingFileHelper;
-//import net.neoforged.neoforge.data.event.GatherDataEvent;
-//
-//import java.util.concurrent.CompletableFuture;
-//
-//@EventBusSubscriber
-//public class WDDataGenerators {
-//
-//    @SubscribeEvent
-//    public static void gatherData(GatherDataEvent event) {
-//        DataGenerator generator = event.getGenerator();
-//        PackOutput packOutput = generator.getPackOutput();
-//        ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
-//        CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
-//
-//        // --- CLIENT ---
-//        generator.addProvider(event.includeClient(), new WDItemModelProvider(packOutput, existingFileHelper));
-//
-//        // --- SERVER ---
-//        generator.addProvider(event.includeServer(), new WDDataPackProvider(packOutput, lookupProvider));
-//    }
-//}
+package com.danielkkrafft.wilddungeons.datagen;
+
+import net.minecraft.core.HolderLookup;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
+
+import java.util.concurrent.CompletableFuture;
+
+@EventBusSubscriber
+public class WDDataGenerators {
+
+    @SubscribeEvent
+    public static void gatherClientData(GatherDataEvent.Client event) {
+        event.createProvider(WDModelProvider::new);
+    }
+
+    @SubscribeEvent
+    public static void gatherServerData(GatherDataEvent.Server event) {
+        CompletableFuture<HolderLookup.Provider> lookup = event.getLookupProvider();
+        event.createProvider(output -> new WDDataPackProvider(output, lookup));
+    }
+}

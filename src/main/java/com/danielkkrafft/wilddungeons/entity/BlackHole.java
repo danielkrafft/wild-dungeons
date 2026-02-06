@@ -104,7 +104,6 @@ public class BlackHole extends Entity {
         super.tick();
     }
 
-    //TODO - Properly implement for 1.21.11
     @Override
     public boolean hurtServer(ServerLevel serverLevel, DamageSource damageSource, float v) {
         return false;

@@ -3,9 +3,11 @@ package com.danielkkrafft.wilddungeons.registry;
 import com.danielkkrafft.wilddungeons.WildDungeons;
 import com.danielkkrafft.wilddungeons.item.*;
 import com.danielkkrafft.wilddungeons.util.debug.DebugItem;
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.*;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -112,8 +114,7 @@ public class WDItems { //TODO - Uncomment Items as they are fixed to work with 1
 //    public static final DeferredItem<Item> PRIMAL_CREEPER_SPAWN_EGG = ITEMS.register("primal_creeper_spawn_egg", () -> new SpawnEggItem(WDEntities.PRIMAL_CREEPER.get(), new Color(60, 94, 64).getRGB(), new Color(34, 55, 45).getRGB(), new Item.Properties()));
 //    public static final DeferredItem<Item> CONDEMNED_GUARDIAN_SPAWN_EGG = ITEMS.register("condemned_guardian_spawn_egg", () -> new SpawnEggItem(WDEntities.CONDEMNED_GUARDIAN.get(), new Color(85, 204, 169).getRGB(), new Color(255, 137, 0).getRGB(), new Item.Properties()));
 
-    private static <T> ResourceKey<Item> createItemKey(String name) {
-        return ResourceKey.create(Registries.ITEM, WildDungeons.rl(name));
+    private static ResourceKey<Item> createItemKey(String id) {
+        return ResourceKey.create(Registries.ITEM, WildDungeons.rl(id));
     }
 }
-

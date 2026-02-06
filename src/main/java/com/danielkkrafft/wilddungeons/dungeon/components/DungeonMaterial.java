@@ -92,7 +92,7 @@ public class DungeonMaterial implements DungeonRegistration.DungeonComponent {
     public String name() {return this.name;}
 
     public static class BlockSetting {
-        public BlockState blockState;
+        public BlockState  blockState;
         public int materialIndex;
         public BlockType blockType = BlockType.NONE;
 
