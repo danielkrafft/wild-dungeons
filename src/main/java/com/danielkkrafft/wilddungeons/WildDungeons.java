@@ -8,7 +8,6 @@ import com.danielkkrafft.wilddungeons.registry.*;
 import com.danielkkrafft.wilddungeons.util.FileUtil;
 import com.danielkkrafft.wilddungeons.util.Serializer;
 import com.danielkkrafft.wilddungeons.world.dimension.EmptyGenerator;
-import com.danielkkrafft.wilddungeons.world.dimension.tools.UpdateDimensionsPacket;
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
@@ -77,7 +76,6 @@ public class WildDungeons {
     public static void register(final RegisterPayloadHandlersEvent event) {
         final PayloadRegistrar registrar = event.registrar("1");
         SimplePacketManager.setup(registrar);
-        registrar.playToClient(UpdateDimensionsPacket.TYPE, UpdateDimensionsPacket.STREAM_CODEC, UpdateDimensionsPacket::handle);
     }
 
     @SubscribeEvent

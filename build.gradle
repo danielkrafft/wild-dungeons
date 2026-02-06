@@ -121,13 +121,9 @@ configurations {
 
 dependencies {
     implementation "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
-
-
+    implementation "net.commoble.infiniverse:infiniverse:${infiniverse_version}"
     compileOnly("curse.maven:sodium-394468:5957448")
     compileOnly("curse.maven:irisshaders-455508:6213632")
-
-
-
 }
 
 repositories {
@@ -136,6 +132,7 @@ repositories {
     maven { url = "https://maven.blamejared.com" }
     maven { url = "https://modmaven.k-4u.nl"}
     maven { url = "https://cursemaven.com" }
+    maven { url "https://maven.commoble.net/" }
     mavenLocal()
 
 }
