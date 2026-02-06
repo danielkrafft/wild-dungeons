@@ -1,8 +1,6 @@
 {
-  "parent": "minecraft:block/stairs",
+  "parent": "minecraft:block/cube_all",
   "textures": {
-    "bottom": "wilddungeons:block/prismarine_tile",
-    "side": "wilddungeons:block/prismarine_tile",
-    "top": "wilddungeons:block/prismarine_tile"
+    "all": "wilddungeons:block/prismarine_tile_stairs"
   }
 }

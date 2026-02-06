@@ -29,10 +29,6 @@ public class WDModelProvider extends ModelProvider {
         simpleBlockWithItem(itemModels, blockModels, WDBlocks.WD_SLAB.get());
         simpleBlockWithItem(itemModels, blockModels, WDBlocks.WD_WALL.get());
 
-        simpleBlockWithItem(itemModels, blockModels, WDBlocks.WD_BASIC.get());
-        simpleBlockWithItem(itemModels, blockModels, WDBlocks.WD_STAIRS.get());
-        simpleBlockWithItem(itemModels, blockModels, WDBlocks.WD_SLAB.get());
-
         simpleBlockWithItem(itemModels, blockModels, WDBlocks.WD_BASIC_2.get());
         simpleBlockWithItem(itemModels, blockModels, WDBlocks.WD_STAIRS_2.get());
         simpleBlockWithItem(itemModels, blockModels, WDBlocks.WD_SLAB_2.get());

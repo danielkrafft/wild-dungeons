@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/outer_stairs",
-  "textures": {
-    "bottom": "wilddungeons:block/orange_prismarine_tile",
-    "side": "wilddungeons:block/orange_prismarine_tile",
-    "top": "wilddungeons:block/orange_prismarine_tile"
-  }
-}

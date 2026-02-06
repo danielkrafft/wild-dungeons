@@ -1,8 +1,6 @@
 {
-  "parent": "minecraft:block/stairs",
+  "parent": "minecraft:block/cube_all",
   "textures": {
-    "bottom": "wilddungeons:block/wd_basic",
-    "side": "wilddungeons:block/wd_basic",
-    "top": "wilddungeons:block/wd_basic"
+    "all": "wilddungeons:block/wd_stairs"
   }
 }

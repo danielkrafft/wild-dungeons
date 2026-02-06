@@ -1,8 +1,6 @@
 {
-  "parent": "minecraft:block/slab",
+  "parent": "minecraft:block/cube_all",
   "textures": {
-    "bottom": "wilddungeons:block/wd_basic_2",
-    "side": "wilddungeons:block/wd_basic_2",
-    "top": "wilddungeons:block/wd_basic_2"
+    "all": "wilddungeons:block/wd_slab_2"
   }
 }
