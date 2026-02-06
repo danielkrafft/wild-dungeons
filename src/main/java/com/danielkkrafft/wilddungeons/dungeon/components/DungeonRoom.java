@@ -23,6 +23,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerLevel;
@@ -620,12 +621,12 @@ public class DungeonRoom {
 
         sectionsToUpdate.forEach(sectionPos -> lightEngine.updateSectionStatus(sectionPos, false));
 
-//        chunkPosSet.forEach(chunkPos -> forceUpdateChunk(level, chunkPos));
-//        for (int i = 1; i <= repeatPacketAmount; i++) {
-//            level.getServer().tell(new TickTask((int) (secondsBetweenPackets * 20 * i), () -> {//will execute immediately instead of waiting because minecraft is dumb
-//                chunkPosSet.forEach(chunkPos -> forceUpdateChunk(level, chunkPos));
-//            }));
-//        }
+        chunkPosSet.forEach(chunkPos -> forceUpdateChunk(level, chunkPos));
+        for (int i = 1; i <= repeatPacketAmount; i++) {
+            level.getServer().doRunTask(new TickTask((int) (secondsBetweenPackets * 20 * i), () -> {//will execute immediately instead of waiting because minecraft is dumb
+                chunkPosSet.forEach(chunkPos -> forceUpdateChunk(level, chunkPos));
+            }));
+        }
 
         // Use CompletableFuture for delayed execution
         CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
