@@ -34,7 +34,6 @@ public class LockableEventRoom extends DungeonRoom { //TODO - Uncomment once Dun
         this.getConnectionPoints().forEach(point -> {
             if (point.isConnected()) {
                 point.block(2);
-                //point.removeDecal(); TODO - Uncomment once decals are fixed for 1.21.11
             }
         });
     }
@@ -111,10 +110,8 @@ public class LockableEventRoom extends DungeonRoom { //TODO - Uncomment once Dun
                 if (point.getConnectedPoint().getBranchIndex() > this.getBranch().getIndex() ||
                         (point.getConnectedPoint().getRoom().getIndex() > this.getIndex() && point.getConnectedPoint().getBranchIndex() == this.getBranch().getIndex())) {
                     point.block(2);
-                    //point.removeDecal(); TODO - Uncomment once decals are fixed for 1.21.11
                 } else {
                     point.unBlock();
-                    //point.addDecal(); TODO - Uncomment once decals are fixed for 1.21.11
                 }
             }
         });

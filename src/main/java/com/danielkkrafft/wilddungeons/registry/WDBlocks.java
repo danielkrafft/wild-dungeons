@@ -269,10 +269,10 @@ public class WDBlocks {
     }
 
     private static ResourceKey<Item> createItemKey(String id) {
-        return ResourceKey.create(Registries.ITEM, Identifier.withDefaultNamespace(id));
+        return ResourceKey.create(Registries.ITEM, WildDungeons.rl(id));
     }
 
     private static ResourceKey<Block> createKey(String id) {
-        return ResourceKey.create(Registries.BLOCK, Identifier.withDefaultNamespace(id));
+        return ResourceKey.create(Registries.BLOCK, WildDungeons.rl(id));
     }
 }

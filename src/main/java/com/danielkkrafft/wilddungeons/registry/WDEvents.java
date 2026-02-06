@@ -126,7 +126,6 @@ public class WDEvents {
             tag1.putBoolean("reset", true);
             PacketDistributor.sendToPlayer(serverPlayer, new SimplePacketManager.ClientboundTagPacket(tag1));
 
-//            DecalRenderer.syncClientDecals(serverPlayer);
 //            event.getEntity().getServer().tell(new TickTask(1, () -> { TODO - Fix for 1.21.11
 //                if (wdPlayer.getCurrentRoom() != null) {
 //                    wdPlayer.getCurrentRoom().onEnter(wdPlayer);

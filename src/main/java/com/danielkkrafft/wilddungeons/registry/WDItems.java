@@ -113,7 +113,7 @@ public class WDItems { //TODO - Uncomment Items as they are fixed to work with 1
 //    public static final DeferredItem<Item> CONDEMNED_GUARDIAN_SPAWN_EGG = ITEMS.register("condemned_guardian_spawn_egg", () -> new SpawnEggItem(WDEntities.CONDEMNED_GUARDIAN.get(), new Color(85, 204, 169).getRGB(), new Color(255, 137, 0).getRGB(), new Item.Properties()));
 
     private static <T> ResourceKey<Item> createItemKey(String name) {
-        return ResourceKey.create(Registries.ITEM, Identifier.withDefaultNamespace(name));
+        return ResourceKey.create(Registries.ITEM, WildDungeons.rl(name));
     }
 }
 

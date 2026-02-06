@@ -21,9 +21,9 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.HashSet;
 
-public class ClientPacketHandler { //TODO - Set correct defaults for data getters, uncomment decal renderer lines when decal renderer is fixed for 1.21.11
+public class ClientPacketHandler { //TODO - Set correct defaults for data getters
     public enum Packets {
-        REMOVE_DECAL, ADD_DECAL, SYNC_DECALS, SWITCH_SOUNDSCAPE, PLAY_DYNAMIC_SOUND, POST_DUNGEON_SCREEN, LOADING_SCREEN, NULL_SCREEN, OPEN_CONNECTION_BLOCK_UI, UPDATE_WD_PLAYER, OPEN_WAND_SCREEN, IS_UNDERWATER;
+        SWITCH_SOUNDSCAPE, PLAY_DYNAMIC_SOUND, POST_DUNGEON_SCREEN, LOADING_SCREEN, NULL_SCREEN, OPEN_CONNECTION_BLOCK_UI, UPDATE_WD_PLAYER, OPEN_WAND_SCREEN, IS_UNDERWATER;
 
         public CompoundTag asTag() {
             CompoundTag tag = new CompoundTag();
@@ -35,15 +35,6 @@ public class ClientPacketHandler { //TODO - Set correct defaults for data getter
     public static HashSet<Integer> loopingSounds = new HashSet<>();
     public static void handleInbound(CompoundTag data) {
         switch (Packets.valueOf(data.getStringOr("packet", ""))) {
-            case REMOVE_DECAL -> {
-                //DecalRenderer.removeClientDecal(Serializer.fromCompoundTag(data.getCompound("decal")));
-            }
-            case ADD_DECAL -> {
-                //DecalRenderer.addClientDecal(Serializer.fromCompoundTag(data.getCompound("decal")));
-            }
-            case SYNC_DECALS -> {
-                //DecalRenderer.CLIENT_DECALS_MAP = Serializer.fromCompoundTag(data.getCompound("decal"));
-            }
             case SWITCH_SOUNDSCAPE -> {
                 SoundscapeHandler.handleSwitchSoundscape(
                         SoundscapeTemplateRegistry.SOUNDSCAPE_TEMPLATE_REGISTRY.get(data.getStringOr("sound_key", "")),

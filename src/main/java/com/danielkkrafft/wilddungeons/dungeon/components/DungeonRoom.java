@@ -309,13 +309,12 @@ public class DungeonRoom {
         chunkPosSet.forEach(chunkPos -> {
             getBranch().getFloor().getChunkMap().get(chunkPos).remove(new Vector2i(this.getBranch().getIndex(), this.getIndex()));
         });
-        //getConnectionPoints().forEach(ConnectionPoint::removeDecal); TODO - Uncomment once decals are fixed for 1.21.11
     }
 
     public void unsetAttachedPoints() {
         getConnectionPoints().forEach(connectionPoint -> {
             if (connectionPoint.isConnected()) {
-                //connectionPoint.getConnectedPoint().unSetConnectedPoint(); TODO - Uncomment once decals are fixed for 1.21.11
+                connectionPoint.getConnectedPoint().unSetConnectedPoint();
             }
         });
     }
@@ -326,14 +325,12 @@ public class DungeonRoom {
             point.setupBlockstates(getOrientation(), getPosition(), this.getBranch().getFloor().getLevel());
             if (point.isConnected()) {
                 point.unBlock();
-                //point.addDecal(); TODO - Uncomment once decals are fixed for 1.21.11
                 if (!(point.getConnectedPoint().getRoom() instanceof LockableEventRoom)){
                     point.getConnectedPoint().unBlock();
-                };
+                }
             }
             if (!point.isConnected()) {
                 point.block(2);
-                //point.removeDecal(); TODO - Uncomment once decals are fixed for 1.21.11
             }
         }
     }
@@ -549,14 +546,6 @@ public class DungeonRoom {
 
             return new Pair<>(pos, score);
         }).min(Comparator.comparingInt(Pair::getSecond)).get().getFirst();
-    }
-
-    public Identifier getDecalTexture() {
-        return null;
-    }
-
-    public int getDecalColor() {
-        return 0xFFFFFFFF;
     }
 
     public void onGenerated() {}

@@ -269,61 +269,9 @@ public class ConnectionPoint {
         unBlockedBlockStates.forEach((pos, blockState) -> level.setBlock(pos, TemplateHelper.fixBlockStateProperties(blockStateFromString(blockState), this.getRoom().getSettings()), 2));
     }
 
-//    public void addDecal() { TODO - Uncomment once DecalRenderer is fixed for 1.21.11
-//        Decal decal = this.getDecal();
-//        if (decal != null) {
-//            DecalRenderer.addServerDecal(decal);
-//            DecalRenderer.sendClientAdditionPacket(decal);
-//        }
-//    }
-//
-//    public void removeDecal() {
-//        Decal decal = this.getDecal();
-//        if (decal != null) {
-//            DecalRenderer.removeServerDecal(decal);
-//            DecalRenderer.sendClientRemovalPacket(decal);
-//        }
-//    }
-//
-//    public void removeServerDecal() {
-//        Decal decal = this.getDecal();
-//        if (decal != null) {
-//            DecalRenderer.removeServerDecal(decal);
-//        }
-//    }
-//
-//    public Decal getDecal() {
-//        return this.getDecal(this.getRoom().getDecalTexture(), this.getRoom().getDecalColor());
-//    }
-//
-//    public Decal getDecal(Identifier texture, int color) {
-//        if (texture == null) return null;
-//        Vector3f avgPosition = this.getAveragePosition();
-//        BoundingBox box = this.getRealBoundingBox();
-//        Direction.Axis axis = this.getDirection(this.getRoom().getOrientation()).getAxis();
-//        float width = 1.0f;
-//        float height = 1.0f;
-//        switch (axis) {
-//            case X -> {
-//                width = box.getZSpan();
-//                height = box.getYSpan();
-//            }
-//            case Y -> {
-//                width = box.getXSpan();
-//                height = box.getZSpan();
-//            }
-//            case Z -> {
-//                width = box.getXSpan();
-//                height = box.getYSpan();
-//            }
-//        }
-//        return new Decal(texture, avgPosition.x, avgPosition.y, avgPosition.z, Math.min(width, height) * 0.75f, Math.min(width, height) * 0.75f, axis, color, this.getRoom().getBranch().getFloor().getLevelKey());
-//    }
-//
-//    public void unSetConnectedPoint() {
-//        removeDecal();
-//        this.connectedPointIndex = -1;
-//        this.connectedBranchIndex = -1;
-//        this.connectedRoomIndex = -1;
-//    }
+    public void unSetConnectedPoint() {
+        this.connectedPointIndex = -1;
+        this.connectedBranchIndex = -1;
+        this.connectedRoomIndex = -1;
+    }
 }

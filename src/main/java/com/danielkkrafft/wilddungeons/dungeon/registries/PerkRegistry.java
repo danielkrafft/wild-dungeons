@@ -89,7 +89,6 @@ public class PerkRegistry {
     //Two of a Kind - Gain two random perks
     //Explorer's Instinct - 25% chance to gain 1 absorption heart (stackable) for each new room you discover
     //Shareholder Distribution - Deletes all items from the collector's inventory. Gain 1 life for each 200 items destroyed in this way
-    //Divine Guidance - Decals which lead to the exit are colored green
     //Iron Guard - Spawn 10 Iron Golems which teleport into active combat rooms and fight mobs but do not refresh on death
     //Midas Touch
 

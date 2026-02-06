@@ -153,10 +153,6 @@ public class CombatRoom extends TargetPurgeRoom {
         this.getBranch().getFloor().getLevel().addFreshEntity(offering);
     }
 
-    @Override public Identifier getDecalTexture() {return ConnectionPoint.SWORD_TEXTURE;}
-    @Override public int getDecalColor() {return 0xFFFF0000;}
-
-
     @Override
     public void destroy() {
         disableCombatBar();

@@ -59,8 +59,4 @@ public class LootRoom extends TargetPurgeRoom {
             });
         }
     }
-
-    @Override public Identifier getDecalTexture() {return ConnectionPoint.CHEST_TEXTURE;}
-    @Override public int getDecalColor() {return 0xFFffdd00;}
-
 }
