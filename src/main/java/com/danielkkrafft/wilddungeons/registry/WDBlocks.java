@@ -143,7 +143,7 @@ public class WDBlocks {
         ResourceKey<Item> itemKey = ResourceKey.create(Registries.ITEM, WildDungeons.rl(name));
 
         DeferredBlock<T> block = BLOCKS.register(name, () -> factory.apply(blockKey));
-        ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties().setId(itemKey)));
+        ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties().setId(itemKey).useBlockDescriptionPrefix()));
         return block;
     }
 

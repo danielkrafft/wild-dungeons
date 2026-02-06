@@ -8,14 +8,11 @@ import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.ModelProvider;
 import net.minecraft.client.data.models.model.ModelLocationUtils;
 import net.minecraft.client.renderer.item.BlockModelWrapper;
-import net.minecraft.data.BlockFamily;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 
 import java.util.Collections;
-
-import static com.danielkkrafft.wilddungeons.registry.WDBlocks.PRISMARINE_TILES;
 
 public class WDModelProvider extends ModelProvider {
     public WDModelProvider(PackOutput output) {
